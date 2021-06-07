@@ -1,0 +1,18 @@
+[package]
+name = "enclave"
+version = "0.1.0"
+authors = ["Michal Rostecki <mrostecki@opensuse.org>"]
+edition = "2018"
+
+[dependencies]
+anyhow = "1.0"
+byteorder = "1.4"
+chrono = { version = "0.4", default-features = false, features = ["clock"] }
+libbpf-rs = "0.10"
+regex = { version = "1.5", default-features = false, features = ["perf"] }
+thiserror = "1.0"
+
+[build-dependencies]
+anyhow = "1.0"
+libbpf-cargo = "0.7"
+thiserror = "1.0"

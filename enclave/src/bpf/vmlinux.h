@@ -1,0 +1,1 @@
+vmlinux-opensuse-5.12.0-2.h
