@@ -86,8 +86,11 @@ static __always_inline u32 hash(const char *str, size_t len)
 	u32 hash = 0;
 	int i;
 
-	for (i = 0; i < len; i++)
+	for (i = 0; i < len; i++) {
+		if (str[i] == '\0')
+			return hash;
 		hash += str[i];
+	}
 
 	return hash;
 }
