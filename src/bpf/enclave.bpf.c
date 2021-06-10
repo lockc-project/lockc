@@ -156,23 +156,24 @@ static __always_inline int handle_new_process(struct task_struct *parent,
 	int err;
 	u64 pid = task_pid(child);
 
-	const char *comm = BPF_CORE_READ(child, comm);
-	u32 runtime_key = hash(comm, TASK_COMM_LEN);
-	u32 *runtime_lookup = bpf_map_lookup_elem(&runtimes, &runtime_key);
-
-	if (runtime_lookup) {
-		bpf_printk("found runtime init process: %d\n", pid);
-		err = add_container(child);
-		if (err < 0)
-			return err;
-		return 0;
-	}
-
+	/* Check if parent process is containerized. */
 	u64 process_key = task_pid(parent);
 	struct process *parent_lookup = bpf_map_lookup_elem(&processes, &process_key);
-	if (!parent_lookup)
-		/* Nothing to do */
+	if (!parent_lookup) {
+		/* If not, check whether it's a container runtime process. */
+		const char *comm = BPF_CORE_READ(child, comm);
+		u32 runtime_key = hash(comm, TASK_COMM_LEN);
+		u32 *runtime_lookup = bpf_map_lookup_elem(&runtimes,
+							  &runtime_key);
+		if (runtime_lookup) {
+			/* If yes, register it as a new container. */
+			bpf_printk("found runtime init process: %d\n", pid);
+			err = add_container(child);
+			if (err < 0)
+				return err;
+		}
 		return 0;
+	}
 
 	bpf_printk("found parent containerized process: %d\n", process_key);
 
