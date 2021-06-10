@@ -11,8 +11,11 @@ name = "enclave"
 anyhow = "1.0"
 byteorder = "1.4"
 chrono = { version = "0.4", default-features = false, features = ["clock"] }
+config = { version = "0.11", default-features = false, features = ["toml"] }
+lazy_static = "1.4"
 libbpf-rs = "0.10"
 regex = { version = "1.5", default-features = false, features = ["perf"] }
+serde = "1.0"
 thiserror = "1.0"
 
 [build-dependencies]

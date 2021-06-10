@@ -1,3 +1,6 @@
+#[macro_use]
+extern crate lazy_static;
+
 use byteorder::{NativeEndian, WriteBytesExt};
 use std::io::prelude::*;
 use std::{fs, path};
@@ -5,7 +8,11 @@ use std::{fs, path};
 mod bpf;
 use bpf::*;
 
-const RUNC_CHILD: &str = "runc:[2:INIT]";
+mod settings;
+
+lazy_static! {
+    static ref SETTINGS: settings::Settings = settings::Settings::new().unwrap();
+}
 
 #[derive(thiserror::Error, Debug)]
 pub enum CheckBpfLsmError {
@@ -72,10 +79,13 @@ pub enum LoadProgramError {
 /// map. Based on that information, BPF programs will track those processes and
 /// their children.
 pub fn init_runtimes(map: &mut libbpf_rs::Map) -> Result<(), LoadProgramError> {
-    let key = hash(RUNC_CHILD)?;
+    let runtimes = &SETTINGS.runtimes;
     let val: [u8; 4] = [0, 0, 0, 0];
 
-    map.update(&key, &val, libbpf_rs::MapFlags::empty())?;
+    for runtime in runtimes.iter() {
+	let key = hash(runtime)?;
+	map.update(&key, &val, libbpf_rs::MapFlags::empty())?;
+    }
 
     Ok(())
 }
