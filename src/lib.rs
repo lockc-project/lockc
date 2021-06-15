@@ -1,5 +1,4 @@
 use byteorder::{NativeEndian, WriteBytesExt};
-use chrono::prelude::*;
 use std::io::prelude::*;
 use std::{fs, path};
 
@@ -9,7 +8,7 @@ use bpf::*;
 const RUNC_CHILD: &str = "runc:[2:INIT]";
 
 #[derive(thiserror::Error, Debug)]
-enum CheckBpfLsmError {
+pub enum CheckBpfLsmError {
     #[error("regex compilation error")]
     RegexError(#[from] regex::Error),
     
@@ -21,7 +20,7 @@ enum CheckBpfLsmError {
 }
 
 /// Checks whether BPF LSM is enabled in the system.
-fn check_bpf_lsm_enabled() -> Result<(), CheckBpfLsmError> {
+pub fn check_bpf_lsm_enabled() -> Result<(), CheckBpfLsmError> {
     let rx = regex::Regex::new(r"bpf")?;
     let path = path::Path::new("/sys").join("kernel").join("security").join("lsm");
     let mut file = fs::File::open(path)?;
@@ -36,14 +35,14 @@ fn check_bpf_lsm_enabled() -> Result<(), CheckBpfLsmError> {
 }
 
 #[derive(thiserror::Error, Debug)]
-enum HashError {
+pub enum HashError {
     #[error("could not convert the hash to a byte array")]
     ByteWriteError(#[from] std::io::Error),
 }
 
 /// Simple string hash function which allows to use strings as keys for BPF
 /// maps even though they use u32 as a key type.
-fn hash(s: &str) -> Result<Vec<u8>, HashError> {
+pub fn hash(s: &str) -> Result<Vec<u8>, HashError> {
     let mut hash: u32 = 0;
 
     for c in s.chars() {
@@ -58,7 +57,7 @@ fn hash(s: &str) -> Result<Vec<u8>, HashError> {
 }
 
 #[derive(thiserror::Error, Debug)]
-enum LoadProgramError {
+pub enum LoadProgramError {
     #[error("hash error")]
     HashError(#[from] HashError),
 
@@ -69,7 +68,7 @@ enum LoadProgramError {
 /// Registers the names of supported container runtime init processes in a BPF
 /// map. Based on that information, BPF programs will track those processes and
 /// their children.
-fn init_runtimes(map: &mut libbpf_rs::Map) -> Result<(), LoadProgramError> {
+pub fn init_runtimes(map: &mut libbpf_rs::Map) -> Result<(), LoadProgramError> {
     let key = hash(RUNC_CHILD)?;
     let val: [u8; 4] = [0, 0, 0, 0];
 
@@ -94,7 +93,7 @@ fn init_runtimes(map: &mut libbpf_rs::Map) -> Result<(), LoadProgramError> {
 /// TODO: The concept described above still has one hole - the contents of old
 /// BPF maps is not migrated in any way. We need to come up with some sane copy
 /// mechanism.
-fn load_programs(path_base_ts: path::PathBuf) -> Result<(), LoadProgramError> {
+pub fn load_programs(path_base_ts: path::PathBuf) -> Result<(), LoadProgramError> {
     let skel_builder = EnclaveSkelBuilder::default();
     let open_skel = skel_builder.open()?;
     let mut skel = open_skel.load()?;
@@ -132,7 +131,7 @@ fn load_programs(path_base_ts: path::PathBuf) -> Result<(), LoadProgramError> {
 }
 
 #[derive(thiserror::Error, Debug)]
-enum CleanupError {
+pub enum CleanupError {
     #[error("regex compilation error")]
     RegexError(#[from] regex::Error),
 
@@ -146,7 +145,7 @@ enum CleanupError {
 /// Removes all old BPF entities (programs, maps, links) from BPFFS, to stop
 /// the execution of old BPF programs. All directories with timestamp lower
 /// than the current one get removed.
-fn cleanup(path_base: path::PathBuf, dirname: &String) -> Result<(), CleanupError> {
+pub fn cleanup(path_base: path::PathBuf, dirname: &String) -> Result<(), CleanupError> {
     let rx = regex::Regex::new(format!(r#"{}"#, dirname).as_str())?;
 
     for entry in fs::read_dir(path_base)? {
@@ -157,23 +156,6 @@ fn cleanup(path_base: path::PathBuf, dirname: &String) -> Result<(), CleanupErro
 	    fs::remove_dir_all(path)?;
 	}
     }
-
-    Ok(())
-}
-
-fn main() -> anyhow::Result<()> {
-    check_bpf_lsm_enabled()?;
-
-    let now = Utc::now();
-    let dirname = now.format("%s").to_string();
-    let path_base = path::Path::new("/sys").join("fs").join("bpf").join("enclave");
-
-    fs::create_dir_all(&path_base)?;
-
-    let path_base_ts = path_base.join(&dirname);
-
-    load_programs(path_base_ts)?;
-    cleanup(path_base, &dirname)?;
 
     Ok(())
 }
