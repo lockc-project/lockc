@@ -2,7 +2,10 @@
 #include <bpf/bpf_core_read.h>
 #include <bpf/bpf_helpers.h>
 #include <bpf/bpf_tracing.h>
-#include <error.h>
+
+#ifndef NULL
+#define NULL 0
+#endif
 
 #define EPERM 1
 #define TASK_COMM_LEN 16
