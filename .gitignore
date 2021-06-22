@@ -16,3 +16,6 @@ mod.rs
 
 # Misc
 **/*~
+
+# Vagrant
+**/.vagrant/
