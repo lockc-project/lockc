@@ -1,0 +1,11 @@
+[Unit]
+Description=Enclave
+After=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/home/vagrant/.cargo/bin/enclave
+StandardOutput=journal
+
+[Install]
+WantedBy=multi-user.target
