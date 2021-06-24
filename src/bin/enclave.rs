@@ -5,7 +5,10 @@ fn main() -> anyhow::Result<()> {
 
     let now = Utc::now();
     let dirname = now.format("%s").to_string();
-    let path_base = std::path::Path::new("/sys").join("fs").join("bpf").join("enclave");
+    let path_base = std::path::Path::new("/sys")
+        .join("fs")
+        .join("bpf")
+        .join("enclave");
 
     std::fs::create_dir_all(&path_base)?;
 
