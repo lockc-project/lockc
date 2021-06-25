@@ -150,8 +150,8 @@ pub enum CleanupError {
 /// Removes all old BPF entities (programs, maps, links) from BPFFS, to stop
 /// the execution of old BPF programs. All directories with timestamp lower
 /// than the current one get removed.
-pub fn cleanup(path_base: path::PathBuf, dirname: &String) -> Result<(), CleanupError> {
-    let rx = regex::Regex::new(format!(r#"{}"#, dirname).as_str())?;
+pub fn cleanup(path_base: path::PathBuf, dirname: &str) -> Result<(), CleanupError> {
+    let rx = regex::Regex::new(dirname.to_string().as_str())?;
 
     for entry in fs::read_dir(path_base)? {
         let path = entry?.path();
