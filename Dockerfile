@@ -17,8 +17,9 @@ RUN wget https://apt.llvm.org/llvm-snapshot.gpg.key && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 WORKDIR /usr/local/src
 # Build libbpf and bpftool from the newest stable kernel sources.
+ARG KERNEL_TAG=v5.13.1
 RUN git clone --depth 1 -b \
-        v$(curl -s https://www.kernel.org/ | grep -A1 'stable:' | grep -oP '(?<=strong>).*(?=</strong.*)') \
+        ${KERNEL_TAG} \
         git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git && \
     cd linux && \
     cd tools/lib/bpf && \
