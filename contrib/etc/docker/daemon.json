@@ -1,0 +1,14 @@
+{
+  "log-level": "warn",
+  "log-driver": "json-file",
+  "log-opts": {
+    "max-size": "10m",
+    "max-file": "5"
+  },
+  "default-runtime": "runc-enclave",
+  "runtimes": {
+    "runc-enclave": {
+      "path": "/home/vagrant/.cargo/bin/enclave-runc-wrapper"
+    }
+  }
+}
