@@ -62,7 +62,7 @@ struct process {
 struct {
 	__uint(type, BPF_MAP_TYPE_HASH);
 	__uint(max_entries, PID_MAX_LIMIT);
-	__type(key, u64);
+	__type(key, pid_t);
 	__type(value, struct process);
 } processes SEC(".maps");
 
@@ -96,52 +96,8 @@ static __always_inline u32 hash(const char *str, size_t len)
 }
 
 /*
- * task_pid - find a PID of the given process
- * @task: task to find a PID for
- *
- * Return: a PID.
- */
-static __always_inline u64 task_pid(struct task_struct *task)
-{
-	return (u64) BPF_CORE_READ(task, tgid) << 32 | BPF_CORE_READ(task, pid);
-}
-
-/*
- * add_container - register the container and its init process in BPF maps
- * @task: the init process of the container runtime
- *
- * Return: 0 if all BPF map operations are successful, otherwise an error code.
- */
-static __always_inline int add_container(struct task_struct *task)
-{
-	int ret;
-
-	u32 container_id = bpf_get_prandom_u32();
-	struct container container = {
-		.policy_level = POLICY_LEVEL_BASELINE
-	};
-
-	ret = bpf_map_update_elem(&containers, &container_id, &container, 0);
-	if (ret < 0)
-		return ret;
-
-	u64 pid = task_pid(task);
-	struct process process = {
-		.container_id = container_id
-	};
-
-	ret = bpf_map_update_elem(&processes, &pid, &process, 0);
-	if (ret < 0)
-		return ret;
-
-	return 0;
-}
-
-/*
  * handle_process - the handler which monitors all new tasks/functions created
  * in the system and checks whether:
- * - it's an init process of a container runtime - in that case, it calls the
- *   add_container() function to register a new container
  * - it's a child of some already containerized process (either the container
  *   runtime init process or any of its children)
  * In any other case, it does not do anything.
@@ -154,11 +110,11 @@ static __always_inline int handle_new_process(struct task_struct *parent,
 					      struct task_struct *child)
 {
 	int err;
-	u64 pid = task_pid(child);
+	pid_t pid = BPF_CORE_READ(child, pid);
+	pid_t ppid = BPF_CORE_READ(parent, pid);
 
 	/* Check if parent process is containerized. */
-	u64 process_key = task_pid(parent);
-	struct process *parent_lookup = bpf_map_lookup_elem(&processes, &process_key);
+	struct process *parent_lookup = bpf_map_lookup_elem(&processes, &ppid);
 	if (!parent_lookup) {
 		/* If not, check whether it's a container runtime process. */
 		const char *comm = BPF_CORE_READ(child, comm);
@@ -166,28 +122,38 @@ static __always_inline int handle_new_process(struct task_struct *parent,
 		u32 *runtime_lookup = bpf_map_lookup_elem(&runtimes,
 							  &runtime_key);
 		if (runtime_lookup) {
-			/* If yes, register it as a new container. */
-			bpf_printk("found runtime init process: %d\n", pid);
-			err = add_container(child);
-			if (err < 0)
-				return err;
+			/*
+			 * If yes, it means that's an unwrapped container
+			 * runtime process. Deny it.
+			 */
+			bpf_printk("deny: unwrapped runtime process %d: %s\n",
+				   pid,
+				   BPF_CORE_READ(child, comm));
+			return -EPERM;
 		}
 		return 0;
 	}
 
-	bpf_printk("found parent containerized process: %d\n", process_key);
+	/* Skip registration if process entry already exists. */
+	struct process *v = bpf_map_lookup_elem(&processes, &pid);
+	if (v != NULL)
+		return 0;
 
-	u32 container_key = parent_lookup->container_id;
-	u32 *container_lookup = bpf_map_lookup_elem(&containers, &container_key);
+	bpf_printk("found parent containerized process: %d\n", ppid);
+	bpf_printk("comm: %s\n", BPF_CORE_READ(child, comm));
+
+	pid_t container_id = parent_lookup->container_id;
+	u32 *container_lookup = bpf_map_lookup_elem(&containers, &container_id);
 	if (!container_lookup) {
 		/* Shouldn't happen */
 		bpf_printk("error: handle_new_process: cound not find a "
-			   "container for a registered process\n");
+			   "container for a registered process %d, container id: %d\n",
+			   pid, container_id);
 		return -EPERM;
 	}
 
 	struct process new_p = {
-		.container_id = container_key
+		.container_id = container_id
 	};
 
 	bpf_printk("adding containerized process: %d\n", pid);
@@ -210,13 +176,15 @@ static __always_inline int handle_new_process(struct task_struct *parent,
  * that value is ever returned, it means that the container/process
  * registration went wrong and we have insonsistent data.
  */
-static __always_inline enum container_policy_level get_policy_level(u64 pid)
+static __always_inline enum container_policy_level get_policy_level(pid_t pid)
 {
 	int err;
 
 	struct process *p = bpf_map_lookup_elem(&processes, &pid);
-	if (!p)
+	if (!p) {
+		bpf_printk("could not find policy for pid %d\n", pid);
 		return POLICY_LEVEL_NOT_FOUND;
+	}
 
 	struct container *c = bpf_map_lookup_elem(&containers, &p->container_id);
 	if (!c) {
@@ -292,7 +260,7 @@ SEC("lsm/syslog")
 int BPF_PROG(syslog_audit, int type, int ret_prev)
 {
 	int ret = 0;
-	u64 pid = bpf_get_current_pid_tgid();
+	pid_t pid = bpf_get_current_pid_tgid() >> 32;
 	enum container_policy_level policy_level = get_policy_level(pid);
 
 	switch (policy_level) {
