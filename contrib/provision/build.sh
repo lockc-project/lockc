@@ -5,6 +5,6 @@ cd /home/vagrant/enclave
 export CLANG=/usr/bin/clang-12
 cargo install --path .
 
-sudo install -D -m 0644 contrib/systemd/enclave.service /etc/systemd/system/enclave.service
-sudo systemctl enable enclave.service
-sudo systemctl start enclave.service
+sudo install -D -m 0644 contrib/systemd/enclaved.service /etc/systemd/system/enclaved.service
+sudo systemctl enable enclaved.service
+sudo systemctl start enclaved.service
