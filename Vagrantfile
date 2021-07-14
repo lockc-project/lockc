@@ -1,5 +1,6 @@
 Vagrant.configure("2") do |config|
   config.vm.box = "opensuse/Tumbleweed.x86_64"
+  config.vm.box_version = "1.0.20210702"
 
   config.vm.synced_folder ".", "/vagrant", disabled: true
   config.vm.synced_folder ".", "/home/vagrant/enclave", type: "rsync",
