@@ -12,4 +12,4 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Build and lint
-      run: make build lint
+      run: make gen build lint
