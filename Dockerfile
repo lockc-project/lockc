@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1
-FROM docker.io/library/rust:latest AS build
+FROM docker.io/library/rust:latest AS buildbase
 RUN wget https://apt.llvm.org/llvm-snapshot.gpg.key && \
     apt-key add llvm-snapshot.gpg.key && \
     rm -f llvm-snapshot.gpg.key && \
@@ -30,19 +30,38 @@ RUN git clone --depth 1 -b \
     make install prefix=/usr && \
     cd ../../../.. && \
     rm -rf linux
-WORKDIR /usr/local/src/enclave
-COPY . .
+ARG USER_ID
+ARG GROUP_ID
+USER ${USER_ID}:${GROUP_ID}
+RUN cargo install libbpf-cargo
 RUN rustup component add rustfmt
-ENV CLANG=/usr/bin/clang-12
-RUN cargo install --path .
+WORKDIR /usr/local/src/enclave
 
-FROM build AS rustfmt
+FROM buildbase AS gen
+ARG USER_ID
+ARG GROUP_ID
+USER ${USER_ID}:${GROUP_ID}
+CMD ["/usr/bin/make", "gen", "CLANG=/usr/bin/clang-12", "CONTAINERIZED_BUILD=0"]
+
+FROM buildbase AS rustfmt
+ARG USER_ID
+ARG GROUP_ID
+USER ${USER_ID}:${GROUP_ID}
 CMD ["/usr/local/cargo/bin/cargo", "fmt"]
 
-FROM build AS clippy
+FROM buildbase AS clippy
+ARG USER_ID
+ARG GROUP_ID
+USER ${USER_ID}:${GROUP_ID}
 RUN rustup component add clippy
 CMD ["/usr/local/cargo/bin/cargo", "clippy", "--", "-D", "warnings"]
 
+FROM buildbase AS build
+COPY . .
+RUN make build install \
+    CLANG=/usr/bin/clang-12 \
+    CONTAINERIZED_BUILD=0
+
 FROM scratch AS artifact
-COPY --from=build /usr/local/cargo/bin/enclaved /enclaved
-COPY --from=build /usr/local/cargo/bin/enclave-runc-wrapper /enclave-runc-wrapper
+COPY --from=build /usr/local/bin/enclaved /enclaved
+COPY --from=build /usr/local/bin/enclave-runc-wrapper /enclave-runc-wrapper
