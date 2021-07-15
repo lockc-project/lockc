@@ -110,7 +110,7 @@ pub fn init_runtimes(map: &mut libbpf_rs::Map) -> Result<(), LoadProgramError> {
 /// BPF maps is not migrated in any way. We need to come up with some sane copy
 /// mechanism.
 pub fn load_programs(path_base_ts: path::PathBuf) -> Result<(), LoadProgramError> {
-    let skel_builder = EnclaveSkelBuilder::default();
+    let skel_builder = LockcSkelBuilder::default();
     let open_skel = skel_builder.open()?;
     let mut skel = open_skel.load()?;
 
@@ -152,7 +152,7 @@ pub fn load_programs(path_base_ts: path::PathBuf) -> Result<(), LoadProgramError
 }
 
 #[derive(thiserror::Error, Debug)]
-pub enum FindEnclaveBpfPathError {
+pub enum FindLockcBpfPathError {
     #[error("I/O error")]
     IOError(#[from] std::io::Error),
 
@@ -160,11 +160,11 @@ pub enum FindEnclaveBpfPathError {
     NotFound,
 }
 
-fn find_enclave_bpf_path() -> Result<std::path::PathBuf, FindEnclaveBpfPathError> {
+fn find_lockc_bpf_path() -> Result<std::path::PathBuf, FindLockcBpfPathError> {
     let path_base = std::path::Path::new("/sys")
         .join("fs")
         .join("bpf")
-        .join("enclave");
+        .join("lockc");
 
     for entry in fs::read_dir(path_base)? {
         let path = entry?.path();
@@ -173,7 +173,7 @@ fn find_enclave_bpf_path() -> Result<std::path::PathBuf, FindEnclaveBpfPathError
         }
     }
 
-    Err(FindEnclaveBpfPathError::NotFound)
+    Err(FindLockcBpfPathError::NotFound)
 }
 
 #[repr(C)]
@@ -189,14 +189,14 @@ pub enum SkelReusedMapsError {
     LibbpfError(#[from] libbpf_rs::Error),
 
     #[error("could not find the BPF objects path")]
-    FindEnclaveBpfPathError(#[from] FindEnclaveBpfPathError),
+    FindLockcBpfPathError(#[from] FindLockcBpfPathError),
 }
 
-pub fn skel_reused_maps<'a>() -> Result<EnclaveSkel<'a>, SkelReusedMapsError> {
-    let skel_builder = EnclaveSkelBuilder::default();
+pub fn skel_reused_maps<'a>() -> Result<LockcSkel<'a>, SkelReusedMapsError> {
+    let skel_builder = LockcSkelBuilder::default();
     let mut open_skel = skel_builder.open()?;
 
-    let path_base = find_enclave_bpf_path()?;
+    let path_base = find_lockc_bpf_path()?;
 
     let path_map_containers = path_base.join("map_containers");
     open_skel

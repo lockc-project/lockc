@@ -1,11 +1,11 @@
 [package]
-name = "enclave"
+name = "lockc"
 version = "0.1.0"
 authors = ["Michal Rostecki <mrostecki@opensuse.org>"]
 edition = "2018"
 
 [lib]
-name = "enclave"
+name = "lockc"
 
 [dependencies]
 anyhow = "1.0"

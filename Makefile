@@ -41,14 +41,14 @@ else
 		--build-arg USER_ID=$(shell id -u) \
 		--build-arg GROUP_ID=$(shell id -g) \
 		--target gen \
-		--tag enclave-gen \
+		--tag lockc-gen \
 		$(EXTRA_DOCKER_FLAGS) \
 		.
 	$(CRUNTIME) run \
 		--rm -i \
 		--user "$(shell id -u):$(shell id -g)" \
-		-v $(shell pwd):/usr/local/src/enclave \
-		enclave-gen
+		-v $(shell pwd):/usr/local/src/lockc \
+		lockc-gen
 endif
 
 .PHONY: build
@@ -72,14 +72,14 @@ else
 		--build-arg USER_ID=$(shell id -u) \
 		--build-arg GROUP_ID=$(shell id -g) \
 		--target rustfmt \
-		--tag enclave-rustfmt \
+		--tag lockc-rustfmt \
 		$(EXTRA_DOCKER_FLAGS) \
 		.
 	$(CRUNTIME) run \
 		--rm -i \
 		--user "$(shell id -u):$(shell id -g)" \
-		-v $(shell pwd):/usr/local/src/enclave \
-		enclave-rustfmt
+		-v $(shell pwd):/usr/local/src/lockc \
+		lockc-rustfmt
 endif
 
 .PHONY: lint
@@ -91,14 +91,14 @@ else
 		--build-arg USER_ID=$(shell id -u) \
 		--build-arg GROUP_ID=$(shell id -g) \
 		--target clippy \
-		--tag enclave-clippy \
+		--tag lockc-clippy \
 		$(EXTRA_DOCKER_FLAGS) \
 		.
 	$(CRUNTIME) run \
 		--rm -i \
 		--user "$(shell id -u):$(shell id -g)" \
-		-v $(shell pwd):/usr/local/src/enclave \
-		enclave-clippy
+		-v $(shell pwd):/usr/local/src/lockc \
+		lockc-clippy
 endif
 
 .PHONY: install
@@ -106,7 +106,7 @@ install:
 ifeq ($(CONTAINERIZED_BUILD),0)
 	# Do not install the unit file in the OCI artifact. Keep only binaries
 	# there.
-	install -D -m 644 contrib/systemd/enclaved.service $(UNITDIR)/enclaved.service
+	install -D -m 644 contrib/systemd/lockcd.service $(UNITDIR)/lockcd.service
 endif
-	install -D -m 755 $(OUTDIR)/enclaved $(BINDIR)/enclaved
-	install -D -m 755 $(OUTDIR)/enclave-runc-wrapper $(BINDIR)/enclave-runc-wrapper
+	install -D -m 755 $(OUTDIR)/lockcd $(BINDIR)/lockcd
+	install -D -m 755 $(OUTDIR)/lockc-runc-wrapper $(BINDIR)/lockc-runc-wrapper

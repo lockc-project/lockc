@@ -1,6 +1,6 @@
 #!/bin/bash
 
-pushd /home/vagrant/enclave
+pushd /home/vagrant/lockc
 install -D -m 0644 contrib/etc/containerd/config.toml /etc/containerd/config.toml
 install -D -m 0644 contrib/etc/docker/daemon.json /etc/docker/daemon.json
 install -D -m 0644 contrib/systemd/containerd.service /etc/systemd/system/containerd.service

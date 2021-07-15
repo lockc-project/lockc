@@ -1,10 +1,10 @@
 [Unit]
-Description=Enclave
+Description=lockc daemon
 After=network-online.target
 
 [Service]
 Type=oneshot
-ExecStart=/home/vagrant/.cargo/bin/enclaved
+ExecStart=/home/vagrant/.cargo/bin/lockcd
 StandardOutput=journal
 
 [Install]

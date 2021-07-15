@@ -79,17 +79,17 @@ fn container_namespace(
 /// policy is returned. Otherwise checks the Kubernetes namespace labels.
 async fn policy_label(
     namespace_o: Option<std::string::String>,
-) -> Result<enclave::ContainerPolicyLevel, kube::Error> {
+) -> Result<lockc::ContainerPolicyLevel, kube::Error> {
     // Apply the privileged policy for kube-system containers immediately.
     // Otherwise the core k8s components (apiserver, scheduler) won't be able
     // to run.
     // If container has no k8s namespace, apply the baseline policy.
     let namespace_s = match namespace_o {
         Some(v) if v.as_str() == "kube-system" => {
-            return Ok(enclave::ContainerPolicyLevel::Privileged)
+            return Ok(lockc::ContainerPolicyLevel::Privileged)
         }
         Some(v) => v,
-        None => return Ok(enclave::ContainerPolicyLevel::Baseline),
+        None => return Ok(lockc::ContainerPolicyLevel::Baseline),
     };
 
     let kubeconfig =
@@ -103,12 +103,12 @@ async fn policy_label(
 
     match namespace.metadata.labels.get(LABEL_POLICY_ENFORCE) {
         Some(s) => match &s[..] {
-            "restricted" => Ok(enclave::ContainerPolicyLevel::Restricted),
-            "baseline" => Ok(enclave::ContainerPolicyLevel::Baseline),
-            "privileged" => Ok(enclave::ContainerPolicyLevel::Privileged),
-            _ => Ok(enclave::ContainerPolicyLevel::Baseline),
+            "restricted" => Ok(lockc::ContainerPolicyLevel::Restricted),
+            "baseline" => Ok(lockc::ContainerPolicyLevel::Baseline),
+            "privileged" => Ok(lockc::ContainerPolicyLevel::Privileged),
+            _ => Ok(lockc::ContainerPolicyLevel::Baseline),
         },
-        None => Ok(enclave::ContainerPolicyLevel::Baseline),
+        None => Ok(lockc::ContainerPolicyLevel::Baseline),
     }
 }
 
@@ -231,47 +231,43 @@ async fn main() -> anyhow::Result<()> {
         ContainerAction::Other => {
             match container_id_o {
                 Some(v) => {
-                    let container_key = enclave::hash(&v)?;
-                    enclave::add_process(container_key, pid_u)?;
+                    let container_key = lockc::hash(&v)?;
+                    lockc::add_process(container_key, pid_u)?;
                     cmd.status().await?;
-                    enclave::delete_process(pid_u)?;
+                    lockc::delete_process(pid_u)?;
                 }
                 None => {
                     // The purpose of this fake "container" is only to allow the runc
                     // subcommand to be detected as wrapped and thus allowed by
                     // the LSM program to execute. It's only to handle subcommands
                     // like `init`, `list` or `spec`, so we make it restricted.
-                    enclave::add_container(0, pid_u, enclave::ContainerPolicyLevel::Restricted)?;
+                    lockc::add_container(0, pid_u, lockc::ContainerPolicyLevel::Restricted)?;
                     cmd.status().await?;
-                    enclave::delete_container(0)?;
+                    lockc::delete_container(0)?;
                 }
             }
         }
         ContainerAction::Create => {
-            let container_key = enclave::hash(&container_id_o.unwrap())?;
+            let container_key = lockc::hash(&container_id_o.unwrap())?;
             // Initialize the container with the baseline policy.
-            enclave::add_container(
-                container_key,
-                pid_u,
-                enclave::ContainerPolicyLevel::Baseline,
-            )?;
+            lockc::add_container(container_key, pid_u, lockc::ContainerPolicyLevel::Baseline)?;
             cmd.status().await?;
         }
         ContainerAction::Delete => {
-            let container_key = enclave::hash(&container_id_o.unwrap())?;
-            enclave::delete_container(container_key)?;
+            let container_key = lockc::hash(&container_id_o.unwrap())?;
+            lockc::delete_container(container_key)?;
             cmd.status().await?;
         }
         ContainerAction::Start => {
             let container_id = container_id_o.unwrap();
-            let container_key = enclave::hash(&container_id)?;
-            enclave::add_process(container_key, pid_u)?;
+            let container_key = lockc::hash(&container_id)?;
+            lockc::add_process(container_key, pid_u)?;
 
             let namespace = container_namespace(&container_id, container_root)?;
 
             // Apply the appropriate policy.
             let policy = policy_label(namespace).await?;
-            enclave::write_policy(&container_id, policy)?;
+            lockc::write_policy(&container_id, policy)?;
 
             cmd.status().await?;
         }

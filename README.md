@@ -1,18 +1,18 @@
-# enclave
+# lockc
 
-[![Build Status](https://github.com/rancher-sandbox/enclave/actions/workflows/rust.yml/badge.svg)](https://github.com/rancher-sandbox/enclave/actions/workflows/rust.yml)
+[![Build Status](https://github.com/rancher-sandbox/lockc/actions/workflows/rust.yml/badge.svg)](https://github.com/rancher-sandbox/lockc/actions/workflows/rust.yml)
 
-Enclave is open source sofware for providing MAC (Mandatory Access Control)
+Lockc is open source sofware for providing MAC (Mandatory Access Control)
 type of security audit for container workloads.
 
-The main technology behind enclave is [eBPF](https://ebpf.io/) - to be more
+The main technology behind lockc is [eBPF](https://ebpf.io/) - to be more
 precise, its ability to attach to [LSM hooks](https://www.kernel.org/doc/html/latest/bpf/bpf_lsm.html)
 
 License for eBPF programs: GPLv2
 
 License for userspace part: Apache-2.0
 
-Please note that currently enclave is an experimental project, not meant for
+Please note that currently lockc is an experimental project, not meant for
 production environment and without any official binaries or packages to use -
 currently the only way to use it is building from sources.
 
@@ -44,7 +44,7 @@ cargo build --release
 Then run it as root:
 
 ```bash
-sudo ./target/release/enclave
+sudo ./target/release/lockc
 ```
 
 To check if the command loaded BPF programs successfully, use `bpftool`:
@@ -72,7 +72,7 @@ $ sudo bpftool prog
         btf_id 18711
 ```
 
-To check if containers get "hardened" by enclave, check if you are able to see
+To check if containers get "hardened" by lockc, check if you are able to see
 the kernel logs from inside the container. Example:
 
 ```bash
@@ -84,8 +84,8 @@ dmesg: read kernel buffer failed: Operation not permitted
 (For now, all containers get the `baseline` policy. The mechanism of
 differentiating between policies per container/pod is yet to be implemented.)
 
-That error means that enclave works and prevented containerized processes from
+That error means that lockc works and prevented containerized processes from
 accessing kernel logs.
 
 If `dmesg` ran successfully and shows the kernel logs, it means that something
-went wrong and enclave is not working properly.
+went wrong and lockc is not working properly.
