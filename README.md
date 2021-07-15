@@ -1,5 +1,6 @@
-enclave
-=======
+# enclave
+
+[![Build Status](https://github.com/rancher-sandbox/enclave/actions/workflows/rust.yml/badge.svg)](https://github.com/rancher-sandbox/enclave/actions/workflows/rust.yml)
 
 Enclave is open source sofware for providing MAC (Mandatory Access Control)
 type of security audit for container workloads.
@@ -15,8 +16,7 @@ Please note that currently enclave is an experimental project, not meant for
 production environment and without any official binaries or packages to use -
 currently the only way to use it is building from sources.
 
-Architecture
-------------
+## Architecture
 
 The project consists of two parts:
 
@@ -31,8 +31,7 @@ The project consists of two parts:
   * loads the BPF programs into the kernel, pins them in BPFFS
   * in future, it's going to serve as the configuration manager
 
-Getting started
----------------
+## Getting started
 
 This guide assumes that you have `rustc` and `cargo` installed.
 

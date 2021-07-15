@@ -5,6 +5,7 @@ use byteorder::{NativeEndian, WriteBytesExt};
 use std::io::prelude::*;
 use std::{fs, path};
 
+#[rustfmt::skip]
 mod bpf;
 use bpf::*;
 

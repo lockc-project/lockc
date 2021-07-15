@@ -44,4 +44,5 @@ RUN rustup component add clippy
 CMD ["/usr/local/cargo/bin/cargo", "clippy", "--", "-D", "warnings"]
 
 FROM scratch AS artifact
-COPY --from=build /usr/local/cargo/bin/enclave /enclave
+COPY --from=build /usr/local/cargo/bin/enclaved /enclaved
+COPY --from=build /usr/local/cargo/bin/enclave-runc-wrapper /enclave-runc-wrapper
