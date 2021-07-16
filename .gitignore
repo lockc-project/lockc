@@ -16,10 +16,6 @@ Cargo.lock
 # BTF headers
 **/vmlinux.h
 
-# libbpf-rs skeletons
-mod.rs
-*.skel.rs
-
 # Misc
 **/*~
 

@@ -1,3 +1,108 @@
+//! lockc is open source software for providing MAC (Mandatory Access Control)
+//! type of security audit for container workloads.
+//!
+//! The main technology behind lockc is [eBPF](https://ebpf.io/) - to be more
+//! precise, its ability to attach to [LSM hooks](https://www.kernel.org/doc/html/latest/bpf/bpf_lsm.html)
+//!
+//! Please note that currently lockc is an experimental project, not meant for
+//! production environments. Currently we don't publish any official binaries or
+//! packages to use, except of a Rust crate. Currently the most convenient way
+//! to use it is to use the source code and follow the guide.
+//!
+//! ## Architecture
+//!
+//! The project consists of 3 parts:
+//!
+//! * the set of BPF programs (written in C)
+//!   * programs for monitoring processes, which detects whether new processes
+//!     are running inside any container, which means applying policies on them
+//!   * programs attached to particular LSM hooks, which allow or deny actions
+//!     based on the policy applied to the container (currently all containers have
+//!     the `baseline` policy applied, the mechanism of differentiating between
+//!     policies per container/pod is yet to be implemented)
+//! * **lockcd** - the userspace program (written in Rust)
+//!   * loads the BPF programs into the kernel, pins them in BPFFS
+//!   * in future, it's going to serve as the configuration manager and log
+//!     collector
+//! * **lockc-runc-wrapper** - a wraper for runc which registers new containers
+//!   and determines which policy should be applied on a contaioner
+//!
+//! ## Getting started
+//!
+//! ### Local build
+//!
+//! This guide assumes that you have `docker` or any other container engine
+//! installed.
+//!
+//! lockc comes with a `Makefile` which supports building the project entirely
+//! in containers without installing any dependencies on your host.
+//!
+//! To start building, you can simply do:
+//!
+//! ```bash
+//! make
+//! ```
+//!
+//! That build should result in binaries produced in the `out/` directory:
+//!
+//! ```bash
+//! $ ls out/
+//! lockcd  lockc-runc-wrapper
+//! ```
+//!
+//! BPF programs can be loaded by executing `lockcd`:
+//!
+//! ```bash
+//! sudo ./out/lockcd
+//! ```
+//!
+//! If you have `bpftool` available on your host, you canm check whether lockc
+//! BPF programs are running. The correct output should look similar to:
+//!
+//! ```bash
+//! $ sudo bpftool prog
+//! [...]
+//! 25910: tracing  name sched_process_f  tag 3a6a6e4defce95ab  gpl
+//!         loaded_at 2021-06-02T16:52:57+0200  uid 0
+//!         xlated 2160B  jited 1137B  memlock 4096B  map_ids 14781,14782,14783
+//!         btf_id 18711
+//! 25911: lsm  name clone_audit  tag fc30a5b3e6a4610b  gpl
+//!         loaded_at 2021-06-02T16:52:57+0200  uid 0
+//!         xlated 2280B  jited 1196B  memlock 4096B  map_ids 14781,14782,14783
+//!         btf_id 18711
+//! 25912: lsm  name syslog_audit  tag 2cdd93e75fa0e936  gpl
+//!         loaded_at 2021-06-02T16:52:57+0200  uid 0
+//!         xlated 816B  jited 458B  memlock 4096B  map_ids 14783,14782
+//!         btf_id 18711
+//! ```
+//!
+//! To check if containers get "hardened" by lockc, check if you are able to
+//! see the kernel logs from inside the container wrapped by **lockc-runc-wrapper**.
+//! Example:
+//!
+//! ```bash
+//! $ podman --runtime ./out/lockc-runc-wrapper run -ti --rm registry.opensuse.org/opensuse/toolbox:latest
+//! a135dbc3ef08:/ # dmesg
+//! dmesg: read kernel buffer failed: Operation not permitted
+//! ```
+//!
+//! That error means that lockc works, applied the *baseline* policy on a new
+//! container and prevented containerized processes from accessing kernel logs.
+//!
+//! If `dmesg` ran successfully and shows the kernel logs, it means that something
+//! went wrong and lockc is not working properly.
+//!
+//! ### Vagrant
+//!
+//! There is also a possibility to build the project in a Vagrant VM, which is
+//! convenient for testing the Kubernetes integration.
+//!
+//! You can start creating and provisioning the environment by:
+//!
+//! ```bash
+//! vagrant up
+//! ```
+
 #[macro_use]
 extern crate lazy_static;
 
@@ -110,7 +215,7 @@ pub fn init_runtimes(map: &mut libbpf_rs::Map) -> Result<(), LoadProgramError> {
 /// BPF maps is not migrated in any way. We need to come up with some sane copy
 /// mechanism.
 pub fn load_programs(path_base_ts: path::PathBuf) -> Result<(), LoadProgramError> {
-    let skel_builder = EnclaveSkelBuilder::default();
+    let skel_builder = LockcSkelBuilder::default();
     let open_skel = skel_builder.open()?;
     let mut skel = open_skel.load()?;
 
@@ -152,7 +257,7 @@ pub fn load_programs(path_base_ts: path::PathBuf) -> Result<(), LoadProgramError
 }
 
 #[derive(thiserror::Error, Debug)]
-pub enum FindEnclaveBpfPathError {
+pub enum FindLockcBpfPathError {
     #[error("I/O error")]
     IOError(#[from] std::io::Error),
 
@@ -160,11 +265,11 @@ pub enum FindEnclaveBpfPathError {
     NotFound,
 }
 
-fn find_enclave_bpf_path() -> Result<std::path::PathBuf, FindEnclaveBpfPathError> {
+fn find_lockc_bpf_path() -> Result<std::path::PathBuf, FindLockcBpfPathError> {
     let path_base = std::path::Path::new("/sys")
         .join("fs")
         .join("bpf")
-        .join("enclave");
+        .join("lockc");
 
     for entry in fs::read_dir(path_base)? {
         let path = entry?.path();
@@ -173,7 +278,7 @@ fn find_enclave_bpf_path() -> Result<std::path::PathBuf, FindEnclaveBpfPathError
         }
     }
 
-    Err(FindEnclaveBpfPathError::NotFound)
+    Err(FindLockcBpfPathError::NotFound)
 }
 
 #[repr(C)]
@@ -189,14 +294,14 @@ pub enum SkelReusedMapsError {
     LibbpfError(#[from] libbpf_rs::Error),
 
     #[error("could not find the BPF objects path")]
-    FindEnclaveBpfPathError(#[from] FindEnclaveBpfPathError),
+    FindLockcBpfPathError(#[from] FindLockcBpfPathError),
 }
 
-pub fn skel_reused_maps<'a>() -> Result<EnclaveSkel<'a>, SkelReusedMapsError> {
-    let skel_builder = EnclaveSkelBuilder::default();
+pub fn skel_reused_maps<'a>() -> Result<LockcSkel<'a>, SkelReusedMapsError> {
+    let skel_builder = LockcSkelBuilder::default();
     let mut open_skel = skel_builder.open()?;
 
-    let path_base = find_enclave_bpf_path()?;
+    let path_base = find_lockc_bpf_path()?;
 
     let path_map_containers = path_base.join("map_containers");
     open_skel

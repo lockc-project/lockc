@@ -1,11 +1,19 @@
 [package]
-name = "enclave"
+name = "lockc"
 version = "0.1.0"
 authors = ["Michal Rostecki <mrostecki@opensuse.org>"]
 edition = "2018"
 
+description = "eBPF-based MAC security audit for container workloads"
+repository = "https://github.com/rancher-sandbox/lockc"
+keywords = ["bpf", "containers", "ebpf", "linux", "security"]
+license = "Apache-2.0 AND GPL-2.0-or-later"
+
+[badges]
+maintenance = { status = "actively-developed" }
+
 [lib]
-name = "enclave"
+name = "lockc"
 
 [dependencies]
 anyhow = "1.0"

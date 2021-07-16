@@ -5,10 +5,10 @@
     "max-size": "10m",
     "max-file": "5"
   },
-  "default-runtime": "runc-enclave",
+  "default-runtime": "runc-lockc",
   "runtimes": {
-    "runc-enclave": {
-      "path": "/home/vagrant/.cargo/bin/enclave-runc-wrapper"
+    "runc-lockc": {
+      "path": "/home/vagrant/.cargo/bin/lockc-runc-wrapper"
     }
   }
 }

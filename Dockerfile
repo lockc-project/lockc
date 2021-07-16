@@ -35,7 +35,7 @@ ARG GROUP_ID
 USER ${USER_ID}:${GROUP_ID}
 RUN cargo install libbpf-cargo
 RUN rustup component add rustfmt
-WORKDIR /usr/local/src/enclave
+WORKDIR /usr/local/src/lockc
 
 FROM buildbase AS gen
 ARG USER_ID
@@ -63,5 +63,5 @@ RUN make build install \
     CONTAINERIZED_BUILD=0
 
 FROM scratch AS artifact
-COPY --from=build /usr/local/bin/enclaved /enclaved
-COPY --from=build /usr/local/bin/enclave-runc-wrapper /enclave-runc-wrapper
+COPY --from=build /usr/local/bin/lockcd /lockcd
+COPY --from=build /usr/local/bin/lockc-runc-wrapper /lockc-runc-wrapper

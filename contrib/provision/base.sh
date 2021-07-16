@@ -23,7 +23,7 @@ zypper install -y \
        tmux \
        wget
 
-pushd /home/vagrant/enclave
+pushd /home/vagrant/lockc
 install -D -m 0644 contrib/etc/modules-load.d/99-k8s.conf /etc/modules-load.d/99-k8s.conf
 install -D -m 0644 contrib/etc/sysctl.d/99-k8s.conf /etc/sysctl.d/99-k8s.conf
 popd

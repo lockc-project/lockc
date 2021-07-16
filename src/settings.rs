@@ -16,7 +16,7 @@ impl Settings {
 
         s.set("runtimes", vec![trim_task_comm_len("runc".to_string())])?;
 
-        s.merge(config::File::with_name("/etc/enclave/enclave.toml").required(false))?;
+        s.merge(config::File::with_name("/etc/lockc/lockc.toml").required(false))?;
         s.try_into()
     }
 }
