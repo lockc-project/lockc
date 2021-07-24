@@ -1,0 +1,4 @@
+  - kubeadm init --cri-socket /run/containerd/containerd.sock
+  - mkdir -p /home/opensuse/.kube
+  - sudo cp -i /etc/kubernetes/admin.conf /home/opensuse/.kube/config
+  - sudo chown opensuse /home/opensuse/.kube/config
