@@ -57,7 +57,7 @@ oom_score = 0
     default = ["walking"]
   [plugins.linux]
     shim = "containerd-shim"
-    runtime = "/home/vagrant/.cargo/bin/lockc-runc-wrapper"
+    runtime = "@BINDIR@/lockc-runc-wrapper"
     runtime_root = ""
     no_shim = false
     shim_debug = false
