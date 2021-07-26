@@ -25,7 +25,7 @@
 //!   * in future, it's going to serve as the configuration manager and log
 //!     collector
 //! * **lockc-runc-wrapper** - a wraper for runc which registers new containers
-//!   and determines which policy should be applied on a contaioner
+//!   and determines which policy should be applied on a container
 //!
 //! ## Getting started
 //!
