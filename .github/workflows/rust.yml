@@ -11,5 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - name: Build and lint
-      run: make gen build lint
+    - name: Build
+      run: ./containerized-build.sh build
+    - name: Lint
+      run: ./containerized-build.sh lint
