@@ -363,7 +363,7 @@ pub fn add_container(
 
     skel.maps_mut().containers().update(
         &container_key_b,
-        &container_b,
+        container_b,
         libbpf_rs::MapFlags::empty(),
     )?;
 
@@ -377,7 +377,7 @@ pub fn add_container(
 
     skel.maps_mut()
         .processes()
-        .update(&process_key, &process_b, libbpf_rs::MapFlags::empty())?;
+        .update(&process_key, process_b, libbpf_rs::MapFlags::empty())?;
 
     Ok(())
 }
@@ -410,7 +410,7 @@ pub fn write_policy(
 
     skel.maps_mut().containers().update(
         &container_key_b,
-        &container_b,
+        container_b,
         libbpf_rs::MapFlags::empty(),
     )?;
 
@@ -430,7 +430,7 @@ pub fn add_process(container_key: u32, pid: u32) -> Result<(), ReusedMapsOperati
 
     skel.maps_mut()
         .processes()
-        .update(&process_key, &process_b, libbpf_rs::MapFlags::empty())?;
+        .update(&process_key, process_b, libbpf_rs::MapFlags::empty())?;
 
     Ok(())
 }
