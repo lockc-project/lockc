@@ -9,6 +9,9 @@
 //! packages to use, except of a Rust crate. Currently the most convenient way
 //! to use it is to use the source code and follow the guide.
 //!
+//! If you need help or want to talk with contributors, please come chat with
+//! us on `#lockc` channel on the [Rust Cloud Native Discord server](https://discord.gg/799cmsYB4q).
+//!
 //! ## Architecture
 //!
 //! The project consists of 3 parts:
