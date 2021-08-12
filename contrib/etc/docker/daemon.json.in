@@ -8,7 +8,7 @@
   "default-runtime": "runc-lockc",
   "runtimes": {
     "runc-lockc": {
-      "path": "/home/vagrant/.cargo/bin/lockc-runc-wrapper"
+      "path": "@BINDIR@/lockc-runc-wrapper"
     }
   }
 }

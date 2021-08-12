@@ -11,7 +11,8 @@ RUN wget https://apt.llvm.org/llvm-snapshot.gpg.key && \
         libelf-dev \
         gcc-multilib \
         lld-12 \
-        lldb-12 && \
+        lldb-12 \
+        meson && \
     apt purge --auto-remove && \
     apt clean && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
@@ -36,12 +37,6 @@ RUN cargo install libbpf-cargo
 RUN rustup component add rustfmt
 WORKDIR /usr/local/src/lockc
 
-FROM buildbase AS gen
-ARG USER_ID
-ARG GROUP_ID
-USER ${USER_ID}:${GROUP_ID}
-CMD ["/usr/bin/make", "gen", "CLANG=/usr/bin/clang-12", "CONTAINERIZED_BUILD=0"]
-
 FROM buildbase AS rustfmt
 ARG USER_ID
 ARG GROUP_ID
@@ -57,10 +52,13 @@ CMD ["/usr/local/cargo/bin/cargo", "clippy", "--", "-D", "warnings"]
 
 FROM buildbase AS build
 COPY . .
-RUN make build install \
-    CLANG=/usr/bin/clang-12 \
-    CONTAINERIZED_BUILD=0
+ARG PREFIX=/usr/local
+ENV DESTDIR=/destdir
+ENV CC=/usr/bin/clang-12
+RUN meson build --prefix ${PREFIX} && \
+    cd build && \
+    meson install
 
 FROM scratch AS artifact
-COPY --from=build /usr/local/bin/lockcd /lockcd
-COPY --from=build /usr/local/bin/lockc-runc-wrapper /lockc-runc-wrapper
+ARG PREFIX=/usr/local
+COPY --from=build /destdir .

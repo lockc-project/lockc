@@ -32,31 +32,105 @@
 //!
 //! ## Getting started
 //!
-//! ### Local build
+//! ### Building lockc
+//!
+//! The first step to try out lockc is to build it. There are two ways to do
+//! that.
+//!
+//! #### Containerized build
+//!
+//! One option for building lockc is using the `containerized-build.sh` script
+//! to perform the build inside container, without installing needed
+//! dependencies on the host system.
 //!
 //! This guide assumes that you have `docker` or any other container engine
 //! installed.
 //!
-//! lockc comes with a `Makefile` which supports building the project entirely
-//! in containers without installing any dependencies on your host.
-//!
-//! To start building, you can simply do:
+//! The build can be performed by running the following command:
 //!
 //! ```bash
-//! make
+//! ./containerized-build.sh build
 //! ```
 //!
-//! That build should result in binaries produced in the `out/` directory:
+//! or simply:
+//!
+//! ```bash
+//! ./containerized-build.sh
+//! ```
+//!
+//! `build` is the default subcommand of `containerized-build`. There are
+//! several other subcommands:
+//!
+//! ```bash
+//! $ ./containerized-build.sh help
+//! Usage: containerized-build.sh <subcommand>
+//!
+//! Subcommands:
+//!     gen        Compile BPF programs and generate BPF CO-RE skeleton
+//!     build      Build lockc
+//!     install    Install lockc
+//!     fmt        Autoformat code
+//!     lint       Code analysis
+//!     help       Show help information
+//! ```
+//!
+//! For following this guide, using the `build` subcommand is enough.
+//!
+//! `./containerized-build.sh install` can be used to install
+//! lockc in your host system, which by default means directories like
+//! `/usr/bin`, `/etc`. Target directories can be customized by `DESTDIR`,
+//! `PREFIX`, `BINDIR`, `UNITDIR` and `SYSCONFDIR` environment variables.
+//!
+//! `build` should result in binaries produced in the `out/` directory:
 //!
 //! ```bash
 //! $ ls out/
 //! lockcd  lockc-runc-wrapper
 //! ```
 //!
+//! #### Meson
+//!
+//! If you are comfortable with installing all dependencies on your host
+//! system, you need to install the following software:
+//!
+//! * meson
+//! * rust, cargo
+//! * llvm, clang
+//! * libbpf
+//! * bpftool
+//!
+//! Build can be performed by the following commands:
+//!
+//! ```bash
+//! CC=clang meson build
+//! cd build
+//! meson compile
+//! ```
+//!
+//! Installation can be perfomed by:
+//!
+//! ```bash
+//! meson install
+//! ```
+//!
+//! ### Using lockc locally
+//!
+//! lockc can be used on the local system if you want to secure your local
+//! container engine (docker, podman).
+//!
 //! BPF programs can be loaded by executing `lockcd`:
+//!
+//! First, we need to load BPF programs by running lockcd. That can be done
+//! by the following command, if lockc was built inside a container:
 //!
 //! ```bash
 //! sudo ./out/lockcd
+//! ```
+//! 
+//! or if lockc was build with Meson:
+//!
+//! ```bash
+//! sudo ./build/src/lockcd
 //! ```
 //!
 //! If you have `bpftool` available on your host, you canm check whether lockc
@@ -95,15 +169,172 @@
 //! If `dmesg` ran successfully and shows the kernel logs, it means that something
 //! went wrong and lockc is not working properly.
 //!
-//! ### Vagrant
+//! ### Terraform
 //!
-//! There is also a possibility to build the project in a Vagrant VM, which is
-//! convenient for testing the Kubernetes integration.
+//! There is also a possibility to run lockc in virtual machines with
+//! Kubernetes.
 //!
-//! You can start creating and provisioning the environment by:
+//! In order to do that, ensure that you have the following software installed:
+//!
+//! * libvirt
+//! * guestfs-tools
+//!
+//! #### Building the base image
+//!
+//! The first step is to build the VM image.
 //!
 //! ```bash
-//! vagrant up
+//! cd contrib/guestfs
+//! ./build
+//! ```
+//!
+//! If the script ran successfully, `lockc-base.qcow2` file should be present.
+//! It cointains the base VM image which will be used by Terraform.
+//!
+//! #### (Optional) building the image with a custom kernel
+//!
+//! The `build.sh` script can be also used to create a VM image with a
+//! custom kernel if there is a need for kernel testing. You can optionally
+//! provide a path to your kernel source tree. Please note that the kernel
+//! should be already build on the host with `make`. Our guestfs scripts do
+//! only `make modules_install install` to install the kernel image and
+//! modules inside a VM. Installing the custom kernel is enabled by using
+//! the `CUSTOM_KERNEL` environment variable. Its value has to be set to
+//! `true`. By default, the script assumes that your kernel tree is in
+//! `~/linux` directory. You can provide a custom path by another
+//! environment variable - `KERNEL_SOURCE`. Examples of usage:
+//!
+//! ```bash
+//! CUSTOM_KERNEL=true ./build.sh
+//! CUSTOM_KERNEL=true KERNEL_SOURCE=${HOME}/my-git-repos/linux ./build.sh
+//! ```
+//!
+//! If you already used `build.sh` once and you would like to inject a
+//! custom kernel into already build qcow2 image, there is a separate script
+//! - `reinstall-custom-kernel.sh`. It takes an optional `KERNEL_SOURCE`
+//! environment variable. Examples of usage:
+//!
+//! ```bash
+//! ./reinstall-custom-kernel.sh
+//! KERNEL_SOURCE=${HOME}/my-git-repos/linux ./reinstall-custom-kernel.sh
+//! ```
+//!
+//! #### Configure libvirt
+//!
+//! VMs which we are going to run are using 9p to mount the source tree. To
+//! ensure that those mounts are going to work correctly, open the
+//! `/etc/libvirt/qemu.conf` file and ensure that the following options
+//! are present there:
+//!
+//! ```bash
+//! user = "root"
+//! group = "root"
+//! dynamic_ownership = 0
+//! ```
+//! If you had to edit the configuration, save the file and restart libvirt:
+//!
+//! ```bash
+//! sudo systemctl restart libvirtd
+//! ```
+//!
+//! #### Running VMs
+//!
+//! Now it's time to prepare Terraform environment.
+//!
+//! ```bash
+//! cd contrib/terraform/libvirt
+//! cp terraform.tfvars.json.example terraform.tfvars.json
+//! ```
+//!
+//! After that, open the `terraform.tfvars.json` file with your favorite text
+//! editor. The only setting which you really need to change is
+//! `authorized_keys`. Please paste your public SSH key there. Otherwise,
+//! connecting to VMs with SSH will be impossible.
+//!
+//! Initialize the environment with:
+//!
+//! ```bash
+//! terraform init
+//! ```
+//!
+//! And then start the VMs:
+//!
+//! ```bash
+//! terraform apply
+//! ```
+//!
+//! If Terraform finished successfully, you should see the output with IP
+//! addresses of virtual machines, like:
+//!
+//! ```bash
+//! ip_control_planes = {
+//!   "lockc-control-plane-0" = "10.16.0.225"
+//! }
+//!
+//! You can simply ssh to them using the `opensuse` user:
+//!
+//! ```bash
+//! ssh opensuse@10.16.0.255
+//! ```
+//! Inside the VM we can check whether Kubernetes is running:
+//!
+//! ```bash
+//! # kubectl get pods -A
+//! NAMESPACE     NAME                                            READY
+//! STATUS    RESTARTS   AGE
+//! kube-system   coredns-78fcd69978-lvshz                        0/1
+//! Running   0          7s
+//! kube-system   coredns-78fcd69978-q874s                        0/1
+//! Running   0          7s
+//! kube-system   etcd-lockc-control-plane-0                      1/1
+//! Running   0          11s
+//! kube-system   kube-apiserver-lockc-control-plane-0            1/1
+//! Running   0          10s
+//! kube-system   kube-controller-manager-lockc-control-plane-0   1/1
+//! Running   0          11s
+//! kube-system   kube-proxy-p7nrd                                1/1
+//! Running   0          7s
+//! kube-system   kube-scheduler-lockc-control-plane-0            1/1
+//! Running   0          11s
+//! ```
+//!
+//! And whether lockc is running. The main service can be checked by:
+//!
+//! ```bash
+//! systemctl status lockcd
+//! ```
+//!
+//! We can check also whether lockc's BPF programs are running:
+//!
+//! ```bash
+//! # bpftool prog list
+//! 35: tracing  name sched_process_f  tag b3c2c2a08effc879  gpl
+//!       loaded_at 2021-08-10T12:23:55+0000  uid 0
+//!       xlated 1528B  jited 869B  memlock 4096B  map_ids 3,2
+//!       btf_id 95
+//! 36: lsm  name clone_audit  tag 33a5e8a5da485fd4  gpl
+//!       loaded_at 2021-08-10T12:23:55+0000  uid 0
+//!       xlated 1600B  jited 899B  memlock 4096B  map_ids 3,2
+//!       btf_id 95
+//! 37: lsm  name syslog_audit  tag 80d655f557922055  gpl
+//!       loaded_at 2021-08-10T12:23:55+0000  uid 0
+//!       xlated 1264B  jited 714B  memlock 4096B  map_ids 3,2
+//!       btf_id 95
+//! [...]
+//! ```
+//!
+//! And whether it registers containers. Directories inside
+//! `/sys/fs/bpf/lockc` represent timestamps of lockcd launch, so it will be
+//! different than in the following example.
+//!
+//! ```bash
+//! # bpftool map dump pinned /sys/fs/bpf/lockc/1628598193/map_containers
+//! [{
+//!         "key": 4506,
+//!         "value": {
+//!             "policy_level": "POLICY_LEVEL_PRIVILEGED"
+//!         }
+//! [...]
 //! ```
 
 #[macro_use]
