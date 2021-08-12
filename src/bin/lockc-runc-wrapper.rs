@@ -1,6 +1,8 @@
 use k8s_openapi::api::core::v1;
 use std::convert::TryFrom;
 
+use lockc::bpfstructs;
+
 // TODO: To be used for cri-o.
 // static ANNOTATION_K8S_LABELS: &str = "io.kubernetes.cri-o.Labels";
 
@@ -79,17 +81,17 @@ fn container_namespace(
 /// policy is returned. Otherwise checks the Kubernetes namespace labels.
 async fn policy_label(
     namespace_o: Option<std::string::String>,
-) -> Result<lockc::ContainerPolicyLevel, kube::Error> {
+) -> Result<bpfstructs::container_policy_level, kube::Error> {
     // Apply the privileged policy for kube-system containers immediately.
     // Otherwise the core k8s components (apiserver, scheduler) won't be able
     // to run.
     // If container has no k8s namespace, apply the baseline policy.
     let namespace_s = match namespace_o {
         Some(v) if v.as_str() == "kube-system" => {
-            return Ok(lockc::ContainerPolicyLevel::Privileged)
+            return Ok(bpfstructs::container_policy_level_POLICY_LEVEL_PRIVILEGED)
         }
         Some(v) => v,
-        None => return Ok(lockc::ContainerPolicyLevel::Baseline),
+        None => return Ok(bpfstructs::container_policy_level_POLICY_LEVEL_BASELINE),
     };
 
     let kubeconfig =
@@ -103,12 +105,12 @@ async fn policy_label(
 
     match namespace.metadata.labels.get(LABEL_POLICY_ENFORCE) {
         Some(s) => match &s[..] {
-            "restricted" => Ok(lockc::ContainerPolicyLevel::Restricted),
-            "baseline" => Ok(lockc::ContainerPolicyLevel::Baseline),
-            "privileged" => Ok(lockc::ContainerPolicyLevel::Privileged),
-            _ => Ok(lockc::ContainerPolicyLevel::Baseline),
+            "restricted" => Ok(bpfstructs::container_policy_level_POLICY_LEVEL_RESTRICTED),
+            "baseline" => Ok(bpfstructs::container_policy_level_POLICY_LEVEL_BASELINE),
+            "privileged" => Ok(bpfstructs::container_policy_level_POLICY_LEVEL_PRIVILEGED),
+            _ => Ok(bpfstructs::container_policy_level_POLICY_LEVEL_BASELINE),
         },
-        None => Ok(lockc::ContainerPolicyLevel::Baseline),
+        None => Ok(bpfstructs::container_policy_level_POLICY_LEVEL_BASELINE),
     }
 }
 
@@ -231,8 +233,7 @@ async fn main() -> anyhow::Result<()> {
         ContainerAction::Other => {
             match container_id_o {
                 Some(v) => {
-                    let container_key = lockc::hash(&v)?;
-                    lockc::add_process(container_key, pid_u)?;
+                    lockc::add_process(&v, pid_u)?;
                     cmd.status().await?;
                     lockc::delete_process(pid_u)?;
                 }
@@ -241,27 +242,24 @@ async fn main() -> anyhow::Result<()> {
                     // subcommand to be detected as wrapped and thus allowed by
                     // the LSM program to execute. It's only to handle subcommands
                     // like `init`, `list` or `spec`, so we make it restricted.
-                    lockc::add_container(0, pid_u, lockc::ContainerPolicyLevel::Restricted)?;
+                    lockc::add_container("", pid_u, bpfstructs::container_policy_level_POLICY_LEVEL_RESTRICTED)?;
                     cmd.status().await?;
-                    lockc::delete_container(0)?;
+                    lockc::delete_container("")?;
                 }
             }
         }
         ContainerAction::Create => {
-            let container_key = lockc::hash(&container_id_o.unwrap())?;
             // Initialize the container with the baseline policy.
-            lockc::add_container(container_key, pid_u, lockc::ContainerPolicyLevel::Baseline)?;
+            lockc::add_container(&container_id_o.unwrap(), pid_u, bpfstructs::container_policy_level_POLICY_LEVEL_BASELINE)?;
             cmd.status().await?;
         }
         ContainerAction::Delete => {
-            let container_key = lockc::hash(&container_id_o.unwrap())?;
-            lockc::delete_container(container_key)?;
+            lockc::delete_container(&container_id_o.unwrap())?;
             cmd.status().await?;
         }
         ContainerAction::Start => {
             let container_id = container_id_o.unwrap();
-            let container_key = lockc::hash(&container_id)?;
-            lockc::add_process(container_key, pid_u)?;
+            lockc::add_process(&container_id, pid_u)?;
 
             let namespace = container_namespace(&container_id, container_root)?;
 

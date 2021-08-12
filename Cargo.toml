@@ -37,5 +37,6 @@ uuid = { version = "0.8", default-features = false, features = ["v4"] }
 
 [build-dependencies]
 anyhow = "1.0"
+bindgen = "0.59"
 libbpf-cargo = "0.9"
 thiserror = "1.0"
