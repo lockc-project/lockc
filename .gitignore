@@ -24,3 +24,6 @@ Cargo.lock
 
 # Vagrant
 **/.vagrant/
+
+# mdBook output
+**/docs/book/

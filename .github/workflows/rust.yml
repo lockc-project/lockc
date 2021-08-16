@@ -15,3 +15,5 @@ jobs:
       run: ./containerized-build.sh build
     - name: Lint
       run: ./containerized-build.sh lint
+    - name: Build book
+      run: ./scripts/mdbook.sh
