@@ -12,7 +12,8 @@ RUN wget https://apt.llvm.org/llvm-snapshot.gpg.key && \
         gcc-multilib \
         lld-12 \
         lldb-12 \
-        meson && \
+        meson \
+        sudo && \
     apt purge --auto-remove && \
     apt clean && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*

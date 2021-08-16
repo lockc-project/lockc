@@ -2,7 +2,7 @@
 
 set -e
 
-CRUNTIME=${CRUNTIME:-docker}
+CRUNTIME=${CRUNTIME:-"env DOCKER_BUILDKIT=1 docker"}
 
 DESTDIR=${DESTDIR:-/}
 PREFIX=${PREFIX:-"/usr/local"}
