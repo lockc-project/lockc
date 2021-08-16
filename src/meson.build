@@ -32,5 +32,6 @@ cargo_release = custom_target(
     '@OUTPUT0@',
     '@OUTPUT1@',
     meson.build_root(),
+    get_option('profile'),
   ]
 )
