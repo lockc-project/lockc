@@ -1,0 +1,9 @@
+[book]
+title = "lockc Documentation"
+description = "**lockc** is open source software for providing MAC (Mandatory Access Control) implemented in Rust"
+authors = ["Michal Rostecki", "Michal Jura"]
+language = "en"
+multilingual = false
+
+[rust]
+edition = "2018"
