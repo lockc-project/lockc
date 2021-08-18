@@ -56,14 +56,18 @@ zypper install -y \
     jq \
     -kernel-default-base \
     libopenssl-devel \
-    meson \
     podman \
     podman-cni-config \
+    python3-pip \
     socat \
     strace \
     tmux \
     wget \
     ${KERNEL_PACKAGES}
+
+pip3 install --no-cache-dir \
+    meson \
+    ninja
 
 # TODO(vadorovsky): Include BPF as an enabled LSM in openSUSE kernel config.
 sed -i -e "s/GRUB_CMDLINE_LINUX=.*/GRUB_CMDLINE_LINUX=\"lsm=bpf,integrity\"/" \
