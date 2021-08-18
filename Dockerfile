@@ -12,11 +12,14 @@ RUN wget https://apt.llvm.org/llvm-snapshot.gpg.key && \
         gcc-multilib \
         lld-12 \
         lldb-12 \
-        meson \
+        python3-pip \
         sudo && \
     apt purge --auto-remove && \
     apt clean && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+RUN pip3 install \
+        meson \
+        ninja
 WORKDIR /usr/local/src
 # Build libbpf and bpftool from the newest stable kernel sources.
 RUN curl -Lo linux.tar.xz \
@@ -52,14 +55,8 @@ RUN rustup component add clippy
 CMD ["/usr/local/cargo/bin/cargo", "clippy", "--", "-D", "warnings"]
 
 FROM buildbase AS build
-COPY . .
-ARG PREFIX=/usr/local
-ENV DESTDIR=/destdir
-ENV CC=/usr/bin/clang-12
-RUN meson build --prefix ${PREFIX} && \
-    cd build && \
-    meson install
-
-FROM scratch AS artifact
-ARG PREFIX=/usr/local
-COPY --from=build /destdir .
+ARG PREFIX
+ENV USER_ID=1000
+ENV GROUP_ID=100
+COPY scripts/entrypoint.sh /
+CMD ["/entrypoint.sh"]

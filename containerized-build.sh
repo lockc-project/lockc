@@ -3,37 +3,20 @@
 set -e
 
 CRUNTIME=${CRUNTIME:-"env DOCKER_BUILDKIT=1 docker"}
-
-DESTDIR=${DESTDIR:-/}
 PREFIX=${PREFIX:-"/usr/local"}
-BINDIR=${BINDIR:-"${PREFIX}/bin"}
-UNITDIR=${UNITDIR:-"${PREFIX}/lib/systemd/system"}
-SYSCONFDIR=${SYSCONFDIR:-"/etc"}
-
-function do_gen() {
-    ${CRUNTIME} build \
-        --build-arg USER_ID=$(id -u) \
-        --build-arg GROUP_ID=$(id -g) \
-        --target gen \
-        --tag lockc-gen \
-	.
-    ${CRUNTIME} run \
-        --rm -i \
-	--user "$(id -u):$(id -g)" \
-        -v $(pwd):/usr/local/src/lockc \
-        lockc-gen
-}
 
 function do_build() {
     ${CRUNTIME} build \
         --build-arg PREFIX=${PREFIX} \
-        --target artifact \
-        --output type=local,dest=out \
+        --target build \
+        --tag lockc-build \
 	.
-}
-
-function do_install() {
-    cp -R out/* ${DESTDIR}
+    ${CRUNTIME} run \
+        --rm -i \
+        -e USER_ID=$(id -u) \
+        -e GROUP_ID=$(id -g) \
+        -v $(pwd):/usr/local/src/lockc \
+        lockc-build
 }
 
 function do_fmt() {
