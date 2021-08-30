@@ -10,7 +10,7 @@
     - [Provision](terraform/README.md)
         - [Base image](terraform/base-image.md)
         - [(Optional) Custom kernel](terraform/custom-kernel.md)
-        - [Configure libvirt](terraform/conf-libvirt.md)
-        - [Running VMs](terraform/start-vm.md)
+        - [Use libvirt](terraform/libvirt.md)
+        - [Use OpenStack](terraform/openstack.md)
 
 

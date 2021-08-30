@@ -1,0 +1,103 @@
+# Name of the image to use
+# EXAMPLE:
+# image_name = "
+image_name = "SLES15-SP2-JeOS.x86_64-15.2-OpenStack-Cloud-GM"
+
+# Name of the internal network to be created
+# EXAMPLE:
+# internal_net = "testing"
+internal_net = ""
+
+# Name of the internal subnet to be created
+# IMPORTANT: If this variable is not set or empty,
+# then it will be generated with schema
+# internal_subnet = "${var.internal_net}-subnet"
+# EXAMPLE:
+# internal_subnet = "testing-subnet"
+internal_subnet = ""
+
+# Name of the internal router to be created
+# IMPORTANT: If this variable is not set or empty,
+# then it will be generated with schema
+# internal_router = "${var.internal_net}-router"
+# EXAMPLE:
+# internal_router = "testing-router"
+internal_router = ""
+
+# Name of the external network to be used, the one used to allocate floating IPs
+# EXAMPLE:
+# external_net = "floating"
+external_net = ""
+
+# Identifier to make all your resources unique and avoid clashes with other users of this terraform project
+stack_name = "my-k8s-cluster"
+
+# CIDR of the subnet for the internal network
+# EXAMPLE:
+# subnet_cidr = "172.28.0.0/24"
+subnet_cidr = ""
+
+# Number of master nodes
+masters = 1
+
+# Number of worker nodes
+workers = 2
+
+# Size of the master nodes
+# EXAMPLE:
+# master_size = "m1.medium"
+master_size = ""
+
+# Size of the worker nodes
+# EXAMPLE:
+# worker_size = "m1.medium"
+worker_size = ""
+
+# Attach persistent volumes to workers
+workers_vol_enabled = false
+
+# Size of the worker volumes in GB
+workers_vol_size = 5
+
+# Name of DNS domain
+# dnsdomain = "my.domain.com"
+dnsdomain = ""
+
+# Set DNS Entry
+dnsentry = false
+
+# define the repositories to use
+# EXAMPLE:
+# repositories = {
+#   repository1 = "http://example.my.repo.com/repository1/"
+#   repository2 = "http://example.my.repo.com/repository2/"
+# }
+repositories = {}
+
+# Minimum required packages. Do not remove them.
+# Feel free to add more packages
+packages = [
+  "zypper-needs-restarting",
+  "kernel-default",
+  "-kernel-default-base"
+]
+
+# ssh keys to inject into all the nodes
+# EXAMPLE:
+# authorized_keys = [
+#  "ssh-rsa <key-content>"
+# ]
+authorized_keys = [
+  ""
+]
+
+# ssh key on openstack to launch the nodes with
+# EXAMPLE:
+# key_pair = "my_keypair"
+key_pair = ""
+
+# IMPORTANT: Replace these ntp servers with ones from your infrastructure
+ntp_servers = ["0.suse.pool.ntp.org", "1.suse.pool.ntp.org", "2.suse.pool.ntp.org", "3.suse.pool.ntp.org"]
+
+# Set node's hostname from DHCP server
+#hostname_from_dhcp = false
