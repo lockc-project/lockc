@@ -1,99 +1,27 @@
+/* SPDX-License-Identifier: GPL-2.0-or-later */
 #include "vmlinux.h"
 #include <bpf/bpf_core_read.h>
 #include <bpf/bpf_helpers.h>
 #include <bpf/bpf_tracing.h>
+
+#include "compiler.h"
+#include "maps.h"
+#include "strutils.h"
 
 #ifndef NULL
 #define NULL 0
 #endif
 
 #define EPERM 1
-#define TASK_COMM_LEN 16
-/*
- * Max configurable PID limit (for x86_64, for the other architectures it's less
- * or equal).
- */
-#define PID_MAX_LIMIT 4194304
+#define EFAULT 14
 
 /*
- * Maps and related structures
- * ===========================
- *
- * All structs below are either BPF maps or structures used as values of those
- * maps.
+ * The `type` pointer coming from the sb_mount LSM hook has allocatted a full
+ * page size, but since we are interested only in "bind" mounts, allocating a
+ * buffer of size 5 is enough.
  */
-
-/*
- * runtimes - BPF map containing the process names of container runtime init
- * processes (for example: `runc:[2:INIT]` which is the name of every init
- * process for runc).
- */
-struct {
-	__uint(type, BPF_MAP_TYPE_HASH);
-	__uint(max_entries, 16);
-	__type(key, u32);
-	__type(value, u32);
-} runtimes SEC(".maps");
-
-enum container_policy_level {
-	POLICY_LEVEL_LOOKUP_ERR = -2,
-	POLICY_LEVEL_NOT_FOUND = -1,
-
-	POLICY_LEVEL_RESTRICTED,
-	POLICY_LEVEL_BASELINE,
-	POLICY_LEVEL_PRIVILEGED
-};
-
-struct container {
-	enum container_policy_level policy_level;
-};
-
-struct {
-	__uint(type, BPF_MAP_TYPE_HASH);
-	__uint(max_entries, PID_MAX_LIMIT);
-	__type(key, u32);
-	__type(value, struct container);
-} containers SEC(".maps");
-
-struct process {
-	u32 container_id;
-};
-
-struct {
-	__uint(type, BPF_MAP_TYPE_HASH);
-	__uint(max_entries, PID_MAX_LIMIT);
-	__type(key, pid_t);
-	__type(value, struct process);
-} processes SEC(".maps");
-
-/*
- * Utils
- * =====
- *
- * Util functions.
- */
-
-/*
- * hash - simple string hash function which allows to use strings as keys for
- * BPF maps even though they use u32 as a key type.
- * @str: string to hash
- * @len: length of the string
- *
- * Return: an u32 value representing the given string.
- */
-static __always_inline u32 hash(const char *str, size_t len)
-{
-	u32 hash = 0;
-	int i;
-
-	for (i = 0; i < len; i++) {
-		if (str[i] == '\0')
-			return hash;
-		hash += str[i];
-	}
-
-	return hash;
-}
+#define MOUNT_TYPE_LEN 5
+#define MOUNT_TYPE_BIND "bind"
 
 /*
  * handle_process - the handler which monitors all new tasks/functions created
@@ -142,12 +70,13 @@ static __always_inline int handle_new_process(struct task_struct *parent,
 	bpf_printk("found parent containerized process: %d\n", ppid);
 	bpf_printk("comm: %s\n", BPF_CORE_READ(child, comm));
 
-	pid_t container_id = parent_lookup->container_id;
+	u32 container_id = parent_lookup->container_id;
 	u32 *container_lookup = bpf_map_lookup_elem(&containers, &container_id);
 	if (!container_lookup) {
 		/* Shouldn't happen */
 		bpf_printk("error: handle_new_process: cound not find a "
-			   "container for a registered process %d, container id: %d\n",
+			   "container for a registered process %d, "
+			   "container id: %d\n",
 			   pid, container_id);
 		return -EPERM;
 	}
@@ -186,7 +115,8 @@ static __always_inline enum container_policy_level get_policy_level(pid_t pid)
 		return POLICY_LEVEL_NOT_FOUND;
 	}
 
-	struct container *c = bpf_map_lookup_elem(&containers, &p->container_id);
+	struct container *c = bpf_map_lookup_elem(&containers,
+						  &p->container_id);
 	if (!c) {
 		/* Shouldn't happen */
 		bpf_printk("error: get_policy_level: could not found a "
@@ -220,7 +150,8 @@ int sched_process_fork(struct bpf_raw_tracepoint_args *args)
 	struct task_struct *child = (struct task_struct *)args->args[1];
 	if (parent == NULL || child == NULL) {
 		/* Shouldn't happen */
-		bpf_printk("error: sched_process_fork: parent or child is NULL\n");
+		bpf_printk("error: sched_process_fork: parent or child is "
+			   "NULL\n");
 		return -EPERM;
 	}
 
@@ -289,6 +220,168 @@ out:
 		bpf_printk("syslog previous result\n");
 		return ret_prev;
 	}
+	return ret;
+}
+
+/*
+ * callback_ctx - input/output data for the `check_allowed_paths` callback
+ * function.
+ */
+struct callback_ctx {
+	/* Input path to compare all the allowed paths with. */
+	unsigned char *path;
+	/* Output whether a match was found. */
+	bool found;
+};
+
+/*
+ * check_allowed_paths - callback function which checks whether the given source
+ * path (about which we make decision whether to mount it) matches the currently
+ * checked allowed path.
+ * @map: the BPF map with allowed paths
+ * @key: the key of the checked BPF map element
+ * @allowed_path: the checked BPF map element
+ * @data: input/output data shared between this callback and the BPF program
+ *
+ * Return: 0 if the match was found and next iterations should be stopped.
+ * 1 if the match was not found and the search for a possible match should be
+ * continued.
+ */
+static u64 check_allowed_paths(struct bpf_map *map, u32 *key,
+			       struct allowed_path *allowed_path,
+			       struct callback_ctx *data)
+{
+	/*
+	 * Shouldn't happen, but if in any case the checked path is NULL, skip
+	 * it and go to the next element. Comparing it would result in a match
+	 * (because of comparing with 0 length).
+	 */
+	if (unlikely(allowed_path == NULL))
+		return 0;
+
+	bpf_printk("checking path: key: %u, dev_name: %s, current: %s\n",
+		   *key, data->path, allowed_path->path);
+
+	size_t allowed_path_len = strlen(allowed_path->path, PATH_LEN);
+
+	/*
+	 * Shouldn't happen, but if in any case the checked path is empty, skip
+	 * it and go to the next element. Comparing it could result in a match
+	 * (because of comparing with 0 length).
+	 */
+	if (unlikely(allowed_path_len < 1))
+		return 0;
+
+	if (strcmp(allowed_path->path, data->path, allowed_path_len) == 0) {
+		bpf_printk("path check matched\n");
+		data->found = true;
+		return 1;
+	}
+
+	return 0;
+}
+
+/*
+ * mount_audit - LSM program triggered by any mount attempt. Its goal is to deny
+ * the bind mounts to restricted and baseline containers whose source prefixes
+ * are not specified as allowed in BPF maps.
+ * @dev_name: source path
+ * @path: destination path
+ * @type: type of mount
+ * @flags: mount flags
+ * @data: filesystem-specific data
+ * @ret_prev: return code of a previous BPF program using the sb_mount hook
+ *
+ * Return: 0 if mount allowed. -EPERM if mount not allowed. -EFAULT if there was
+ * a problem with reading the kernel strings into buffers or any important
+ * buffer is NULL.
+ */
+SEC("lsm/sb_mount")
+int BPF_PROG(mount_audit, const char *dev_name, const struct path *path,
+	     const char *type, unsigned long flags, void *data, int ret_prev)
+{
+	int ret = 0;
+	pid_t pid = bpf_get_current_pid_tgid() >> 32;
+	enum container_policy_level policy_level = get_policy_level(pid);
+	struct path *path_mut = (struct path *) path;
+	unsigned char type_bind[MOUNT_TYPE_LEN] = MOUNT_TYPE_BIND;
+	unsigned char type_safe[MOUNT_TYPE_LEN];
+	unsigned char dev_name_safe[PATH_LEN];
+
+	/* Retrieve the mount type. */
+	if (unlikely(type == NULL)) {
+		/*
+		 * TODO(vadorovsky): Investigate the "empty type" mounts more.
+		 * Apparently denying them was breaking bwrap and flatpak...
+		 */
+		bpf_printk("warning: mount type is NULL\n");
+		goto out;
+	}
+	if (unlikely(bpf_probe_read_kernel_str(&type_safe,
+					       MOUNT_TYPE_LEN, type) < 0)) {
+		bpf_printk("error: could not read the mount type\n");
+		ret = -EFAULT;
+		goto out;
+	}
+
+	/* Apply the policy only on bind mounts. */
+	if (strcmp(type_safe, type_bind, MOUNT_TYPE_LEN) != 0)
+		goto out;
+
+	/* Check and retrieve the dev_name (source path). */
+	if (unlikely(dev_name == NULL)) {
+		bpf_printk("error: bind mount without source\n");
+		ret = -EFAULT;
+		goto out;
+	}
+	if (unlikely(bpf_probe_read_kernel_str(&dev_name_safe, PATH_LEN,
+					       dev_name) < 0)) {
+		bpf_printk("error: could not read the mount dev_name\n");
+		ret = -EFAULT;
+		goto out;
+	}
+
+	struct callback_ctx cb = {
+		.path = dev_name_safe,
+		.found = false
+	};
+
+	switch (policy_level) {
+	case POLICY_LEVEL_LOOKUP_ERR:
+		/* Shouldn't happen */
+		ret = -EPERM;
+		goto out;
+	case POLICY_LEVEL_NOT_FOUND:
+		goto out;
+	case POLICY_LEVEL_RESTRICTED:
+		bpf_for_each_map_elem(&allowed_paths_restricted,
+				      check_allowed_paths,
+				      &cb, 0);
+		if (cb.found) {
+			bpf_printk("mount: restricted: allow\n");
+			goto out;
+		}
+		bpf_printk("mount: baseline: deny\n");
+		ret = -EPERM;
+		goto out;
+	case POLICY_LEVEL_BASELINE:
+		bpf_for_each_map_elem(&allowed_paths_baseline,
+				      check_allowed_paths,
+				      &cb, 0);
+		if (cb.found) {
+			bpf_printk("mount: baseline: allow\n");
+			goto out;
+		}
+		bpf_printk("mount: baseline: deny\n");
+		ret = -EPERM;
+		goto out;
+	case POLICY_LEVEL_PRIVILEGED:
+		bpf_printk("mount: privileged: allow\n");
+		goto out;
+	}
+out:
+	if (ret_prev != 0)
+		return ret_prev;
 	return ret;
 }
 
