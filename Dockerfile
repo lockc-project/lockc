@@ -54,6 +54,12 @@ USER ${USER_ID}:${GROUP_ID}
 RUN rustup component add clippy
 CMD ["/usr/local/cargo/bin/cargo", "clippy", "--", "-D", "warnings"]
 
+FROM buildbase AS test
+ARG USER_ID
+ARG GROUP_ID
+USER ${USER_ID}:${GROUP_ID}
+CMD ["/usr/local/cargo/bin/cargo", "test"]
+
 FROM buildbase AS build
 ARG PREFIX
 ENV USER_ID=1000

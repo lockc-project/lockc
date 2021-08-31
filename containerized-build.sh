@@ -47,6 +47,20 @@ function do_lint() {
         lockc-clippy
 }
 
+function do_test() {
+    ${CRUNTIME} build \
+        --build-arg USER_ID=$(id -u) \
+        --build-arg GROUP_ID=$(id -g) \
+        --target test \
+        --tag lockc-test \
+        .
+    ${CRUNTIME} run \
+        --rm -i \
+        --user "$(id -u):$(id -g)" \
+        -v $(pwd):/usr/local/src/lockc \
+        lockc-test
+}
+
 function do_help() {
     echo "Usage: $(basename $0) <subcommand>"
     echo
@@ -56,6 +70,7 @@ function do_help() {
     echo "    install    Install lockc"
     echo "    fmt        Autoformat code"
     echo "    lint       Code analysis"
+    echo "    test       Execute unit tests"
     echo "    help       Show help information"
 }
 
@@ -74,6 +89,9 @@ case "$1" in
         ;;
     "lint")
         do_lint
+        ;;
+    "test")
+        do_test
         ;;
     "")
         do_build
