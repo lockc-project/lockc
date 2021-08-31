@@ -5,7 +5,9 @@
 #[macro_use]
 extern crate lazy_static;
 
+use bpfstructs::BpfStruct;
 use byteorder::{NativeEndian, WriteBytesExt};
+use std::convert::TryInto;
 use std::io::prelude::*;
 use std::{fs, path};
 
@@ -13,6 +15,7 @@ use std::{fs, path};
 mod bpf;
 use bpf::*;
 
+pub mod bpfstructs;
 mod settings;
 
 lazy_static! {
@@ -69,7 +72,7 @@ pub fn hash(s: &str) -> Result<u32, HashError> {
 }
 
 #[derive(thiserror::Error, Debug)]
-pub enum LoadProgramError {
+pub enum InitRuntimesError {
     #[error("hash error")]
     HashError(#[from] HashError),
 
@@ -83,7 +86,7 @@ pub enum LoadProgramError {
 /// Registers the names of supported container runtime init processes in a BPF
 /// map. Based on that information, BPF programs will track those processes and
 /// their children.
-pub fn init_runtimes(map: &mut libbpf_rs::Map) -> Result<(), LoadProgramError> {
+pub fn init_runtimes(map: &mut libbpf_rs::Map) -> Result<(), InitRuntimesError> {
     let runtimes = &SETTINGS.runtimes;
     let val: [u8; 4] = [0, 0, 0, 0];
 
@@ -95,6 +98,53 @@ pub fn init_runtimes(map: &mut libbpf_rs::Map) -> Result<(), LoadProgramError> {
     }
 
     Ok(())
+}
+
+#[derive(thiserror::Error, Debug)]
+pub enum InitAllowedPathsError {
+    #[error("could not create a new BPF struct instance")]
+    NewBpfstructError(#[from] bpfstructs::NewBpfstructError),
+
+    #[error("BPF map operation error")]
+    MapOperationError(#[from] bpfstructs::MapOperationError),
+}
+
+/// Registers the allowed directories for restricted and baseline containers in
+/// BPF maps. Based on that information, mount_audit BPF prrogram will make a
+/// decision whether to allow a bind mount for a given container.
+pub fn init_allowed_paths(mut maps: LockcMapsMut) -> Result<(), InitAllowedPathsError> {
+    for (i, allowed_path_s) in SETTINGS.allowed_paths_restricted.iter().enumerate() {
+        bpfstructs::allowed_path::new(allowed_path_s)?
+            .map_update(maps.allowed_paths_restricted(), i.try_into().unwrap())?;
+    }
+
+    for (i, allowed_path_s) in SETTINGS.allowed_paths_baseline.iter().enumerate() {
+        bpfstructs::allowed_path::new(allowed_path_s)?
+            .map_update(maps.allowed_paths_baseline(), i.try_into().unwrap())?;
+    }
+
+    Ok(())
+}
+
+#[derive(thiserror::Error, Debug)]
+pub enum LoadProgramError {
+    #[error("hash error")]
+    HashError(#[from] HashError),
+
+    #[error("init runtimes error")]
+    InitRuntimesError(#[from] InitRuntimesError),
+
+    #[error("init allowed paths error")]
+    InitAllowedPathsError(#[from] InitAllowedPathsError),
+
+    #[error("could not convert the hash to a byte array")]
+    ByteWriteError(#[from] std::io::Error),
+
+    #[error("libbpf error")]
+    LibbpfError(#[from] libbpf_rs::Error),
+
+    #[error("could not align the byte data")]
+    ByteAlignError,
 }
 
 /// Performs the following BPF-related operations:
@@ -129,6 +179,18 @@ pub fn load_programs(path_base_ts: path::PathBuf) -> Result<(), LoadProgramError
     let path_map_processes = path_base_ts.join("map_processes");
     skel.maps_mut().processes().pin(path_map_processes)?;
 
+    let path_map_allowed_paths_restricted = path_base_ts.join("map_allowed_paths_restricted");
+    skel.maps_mut()
+        .allowed_paths_restricted()
+        .pin(path_map_allowed_paths_restricted)?;
+
+    let path_map_allowed_paths_baseline = path_base_ts.join("map_allowed_paths_baseline");
+    skel.maps_mut()
+        .allowed_paths_baseline()
+        .pin(path_map_allowed_paths_baseline)?;
+
+    init_allowed_paths(skel.maps_mut())?;
+
     let path_program_fork = path_base_ts.join("prog_fork");
     skel.progs_mut()
         .sched_process_fork()
@@ -139,6 +201,9 @@ pub fn load_programs(path_base_ts: path::PathBuf) -> Result<(), LoadProgramError
 
     let path_program_syslog = path_base_ts.join("prog_syslog_audit");
     skel.progs_mut().syslog_audit().pin(path_program_syslog)?;
+
+    let path_program_mount = path_base_ts.join("prog_mount_audit");
+    skel.progs_mut().mount_audit().pin(path_program_mount)?;
 
     let mut link_fork = skel.progs_mut().sched_process_fork().attach()?;
     let path_link_fork = path_base_ts.join("link_fork");
@@ -152,6 +217,10 @@ pub fn load_programs(path_base_ts: path::PathBuf) -> Result<(), LoadProgramError
     let path_link_syslog = path_base_ts.join("link_syslog_audit");
     link_syslog.pin(path_link_syslog)?;
 
+    let mut link_mount = skel.progs_mut().mount_audit().attach_lsm()?;
+    let path_link_mount = path_base_ts.join("link_mount_audit");
+    link_mount.pin(path_link_mount)?;
+
     Ok(())
 }
 
@@ -164,6 +233,8 @@ pub enum FindLockcBpfPathError {
     NotFound,
 }
 
+/// Find the directory with BPF objects of the currently running lockc
+/// BPF programs.
 fn find_lockc_bpf_path() -> Result<std::path::PathBuf, FindLockcBpfPathError> {
     let path_base = std::path::Path::new("/sys")
         .join("fs")
@@ -180,13 +251,6 @@ fn find_lockc_bpf_path() -> Result<std::path::PathBuf, FindLockcBpfPathError> {
     Err(FindLockcBpfPathError::NotFound)
 }
 
-#[repr(C)]
-pub enum ContainerPolicyLevel {
-    Restricted,
-    Baseline,
-    Privileged,
-}
-
 #[derive(thiserror::Error, Debug)]
 pub enum SkelReusedMapsError {
     #[error("libbpf error")]
@@ -196,6 +260,8 @@ pub enum SkelReusedMapsError {
     FindLockcBpfPathError(#[from] FindLockcBpfPathError),
 }
 
+/// Returns a new BPF skeleton with reused containers and processes maps. Meant
+/// to be used by lockc-runc-wrapper to interact with those maps.
 pub fn skel_reused_maps<'a>() -> Result<LockcSkel<'a>, SkelReusedMapsError> {
     let skel_builder = LockcSkelBuilder::default();
     let mut open_skel = skel_builder.open()?;
@@ -219,128 +285,80 @@ pub fn skel_reused_maps<'a>() -> Result<LockcSkel<'a>, SkelReusedMapsError> {
     Ok(skel)
 }
 
-#[repr(C, packed)]
-struct Process {
-    container_id: u32,
-}
-
-#[repr(C, packed)]
-struct Container {
-    container_policy_level: ContainerPolicyLevel,
-}
-
 #[derive(thiserror::Error, Debug)]
 pub enum ReusedMapsOperationError {
-    #[error("libbpf error")]
-    LibbpfError(#[from] libbpf_rs::Error),
-
-    #[error("I/O error")]
-    IOError(#[from] std::io::Error),
-
-    #[error("could not reuse BPF maps")]
-    SkelReusedMapsError(#[from] SkelReusedMapsError),
+    #[error("BPF map operation error")]
+    MapOperationError(#[from] bpfstructs::MapOperationError),
 
     #[error("hash error")]
     HashError(#[from] HashError),
+
+    #[error("could not reuse BPF maps")]
+    SkelReusedMapsError(#[from] SkelReusedMapsError),
 }
 
+/// Adds a new container and its first associated process into BPF maps.
 pub fn add_container(
     container_key: u32,
     pid: u32,
-    level: ContainerPolicyLevel,
+    level: bpfstructs::container_policy_level,
 ) -> Result<(), ReusedMapsOperationError> {
     let mut skel = skel_reused_maps()?;
 
-    // let container_key = hash(container_id)?;
-    let mut container_key_b = vec![];
-    container_key_b.write_u32::<NativeEndian>(container_key)?;
+    bpfstructs::container {
+        policy_level: level,
+    }
+    .map_update(skel.maps_mut().containers(), container_key)?;
 
-    let container = Container {
-        container_policy_level: level,
-    };
-    let container_b = unsafe { plain::as_bytes(&container) };
-
-    skel.maps_mut().containers().update(
-        &container_key_b,
-        container_b,
-        libbpf_rs::MapFlags::empty(),
-    )?;
-
-    let mut process_key = vec![];
-    process_key.write_u32::<NativeEndian>(pid)?;
-
-    let process = Process {
+    bpfstructs::process {
         container_id: container_key,
-    };
-    let process_b = unsafe { plain::as_bytes(&process) };
-
-    skel.maps_mut()
-        .processes()
-        .update(&process_key, process_b, libbpf_rs::MapFlags::empty())?;
+    }
+    .map_update(skel.maps_mut().processes(), pid)?;
 
     Ok(())
 }
 
+/// Deletes the given container from BPF map.
 pub fn delete_container(container_key: u32) -> Result<(), ReusedMapsOperationError> {
     let mut skel = skel_reused_maps()?;
-
-    let mut container_key_b = vec![];
-    container_key_b.write_u32::<NativeEndian>(container_key)?;
-
-    skel.maps_mut().containers().delete(&container_key_b)?;
+    bpfstructs::map_delete(skel.maps_mut().containers(), container_key)?;
 
     Ok(())
 }
 
+/// Writes the given policy to the container info in BPF map.
 pub fn write_policy(
     container_id: &str,
-    level: ContainerPolicyLevel,
+    level: bpfstructs::container_policy_level,
 ) -> Result<(), ReusedMapsOperationError> {
     let mut skel = skel_reused_maps()?;
 
     let container_key = hash(container_id)?;
-    let mut container_key_b = vec![];
-    container_key_b.write_u32::<NativeEndian>(container_key)?;
-
-    let container = Container {
-        container_policy_level: level,
-    };
-    let container_b = unsafe { plain::as_bytes(&container) };
-
-    skel.maps_mut().containers().update(
-        &container_key_b,
-        container_b,
-        libbpf_rs::MapFlags::empty(),
-    )?;
+    bpfstructs::container {
+        policy_level: level,
+    }
+    .map_update(skel.maps_mut().containers(), container_key)?;
 
     Ok(())
 }
 
+/// Adds the given process as a container's member in the BPF map. After this
+/// action, LSM BPF programs are going to enforce policies on that process.
 pub fn add_process(container_key: u32, pid: u32) -> Result<(), ReusedMapsOperationError> {
     let mut skel = skel_reused_maps()?;
 
-    let mut process_key = vec![];
-    process_key.write_u32::<NativeEndian>(pid)?;
-
-    let process = Process {
+    bpfstructs::process {
         container_id: container_key,
-    };
-    let process_b = unsafe { plain::as_bytes(&process) };
-
-    skel.maps_mut()
-        .processes()
-        .update(&process_key, process_b, libbpf_rs::MapFlags::empty())?;
+    }
+    .map_update(skel.maps_mut().processes(), pid)?;
 
     Ok(())
 }
 
+/// Removes the given process from BPF map.
 pub fn delete_process(pid: u32) -> Result<(), ReusedMapsOperationError> {
     let mut skel = skel_reused_maps()?;
-
-    let mut process_key = vec![];
-    process_key.write_u32::<NativeEndian>(pid)?;
-
-    skel.maps_mut().processes().delete(&process_key)?;
+    bpfstructs::map_delete(skel.maps_mut().processes(), pid)?;
 
     Ok(())
 }
