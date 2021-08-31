@@ -17,7 +17,7 @@ cmd ""
 
 i=0
 for MASTER in $TR_MASTER_IPS; do
-    cmd "ssh -l ${TR_USERNAME} ${MASTER} /bin/bash <<EOF"
+    cmd "ssh -o 'StrictHostKeyChecking no' -l ${TR_USERNAME} ${MASTER} /bin/bash <<EOF"
     cmd ""
     
     if [ $i -eq "0" ]; then
@@ -28,20 +28,12 @@ for MASTER in $TR_MASTER_IPS; do
         cmd "  sudo chown ${TR_USERNAME}:users /home/${TR_USERNAME}/.kube/config"
         cmd "EOF"
 
-        ssh -l ${TR_USERNAME} ${MASTER} /bin/bash <<-EOF
+        ssh -o 'StrictHostKeyChecking no' -l ${TR_USERNAME} ${MASTER} /bin/bash <<-EOF
           sudo kubeadm init --cri-socket /run/containerd/containerd.sock --control-plane-endpoint ${TR_LB_IP}:6443 | tee kubeadm-init.log
           mkdir -p /home/${TR_USERNAME}/.kube
           sudo cp /etc/kubernetes/admin.conf /home/${TR_USERNAME}/.kube/config
           sudo chown ${TR_USERNAME}:users /home/${TR_USERNAME}/.kube/config
 EOF
-
-        cmd ""
-
-        cmd "scp ${TR_USERNAME}@${MASTER}:/home/${TR_USERNAME}/.kube/config ./admin.conf"
-        cmd "export KUBECONFIG=`pwd`/admin.conf"
-        scp ${TR_USERNAME}@${MASTER}:/home/${TR_USERNAME}/.kube/config ./admin.conf
-        export KUBECONFIG=`pwd`/admin.conf
-        kubectl get nodes
 
         cmd ""
         export KUBEADM_JOIN=`ssh -l ${TR_USERNAME} ${MASTER} tail -n2 kubeadm-init.log`
@@ -58,7 +50,21 @@ done
 
 i=0
 for WORKER in $TR_WORKER_IPS; do
-    cmd "ssh -l ${TR_USERNAME} ${WORKER} sudo ${KUBEADM_CMD}"
-    ssh -l ${TR_USERNAME} ${WORKER} sudo ${KUBEADM_CMD}
+    cmd "ssh -o 'StrictHostKeyChecking no' -l ${TR_USERNAME} ${WORKER} sudo ${KUBEADM_CMD}"
+    ssh -o 'StrictHostKeyChecking no' -l ${TR_USERNAME} ${WORKER} sudo ${KUBEADM_CMD}
     ((++i))
 done
+
+cmd ""
+cmd "scp ${TR_USERNAME}@${MASTER}:/home/${TR_USERNAME}/.kube/config ./admin.conf"
+cmd "export KUBECONFIG=`pwd`/admin.conf"
+cmd ""
+
+scp ${TR_USERNAME}@${MASTER}:/home/${TR_USERNAME}/.kube/config ./admin.conf
+export KUBECONFIG=`pwd`/admin.conf
+kubectl get nodes
+
+cmd ""
+cmd "WARNING!!! To start with K8s cluster please run following command:"
+cmd "export KUBECONFIG=`pwd`/admin.conf"
+cmd ""

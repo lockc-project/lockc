@@ -51,7 +51,6 @@ zypper install -y \
     conntrack-tools \
     containerd \
     cri-tools \
-    docker \
     ebtables \
     ethtool \
     jq \
