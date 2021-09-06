@@ -17,6 +17,9 @@ zypper ar -p 90 -r \
 zypper ar -p 90 -r \
     https://download.opensuse.org/repositories/devel:/languages:/rust/openSUSE_Leap_15.3/devel:languages:rust.repo
 
+# NOTE(vadorovsky): Temporary workaround for non-functioning mirror.
+zypper mr -d repo-backports-update
+
 zypper --gpg-auto-import-keys ref
 zypper up -y --allow-vendor-change
 zypper dup -y --allow-vendor-change
@@ -75,7 +78,6 @@ sed -i -e "s/GRUB_CMDLINE_LINUX=.*/GRUB_CMDLINE_LINUX=\"lsm=bpf,integrity\"/" \
 grub2-mkconfig -o /boot/grub2/grub.cfg
 
 systemctl enable containerd
-systemctl enable docker
 
 CNI_VERSION=$(curl -s https://api.github.com/repos/containernetworking/plugins/releases/latest | jq -r '.tag_name')
 ARCH="amd64"
