@@ -13,7 +13,7 @@ set -eux
 echo "nameserver 169.254.2.3" > /etc/resolv.conf
 
 zypper ar -p 90 -r \
-    https://download.opensuse.org/repositories/home:/mjura:/branches:/Kernel:/stable/standard/home:mjura:branches:Kernel:stable.repo
+    https://download.opensuse.org/repositories/Kernel:/stable:/Backport/standard/Kernel:stable:Backport.repo
 zypper ar -p 90 -r \
     https://download.opensuse.org/repositories/devel:/languages:/rust/openSUSE_Leap_15.3/devel:languages:rust.repo
 
