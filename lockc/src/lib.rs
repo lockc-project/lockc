@@ -18,6 +18,7 @@ mod bpf;
 use bpf::*;
 
 pub mod bpfstructs;
+pub mod k8s_agent_api;
 mod settings;
 
 lazy_static! {
@@ -26,14 +27,14 @@ lazy_static! {
 
 #[derive(thiserror::Error, Debug)]
 pub enum CheckBpfLsmError {
-    #[error("regex compilation error")]
-    RegexError(#[from] regex::Error),
+    #[error(transparent)]
+    Regex(#[from] regex::Error),
 
-    #[error("I/O error")]
-    IOError(#[from] io::Error),
+    #[error(transparent)]
+    IO(#[from] io::Error),
 
     #[error("BPF LSM is not enabled")]
-    BpfLsmDisabledError,
+    BpfLsmDisabled,
 }
 
 /// Checks whether BPF LSM is enabled in the system.
@@ -48,14 +49,14 @@ pub fn check_bpf_lsm_enabled<P: AsRef<path::Path>>(
 
     match rx.is_match(&content) {
         true => Ok(()),
-        false => Err(CheckBpfLsmError::BpfLsmDisabledError),
+        false => Err(CheckBpfLsmError::BpfLsmDisabled),
     }
 }
 
 #[derive(thiserror::Error, Debug)]
 pub enum HashError {
-    #[error("could not convert the hash to a byte array")]
-    ByteWriteError(#[from] io::Error),
+    #[error("I/O error: {}", self)]
+    IO(#[from] io::Error),
 }
 
 /// Simple string hash function which allows to use strings as keys for BPF
@@ -73,14 +74,14 @@ pub fn hash(s: &str) -> Result<u32, HashError> {
 
 #[derive(thiserror::Error, Debug)]
 pub enum InitRuntimesError {
-    #[error("hash error")]
-    HashError(#[from] HashError),
+    #[error(transparent)]
+    Hash(#[from] HashError),
 
-    #[error("could not convert the hash to a byte array")]
-    ByteWriteError(#[from] io::Error),
+    #[error(transparent)]
+    IO(#[from] io::Error),
 
-    #[error("libbpf error")]
-    LibbpfError(#[from] libbpf_rs::Error),
+    #[error(transparent)]
+    Libbpf(#[from] libbpf_rs::Error),
 }
 
 /// Registers the names of supported container runtime init processes in a BPF
@@ -102,11 +103,11 @@ pub fn init_runtimes(map: &mut libbpf_rs::Map) -> Result<(), InitRuntimesError> 
 
 #[derive(thiserror::Error, Debug)]
 pub enum InitAllowedPathsError {
-    #[error("could not create a new BPF struct instance")]
-    NewBpfstructError(#[from] bpfstructs::NewBpfstructError),
+    #[error(transparent)]
+    NewBpfstruct(#[from] bpfstructs::NewBpfstructError),
 
-    #[error("BPF map operation error")]
-    MapOperationError(#[from] bpfstructs::MapOperationError),
+    #[error(transparent)]
+    MapOperation(#[from] bpfstructs::MapOperationError),
 }
 
 /// Registers the allowed directories for restricted and baseline containers in
@@ -276,8 +277,8 @@ pub fn load_programs<P: AsRef<path::Path>>(path_base_ts_r: P) -> Result<(), Load
 
 #[derive(thiserror::Error, Debug)]
 pub enum FindLockcBpfPathError {
-    #[error("I/O error")]
-    IOError(#[from] io::Error),
+    #[error(transparent)]
+    IO(#[from] io::Error),
 
     #[error("BPF objects not found")]
     NotFound,
@@ -300,11 +301,11 @@ fn find_lockc_bpf_path<P: AsRef<path::Path>>(
 
 #[derive(thiserror::Error, Debug)]
 pub enum SkelReusedMapsError {
-    #[error("libbpf error")]
-    LibbpfError(#[from] libbpf_rs::Error),
+    #[error(transparent)]
+    Libbpf(#[from] libbpf_rs::Error),
 
-    #[error("could not find the BPF objects path")]
-    FindLockcBpfPathError(#[from] FindLockcBpfPathError),
+    #[error(transparent)]
+    FindLockcBpfPath(#[from] FindLockcBpfPathError),
 }
 
 /// Returns a new BPF skeleton with reused containers and processes maps. Meant
@@ -335,13 +336,13 @@ pub fn skel_reused_maps<'a>() -> Result<LockcSkel<'a>, SkelReusedMapsError> {
 
 #[derive(thiserror::Error, Debug)]
 pub enum ReusedMapsOperationError {
-    #[error("BPF map operation error")]
+    #[error(transparent)]
     MapOperationError(#[from] bpfstructs::MapOperationError),
 
-    #[error("hash error")]
+    #[error(transparent)]
     HashError(#[from] HashError),
 
-    #[error("could not reuse BPF maps")]
+    #[error(transparent)]
     SkelReusedMapsError(#[from] SkelReusedMapsError),
 }
 
@@ -413,10 +414,10 @@ pub fn delete_process(pid: u32) -> Result<(), ReusedMapsOperationError> {
 
 #[derive(thiserror::Error, Debug)]
 pub enum CleanupError {
-    #[error("regex compilation error")]
+    #[error(transparent)]
     RegexError(#[from] regex::Error),
 
-    #[error("I/O error")]
+    #[error(transparent)]
     IOError(#[from] io::Error),
 
     #[error("could not convert path to string")]

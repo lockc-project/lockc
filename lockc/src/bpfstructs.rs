@@ -10,17 +10,33 @@ use std::convert::TryInto;
 use byteorder::{NativeEndian, WriteBytesExt};
 
 #[derive(thiserror::Error, Debug)]
+pub enum PolicyLevelError {
+    #[error("invalid policy level")]
+    InvalidPolicyLevelError,
+}
+
+/// Converts the string into a policy level.
+pub fn policy_level_from_str(val: &str) -> Result<container_policy_level, PolicyLevelError> {
+    match val {
+        "restricted" => Ok(container_policy_level_POLICY_LEVEL_RESTRICTED),
+        "baseline" => Ok(container_policy_level_POLICY_LEVEL_BASELINE),
+        "privileged" => Ok(container_policy_level_POLICY_LEVEL_PRIVILEGED),
+        _ => Err(PolicyLevelError::InvalidPolicyLevelError),
+    }
+}
+
+#[derive(thiserror::Error, Debug)]
 pub enum NewBpfstructError {
-    #[error("FFI nul error")]
+    #[error(transparent)]
     NulError(#[from] std::ffi::NulError),
 }
 
 #[derive(thiserror::Error, Debug)]
 pub enum MapOperationError {
-    #[error("could not convert the key to a byte array")]
+    #[error(transparent)]
     ByteWriteError(#[from] std::io::Error),
 
-    #[error("libbpf error")]
+    #[error(transparent)]
     LibbpfError(#[from] libbpf_rs::Error),
 }
 

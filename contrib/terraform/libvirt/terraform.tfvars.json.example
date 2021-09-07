@@ -12,6 +12,7 @@
   "authorized_keys": [
     ""
   ],
+  "kubeadm_token": "8c05f4.b5bdd4ceb5ce4d3f",
   "control_planes": 1,
   "control_plane_memory": 2048,
   "control_plane_vcpu": 2,

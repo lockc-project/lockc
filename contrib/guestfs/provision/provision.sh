@@ -53,8 +53,8 @@ zypper install -y \
     bpftool \
     cargo \
     conntrack-tools \
-    containerd \
     cri-tools \
+    criu \
     docker \
     ebtables \
     ethtool \
@@ -84,7 +84,10 @@ EOF
 ### Rebuild initrd with dracut
 mkinitrd
 
-mv /etc/containerd/config.toml.rpmorig /etc/containerd/config.toml
+CONTAINERD_URL=$(curl -s https://api.github.com/repos/containerd/containerd/releases/latest | jq -r '.assets[] | select(.browser_download_url | contains("cri-containerd-cni") and endswith("linux-amd64.tar.gz")) | .browser_download_url')
+curl -L "${CONTAINERD_URL}" | sudo tar --no-overwrite-dir -C / -xz
+
+# mv /etc/containerd/config.toml.rpmorig /etc/containerd/config.toml
 
 systemctl enable containerd
 systemctl enable docker
@@ -107,7 +110,17 @@ curl -sSL "https://raw.githubusercontent.com/kubernetes/release/${RELEASE_VERSIO
 mkdir -p /etc/systemd/system/kubelet.service.d
 curl -sSL "https://raw.githubusercontent.com/kubernetes/release/${RELEASE_VERSION}/cmd/kubepkg/templates/latest/deb/kubeadm/10-kubeadm.conf" | sed "s:/usr/bin:${DOWNLOAD_DIR}:g" | tee /etc/systemd/system/kubelet.service.d/10-kubeadm.conf
 
+HELM_VERSION=$(curl -s https://api.github.com/repos/helm/helm/releases/latest | jq -r .tag_name)
+curl -L "https://get.helm.sh/helm-${HELM_VERSION}-linux-amd64.tar.gz" | tar -xz
+install -D -m 0755 linux-amd64/helm /usr/bin/helm
+rm -rf linux-amd64
+
 systemctl enable kubelet
 
 curl -sL https://releases.rancher.com/dapper/latest/dapper-$(uname -s)-$(uname -m) > /usr/local/bin/dapper
 chmod +x /usr/local/bin/dapper
+
+curl -L --remote-name-all https://github.com/cilium/cilium-cli/releases/latest/download/cilium-linux-amd64.tar.gz{,.sha256sum}
+sha256sum --check cilium-linux-amd64.tar.gz.sha256sum
+sudo tar xzvfC cilium-linux-amd64.tar.gz /usr/local/bin
+rm cilium-linux-amd64.tar.gz{,.sha256sum}

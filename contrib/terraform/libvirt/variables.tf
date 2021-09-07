@@ -48,10 +48,20 @@ variable "timezone" {
   default     = "Etc/UTC"
 }
 
+variable "username" {
+  description = "Default user on the nodes"
+  default     = "opensuse"
+}
+
 variable "authorized_keys" {
   description = "SSH keys to inject into all the nodes"
   type        = list(string)
   default     = []
+}
+
+variable "kubeadm_token" {
+  description = "Token for trust between kubeadm nodes"
+  default     = "8c05f4.b5bdd4ceb5ce4d3f"
 }
 
 variable "control_planes" {

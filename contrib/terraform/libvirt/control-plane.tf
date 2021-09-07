@@ -4,12 +4,12 @@ resource "libvirt_volume" "control_plane" {
   count          = var.control_planes
 }
 
-
 data "template_file" "control_plane_commands" {
   template = file("cloud-init/control-plane.tpl")
 
   vars = {
     workers = var.workers
+    kubeadm_token = var.kubeadm_token
   }
 }
 
@@ -21,6 +21,7 @@ data "template_file" "control_plane_cloud_init" {
     hostname        = "lockc-control-plane-${count.index}"
     locale          = var.locale
     timezone        = var.timezone
+    username        = var.username
     authorized_keys = join("\n", formatlist("      - %s", var.authorized_keys))
     commands        = join("\n", data.template_file.control_plane_commands.*.rendered)
   }

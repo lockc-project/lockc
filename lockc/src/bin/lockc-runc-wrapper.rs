@@ -1,18 +1,29 @@
-use std::{convert::TryFrom, fs, io, path};
+use std::{
+    convert::TryFrom,
+    fs, io, path,
+    pin::Pin,
+    task::{Context, Poll},
+};
 
-use k8s_openapi::api::core::v1;
-use log::{info, LevelFilter, SetLoggerError};
+use axum::{
+    body::Body,
+    http::{Method, Request, StatusCode, Uri},
+};
+use hyper::client::connect::{Connected, Connection};
+use log::{error, info, LevelFilter, SetLoggerError};
 use log4rs::append::file::FileAppender;
 use log4rs::config::{runtime::ConfigErrors, Appender, Config, Root};
+use serde_json::json;
+use tokio::{
+    io::{AsyncRead, AsyncWrite},
+    net::UnixStream,
+};
 use uuid::Uuid;
+
+use lockc::k8s_agent_api::DEFAULT_SOCKET_PATH;
 
 // TODO: To be used for cri-o.
 // static ANNOTATION_K8S_LABELS: &str = "io.kubernetes.cri-o.Labels";
-
-// static LABEL_NAMESPACE: &str = "io.kubernetes.pod.namespace";
-static LABEL_POLICY_ENFORCE: &str = "pod-security.kubernetes.io/enforce";
-// static LABEL_POLICY_AUDIT: &str = "pod-security.kubernetes.io/audit";
-// static LABEL_POLICY_WARN: &str = "pod-security.kubernetes.io/warn";
 
 static ANNOTATION_CONTAINERD_LOG_DIRECTORY: &str = "io.kubernetes.cri.sandbox-log-directory";
 static ANNOTATION_CONTAINERD_SANDBOX_ID: &str = "io.kubernetes.cri.sandbox-id";
@@ -88,48 +99,107 @@ fn container_namespace<P: AsRef<std::path::Path>>(
     }
 }
 
+struct ClientConnection {
+    stream: UnixStream,
+}
+
+impl AsyncWrite for ClientConnection {
+    fn poll_write(
+        mut self: Pin<&mut Self>,
+        cx: &mut Context<'_>,
+        buf: &[u8],
+    ) -> Poll<Result<usize, io::Error>> {
+        Pin::new(&mut self.stream).poll_write(cx, buf)
+    }
+
+    fn poll_flush(mut self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Result<(), io::Error>> {
+        Pin::new(&mut self.stream).poll_flush(cx)
+    }
+
+    fn poll_shutdown(
+        mut self: Pin<&mut Self>,
+        cx: &mut Context<'_>,
+    ) -> Poll<Result<(), io::Error>> {
+        Pin::new(&mut self.stream).poll_shutdown(cx)
+    }
+}
+
+impl AsyncRead for ClientConnection {
+    fn poll_read(
+        mut self: Pin<&mut Self>,
+        cx: &mut Context<'_>,
+        buf: &mut tokio::io::ReadBuf<'_>,
+    ) -> Poll<io::Result<()>> {
+        Pin::new(&mut self.stream).poll_read(cx, buf)
+    }
+}
+
+impl Connection for ClientConnection {
+    fn connected(&self) -> Connected {
+        Connected::new()
+    }
+}
+
+#[derive(thiserror::Error, Debug)]
+enum PolicyLabelError {
+    #[error(transparent)]
+    Axum(#[from] axum::http::Error),
+
+    #[error(transparent)]
+    FromUtf8(#[from] std::string::FromUtf8Error),
+
+    #[error(transparent)]
+    Hyper(#[from] hyper::Error),
+
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+}
+
 /// Finds the policy for the given Kubernetes namespace. If none, the baseline
 /// policy is returned. Otherwise checks the Kubernetes namespace labels.
 async fn policy_label(
     namespace_o: Option<std::string::String>,
-) -> Result<lockc::bpfstructs::container_policy_level, kube::Error> {
-    // Apply the privileged policy for kube-system containers immediately.
-    // Otherwise the core k8s components (apiserver, scheduler) won't be able
-    // to run.
-    // If container has no k8s namespace, apply the baseline policy.
+) -> Result<lockc::bpfstructs::container_policy_level, PolicyLabelError> {
     let namespace_s = match namespace_o {
-        Some(v) if v.as_str() == "kube-system" => {
-            return Ok(lockc::bpfstructs::container_policy_level_POLICY_LEVEL_PRIVILEGED)
-        }
         Some(v) => v,
         None => return Ok(lockc::bpfstructs::container_policy_level_POLICY_LEVEL_BASELINE),
     };
 
-    let kubeconfig =
-        kube::config::Kubeconfig::read_from(std::path::Path::new("/etc/kubernetes/admin.conf"))?;
-    let options = kube::config::KubeConfigOptions::default();
-    let config = kube::config::Config::from_custom_kubeconfig(kubeconfig, &options).await?;
-    let client = kube::Client::try_from(config)?;
+    info!("creating connector");
+    let connector = tower::service_fn(move |_: Uri| {
+        Box::pin(async move {
+            let stream = UnixStream::connect(DEFAULT_SOCKET_PATH).await?;
+            Ok::<_, io::Error>(ClientConnection { stream })
+        })
+    });
+    info!("creating client");
+    let client = hyper::Client::builder().build(connector);
 
-    let namespaces: kube::api::Api<v1::Namespace> = kube::api::Api::all(client);
-    let namespace = namespaces.get(&namespace_s).await?;
+    info!("creating request");
+    let request = Request::builder()
+        .header("Content-Type", "application/json")
+        .method(Method::GET)
+        .uri(hyperlocal::Uri::new(DEFAULT_SOCKET_PATH, "/policies"))
+        .body(Body::from(serde_json::to_vec(&json!({
+            "namespace": namespace_s
+        }))?))?;
 
-    match namespace.metadata.labels {
-        Some(v) => match v.get(LABEL_POLICY_ENFORCE) {
-            Some(v) => match v.as_str() {
-                "restricted" => {
-                    Ok(lockc::bpfstructs::container_policy_level_POLICY_LEVEL_RESTRICTED)
-                }
-                "baseline" => Ok(lockc::bpfstructs::container_policy_level_POLICY_LEVEL_BASELINE),
-                "privileged" => {
-                    Ok(lockc::bpfstructs::container_policy_level_POLICY_LEVEL_PRIVILEGED)
-                }
-                _ => Ok(lockc::bpfstructs::container_policy_level_POLICY_LEVEL_BASELINE),
-            },
-            None => Ok(lockc::bpfstructs::container_policy_level_POLICY_LEVEL_BASELINE),
-        },
-        None => Ok(lockc::bpfstructs::container_policy_level_POLICY_LEVEL_BASELINE),
-    }
+    info!("creating response");
+    let response = client.request(request).await?;
+    info!("got response {}", response.status());
+
+    assert_eq!(response.status(), StatusCode::OK);
+    info!("response ok");
+
+    let body = hyper::body::to_bytes(response.into_body()).await?;
+    info!("to bytes");
+    let body: Value = serde_json::from_slice(&body)?;
+    info!("to json");
+
+    let policy: lockc::bpfstructs::container_policy_level =
+        body["enforce"].as_i64().unwrap() as i32;
+    info!("got policy: {}", policy);
+    Ok(policy)
 }
 
 use serde::Deserialize;
@@ -140,13 +210,13 @@ struct Mount {
     destination: String,
     r#type: String,
     source: String,
-    options: Vec<String>
+    options: Vec<String>,
 }
 
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
 struct Mounts {
-    mounts: Vec<Mount>
+    mounts: Vec<Mount>,
 }
 
 fn docker_config<P: AsRef<std::path::Path>>(
@@ -161,9 +231,9 @@ fn docker_config<P: AsRef<std::path::Path>>(
 
     for test in m.mounts {
         let source: Vec<&str> = test.source.split('/').collect();
-        if source.len() > 1 && source[ source.len() - 1 ] == "hostname" {
-                let config_v2= str::replace(&test.source, "hostname", "config.v2.json");
-                return Ok(std::path::PathBuf::from(config_v2));
+        if source.len() > 1 && source[source.len() - 1] == "hostname" {
+            let config_v2 = str::replace(&test.source, "hostname", "config.v2.json");
+            return Ok(std::path::PathBuf::from(config_v2));
         }
     }
 
@@ -185,15 +255,11 @@ fn docker_label<P: AsRef<std::path::Path>>(
 
     match x {
         Some(x) => match x {
-            "restricted" => {
-                Ok(lockc::bpfstructs::container_policy_level_POLICY_LEVEL_RESTRICTED)
-            }
+            "restricted" => Ok(lockc::bpfstructs::container_policy_level_POLICY_LEVEL_RESTRICTED),
             "baseline" => Ok(lockc::bpfstructs::container_policy_level_POLICY_LEVEL_BASELINE),
-            "privileged" => {
-                Ok(lockc::bpfstructs::container_policy_level_POLICY_LEVEL_PRIVILEGED)
-            }
-            _ => Ok(lockc::bpfstructs::container_policy_level_POLICY_LEVEL_BASELINE)
-        }
+            "privileged" => Ok(lockc::bpfstructs::container_policy_level_POLICY_LEVEL_PRIVILEGED),
+            _ => Ok(lockc::bpfstructs::container_policy_level_POLICY_LEVEL_BASELINE),
+        },
         None => Ok(lockc::bpfstructs::container_policy_level_POLICY_LEVEL_BASELINE),
     }
 }
@@ -287,13 +353,16 @@ async fn main() -> anyhow::Result<()> {
         match arg.as_str() {
             // Options which are followed with a positional arguments we don't
             // want to store.
+            "--console-socket" => opt_parsing_action = OptParsingAction::Skip,
+            "--criu" => opt_parsing_action = OptParsingAction::Skip,
             "--log" => opt_parsing_action = OptParsingAction::Skip,
             "--log-format" => opt_parsing_action = OptParsingAction::Skip,
             "--pid-file" => opt_parsing_action = OptParsingAction::Skip,
-            "--console-socket" => opt_parsing_action = OptParsingAction::Skip,
+            "--preserve-fds" => opt_parsing_action = OptParsingAction::Skip,
+            "--process" => opt_parsing_action = OptParsingAction::Skip,
             "--root" => opt_parsing_action = OptParsingAction::Skip,
-            // We want to explicitly store the value of --bundle and --root
-            // options.
+            "--rootless" => opt_parsing_action = OptParsingAction::Skip,
+            // We want to explicitly store the value of --bundle option.
             "--bundle" => opt_parsing_action = OptParsingAction::Bundle,
             _ => {}
         }
@@ -365,13 +434,7 @@ async fn main() -> anyhow::Result<()> {
                     // subcommand to be detected as wrapped and thus allowed by
                     // the LSM program to execute. It's only to handle subcommands
                     // like `init`, `list` or `spec`, so we make it restricted.
-                    lockc::add_container(
-                        0,
-                        pid_u,
-                        lockc::bpfstructs::container_policy_level_POLICY_LEVEL_RESTRICTED,
-                    )?;
                     cmd.status().await?;
-                    lockc::delete_container(0)?;
                 }
             }
         }
@@ -386,14 +449,17 @@ async fn main() -> anyhow::Result<()> {
             let runc_bundle = container_bundle.clone();
             let namespace = container_namespace(container_bundle);
             match namespace {
-                Ok(n) => policy = policy_label(n).await?,
+                Ok(n) => {
+                    policy = policy_label(n).await?;
+                }
                 Err(_) => {
                     let docker_conf = docker_config(runc_bundle)?;
                     policy = docker_label(docker_conf)?;
                 }
             };
+            info!("found policy");
             lockc::add_container(container_key, pid_u, policy)?;
-            cmd.status().await?;
+            info!("added container");
         }
         ContainerAction::Delete => {
             let container_key = lockc::hash(&container_id_o.unwrap())?;
@@ -404,6 +470,7 @@ async fn main() -> anyhow::Result<()> {
             cmd.status().await?;
         }
     }
+    info!("success");
 
     Ok(())
 }

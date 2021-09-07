@@ -1,0 +1,234 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: containerd
+  namespace: kube-system
+data:
+  config.toml: |
+    version = 2
+    [plugins."io.containerd.grpc.v1.cri"]
+      disable_tcp_service = true
+      stream_server_address = "127.0.0.1"
+      stream_server_port = "0"
+      stream_idle_timeout = "4h"
+      enable_selinux = false
+      sandbox_image = "k8s.gcr.io/pause:3.6"
+      stats_collect_period = 10
+      max_container_log_line_size = 16384
+      disable_cgroup = false
+      disable_apparmor = true
+      restrict_oom_score_adj = false
+      max_concurrent_downloads = 3
+      [plugins."io.containerd.grpc.v1.cri".containerd]
+        default_runtime_name = "runc"
+        [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.runc]
+          runtime_type = "io.containerd.runc.v2"
+          pod_annotations = []
+          container_annotations = []
+          privileged_without_host_devices = false
+          base_runtime_spec = ""
+          cni_conf_dir = "/etc/cni/net.d"
+          cni_max_conf_num = 1
+          [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.runc.options]
+            NoPivotRoot = false
+            NoNewKeyring = false
+            ShimCgroup = ""
+            IoUid = 0
+            IoGid = 0
+            BinaryName = "/usr/bin/runc"
+            Root = ""
+            CriuPath = "/usr/sbin/criu"
+            SystemdCgroup = false
+            CriuImagePath = ""
+            CriuWorkPath = ""
+        [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.lockc-runc-wrapper]
+          runtime_type = "io.containerd.runc.v2"
+          pod_annotations = []
+          container_annotations = []
+          privileged_without_host_devices = false
+          base_runtime_spec = ""
+          cni_conf_dir = "/etc/cni/net.d"
+          cni_max_conf_num = 1
+          [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.lockc-runc-wrapper.options]
+            NoPivotRoot = false
+            NoNewKeyring = false
+            ShimCgroup = ""
+            IoUid = 0
+            IoGid = 0
+            BinaryName = "/opt/bin/lockc-runc-wrapper"
+            Root = ""
+            CriuPath = "/usr/sbin/criu"
+            SystemdCgroup = false
+            CriuImagePath = ""
+            CriuWorkPath = ""
+      [plugins."io.containerd.grpc.v1.cri".cni]
+        bin_dir = "/opt/cni/bin"
+        conf_dir = "/etc/cni/net.d"
+        max_conf_num = 1
+        ip_pref = "cni"
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: lockcd
+  namespace: kube-system
+  labels:
+    k8s-app: lockcd
+spec:
+  selector:
+    matchLabels:
+      name: lockcd
+  template:
+    metadata:
+      labels:
+        name: lockcd
+    spec:
+      hostPID: true
+      containers:
+      - name: lockcd
+        image: docker.io/vadorovsky/lockcd:latest
+        imagePullPolicy: Always
+        securityContext:
+          privileged: true
+        env:
+        - name: LOCKC_CHECK_LSM_SKIP
+          value: "1"
+        volumeMounts:
+        - name: bpffs
+          mountPath: /sys/fs/bpf
+      initContainers:
+      - name: install-lockc-runc-wrapper
+        image: docker.io/vadorovsky/lockc-runc-wrapper:latest
+        imagePullPolicy: Always
+        securityContext:
+          privileged: true
+        volumeMounts:
+        - name: opt-bin
+          mountPath: /host/opt/bin
+      - name: install-containerd-config
+        image: busybox:latest
+        imagePullPolicy: Always
+        command:
+        - cp
+        - -f
+        - /config/config.toml
+        - /host/etc/containerd/config.toml
+        securityContext:
+          privileged: true
+        volumeMounts:
+        - name: etc-containerd
+          mountPath: /host/etc/containerd
+        - name: containerd-config
+          mountPath: /config
+      - name: restart-containerd
+        image: busybox:latest
+        imagePullPolicy: Always
+        command:
+        - "nsenter"
+        - "-t"
+        - "1"
+        - "-m"
+        - "--"
+        - "/usr/bin/systemctl"
+        - "restart"
+        - "containerd"
+        securityContext:
+          privileged: true
+      tolerations:
+      - operator: Exists
+      volumes:
+      - name: bpffs
+        hostPath:
+          path: /sys/fs/bpf
+          type: Directory
+      - name: opt-bin
+        hostPath:
+          path: /opt/bin
+          type: DirectoryOrCreate
+      - name: etc-containerd
+        hostPath:
+          path: /etc/containerd
+          type: DirectoryOrCreate
+      - name: containerd-config
+        configMap:
+          name: containerd
+          items:
+          - key: "config.toml"
+            path: "config.toml"
+---
+apiVersion: node.k8s.io/v1
+kind: RuntimeClass
+metadata:
+  name: lockc-runc-wrapper
+handler: lockc-runc-wrapper
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: lockc-k8s-agent
+  namespace: kube-system
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: lockc-k8s-agent
+  namespace: kube-system
+rules:
+- apiGroups: [""]
+  resources: ["namespaces"]
+  verbs: ["get", "watch", "list"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: lockc-k8s-agent
+  namespace: kube-system
+subjects:
+- kind: ServiceAccount
+  name: lockc-k8s-agent
+  namespace: kube-system
+roleRef:
+  kind: ClusterRole
+  name: lockc-k8s-agent
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: lockc-k8s-agent
+  namespace: kube-system
+  labels:
+    k8s-app: lockc-k8s-agent
+spec:
+  selector:
+    matchLabels:
+      name: lockc-k8s-agent
+  template:
+    metadata:
+      labels:
+        name: lockc-k8s-agent
+    spec:
+      containers:
+      - name: lockc-k8s-agent
+        image: docker.io/vadorovsky/lockc-k8s-agent:latest
+        imagePullPolicy: Always
+        env:
+        - name: RUST_LOG
+          value: info
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 8080
+          initialDelaySeconds: 3
+          periodSeconds: 3
+        volumeMounts:
+        - name: runlockc
+          mountPath: /run/lockc
+      serviceAccountName: lockc-k8s-agent
+      tolerations:
+      - operator: Exists
+      volumes:
+      - name: runlockc
+        hostPath:
+          path: /run/lockc
