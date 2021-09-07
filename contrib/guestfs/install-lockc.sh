@@ -2,15 +2,12 @@
 
 set -eux
 
-pushd /home/opensuse/lockc
+pushd /usr/local/src/lockc
 
-if [ -d "out/" ]; then
-    # lockc was build with containerized-build.sh script
-    ./containerized-build.sh install
-elif [ -d "build/" ]; then
-    # lockc was build with Meson
+if [ -d "build/" ]; then
+    # lockc was built with Meson
     pushd build
-    meson install
+    meson install --no-rebuild
     popd
 else
     echo "lockc was not build, cannot install" >&2

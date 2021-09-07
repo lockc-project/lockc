@@ -13,7 +13,7 @@ static ANNOTATION_CONTAINERD_LOG_DIRECTORY: &str = "io.kubernetes.cri.sandbox-lo
 static ANNOTATION_CONTAINERD_SANDBOX_ID: &str = "io.kubernetes.cri.sandbox-id";
 
 #[derive(thiserror::Error, Debug)]
-enum NewContainerError {
+enum ContainerNamespaceError {
     #[error("could not retrieve the runc status")]
     Status(#[from] std::io::Error),
 
@@ -25,24 +25,21 @@ enum NewContainerError {
 
     #[error("could not parse JSON")]
     Json(#[from] serde_json::Error),
+
+    #[error("could not find sandbox container bundle directory")]
+    BundleDirError,
 }
 
-/// Checks whether the container is a part of Kubernetes infrastracture and if
-/// yes, looks up for the Kubernetes namespace.
-fn container_namespace(
-    container_id: &str,
-    container_root: Option<std::string::String>,
-) -> Result<Option<std::string::String>, NewContainerError> {
-    let mut state_cmd = std::process::Command::new("runc");
-    if let Some(ref v) = container_root {
-        state_cmd.arg("--root").arg(v);
-    }
+fn container_namespace<P: AsRef<std::path::Path>>(
+    container_bundle: P,
+) -> Result<Option<std::string::String>, ContainerNamespaceError> {
+    let bundle_path = container_bundle.as_ref();
+    let config_path = bundle_path.join("config.json");
+    let f = std::fs::File::open(config_path)?;
+    let r = std::io::BufReader::new(f);
 
-    state_cmd.arg("state").arg(container_id);
-    let state_raw = String::from_utf8(state_cmd.output()?.stdout)?;
-
-    let state: serde_json::Value = serde_json::from_str(&state_raw)?;
-    let annotations_o = state["annotations"].as_object();
+    let config: serde_json::Value = serde_json::from_reader(r)?;
+    let annotations_o = config["annotations"].as_object();
 
     match annotations_o {
         Some(annotations) => {
@@ -54,8 +51,8 @@ fn container_namespace(
                 let log_directory = annotations[ANNOTATION_CONTAINERD_LOG_DIRECTORY]
                     .as_str()
                     .unwrap();
-                let p = std::path::PathBuf::from(log_directory);
-                let file_name = p.file_name().unwrap().to_str().unwrap();
+                let log_path = std::path::PathBuf::from(log_directory);
+                let file_name = log_path.file_name().unwrap().to_str().unwrap();
                 let mut splitter = file_name.split('_');
                 let namespace = splitter.next().unwrap().to_string();
 
@@ -67,7 +64,18 @@ fn container_namespace(
                 let sandbox_id = annotations[ANNOTATION_CONTAINERD_SANDBOX_ID]
                     .as_str()
                     .unwrap();
-                return container_namespace(sandbox_id, container_root);
+
+                // Go one directory up from the current bundle.
+                let mut ancestors = bundle_path.ancestors();
+                ancestors.next();
+                match ancestors.next() {
+                    Some(v) => {
+                        // Then go to sandbox_id directory (sandbox's bundle).
+                        let new_bundle = v.join(sandbox_id);
+                        return container_namespace(new_bundle);
+                    }
+                    None => return Err(ContainerNamespaceError::BundleDirError),
+                }
             }
             Ok(None)
         }
@@ -79,17 +87,17 @@ fn container_namespace(
 /// policy is returned. Otherwise checks the Kubernetes namespace labels.
 async fn policy_label(
     namespace_o: Option<std::string::String>,
-) -> Result<lockc::ContainerPolicyLevel, kube::Error> {
+) -> Result<lockc::bpfstructs::container_policy_level, kube::Error> {
     // Apply the privileged policy for kube-system containers immediately.
     // Otherwise the core k8s components (apiserver, scheduler) won't be able
     // to run.
     // If container has no k8s namespace, apply the baseline policy.
     let namespace_s = match namespace_o {
         Some(v) if v.as_str() == "kube-system" => {
-            return Ok(lockc::ContainerPolicyLevel::Privileged)
+            return Ok(lockc::bpfstructs::container_policy_level_POLICY_LEVEL_PRIVILEGED)
         }
         Some(v) => v,
-        None => return Ok(lockc::ContainerPolicyLevel::Baseline),
+        None => return Ok(lockc::bpfstructs::container_policy_level_POLICY_LEVEL_BASELINE),
     };
 
     let kubeconfig =
@@ -103,12 +111,12 @@ async fn policy_label(
 
     match namespace.metadata.labels.get(LABEL_POLICY_ENFORCE) {
         Some(s) => match &s[..] {
-            "restricted" => Ok(lockc::ContainerPolicyLevel::Restricted),
-            "baseline" => Ok(lockc::ContainerPolicyLevel::Baseline),
-            "privileged" => Ok(lockc::ContainerPolicyLevel::Privileged),
-            _ => Ok(lockc::ContainerPolicyLevel::Baseline),
+            "restricted" => Ok(lockc::bpfstructs::container_policy_level_POLICY_LEVEL_RESTRICTED),
+            "baseline" => Ok(lockc::bpfstructs::container_policy_level_POLICY_LEVEL_BASELINE),
+            "privileged" => Ok(lockc::bpfstructs::container_policy_level_POLICY_LEVEL_PRIVILEGED),
+            _ => Ok(lockc::bpfstructs::container_policy_level_POLICY_LEVEL_BASELINE),
         },
-        None => Ok(lockc::ContainerPolicyLevel::Baseline),
+        None => Ok(lockc::bpfstructs::container_policy_level_POLICY_LEVEL_BASELINE),
     }
 }
 
@@ -118,8 +126,8 @@ enum OptParsingAction {
     NoPositional,
     /// Option followed by a positional argument we don't want to store.
     Skip,
-    /// --root option which we want to store.
-    Root,
+    /// --bundle option which we want to store.
+    Bundle,
 }
 
 /// Types of positional arguments.
@@ -155,7 +163,7 @@ async fn main() -> anyhow::Result<()> {
     let mut arg_parsing_action = ArgParsingAction::None;
     let mut container_action = ContainerAction::Other;
 
-    let mut container_root: Option<std::string::String> = None;
+    let mut container_bundle_o: Option<std::string::String> = None;
     let mut container_id_o: Option<std::string::String> = None;
 
     let mut cmd = tokio::process::Command::new("runc");
@@ -165,12 +173,14 @@ async fn main() -> anyhow::Result<()> {
         match arg.as_str() {
             // Options which are followed with a positional arguments we don't
             // want to store.
-            "--bundle" => opt_parsing_action = OptParsingAction::Skip,
             "--log" => opt_parsing_action = OptParsingAction::Skip,
             "--log-format" => opt_parsing_action = OptParsingAction::Skip,
             "--pid-file" => opt_parsing_action = OptParsingAction::Skip,
-            // We want to explicitly store the value of the --root option.
-            "--root" => opt_parsing_action = OptParsingAction::Root,
+            "--console-socket" => opt_parsing_action = OptParsingAction::Skip,
+            "--root" => opt_parsing_action = OptParsingAction::Skip,
+            // We want to explicitly store the value of --bundle and --root
+            // options.
+            "--bundle" => opt_parsing_action = OptParsingAction::Bundle,
             _ => {}
         }
         if arg.as_str().starts_with('-') {
@@ -184,8 +194,8 @@ async fn main() -> anyhow::Result<()> {
                 opt_parsing_action = OptParsingAction::NoPositional;
                 continue;
             }
-            OptParsingAction::Root => {
-                container_root = Some(arg.clone());
+            OptParsingAction::Bundle => {
+                container_bundle_o = Some(arg.clone());
                 opt_parsing_action = OptParsingAction::NoPositional;
                 continue;
             }
@@ -241,7 +251,11 @@ async fn main() -> anyhow::Result<()> {
                     // subcommand to be detected as wrapped and thus allowed by
                     // the LSM program to execute. It's only to handle subcommands
                     // like `init`, `list` or `spec`, so we make it restricted.
-                    lockc::add_container(0, pid_u, lockc::ContainerPolicyLevel::Restricted)?;
+                    lockc::add_container(
+                        0,
+                        pid_u,
+                        lockc::bpfstructs::container_policy_level_POLICY_LEVEL_RESTRICTED,
+                    )?;
                     cmd.status().await?;
                     lockc::delete_container(0)?;
                 }
@@ -249,8 +263,13 @@ async fn main() -> anyhow::Result<()> {
         }
         ContainerAction::Create => {
             let container_key = lockc::hash(&container_id_o.unwrap())?;
-            // Initialize the container with the baseline policy.
-            lockc::add_container(container_key, pid_u, lockc::ContainerPolicyLevel::Baseline)?;
+            let container_bundle = match container_bundle_o {
+                Some(v) => std::path::PathBuf::from(v),
+                None => std::env::current_dir()?,
+            };
+            let namespace = container_namespace(container_bundle)?;
+            let policy = policy_label(namespace).await?;
+            lockc::add_container(container_key, pid_u, policy)?;
             cmd.status().await?;
         }
         ContainerAction::Delete => {
@@ -259,16 +278,6 @@ async fn main() -> anyhow::Result<()> {
             cmd.status().await?;
         }
         ContainerAction::Start => {
-            let container_id = container_id_o.unwrap();
-            let container_key = lockc::hash(&container_id)?;
-            lockc::add_process(container_key, pid_u)?;
-
-            let namespace = container_namespace(&container_id, container_root)?;
-
-            // Apply the appropriate policy.
-            let policy = policy_label(namespace).await?;
-            lockc::write_policy(&container_id, policy)?;
-
             cmd.status().await?;
         }
     }

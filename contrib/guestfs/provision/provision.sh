@@ -13,9 +13,12 @@ set -eux
 echo "nameserver 169.254.2.3" > /etc/resolv.conf
 
 zypper ar -p 90 -r \
-    https://download.opensuse.org/repositories/home:/mjura:/branches:/Kernel:/stable/standard/home:mjura:branches:Kernel:stable.repo
+    https://download.opensuse.org/repositories/Kernel:/stable:/Backport/standard/Kernel:stable:Backport.repo
 zypper ar -p 90 -r \
     https://download.opensuse.org/repositories/devel:/languages:/rust/openSUSE_Leap_15.3/devel:languages:rust.repo
+
+# NOTE(vadorovsky): Temporary workaround for non-functioning mirror.
+zypper mr -d repo-backports-update
 
 zypper --gpg-auto-import-keys ref
 zypper up -y --allow-vendor-change
@@ -56,14 +59,18 @@ zypper install -y \
     jq \
     -kernel-default-base \
     libopenssl-devel \
-    meson \
     podman \
     podman-cni-config \
+    python3-pip \
     socat \
     strace \
     tmux \
     wget \
     ${KERNEL_PACKAGES}
+
+pip3 install --no-cache-dir \
+    meson \
+    ninja
 
 # TODO(vadorovsky): Include BPF as an enabled LSM in openSUSE kernel config.
 sed -i -e "s/GRUB_CMDLINE_LINUX=.*/GRUB_CMDLINE_LINUX=\"lsm=bpf,integrity\"/" \
@@ -71,7 +78,6 @@ sed -i -e "s/GRUB_CMDLINE_LINUX=.*/GRUB_CMDLINE_LINUX=\"lsm=bpf,integrity\"/" \
 grub2-mkconfig -o /boot/grub2/grub.cfg
 
 systemctl enable containerd
-systemctl enable docker
 
 CNI_VERSION=$(curl -s https://api.github.com/repos/containernetworking/plugins/releases/latest | jq -r '.tag_name')
 ARCH="amd64"

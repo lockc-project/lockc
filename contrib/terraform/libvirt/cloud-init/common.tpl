@@ -5,7 +5,7 @@ locale: ${locale} # en_US.UTF-8
 timezone: ${timezone} # Etc/UTC
 
 mounts:
-  - [ lockc, /home/opensuse/lockc, 9p, "trans=virtio,version=9p2000.L,rw", "0", "0" ]
+  - [ lockc, /usr/local/src/lockc, 9p, "trans=virtio,version=9p2000.L,rw", "0", "0" ]
 
 users:
   - name: opensuse
@@ -16,6 +16,6 @@ ${authorized_keys}
 
 runcmd:
   - install-lockc.sh
-  - systemctl restart containerd.service docker.service
+  - systemctl restart containerd.service
   - systemctl enable --now lockcd.service
 ${commands}

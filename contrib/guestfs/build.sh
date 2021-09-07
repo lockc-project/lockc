@@ -9,6 +9,7 @@ BASE_IMAGE="openSUSE-Leap-${LEAP_VERSION}-JeOS.qcow2"
 LOCKC_IMAGE="lockc-base.qcow2"
 
 CUSTOM_KERNEL=${CUSTOM_KERNEL:-false}
+DEBUG=${DEBUG:-false}
 KERNEL_SOURCE=${KERNEL_SOURCE:-${HOME}/linux}
 
 if [[ ! -f ${BASE_IMAGE} ]]; then
@@ -26,7 +27,10 @@ EXTRA_FLAGS=""
 if [[ "${CUSTOM_KERNEL}" == "true" ]]; then
     echo "Building with a custom kernel source tree ${KERNEL_SOURCE}"
 
-    EXTRA_FLAGS+="--copy-in ${KERNEL_SOURCE}:/usr/src/"
+    EXTRA_FLAGS+="--copy-in ${KERNEL_SOURCE}:/usr/src/ "
+fi
+if [[ "${DEBUG}" == "true" ]]; then
+    EXTRA_FLAGS+="-v -x "
 fi
 
 set -eux

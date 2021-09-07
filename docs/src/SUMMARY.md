@@ -12,5 +12,6 @@
         - [(Optional) Custom kernel](terraform/custom-kernel.md)
         - [Use libvirt](terraform/libvirt.md)
         - [Use OpenStack](terraform/openstack.md)
-
-
+- [Policies](policies/README.md)
+    - [Mount](policies/mount.md)
+    - [Syslog](policies/syslog.md)
