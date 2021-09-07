@@ -109,12 +109,19 @@ async fn policy_label(
     let namespaces: kube::api::Api<v1::Namespace> = kube::api::Api::all(client);
     let namespace = namespaces.get(&namespace_s).await?;
 
-    match namespace.metadata.labels.get(LABEL_POLICY_ENFORCE) {
-        Some(s) => match &s[..] {
-            "restricted" => Ok(lockc::bpfstructs::container_policy_level_POLICY_LEVEL_RESTRICTED),
-            "baseline" => Ok(lockc::bpfstructs::container_policy_level_POLICY_LEVEL_BASELINE),
-            "privileged" => Ok(lockc::bpfstructs::container_policy_level_POLICY_LEVEL_PRIVILEGED),
-            _ => Ok(lockc::bpfstructs::container_policy_level_POLICY_LEVEL_BASELINE),
+    match namespace.metadata.labels {
+        Some(v) => match v.get(LABEL_POLICY_ENFORCE) {
+            Some(v) => match v.as_str() {
+                "restricted" => {
+                    Ok(lockc::bpfstructs::container_policy_level_POLICY_LEVEL_RESTRICTED)
+                }
+                "baseline" => Ok(lockc::bpfstructs::container_policy_level_POLICY_LEVEL_BASELINE),
+                "privileged" => {
+                    Ok(lockc::bpfstructs::container_policy_level_POLICY_LEVEL_PRIVILEGED)
+                }
+                _ => Ok(lockc::bpfstructs::container_policy_level_POLICY_LEVEL_BASELINE),
+            },
+            None => Ok(lockc::bpfstructs::container_policy_level_POLICY_LEVEL_BASELINE),
         },
         None => Ok(lockc::bpfstructs::container_policy_level_POLICY_LEVEL_BASELINE),
     }
