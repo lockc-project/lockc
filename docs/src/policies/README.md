@@ -1,4 +1,4 @@
-## Policies
+# Policies
 
 lockc provides three policy levels for containers:
 
