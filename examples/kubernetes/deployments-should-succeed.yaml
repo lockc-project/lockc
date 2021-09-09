@@ -1,0 +1,94 @@
+# Deployments which should run successfully as they should not violate policy
+# levels of their namespaces.
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-default
+  namespace: default
+spec:
+  selector:
+    matchLabels:
+      app: nginx-default
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: nginx-default
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:1.14.2
+        ports:
+        - containerPort: 80
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-restricted
+  namespace: restricted
+spec:
+  selector:
+    matchLabels:
+      app: nginx-restricted
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: nginx-restricted
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:1.14.2
+        ports:
+        - containerPort: 80
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-baseline
+  namespace: baseline
+spec:
+  selector:
+    matchLabels:
+      app: nginx-baseline
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: nginx-baseline
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:1.14.2
+        ports:
+        - containerPort: 80
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bpf-privileged
+  namespace: privileged
+spec:
+  selector:
+    matchLabels:
+      app: bpf-privileged
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: bpf-privileged
+    spec:
+      containers:
+      - name: bpf
+        image: busybox:latest
+        command: ["sleep"]
+        args: ["inf"]
+        volumeMounts:
+        - name: bpffs
+          mountPath: /sys/fs/bpf
+      volumes:
+      - name: bpffs
+        hostPath:
+          path: /sys/fs/bpf
+          type: Directory

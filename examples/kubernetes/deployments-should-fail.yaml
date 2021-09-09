@@ -1,0 +1,118 @@
+# Deployments which should fail to run as they violate policy levels of their
+# namespaces.
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-restricted-fail
+  namespace: restricted
+spec:
+  selector:
+    matchLabels:
+      app: nginx-restricted-fail
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: nginx-restricted-fail
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:1.14.2
+        ports:
+        - containerPort: 80
+        volumeMounts:
+        - name: data
+          mountPath: /var/data/www
+      volumes:
+      - name: data
+        hostPath:
+          path: /var/data/www
+          type: Directory
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bpf-default-fail
+  namespace: default
+spec:
+  selector:
+    matchLabels:
+      app: bpf-default-fail
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: bpf-default-fail
+    spec:
+      containers:
+      - name: bpf
+        image: busybox:latest
+        command: ["sleep"]
+        args: ["inf"]
+        volumeMounts:
+        - name: bpffs
+          mountPath: /sys/fs/bpf
+      volumes:
+      - name: bpffs
+        hostPath:
+          path: /sys/fs/bpf
+          type: Directory
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bpf-restricted-fail
+  namespace: restricted
+spec:
+  selector:
+    matchLabels:
+      app: bpf-restricted-fail
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: bpf-restricted-fail
+    spec:
+      containers:
+      - name: bpf
+        image: busybox:latest
+        command: ["sleep"]
+        args: ["inf"]
+        volumeMounts:
+        - name: bpffs
+          mountPath: /sys/fs/bpf
+      volumes:
+      - name: bpffs
+        hostPath:
+          path: /sys/fs/bpf
+          type: Directory
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bpf-baseline-fail
+  namespace: baseline
+spec:
+  selector:
+    matchLabels:
+      app: bpf-baseline-fail
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: bpf-baseline-fail
+    spec:
+      containers:
+      - name: bpf
+        image: busybox:latest
+        command: ["sleep"]
+        args: ["inf"]
+        volumeMounts:
+        - name: bpffs
+          mountPath: /sys/fs/bpf
+      volumes:
+      - name: bpffs
+        hostPath:
+          path: /sys/fs/bpf
+          type: Directory
