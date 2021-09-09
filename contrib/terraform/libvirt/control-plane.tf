@@ -7,6 +7,10 @@ resource "libvirt_volume" "control_plane" {
 
 data "template_file" "control_plane_commands" {
   template = file("cloud-init/control-plane.tpl")
+
+  vars = {
+    workers = var.workers
+  }
 }
 
 data "template_file" "control_plane_cloud_init" {
