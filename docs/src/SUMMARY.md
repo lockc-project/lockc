@@ -15,3 +15,5 @@
 - [Policies](policies/README.md)
     - [Mount](policies/mount.md)
     - [Syslog](policies/syslog.md)
+- [Demos](demos/README.md)
+    - [Mount](demos/mount.md)
