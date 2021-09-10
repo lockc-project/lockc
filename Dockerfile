@@ -3,7 +3,7 @@ FROM docker.io/library/rust:latest AS buildbase
 RUN wget https://apt.llvm.org/llvm-snapshot.gpg.key && \
     apt-key add llvm-snapshot.gpg.key && \
     rm -f llvm-snapshot.gpg.key && \
-    echo "deb http://apt.llvm.org/buster/ llvm-toolchain-buster-12 main" > /etc/apt/sources.list.d/llvm.list && \
+    echo "deb http://apt.llvm.org/bullseye/ llvm-toolchain-bullseye-12 main" > /etc/apt/sources.list.d/llvm.list && \
     apt update && \
     apt upgrade -y --no-install-recommends && \
     apt install -y --no-install-recommends \
