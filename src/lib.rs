@@ -392,3 +392,38 @@ pub fn cleanup(path_base: path::PathBuf, dirname: &str) -> Result<(), CleanupErr
 
     Ok(())
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn check_bpf_lsm_enabled_should_return_error() {
+        assert!(check_bpf_lsm_enabled().is_err());
+        let actual_error = format!("{:?}", check_bpf_lsm_enabled().unwrap_err());
+        assert_eq!(actual_error, "BpfLsmDisabledError");
+    }
+
+    #[test]
+    fn hash_should_return_hash_when_correct() {
+        let test_string = "Test string for hash function";
+        assert!(hash(test_string).is_ok());
+        let returned_hash= hash(test_string).unwrap();
+        let correct_hash: u32 = 2824;
+        assert_eq!(returned_hash, correct_hash);
+    }
+
+    #[test]
+    fn find_lockc_bpf_path_should_return_error() {
+        assert!(find_lockc_bpf_path().is_err());
+        match find_lockc_bpf_path() {
+            Err(e) => assert_eq!(format!("{:?}", e), "\
+            IOError(Os { \
+                code: 13, \
+                kind: PermissionDenied, \
+                message: \"Permission denied\" \
+            })"),
+            Ok(_) => panic!("Returned an Ok variant!"),
+        }
+    }
+}
