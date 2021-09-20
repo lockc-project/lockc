@@ -3,6 +3,7 @@
 #include <bpf/bpf_core_read.h>
 #include <bpf/bpf_helpers.h>
 #include <bpf/bpf_tracing.h>
+#include <errno.h>
 
 #include "compiler.h"
 #include "maps.h"
@@ -12,8 +13,9 @@
 #define NULL 0
 #endif
 
-#define EPERM 1
-#define EFAULT 14
+// #define EPERM 1
+// #define ENOENT 2
+// #define EFAULT 14
 
 /*
  * The `type` pointer coming from the sb_mount LSM hook has allocatted a full
@@ -156,6 +158,26 @@ int sched_process_fork(struct bpf_raw_tracepoint_args *args)
 	}
 
 	return handle_new_process(parent, child);
+}
+
+SEC("fentry/do_exit")
+int BPF_PROG(do_exit, long code)
+{
+	pid_t pid = bpf_get_current_pid_tgid() >> 32;
+	int err;
+
+	struct process *p = bpf_map_lookup_elem(&processes, &pid);
+	/* Ignore if process is not containerized */
+	if (!p)
+		return 0;
+
+	bpf_printk("process %d is exiting", pid);
+	err = bpf_map_delete_elem(&processes, &pid);
+	if (err < 0) {
+		bpf_printk("error: do_exit: could not remove old process");
+	}
+
+	return 0;
 }
 
 /*

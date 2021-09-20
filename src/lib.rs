@@ -199,6 +199,9 @@ pub fn load_programs(path_base_ts: path::PathBuf) -> Result<(), LoadProgramError
     let path_program_clone = path_base_ts.join("prog_clone_audit");
     skel.progs_mut().clone_audit().pin(path_program_clone)?;
 
+    // let path_program_exit = path_base_ts.join("prog_exit");
+    // skel.progs_mut().do_exit().pin(path_program_exit)?;
+
     let path_program_syslog = path_base_ts.join("prog_syslog_audit");
     skel.progs_mut().syslog_audit().pin(path_program_syslog)?;
 
@@ -212,6 +215,10 @@ pub fn load_programs(path_base_ts: path::PathBuf) -> Result<(), LoadProgramError
     let mut link_clone = skel.progs_mut().clone_audit().attach_lsm()?;
     let path_link_clone = path_base_ts.join("link_clone_audit");
     link_clone.pin(path_link_clone)?;
+
+    // let mut link_exit = skel.progs_mut().do_exit().attach_trace()?;
+    // let path_link_exit = path_base_ts.join("link_exit");
+    // link_exit.pin(path_link_exit)?;
 
     let mut link_syslog = skel.progs_mut().syslog_audit().attach_lsm()?;
     let path_link_syslog = path_base_ts.join("link_syslog_audit");
@@ -408,7 +415,7 @@ mod tests {
     fn hash_should_return_hash_when_correct() {
         let test_string = "Test string for hash function";
         assert!(hash(test_string).is_ok());
-        let returned_hash= hash(test_string).unwrap();
+        let returned_hash = hash(test_string).unwrap();
         let correct_hash: u32 = 2824;
         assert_eq!(returned_hash, correct_hash);
     }
@@ -417,12 +424,15 @@ mod tests {
     fn find_lockc_bpf_path_should_return_error() {
         assert!(find_lockc_bpf_path().is_err());
         match find_lockc_bpf_path() {
-            Err(e) => assert_eq!(format!("{:?}", e), "\
+            Err(e) => assert_eq!(
+                format!("{:?}", e),
+                "\
             IOError(Os { \
                 code: 13, \
                 kind: PermissionDenied, \
                 message: \"Permission denied\" \
-            })"),
+            })"
+            ),
             Ok(_) => panic!("Returned an Ok variant!"),
         }
     }
