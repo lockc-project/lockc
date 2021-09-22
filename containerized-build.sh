@@ -19,6 +19,11 @@ function do_build() {
         lockc-build
 }
 
+function do_install() {
+    install -D -m 0644 build/lockcd.service /etc/systemd/system/lockcd.service
+    install -D -m 0755 build/src/lockcd /usr/local/bin/lockcd
+}
+
 function do_fmt() {
     ${CRUNTIME} build \
         --build-arg USER_ID=$(id -u) \

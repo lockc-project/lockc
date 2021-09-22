@@ -42,10 +42,10 @@ lockc in your host system, which by default means directories like
 `/usr/bin`, `/etc`. Target directories can be customized by `DESTDIR`,
 `PREFIX`, `BINDIR`, `UNITDIR` and `SYSCONFDIR` environment variables.
 
-`build` should result in binaries produced in the `out/` directory:
+`build` should result in binaries produced in the `build/` directory:
 
 ```bash
-$ ls out/
+$ ls build/
 lockcd  lockc-runc-wrapper
 ```
 

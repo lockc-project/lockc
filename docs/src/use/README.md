@@ -6,13 +6,7 @@ container engine (docker, podman).
 BPF programs can be loaded by executing `lockcd`:
 
 First, we need to load BPF programs by running lockcd. That can be done
-by the following command, if lockc was built inside a container:
-
-```bash
-sudo ./out/lockcd
-```
-
-or if lockc was build with Meson:
+by the following command:
 
 ```bash
 sudo ./build/src/lockcd
