@@ -40,7 +40,7 @@ resource "libvirt_domain" "control_plane" {
   vcpu       = var.control_plane_vcpu
   cloudinit  = element(libvirt_cloudinit_disk.control_plane.*.id, count.index)
 
-  cpu = {
+  cpu {
     mode = "host-passthrough"
   }
 

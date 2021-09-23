@@ -51,9 +51,11 @@ fi
 
 zypper install -y \
     bpftool \
+    cargo \
     conntrack-tools \
     containerd \
     cri-tools \
+    docker \
     ebtables \
     ethtool \
     jq \
@@ -62,22 +64,21 @@ zypper install -y \
     podman \
     podman-cni-config \
     python3-pip \
+    rust \
     socat \
     strace \
     tmux \
-    wget \
-    ${KERNEL_PACKAGES}
-
-pip3 install --no-cache-dir \
-    meson \
-    ninja
+    ${KERNEL_PACKAGES} || true
 
 # TODO(vadorovsky): Include BPF as an enabled LSM in openSUSE kernel config.
 sed -i -e "s/GRUB_CMDLINE_LINUX=.*/GRUB_CMDLINE_LINUX=\"lsm=bpf,integrity\"/" \
     /etc/default/grub
 grub2-mkconfig -o /boot/grub2/grub.cfg
 
+mv /etc/containerd/config.toml.rpmorig /etc/containerd/config.toml
+
 systemctl enable containerd
+systemctl enable docker
 
 CNI_VERSION=$(curl -s https://api.github.com/repos/containernetworking/plugins/releases/latest | jq -r '.tag_name')
 ARCH="amd64"
@@ -98,3 +99,6 @@ mkdir -p /etc/systemd/system/kubelet.service.d
 curl -sSL "https://raw.githubusercontent.com/kubernetes/release/${RELEASE_VERSION}/cmd/kubepkg/templates/latest/deb/kubeadm/10-kubeadm.conf" | sed "s:/usr/bin:${DOWNLOAD_DIR}:g" | tee /etc/systemd/system/kubelet.service.d/10-kubeadm.conf
 
 systemctl enable kubelet
+
+curl -sL https://releases.rancher.com/dapper/latest/dapper-$(uname -s)-$(uname -m) > /usr/local/bin/dapper
+chmod +x /usr/local/bin/dapper

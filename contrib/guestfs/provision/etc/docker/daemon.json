@@ -8,7 +8,7 @@
   "default-runtime": "runc-lockc",
   "runtimes": {
     "runc-lockc": {
-      "path": "@BINDIR@/lockc-runc-wrapper"
+      "path": "/usr/local/bin/lockc-runc-wrapper"
     }
   }
 }

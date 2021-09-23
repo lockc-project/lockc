@@ -1,7 +1,13 @@
+use std::path;
+
 use chrono::prelude::*;
 
 fn main() -> anyhow::Result<()> {
-    lockc::check_bpf_lsm_enabled()?;
+    let sys_lsm_path = path::Path::new("/sys")
+        .join("kernel")
+        .join("security")
+        .join("lsm");
+    lockc::check_bpf_lsm_enabled(sys_lsm_path)?;
 
     let now = Utc::now();
     let dirname = now.format("%s").to_string();
