@@ -9,7 +9,7 @@ a lot of information about host OS and provide ways to "break out" from the
 container. **lockc** aims to provide more isolation to containers and make them
 more secure.
 
-The [Containers do not contain](containers-do-not-cointain.md) documentation
+The [Containers do not contain](containers-do-not-contain.md) documentation
 section explains why we mean by that phrase and what kind of behavior we want
 to restrict with **lockc**.
 
