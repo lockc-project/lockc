@@ -15,7 +15,7 @@ a lot of information about host OS and provide ways to "break out" from the
 container. **lockc** aims to provide more isolation to containers and make them
 more secure.
 
-The [Containers do not contain](https://rancher-sandbox.github.io/lockc/containers-do-not-cointain.html)
+The [Containers do not contain](https://rancher-sandbox.github.io/lockc/containers-do-not-contain.html)
 documentation section explains what we mean by that phrase and what kind of
 behavior we want to restrict with **lockc**.
 
