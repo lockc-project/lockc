@@ -7,9 +7,7 @@ extern crate lazy_static;
 
 use bpfstructs::BpfStruct;
 use byteorder::{NativeEndian, WriteBytesExt};
-use std::convert::TryInto;
-use std::io::prelude::*;
-use std::{fs, path};
+use std::{convert::TryInto, fs, io, io::prelude::*, path};
 
 #[rustfmt::skip]
 mod bpf;
@@ -28,20 +26,18 @@ pub enum CheckBpfLsmError {
     RegexError(#[from] regex::Error),
 
     #[error("I/O error")]
-    IOError(#[from] std::io::Error),
+    IOError(#[from] io::Error),
 
     #[error("BPF LSM is not enabled")]
     BpfLsmDisabledError,
 }
 
 /// Checks whether BPF LSM is enabled in the system.
-pub fn check_bpf_lsm_enabled() -> Result<(), CheckBpfLsmError> {
+pub fn check_bpf_lsm_enabled<P: AsRef<path::Path>>(
+    sys_lsm_path: P,
+) -> Result<(), CheckBpfLsmError> {
     let rx = regex::Regex::new(r"bpf")?;
-    let path = path::Path::new("/sys")
-        .join("kernel")
-        .join("security")
-        .join("lsm");
-    let mut file = fs::File::open(path)?;
+    let mut file = fs::File::open(sys_lsm_path)?;
     let mut content = String::new();
 
     file.read_to_string(&mut content)?;
@@ -55,7 +51,7 @@ pub fn check_bpf_lsm_enabled() -> Result<(), CheckBpfLsmError> {
 #[derive(thiserror::Error, Debug)]
 pub enum HashError {
     #[error("could not convert the hash to a byte array")]
-    ByteWriteError(#[from] std::io::Error),
+    ByteWriteError(#[from] io::Error),
 }
 
 /// Simple string hash function which allows to use strings as keys for BPF
@@ -77,7 +73,7 @@ pub enum InitRuntimesError {
     HashError(#[from] HashError),
 
     #[error("could not convert the hash to a byte array")]
-    ByteWriteError(#[from] std::io::Error),
+    ByteWriteError(#[from] io::Error),
 
     #[error("libbpf error")]
     LibbpfError(#[from] libbpf_rs::Error),
@@ -138,7 +134,7 @@ pub enum LoadProgramError {
     InitAllowedPathsError(#[from] InitAllowedPathsError),
 
     #[error("could not convert the hash to a byte array")]
-    ByteWriteError(#[from] std::io::Error),
+    ByteWriteError(#[from] io::Error),
 
     #[error("libbpf error")]
     LibbpfError(#[from] libbpf_rs::Error),
@@ -163,7 +159,8 @@ pub enum LoadProgramError {
 /// TODO: The concept described above still has one hole - the contents of old
 /// BPF maps is not migrated in any way. We need to come up with some sane copy
 /// mechanism.
-pub fn load_programs(path_base_ts: path::PathBuf) -> Result<(), LoadProgramError> {
+pub fn load_programs<P: AsRef<path::Path>>(path_base_ts_r: P) -> Result<(), LoadProgramError> {
+    let path_base_ts = path_base_ts_r.as_ref();
     let skel_builder = LockcSkelBuilder::default();
     let open_skel = skel_builder.open()?;
     let mut skel = open_skel.load()?;
@@ -227,7 +224,7 @@ pub fn load_programs(path_base_ts: path::PathBuf) -> Result<(), LoadProgramError
 #[derive(thiserror::Error, Debug)]
 pub enum FindLockcBpfPathError {
     #[error("I/O error")]
-    IOError(#[from] std::io::Error),
+    IOError(#[from] io::Error),
 
     #[error("BPF objects not found")]
     NotFound,
@@ -235,12 +232,9 @@ pub enum FindLockcBpfPathError {
 
 /// Find the directory with BPF objects of the currently running lockc
 /// BPF programs.
-fn find_lockc_bpf_path() -> Result<std::path::PathBuf, FindLockcBpfPathError> {
-    let path_base = std::path::Path::new("/sys")
-        .join("fs")
-        .join("bpf")
-        .join("lockc");
-
+fn find_lockc_bpf_path<P: AsRef<path::Path>>(
+    path_base: P,
+) -> Result<path::PathBuf, FindLockcBpfPathError> {
     for entry in fs::read_dir(path_base)? {
         let path = entry?.path();
         if path.is_dir() {
@@ -266,15 +260,16 @@ pub fn skel_reused_maps<'a>() -> Result<LockcSkel<'a>, SkelReusedMapsError> {
     let skel_builder = LockcSkelBuilder::default();
     let mut open_skel = skel_builder.open()?;
 
-    let path_base = find_lockc_bpf_path()?;
+    let path_base = path::Path::new("/sys").join("fs").join("bpf").join("lockc");
+    let bpf_path = find_lockc_bpf_path(path_base)?;
 
-    let path_map_containers = path_base.join("map_containers");
+    let path_map_containers = bpf_path.join("map_containers");
     open_skel
         .maps_mut()
         .containers()
         .reuse_pinned_map(path_map_containers)?;
 
-    let path_map_processes = path_base.join("map_processes");
+    let path_map_processes = bpf_path.join("map_processes");
     open_skel
         .maps_mut()
         .processes()
@@ -369,7 +364,7 @@ pub enum CleanupError {
     RegexError(#[from] regex::Error),
 
     #[error("I/O error")]
-    IOError(#[from] std::io::Error),
+    IOError(#[from] io::Error),
 
     #[error("could not convert path to string")]
     PathToStrConvError,
@@ -395,35 +390,85 @@ pub fn cleanup(path_base: path::PathBuf, dirname: &str) -> Result<(), CleanupErr
 
 #[cfg(test)]
 mod tests {
+    use std::panic;
+
+    use tempfile::tempdir;
+
     use super::*;
+
+    static PATH_BASE: &str = "/sys/fs/bpf/lockc/test";
+
+    /// Represents the real base path for lockc's test BPF objects (programs,
+    /// maps, links).
+    struct PathBase;
+
+    impl PathBase {
+        fn new() -> PathBase {
+            match fs::remove_dir_all(PATH_BASE) {
+                Ok(_) => {}
+                Err(e) => match e.kind() {
+                    io::ErrorKind::NotFound => {}
+                    _ => panic::panic_any(e),
+                },
+            }
+            fs::create_dir_all(PATH_BASE).unwrap();
+            PathBase {}
+        }
+    }
+
+    impl Drop for PathBase {
+        /// Cleans up the base path for lockc's test BPF objects.
+        fn drop(&mut self) {
+            fs::remove_dir_all(PATH_BASE).unwrap();
+        }
+    }
+
+    #[test]
+    fn check_bpf_lsm_enabled_when_correct() {
+        let dir = tempdir().unwrap();
+        let sys_lsm_path = dir.path().join("lsm");
+        let mut f = fs::File::create(sys_lsm_path.clone()).unwrap();
+        f.write_all(b"lockdown,capability,bpf").unwrap();
+        assert!(check_bpf_lsm_enabled(sys_lsm_path).is_ok());
+    }
 
     #[test]
     fn check_bpf_lsm_enabled_should_return_error() {
-        assert!(check_bpf_lsm_enabled().is_err());
-        let actual_error = format!("{:?}", check_bpf_lsm_enabled().unwrap_err());
-        assert_eq!(actual_error, "BpfLsmDisabledError");
+        let dir = tempdir().unwrap();
+        let sys_lsm_path = dir.path().join("lsm");
+        let mut f = fs::File::create(sys_lsm_path.clone()).unwrap();
+        f.write_all(b"lockdown,capability,selinux").unwrap();
+        let res = check_bpf_lsm_enabled(sys_lsm_path);
+        assert!(res.is_err());
+        assert!(matches!(
+            res.unwrap_err(),
+            CheckBpfLsmError::BpfLsmDisabledError
+        ));
     }
 
     #[test]
     fn hash_should_return_hash_when_correct() {
         let test_string = "Test string for hash function";
         assert!(hash(test_string).is_ok());
-        let returned_hash= hash(test_string).unwrap();
+        let returned_hash = hash(test_string).unwrap();
         let correct_hash: u32 = 2824;
         assert_eq!(returned_hash, correct_hash);
     }
 
+    // It doesn't work on Github actions, see
+    // https://github.com/rancher-sandbox/lockc/issues/65
     #[test]
-    fn find_lockc_bpf_path_should_return_error() {
-        assert!(find_lockc_bpf_path().is_err());
-        match find_lockc_bpf_path() {
-            Err(e) => assert_eq!(format!("{:?}", e), "\
-            IOError(Os { \
-                code: 13, \
-                kind: PermissionDenied, \
-                message: \"Permission denied\" \
-            })"),
-            Ok(_) => panic!("Returned an Ok variant!"),
-        }
+    #[ignore]
+    fn test_load_programs() {
+        let _cleanup = PathBase::new();
+        assert!(load_programs(PATH_BASE).is_ok());
+    }
+
+    #[test]
+    fn find_lockc_bpf_path_when_correct() {
+        let dir = tempdir().unwrap();
+        let subdir = dir.path().join("test");
+        fs::create_dir_all(subdir.clone()).unwrap();
+        assert_eq!(find_lockc_bpf_path(dir.path()).unwrap(), subdir);
     }
 }

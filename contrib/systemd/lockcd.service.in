@@ -4,7 +4,7 @@ After=network-online.target
 
 [Service]
 Type=oneshot
-ExecStart=@PREFIX@/bin/lockcd
+ExecStart={{ bindir }}/lockcd
 StandardOutput=journal
 
 [Install]

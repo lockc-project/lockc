@@ -74,19 +74,22 @@ mod tests {
         let ap1 = allowed_path::new("/foo/bar").unwrap();
         assert_eq!(
             &ap1.path,
-            b"/foo/bar\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"
+            b"/foo/bar\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"
         );
 
         let ap2 = allowed_path::new("/ayy/lmao").unwrap();
         assert_eq!(
             &ap2.path,
-            b"/ayy/lmao\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"
+            b"/ayy/lmao\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"
         );
 
         let ap3 = allowed_path::new(
             "/this/is/gonna/be/a/veeeeeeeeery/looooooooooooooooong/paaaaaaaaaaaaaaaaaaaath",
         )
         .unwrap();
-        assert_eq!(&ap3.path, b"/this/is/gonna/be/a/veeeeeeeeery",);
+        assert_eq!(
+            &ap3.path,
+            b"/this/is/gonna/be/a/veeeeeeeeery/looooooooooooooooong/paaaaaaaaa",
+        );
     }
 }

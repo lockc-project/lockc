@@ -1,5 +1,10 @@
+use std::{convert::TryFrom, fs, io, path};
+
 use k8s_openapi::api::core::v1;
-use std::convert::TryFrom;
+use log::{info, LevelFilter, SetLoggerError};
+use log4rs::append::file::FileAppender;
+use log4rs::config::{runtime::ConfigErrors, Appender, Config, Root};
+use uuid::Uuid;
 
 // TODO: To be used for cri-o.
 // static ANNOTATION_K8S_LABELS: &str = "io.kubernetes.cri-o.Labels";
@@ -161,8 +166,43 @@ enum ContainerAction {
     Start,
 }
 
+#[derive(thiserror::Error, Debug)]
+enum SetupLoggingError {
+    #[error(transparent)]
+    Config(#[from] ConfigErrors),
+
+    #[error(transparent)]
+    IO(#[from] io::Error),
+
+    #[error(transparent)]
+    SetLogger(#[from] SetLoggerError),
+}
+
+fn setup_logging() -> Result<(), SetupLoggingError> {
+    let log_dir = path::Path::new("/var")
+        .join("log")
+        .join("lockc-runc-wrapper");
+
+    fs::create_dir_all(log_dir.clone())?;
+    let log_file = FileAppender::builder()
+        .build(log_dir.join(format!("{}.log", Uuid::new_v4())))
+        .unwrap();
+    let config = Config::builder()
+        .appender(Appender::builder().build("log_file", Box::new(log_file)))
+        .build(
+            Root::builder()
+                .appender("log_file")
+                .build(LevelFilter::Info),
+        )?;
+    log4rs::init_config(config)?;
+
+    Ok(())
+}
+
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
+    setup_logging()?;
+
     let pid = nix::unistd::getpid();
     let pid_u = u32::try_from(libc::pid_t::from(pid))?;
 
@@ -175,6 +215,7 @@ async fn main() -> anyhow::Result<()> {
 
     let mut cmd = tokio::process::Command::new("runc");
     for arg in std::env::args().skip(1) {
+        info!("argument: {}", arg.clone());
         cmd.arg(arg.clone());
 
         match arg.as_str() {

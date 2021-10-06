@@ -1,0 +1,89 @@
+# Container runtime process names to monitor.
+runtimes = ["runc"]
+
+# Paths which are allowed to bind mount from host filesystem to container
+# filesystem in containers with "restricted" policy.
+# By default, these are only directories used by container runtimes (i.e. runc),
+# engines (i.e. containerd, cri-o, podman) and kubelet.
+allowed_paths_rescricted = [
+    "/dev/pts",
+    "/var/lib/containers/storage",
+    "/var/run/container",
+    "/run/containerd/io.containerd.runtime.v1.linux",
+    "/run/containerd/io.containerd.grpc.v1.cri/sandboxes",
+    "/var/lib/containerd/io.containerd.grpc.v1.cri/sandboxes",
+    "/sys/fs/cgroup/misc",
+    "/sys/fs/cgroup/rdma",
+    "/sys/fs/cgroup/blkio/machine.slice",
+    "/sys/fs/cgroup/cpu,cpuacct/machine.slice",
+    "/sys/fs/cgroup/cpuset/machine.slice",
+    "/sys/fs/cgroup/devices/machine.slice",
+    "/sys/fs/cgroup/freezer/machine.slice",
+    "/sys/fs/cgroup/hugetlb/machine.slice",
+    "/sys/fs/cgroup/memory/machine.slice",
+    "/sys/fs/cgroup/net_cls,net_prio/machine.slice",
+    "/sys/fs/cgroup/perf_event/machine.slice",
+    "/sys/fs/cgroup/pids/machine.slice",
+    "/sys/fs/cgroup/systemd/machine.slice",
+    "/sys/fs/cgroup/unified/machine.slice",
+    "/sys/fs/cgroup/blkio/kubepods.slice",
+    "/sys/fs/cgroup/cpu,cpuacct/kubepods.slice",
+    "/sys/fs/cgroup/cpuset/kubepods.slice",
+    "/sys/fs/cgroup/devices/kubepods.slice",
+    "/sys/fs/cgroup/freezer/kubepods.slice",
+    "/sys/fs/cgroup/hugetlb/kubepods.slice",
+    "/sys/fs/cgroup/memory/kubepods.slice",
+    "/sys/fs/cgroup/net_cls,net_prio/kubepods.slice",
+    "/sys/fs/cgroup/perf_event/kubepods.slice",
+    "/sys/fs/cgroup/pids/kubepods.slice",
+    "/sys/fs/cgroup/systemd/kubepods.slice",
+    "/sys/fs/cgroup/unified/kubepods.slice",
+    "/var/lib/kubelet/pods",
+]
+
+# Paths which are allowed to bind mount from host filesystem to container
+# filesystem in containers with "baseline" policy.
+# By default, these are:
+# * /home
+# * /var/data
+# * directories used by container runtimes, engines and kubelet
+allowed_paths_baseline = [
+    # Directories used by container runtimes, engines and kubelet.
+    "/dev/pts",
+    "/var/lib/containers/storage",
+    "/var/run/container",
+    "/run/containerd/io.containerd.runtime.v1.linux",
+    "/run/containerd/io.containerd.grpc.v1.cri/sandboxes",
+    "/var/lib/containerd/io.containerd.grpc.v1.cri/sandboxes",
+    "/sys/fs/cgroup/misc",
+    "/sys/fs/cgroup/rdma",
+    "/sys/fs/cgroup/blkio/machine.slice",
+    "/sys/fs/cgroup/cpu,cpuacct/machine.slice",
+    "/sys/fs/cgroup/cpuset/machine.slice",
+    "/sys/fs/cgroup/devices/machine.slice",
+    "/sys/fs/cgroup/freezer/machine.slice",
+    "/sys/fs/cgroup/hugetlb/machine.slice",
+    "/sys/fs/cgroup/memory/machine.slice",
+    "/sys/fs/cgroup/net_cls,net_prio/machine.slice",
+    "/sys/fs/cgroup/perf_event/machine.slice",
+    "/sys/fs/cgroup/pids/machine.slice",
+    "/sys/fs/cgroup/systemd/machine.slice",
+    "/sys/fs/cgroup/unified/machine.slice",
+    "/sys/fs/cgroup/blkio/kubepods.slice",
+    "/sys/fs/cgroup/cpu,cpuacct/kubepods.slice",
+    "/sys/fs/cgroup/cpuset/kubepods.slice",
+    "/sys/fs/cgroup/devices/kubepods.slice",
+    "/sys/fs/cgroup/freezer/kubepods.slice",
+    "/sys/fs/cgroup/hugetlb/kubepods.slice",
+    "/sys/fs/cgroup/memory/kubepods.slice",
+    "/sys/fs/cgroup/net_cls,net_prio/kubepods.slice",
+    "/sys/fs/cgroup/perf_event/kubepods.slice",
+    "/sys/fs/cgroup/pids/kubepods.slice",
+    "/sys/fs/cgroup/systemd/kubepods.slice",
+    "/sys/fs/cgroup/unified/kubepods.slice",
+    "/var/lib/kubelet/pods",
+
+    # Directories mounted by container engine user.
+    "/home",
+    "/var/data",
+]
