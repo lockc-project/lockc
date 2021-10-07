@@ -123,3 +123,35 @@ Running lints:
 ```bash
 cargo clippy
 ```
+
+#### Installing lockc
+
+To install lockc on your host, use the following command:
+
+```bash
+cargo xtask install
+```
+
+Do not run this command with sudo! Why?
+
+tl;dr: you will be asked for password when necessary, don't worry!
+
+Explanation: Running cargo with sudo ends with weird consequences like not
+seing cargo content from your home directory or leaving some files owned by
+root in `target`. When any destination directory is owned by root, sudo will
+be launched automatically by `xtask install` just to perform necessary
+installation steps.
+
+By default it tries to install lockc binaries in `/usr/local/bin`, but the
+destination directory can be changed by the following arguments:
+
+* `--destdir` - the rootfs of your system, default: `/`
+* `--prefix` - prefix of the most of installation destinations, default:
+  `usr/local`
+* `--bindir` - directory for binary files, default: `bin`
+* `--unitdir` - directory for systemd units, default: `lib/systemd/system`
+* `--sysconfdir` - directory for configuration files, default: `etc`
+
+By default, binaries are installed from the `debug` target profile. If you want
+to change it, use the `--profile` argument. `--profile release` is what you
+most likely want to use when packaging or installing on the production system.
