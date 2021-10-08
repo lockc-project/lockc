@@ -38,4 +38,6 @@ ENV DAPPER_SOURCE /source
 ENV DAPPER_OUTPUT target
 ENV DAPPER_RUN_ARGS --privileged -v /sys/fs/bpf:/sys/fs/bpf
 
+ENV CLANG /usr/bin/clang-12
+
 WORKDIR ${DAPPER_SOURCE}

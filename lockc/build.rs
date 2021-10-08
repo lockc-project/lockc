@@ -11,29 +11,40 @@ use anyhow::Result;
 use libbpf_cargo::SkeletonBuilder;
 use tempfile::tempdir;
 
-static CLANG_DEFAULT: &str = "/usr/bin/clang-12";
+static CLANG_DEFAULT: &str = "/usr/bin/clang";
 static HEADER_MAP_STRUCTS: &str = "src/bpf/map_structs.h";
 static VMLINUX_URL: &str =
     "https://raw.githubusercontent.com/libbpf/libbpf-bootstrap/master/vmlinux/vmlinux_508.h";
 
+/// Downloads vmlinux.h from github if it can't be generated.
+fn download_btf(mut f: fs::File) -> Result<()> {
+    let mut res = reqwest::blocking::get(VMLINUX_URL)?;
+    io::copy(&mut res, &mut f)?;
+
+    Ok(())
+}
+
 fn generate_btf<P: AsRef<path::Path>>(out_path: P) -> Result<()> {
-    let output = process::Command::new("bpftool")
+    let vmlinux_path = out_path.as_ref().join("vmlinux.h");
+    let mut f = fs::File::create(vmlinux_path)?;
+    match process::Command::new("bpftool")
         .arg("btf")
         .arg("dump")
         .arg("file")
         .arg("/sys/kernel/btf/vmlinux")
         .arg("format")
         .arg("c")
-        .output()?;
-    let vmlinux_path = out_path.as_ref().join("vmlinux.h");
-    let mut f = fs::File::create(vmlinux_path)?;
-    if output.status.success() {
-        f.write_all(&output.stdout)?;
-    } else {
-        // If we can't generate vmlinux.h, let's download it from Github.
-        let mut res = reqwest::blocking::get(VMLINUX_URL)?;
-        io::copy(&mut res, &mut f)?;
-    }
+        .output()
+    {
+        Ok(output) => {
+            if output.status.success() {
+                f.write_all(&output.stdout)?;
+            } else {
+                download_btf(f)?;
+            }
+        }
+        Err(_) => download_btf(f)?,
+    };
 
     Ok(())
 }
