@@ -18,7 +18,7 @@ static ANNOTATION_CONTAINERD_LOG_DIRECTORY: &str = "io.kubernetes.cri.sandbox-lo
 static ANNOTATION_CONTAINERD_SANDBOX_ID: &str = "io.kubernetes.cri.sandbox-id";
 
 #[derive(thiserror::Error, Debug)]
-enum ContainerNamespaceError {
+enum ContainerError {
     #[error("could not retrieve the runc status")]
     Status(#[from] std::io::Error),
 
@@ -37,7 +37,7 @@ enum ContainerNamespaceError {
 
 fn container_namespace<P: AsRef<std::path::Path>>(
     container_bundle: P,
-) -> Result<Option<std::string::String>, ContainerNamespaceError> {
+) -> Result<Option<std::string::String>, ContainerError> {
     let bundle_path = container_bundle.as_ref();
     let config_path = bundle_path.join("config.json");
     let f = std::fs::File::open(config_path)?;
@@ -79,7 +79,7 @@ fn container_namespace<P: AsRef<std::path::Path>>(
                         let new_bundle = v.join(sandbox_id);
                         return container_namespace(new_bundle);
                     }
-                    None => return Err(ContainerNamespaceError::BundleDirError),
+                    None => return Err(ContainerError::BundleDirError),
                 }
             }
             Ok(None)
@@ -128,6 +128,72 @@ async fn policy_label(
             },
             None => Ok(lockc::bpfstructs::container_policy_level_POLICY_LEVEL_BASELINE),
         },
+        None => Ok(lockc::bpfstructs::container_policy_level_POLICY_LEVEL_BASELINE),
+    }
+}
+
+use serde::Deserialize;
+
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
+struct Mount {
+    destination: String,
+    r#type: String,
+    source: String,
+    options: Vec<String>
+}
+
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
+struct Mounts {
+    mounts: Vec<Mount>
+}
+
+fn docker_config<P: AsRef<std::path::Path>>(
+    container_bundle: P,
+) -> Result<std::path::PathBuf, ContainerError> {
+    let bundle_path = container_bundle.as_ref();
+    let config_path = bundle_path.join("config.json");
+    let f = std::fs::File::open(config_path)?;
+    let r = std::io::BufReader::new(f);
+
+    let m: Mounts = serde_json::from_reader(r)?;
+
+    for test in m.mounts {
+        let source: Vec<&str> = test.source.split('/').collect();
+        if source.len() > 1 && source[ source.len() - 1 ] == "hostname" {
+                let config_v2= str::replace(&test.source, "hostname", "config.v2.json");
+                return Ok(std::path::PathBuf::from(config_v2));
+        }
+    }
+
+    Err(ContainerError::BundleDirError)
+}
+
+use serde_json::Value;
+
+fn docker_label<P: AsRef<std::path::Path>>(
+    docker_bundle: P,
+) -> Result<lockc::bpfstructs::container_policy_level, ContainerError> {
+    let config_path = docker_bundle.as_ref();
+    let f = std::fs::File::open(config_path)?;
+    let r = std::io::BufReader::new(f);
+
+    let l: Value = serde_json::from_reader(r)?;
+
+    let x = l["Config"]["Labels"]["org.lockc.policy"].as_str();
+
+    match x {
+        Some(x) => match x {
+            "restricted" => {
+                Ok(lockc::bpfstructs::container_policy_level_POLICY_LEVEL_RESTRICTED)
+            }
+            "baseline" => Ok(lockc::bpfstructs::container_policy_level_POLICY_LEVEL_BASELINE),
+            "privileged" => {
+                Ok(lockc::bpfstructs::container_policy_level_POLICY_LEVEL_PRIVILEGED)
+            }
+            _ => Ok(lockc::bpfstructs::container_policy_level_POLICY_LEVEL_BASELINE)
+        }
         None => Ok(lockc::bpfstructs::container_policy_level_POLICY_LEVEL_BASELINE),
     }
 }
@@ -315,8 +381,17 @@ async fn main() -> anyhow::Result<()> {
                 Some(v) => std::path::PathBuf::from(v),
                 None => std::env::current_dir()?,
             };
-            let namespace = container_namespace(container_bundle)?;
-            let policy = policy_label(namespace).await?;
+
+            let policy;
+            let runc_bundle = container_bundle.clone();
+            let namespace = container_namespace(container_bundle);
+            match namespace {
+                Ok(n) => policy = policy_label(n).await?,
+                Err(_) => {
+                    let docker_conf = docker_config(runc_bundle)?;
+                    policy = docker_label(docker_conf)?;
+                }
+            };
             lockc::add_container(container_key, pid_u, policy)?;
             cmd.status().await?;
         }
