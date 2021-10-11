@@ -14,6 +14,7 @@
         - [Use libvirt](terraform/libvirt.md)
         - [Use OpenStack](terraform/openstack.md)
 - [Policies](policies/README.md)
+    - [File access](policies/file-access.md)
     - [Mount](policies/mount.md)
     - [Syslog](policies/syslog.md)
 - [Demos](demos/README.md)

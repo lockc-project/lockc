@@ -111,7 +111,6 @@ static __always_inline enum container_policy_level get_policy_level(pid_t pid)
 
 	struct process *p = bpf_map_lookup_elem(&processes, &pid);
 	if (!p) {
-		bpf_printk("could not find policy for pid %d\n", pid);
 		return POLICY_LEVEL_NOT_FOUND;
 	}
 
@@ -247,9 +246,9 @@ struct callback_ctx {
  * 1 if the match was not found and the search for a possible match should be
  * continued.
  */
-static u64 check_allowed_paths(struct bpf_map *map, u32 *key,
-			       struct allowed_path *allowed_path,
-			       struct callback_ctx *data)
+static u64 check_paths(struct bpf_map *map, u32 *key,
+		       struct accessed_path *allowed_path,
+		       struct callback_ctx *data)
 {
 	/*
 	 * Shouldn't happen, but if in any case the checked path is NULL, skip
@@ -308,6 +307,22 @@ int BPF_PROG(mount_audit, const char *dev_name, const struct path *path,
 	unsigned char type_safe[MOUNT_TYPE_LEN];
 	unsigned char dev_name_safe[PATH_LEN];
 
+	switch (policy_level) {
+	case POLICY_LEVEL_LOOKUP_ERR:
+		/* Shouldn't happen */
+		ret = -EPERM;
+		goto out;
+	case POLICY_LEVEL_NOT_FOUND:
+		goto out;
+	case POLICY_LEVEL_RESTRICTED:
+		break;
+	case POLICY_LEVEL_BASELINE:
+		break;
+	case POLICY_LEVEL_PRIVILEGED:
+		bpf_printk("mount: privileged: allow\n");
+		goto out;
+	}
+
 	/* Retrieve the mount type. */
 	if (unlikely(type == NULL)) {
 		/*
@@ -318,7 +333,8 @@ int BPF_PROG(mount_audit, const char *dev_name, const struct path *path,
 		goto out;
 	}
 	if (unlikely(bpf_probe_read_kernel_str(&type_safe,
-					       MOUNT_TYPE_LEN, type) < 0)) {
+					       MOUNT_TYPE_LEN,
+					       type) < 0)) {
 		bpf_printk("error: could not read the mount type\n");
 		ret = -EFAULT;
 		goto out;
@@ -340,11 +356,70 @@ int BPF_PROG(mount_audit, const char *dev_name, const struct path *path,
 		ret = -EFAULT;
 		goto out;
 	}
-
 	struct callback_ctx cb = {
-		.path = dev_name_safe,
-		.found = false
+		.found = false,
+		.path = dev_name_safe
 	};
+
+	/*
+	 * NOTE(vadorovsky): Yeah, we need to check the policy yet another
+	 * time. That's because BPF verifier complains when the map argument
+	 * in BPF helpers is not a direct pointer to the global variable.
+	 * Creating a new (struct bpf_map *) and assigning a map to it does not
+	 * work - it still annoys the verifier.
+	 * What's more, any attempt to move the code above to a separate
+	 * function annoyed the verifier too.
+	 * Therefore I was pretty much forced to either:
+	 * * keep one switch statement, copy&paste a huge portion of code
+	 *   between POLICY_LEVEL_RESTRICTED and POLICY_LEVEL_BASELINE arms -
+	 *   that would give the best performance, but really bad readability
+	 *   and maintability of code
+	 * * do what I did - use two switch statements, one for initial policy
+	 *   pick, then the second one after executing a common code shared
+	 *   between restricted and baseline policy; not the most optimal, but
+	 *   hurts my eyes less
+	 * If anyone can show or contribute the better solution, I owe them a
+	 * beer!
+	 */
+	switch (policy_level) {
+	case POLICY_LEVEL_RESTRICTED:
+		bpf_for_each_map_elem(&allowed_paths_mount_restricted,
+				      check_paths, &cb, 0);
+		if (cb.found) {
+			bpf_printk("mount: restricted: allow\n");
+			goto out;
+		}
+		break;
+	case POLICY_LEVEL_BASELINE:
+		bpf_for_each_map_elem(&allowed_paths_mount_baseline,
+				      check_paths, &cb, 0);
+		if (cb.found) {
+			bpf_printk("mount: baseline: allow\n");
+			goto out;
+		}
+		break;
+	defaut:
+		/* unreachable */
+		goto out;
+	}
+
+	bpf_printk("mount: deny\n");
+	ret = -EPERM;
+
+out:
+	if (ret_prev != 0)
+		return ret_prev;
+	return ret;
+}
+
+SEC("lsm/file_open")
+int BPF_PROG(open_audit, struct file *file, int ret_prev)
+{
+	int ret = 0;
+	pid_t pid = bpf_get_current_pid_tgid() >> 32;
+	enum container_policy_level policy_level = get_policy_level(pid);
+	unsigned char d_path_buf[PATH_LEN] = {};
+
 
 	switch (policy_level) {
 	case POLICY_LEVEL_LOOKUP_ERR:
@@ -354,31 +429,88 @@ int BPF_PROG(mount_audit, const char *dev_name, const struct path *path,
 	case POLICY_LEVEL_NOT_FOUND:
 		goto out;
 	case POLICY_LEVEL_RESTRICTED:
-		bpf_for_each_map_elem(&allowed_paths_restricted,
-				      check_allowed_paths,
-				      &cb, 0);
-		if (cb.found) {
-			bpf_printk("mount: restricted: allow\n");
-			goto out;
-		}
-		bpf_printk("mount: baseline: deny\n");
-		ret = -EPERM;
-		goto out;
+		break;
 	case POLICY_LEVEL_BASELINE:
-		bpf_for_each_map_elem(&allowed_paths_baseline,
-				      check_allowed_paths,
-				      &cb, 0);
-		if (cb.found) {
-			bpf_printk("mount: baseline: allow\n");
-			goto out;
-		}
-		bpf_printk("mount: baseline: deny\n");
-		ret = -EPERM;
-		goto out;
+		break;
 	case POLICY_LEVEL_PRIVILEGED:
-		bpf_printk("mount: privileged: allow\n");
+		bpf_printk("open: privileged: allow\n");
 		goto out;
 	}
+
+	if (unlikely(bpf_d_path(&file->f_path, d_path_buf, PATH_LEN) < 0)) {
+		bpf_printk("warn: could not read the path of opened "
+			   "file\n");
+			goto out;
+	}
+	/*
+	 * Allow /, but ensure it's only / (not a prefix of everything)
+	 */
+	if (strcmp(d_path_buf, "/\0", 2) == 0) {
+		bpf_printk("open: restricted: allow /\n");
+		goto out;
+	}
+	struct callback_ctx cb = {
+		.found = false,
+		.path = d_path_buf
+	};
+
+	/*
+	 * NOTE(vadorovsky): Yeah, we need to check the policy yet another
+	 * time. That's because BPF verifier complains when the map argument
+	 * in BPF helpers is not a direct pointer to the global variable.
+	 * Creating a new (struct bpf_map *) and assigning a map to it does not
+	 * work - it still annoys the verifier.
+	 * What's more, any attempt to move the code above to a separate
+	 * function annoyed the verifier too.
+	 * Therefore I was pretty much forced to either:
+	 * * keep one switch statement, copy&paste a portion of code
+	 *   between POLICY_LEVEL_RESTRICTED and POLICY_LEVEL_BASELINE arms -
+	 *   that would give the best performance, but really bad readability
+	 *   and maintability of code
+	 * * do what I did - use two switch statements, one for initial policy
+	 *   pick, then the second one after executing a common code shared
+	 *   between restricted and baseline policy; not the most optimal, but
+	 *   hurts my eyes less
+	 * If anyone can show or contribute the better solution, I owe them a
+	 * beer!
+	 */
+	switch (policy_level){
+	case POLICY_LEVEL_RESTRICTED:
+		bpf_for_each_map_elem(&denied_paths_access_restricted,
+				      check_paths, &cb, 0);
+		if (cb.found) {
+			bpf_printk("open: restricted: deny\n");
+			ret = -EPERM;
+			goto out;
+		}
+		cb.found = false;
+		bpf_for_each_map_elem(&allowed_paths_access_restricted,
+				      check_paths, &cb, 0);
+		if (cb.found) {
+			bpf_printk("open: restricted: allow\n");
+			goto out;
+		}
+		break;
+	case POLICY_LEVEL_BASELINE:
+		bpf_for_each_map_elem(&denied_paths_access_baseline,
+				      check_paths, &cb, 0);
+		if (cb.found) {
+			bpf_printk("open: baseline: deny\n");
+			ret = -EPERM;
+			goto out;
+		}
+		cb.found = false;
+		bpf_for_each_map_elem(&allowed_paths_access_baseline,
+				      check_paths, &cb, 0);
+		if (cb.found) {
+			bpf_printk("open: baseline: allow\n");
+			goto out;
+		}
+		break;
+	}
+	bpf_printk("open: deny\n");
+	ret = -EPERM;
+
 out:
 	if (ret_prev != 0)
 		return ret_prev;

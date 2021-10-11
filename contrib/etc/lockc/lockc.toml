@@ -5,39 +5,100 @@ runtimes = ["runc"]
 # filesystem in containers with "restricted" policy.
 # By default, these are only directories used by container runtimes (i.e. runc),
 # engines (i.e. containerd, cri-o, podman) and kubelet.
-allowed_paths_rescricted = [
+allowed_paths_mount_restricted = [
+    # Path to Pseudo-Terminal Device, needed for -it option in container runtimes.
     "/dev/pts",
+    # Storage directory used by libpod (podman, cri-o).
     "/var/lib/containers/storage",
+    # Storage directory used by docker (overlay2 driver).
+    "/var/lib/docker/overlay2",
+    # Storage directory used by containerd.
     "/var/run/container",
+    # Storage directory used by CRI containerd.
     "/run/containerd/io.containerd.runtime.v1.linux",
+    # Data directory used by docker.
+    "/var/lib/docker/containers",
+    # Sandbox directory used by containerd.
     "/run/containerd/io.containerd.grpc.v1.cri/sandboxes",
+    # Sandbox directory used by containerd.
     "/var/lib/containerd/io.containerd.grpc.v1.cri/sandboxes",
+    # Misc cgroup controller.
     "/sys/fs/cgroup/misc",
+    # RDMA controller.
     "/sys/fs/cgroup/rdma",
+    # Block I/O controller for libpod (podman, cri-o).
     "/sys/fs/cgroup/blkio/machine.slice",
+    # CPU accounting controller for libpod (podman, cri-o).
     "/sys/fs/cgroup/cpu,cpuacct/machine.slice",
+    # Cpusets for libpod (podman, cri-o).
     "/sys/fs/cgroup/cpuset/machine.slice",
+    # Device allowlist controller for libpod (podman, cri-o).
     "/sys/fs/cgroup/devices/machine.slice",
+    # Cgroup freezer for libpod (podman, cri-o).
     "/sys/fs/cgroup/freezer/machine.slice",
+    # HugeTLB controller for libpod (podman, cri-o).
     "/sys/fs/cgroup/hugetlb/machine.slice",
+    # Memory controller for libpod (podman, cri-o).
     "/sys/fs/cgroup/memory/machine.slice",
+    # Network classifier and priority controller for libpod (podman, cri-o).
     "/sys/fs/cgroup/net_cls,net_prio/machine.slice",
+    # Perf event controller for libpod (podman, cri-o).
     "/sys/fs/cgroup/perf_event/machine.slice",
+    # Process number controller for libpod (podman, cri-o).
     "/sys/fs/cgroup/pids/machine.slice",
+    # Cgroup v1 hierarchy (used by systemd) for libpod (podman, cri-o).
     "/sys/fs/cgroup/systemd/machine.slice",
+    # Cgroup v2 hierarchy (used by systemd) for libpod (podman, cri-o).
     "/sys/fs/cgroup/unified/machine.slice",
+    # Block I/O controller for kubelet.
     "/sys/fs/cgroup/blkio/kubepods.slice",
+    # CPU accounting controller for kubelet.
     "/sys/fs/cgroup/cpu,cpuacct/kubepods.slice",
+    # Cpusets for libpod for kubelet.
     "/sys/fs/cgroup/cpuset/kubepods.slice",
+    # Device allowlist controller for kubelet.
     "/sys/fs/cgroup/devices/kubepods.slice",
+    # Cgroup freezer for kubelet.
     "/sys/fs/cgroup/freezer/kubepods.slice",
+    # HugeTLB controller for kubelet.
     "/sys/fs/cgroup/hugetlb/kubepods.slice",
+    # Memory controller for kubelet.
     "/sys/fs/cgroup/memory/kubepods.slice",
+    # Network classifier and priority controller for kubelet.
     "/sys/fs/cgroup/net_cls,net_prio/kubepods.slice",
+    # Perf event controller for kubelet.
     "/sys/fs/cgroup/perf_event/kubepods.slice",
+    # Process number controller for kubelet.
     "/sys/fs/cgroup/pids/kubepods.slice",
+    # Cgroup v1 hierarchy (used by systemd) for kubelet.
     "/sys/fs/cgroup/systemd/kubepods.slice",
+    # Cgroup v2 hierarchy (used by systemd) for kubelet.
     "/sys/fs/cgroup/unified/kubepods.slice",
+    # Block I/O controller for docker.
+    "/sys/fs/cgroup/blkio/docker",
+    # CPU accounting controller for docker.
+    "/sys/fs/cgroup/cpu,cpuacct/docker",
+    # Cpusets for docker.
+    "/sys/fs/cgroup/cpuset/docker",
+    # Device allowlist controller for docker.
+    "/sys/fs/cgroup/devices/docker",
+    # Cgroup freezer for docker.
+    "/sys/fs/cgroup/freezer/docker",
+    # HugeTLB controller for docker.
+    "/sys/fs/cgroup/hugetlb/docker",
+    # Memory controller for docker.
+    "/sys/fs/cgroup/memory/docker",
+    # Network classifier and priority controller for docker.
+    "/sys/fs/cgroup/net_cls,net_prio/docker",
+    # Perf event controller for docker.
+    "/sys/fs/cgroup/perf_event/docker",
+    # Process number controller for docker.
+    "/sys/fs/cgroup/pids/docker",
+    # Cgroup v1 hierarchy (used by systemd) for docker.
+    "/sys/fs/cgroup/systemd/docker",
+    # Cgroup v2 hierarchy (used by systemd) for docker.
+    "/sys/fs/cgroup/unified/docker",
+    # State and ephemeral storage for kubelet.
     "/var/lib/kubelet/pods",
 ]
 
@@ -47,43 +108,153 @@ allowed_paths_rescricted = [
 # * /home
 # * /var/data
 # * directories used by container runtimes, engines and kubelet
-allowed_paths_baseline = [
+allowed_paths_mount_baseline = [
     # Directories used by container runtimes, engines and kubelet.
+
+    # Path to Pseudo-Terminal Device, needed for -it option in container runtimes.
     "/dev/pts",
+    # Storage directory used by libpod (podman, cri-o).
     "/var/lib/containers/storage",
+    # Storage directory used by docker (overlay2 driver).
+    "/var/lib/docker/overlay2",
+    # Storage directory used by containerd.
     "/var/run/container",
+    # Storage directory used by CRI containerd.
     "/run/containerd/io.containerd.runtime.v1.linux",
+    # Data directory used by docker.
+    "/var/lib/docker/containers",
+    # Sandbox directory used by containerd.
     "/run/containerd/io.containerd.grpc.v1.cri/sandboxes",
+    # Sandbox directory used by containerd.
     "/var/lib/containerd/io.containerd.grpc.v1.cri/sandboxes",
+    # Misc cgroup controller.
     "/sys/fs/cgroup/misc",
+    # RDMA controller.
     "/sys/fs/cgroup/rdma",
+    # Block I/O controller for libpod (podman, cri-o).
     "/sys/fs/cgroup/blkio/machine.slice",
+    # CPU accounting controller for libpod (podman, cri-o).
     "/sys/fs/cgroup/cpu,cpuacct/machine.slice",
+    # Cpusets for libpod (podman, cri-o).
     "/sys/fs/cgroup/cpuset/machine.slice",
+    # Device allowlist controller for libpod (podman, cri-o).
     "/sys/fs/cgroup/devices/machine.slice",
+    # Cgroup freezer for libpod (podman, cri-o).
     "/sys/fs/cgroup/freezer/machine.slice",
+    # HugeTLB controller for libpod (podman, cri-o).
     "/sys/fs/cgroup/hugetlb/machine.slice",
+    # Memory controller for libpod (podman, cri-o).
     "/sys/fs/cgroup/memory/machine.slice",
+    # Network classifier and priority controller for libpod (podman, cri-o).
     "/sys/fs/cgroup/net_cls,net_prio/machine.slice",
+    # Perf event controller for libpod (podman, cri-o).
     "/sys/fs/cgroup/perf_event/machine.slice",
+    # Process number controller for libpod (podman, cri-o).
     "/sys/fs/cgroup/pids/machine.slice",
+    # Cgroup v1 hierarchy (used by systemd) for libpod (podman, cri-o).
     "/sys/fs/cgroup/systemd/machine.slice",
+    # Cgroup v2 hierarchy (used by systemd) for libpod (podman, cri-o).
     "/sys/fs/cgroup/unified/machine.slice",
+    # Block I/O controller for kubelet.
     "/sys/fs/cgroup/blkio/kubepods.slice",
+    # CPU accounting controller for kubelet.
     "/sys/fs/cgroup/cpu,cpuacct/kubepods.slice",
+    # Cpusets for libpod for kubelet.
     "/sys/fs/cgroup/cpuset/kubepods.slice",
+    # Device allowlist controller for kubelet.
     "/sys/fs/cgroup/devices/kubepods.slice",
+    # Cgroup freezer for kubelet.
     "/sys/fs/cgroup/freezer/kubepods.slice",
+    # HugeTLB controller for kubelet.
     "/sys/fs/cgroup/hugetlb/kubepods.slice",
+    # Memory controller for kubelet.
     "/sys/fs/cgroup/memory/kubepods.slice",
+    # Network classifier and priority controller for kubelet.
     "/sys/fs/cgroup/net_cls,net_prio/kubepods.slice",
+    # Perf event controller for kubelet.
     "/sys/fs/cgroup/perf_event/kubepods.slice",
+    # Process number controller for kubelet.
     "/sys/fs/cgroup/pids/kubepods.slice",
+    # Cgroup v1 hierarchy (used by systemd) for kubelet.
     "/sys/fs/cgroup/systemd/kubepods.slice",
+    # Cgroup v2 hierarchy (used by systemd) for kubelet.
     "/sys/fs/cgroup/unified/kubepods.slice",
+    # Block I/O controller for docker.
+    "/sys/fs/cgroup/blkio/docker",
+    # CPU accounting controller for docker.
+    "/sys/fs/cgroup/cpu,cpuacct/docker",
+    # Cpusets for docker.
+    "/sys/fs/cgroup/cpuset/docker",
+    # Device allowlist controller for docker.
+    "/sys/fs/cgroup/devices/docker",
+    # Cgroup freezer for docker.
+    "/sys/fs/cgroup/freezer/docker",
+    # HugeTLB controller for docker.
+    "/sys/fs/cgroup/hugetlb/docker",
+    # Memory controller for docker.
+    "/sys/fs/cgroup/memory/docker",
+    # Network classifier and priority controller for docker.
+    "/sys/fs/cgroup/net_cls,net_prio/docker",
+    # Perf event controller for docker.
+    "/sys/fs/cgroup/perf_event/docker",
+    # Process number controller for docker.
+    "/sys/fs/cgroup/pids/docker",
+    # Cgroup v1 hierarchy (used by systemd) for docker.
+    "/sys/fs/cgroup/systemd/docker",
+    # Cgroup v2 hierarchy (used by systemd) for docker.
+    "/sys/fs/cgroup/unified/docker",
+    # State and ephemeral storage for kubelet.
     "/var/lib/kubelet/pods",
 
     # Directories mounted by container engine user.
+
     "/home",
     "/var/data",
+]
+
+allowed_paths_access_restricted = [
+    "/bin",
+    "/dev/console",
+    "/dev/full",
+    "/dev/null",
+    "/dev/pts",
+    "/dev/tty",
+    "/dev/urandom",
+    "/dev/zero",
+    "/etc",
+    "/home",
+    "/lib",
+    "/proc",
+    "/sys/fs/cgroup",
+    "/tmp",
+    "/usr",
+    "/var",
+]
+
+allowed_paths_access_baseline = [
+    "/bin",
+    "/dev/console",
+    "/dev/full",
+    "/dev/null",
+    "/dev/pts",
+    "/dev/tty",
+    "/dev/urandom",
+    "/dev/zero",
+    "/etc",
+    "/home",
+    "/lib",
+    "/proc",
+    "/sys/fs/cgroup",
+    "/tmp",
+    "/usr",
+    "/var",
+]
+
+denied_paths_access_restricted = [
+    "/proc/acpi",
+]
+
+denied_paths_access_baseline = [
+    "/proc/acpi",
+    "/proc/sys",
 ]
