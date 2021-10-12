@@ -2,15 +2,15 @@ FROM docker.io/library/rust:latest
 RUN wget https://apt.llvm.org/llvm-snapshot.gpg.key && \
     apt-key add llvm-snapshot.gpg.key && \
     rm -f llvm-snapshot.gpg.key && \
-    echo "deb http://apt.llvm.org/bullseye/ llvm-toolchain-bullseye-12 main" > /etc/apt/sources.list.d/llvm.list && \
+    echo "deb http://apt.llvm.org/bullseye/ llvm-toolchain-bullseye-13 main" > /etc/apt/sources.list.d/llvm.list && \
     apt update && \
     apt upgrade -y --no-install-recommends && \
     apt install -y --no-install-recommends \
-        clang-12 \
+        clang-13 \
         libelf-dev \
         gcc-multilib \
-        lld-12 \
-        lldb-12 \
+        lld-13 \
+        lldb-13 \
         python3-pip \
         sudo && \
     apt purge --auto-remove && \
@@ -38,6 +38,6 @@ ENV DAPPER_SOURCE /source
 ENV DAPPER_OUTPUT target
 ENV DAPPER_RUN_ARGS --privileged -v /sys/fs/bpf:/sys/fs/bpf
 
-ENV CLANG /usr/bin/clang-12
+ENV CLANG /usr/bin/clang-13
 
 WORKDIR ${DAPPER_SOURCE}
