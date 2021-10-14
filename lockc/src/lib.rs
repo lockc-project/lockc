@@ -109,14 +109,26 @@ pub enum InitAllowedPathsError {
 /// BPF maps. Based on that information, mount_audit BPF prrogram will make a
 /// decision whether to allow a bind mount for a given container.
 pub fn init_allowed_paths(mut maps: LockcMapsMut) -> Result<(), InitAllowedPathsError> {
-    for (i, allowed_path_s) in SETTINGS.allowed_paths_restricted.iter().enumerate() {
-        bpfstructs::allowed_path::new(allowed_path_s)?
-            .map_update(maps.allowed_paths_restricted(), i.try_into().unwrap())?;
+    for (i, allowed_path_s) in SETTINGS.allowed_paths_mount_restricted.iter().enumerate() {
+        bpfstructs::accessed_path::new(allowed_path_s)?
+            .map_update(maps.allowed_paths_mount_restricted(), i.try_into().unwrap())?;
     }
 
-    for (i, allowed_path_s) in SETTINGS.allowed_paths_baseline.iter().enumerate() {
-        bpfstructs::allowed_path::new(allowed_path_s)?
-            .map_update(maps.allowed_paths_baseline(), i.try_into().unwrap())?;
+    for (i, allowed_path_s) in SETTINGS.allowed_paths_mount_baseline.iter().enumerate() {
+        bpfstructs::accessed_path::new(allowed_path_s)?
+            .map_update(maps.allowed_paths_mount_baseline(), i.try_into().unwrap())?;
+    }
+
+    for (i, allowed_path_s) in SETTINGS.allowed_paths_access_restricted.iter().enumerate() {
+        bpfstructs::accessed_path::new(allowed_path_s)?.map_update(
+            maps.allowed_paths_access_restricted(),
+            i.try_into().unwrap(),
+        )?;
+    }
+
+    for (i, allowed_path_s) in SETTINGS.allowed_paths_access_baseline.iter().enumerate() {
+        bpfstructs::accessed_path::new(allowed_path_s)?
+            .map_update(maps.allowed_paths_access_baseline(), i.try_into().unwrap())?;
     }
 
     Ok(())
@@ -176,15 +188,29 @@ pub fn load_programs<P: AsRef<path::Path>>(path_base_ts_r: P) -> Result<(), Load
     let path_map_processes = path_base_ts.join("map_processes");
     skel.maps_mut().processes().pin(path_map_processes)?;
 
-    let path_map_allowed_paths_restricted = path_base_ts.join("map_allowed_paths_restricted");
+    let path_map_allowed_paths_mount_restricted =
+        path_base_ts.join("map_allowed_paths_mount_restricted");
     skel.maps_mut()
-        .allowed_paths_restricted()
-        .pin(path_map_allowed_paths_restricted)?;
+        .allowed_paths_mount_restricted()
+        .pin(path_map_allowed_paths_mount_restricted)?;
 
-    let path_map_allowed_paths_baseline = path_base_ts.join("map_allowed_paths_baseline");
+    let path_map_allowed_paths_mount_baseline =
+        path_base_ts.join("map_allowed_paths_mount_baseline");
     skel.maps_mut()
-        .allowed_paths_baseline()
-        .pin(path_map_allowed_paths_baseline)?;
+        .allowed_paths_mount_baseline()
+        .pin(path_map_allowed_paths_mount_baseline)?;
+
+    let path_map_allowed_paths_access_restricted =
+        path_base_ts.join("map_allowed_paths_access_restricted");
+    skel.maps_mut()
+        .allowed_paths_access_restricted()
+        .pin(path_map_allowed_paths_access_restricted)?;
+
+    let path_map_allowed_paths_access_baseline =
+        path_base_ts.join("map_allowed_paths_access_baseline");
+    skel.maps_mut()
+        .allowed_paths_access_baseline()
+        .pin(path_map_allowed_paths_access_baseline)?;
 
     init_allowed_paths(skel.maps_mut())?;
 
@@ -202,6 +228,9 @@ pub fn load_programs<P: AsRef<path::Path>>(path_base_ts_r: P) -> Result<(), Load
     let path_program_mount = path_base_ts.join("prog_mount_audit");
     skel.progs_mut().mount_audit().pin(path_program_mount)?;
 
+    let path_program_open = path_base_ts.join("prog_open_audit");
+    skel.progs_mut().open_audit().pin(path_program_open)?;
+
     let mut link_fork = skel.progs_mut().sched_process_fork().attach()?;
     let path_link_fork = path_base_ts.join("link_fork");
     link_fork.pin(path_link_fork)?;
@@ -217,6 +246,10 @@ pub fn load_programs<P: AsRef<path::Path>>(path_base_ts_r: P) -> Result<(), Load
     let mut link_mount = skel.progs_mut().mount_audit().attach_lsm()?;
     let path_link_mount = path_base_ts.join("link_mount_audit");
     link_mount.pin(path_link_mount)?;
+
+    let mut link_open = skel.progs_mut().open_audit().attach_lsm()?;
+    let path_link_open = path_base_ts.join("link_open_audit");
+    link_open.pin(path_link_open)?;
 
     Ok(())
 }

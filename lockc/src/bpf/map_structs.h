@@ -12,6 +12,6 @@ struct process {
 	unsigned int container_id;
 };
 
-struct allowed_path {
+struct accessed_path {
 	unsigned char path[PATH_LEN];
 };

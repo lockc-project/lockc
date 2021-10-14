@@ -51,15 +51,15 @@ pub trait BpfStruct {
 
 impl BpfStruct for container {}
 impl BpfStruct for process {}
-impl BpfStruct for allowed_path {}
+impl BpfStruct for accessed_path {}
 
-impl allowed_path {
-    /// Creates a new allowed_path instance and converts the given Rust string
+impl accessed_path {
+    /// Creates a new accessed_path instance and converts the given Rust string
     /// into C fixed-size char array.
     pub fn new(path: &str) -> Result<Self, NewBpfstructError> {
         let mut path_b = std::ffi::CString::new(path)?.into_bytes_with_nul();
         path_b.resize(PATH_LEN as usize, 0);
-        Ok(allowed_path {
+        Ok(accessed_path {
             path: path_b.try_into().unwrap(),
         })
     }
@@ -70,20 +70,20 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_allowed_path_new() {
-        let ap1 = allowed_path::new("/foo/bar").unwrap();
+    fn test_accessed_path_new() {
+        let ap1 = accessed_path::new("/foo/bar").unwrap();
         assert_eq!(
             &ap1.path,
             b"/foo/bar\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"
         );
 
-        let ap2 = allowed_path::new("/ayy/lmao").unwrap();
+        let ap2 = accessed_path::new("/ayy/lmao").unwrap();
         assert_eq!(
             &ap2.path,
             b"/ayy/lmao\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"
         );
 
-        let ap3 = allowed_path::new(
+        let ap3 = accessed_path::new(
             "/this/is/gonna/be/a/veeeeeeeeery/looooooooooooooooong/paaaaaaaaaaaaaaaaaaaath",
         )
         .unwrap();
