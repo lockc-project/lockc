@@ -17,5 +17,6 @@
     - [File access](policies/file-access.md)
     - [Mount](policies/mount.md)
     - [Syslog](policies/syslog.md)
+- [Tuning](tuning/README.md)
 - [Demos](demos/README.md)
     - [Mount](demos/mount.md)

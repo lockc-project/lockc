@@ -5,9 +5,13 @@
 #[macro_use]
 extern crate lazy_static;
 
-use bpfstructs::BpfStruct;
+use std::{convert::TryInto, fs, io, io::prelude::*, num, path};
+
 use byteorder::{NativeEndian, WriteBytesExt};
-use std::{convert::TryInto, fs, io, io::prelude::*, path};
+use sysctl::Sysctl;
+
+use bpfstructs::BpfStruct;
+
 
 #[rustfmt::skip]
 mod bpf;
@@ -135,28 +139,39 @@ pub fn init_allowed_paths(mut maps: LockcMapsMut) -> Result<(), InitAllowedPaths
 }
 
 #[derive(thiserror::Error, Debug)]
+pub enum GetPidMaxError {
+    #[error(transparent)]
+    ParseInt(#[from] num::ParseIntError),
+
+    #[error(transparent)]
+    Sysctl(#[from] sysctl::SysctlError),
+}
+
+/// Gets the max PID number configured in the system.
+fn get_pid_max() -> Result<u32, GetPidMaxError> {
+    let pid_max_s = sysctl::Ctl::new("kernel.pid_max")?.value_string()?;
+    let pid_max = pid_max_s.parse::<u32>()?;
+    Ok(pid_max)
+}
+
+#[derive(thiserror::Error, Debug)]
 pub enum LoadProgramError {
-    #[error("hash error")]
-    HashError(#[from] HashError),
+    #[error(transparent)]
+    Libbpf(#[from] libbpf_rs::Error),
 
-    #[error("init runtimes error")]
-    InitRuntimesError(#[from] InitRuntimesError),
+    #[error(transparent)]
+    GetPidMax(#[from] GetPidMaxError),
 
-    #[error("init allowed paths error")]
-    InitAllowedPathsError(#[from] InitAllowedPathsError),
+    #[error(transparent)]
+    InitAllowedPaths(#[from] InitAllowedPathsError),
 
-    #[error("could not convert the hash to a byte array")]
-    ByteWriteError(#[from] io::Error),
-
-    #[error("libbpf error")]
-    LibbpfError(#[from] libbpf_rs::Error),
-
-    #[error("could not align the byte data")]
-    ByteAlignError,
+    #[error(transparent)]
+    InitRuntimes(#[from] InitRuntimesError),
 }
 
 /// Performs the following BPF-related operations:
 /// - loading BPF programs
+/// - resizing PID-related BPF maps
 /// - pinning BPF maps in BPFFS
 /// - pinning BPF programs in BPFFS
 /// - attaching BPF programs, creating links
@@ -174,7 +189,12 @@ pub enum LoadProgramError {
 pub fn load_programs<P: AsRef<path::Path>>(path_base_ts_r: P) -> Result<(), LoadProgramError> {
     let path_base_ts = path_base_ts_r.as_ref();
     let skel_builder = LockcSkelBuilder::default();
-    let open_skel = skel_builder.open()?;
+    let mut open_skel = skel_builder.open()?;
+
+    let pid_max = get_pid_max()?;
+    open_skel.maps_mut().containers().set_max_entries(pid_max)?;
+    open_skel.maps_mut().processes().set_max_entries(pid_max)?;
+
     let mut skel = open_skel.load()?;
 
     let mut path_map_runtimes = path_base_ts.join("map_runtimes");
@@ -486,6 +506,11 @@ mod tests {
         let returned_hash = hash(test_string).unwrap();
         let correct_hash: u32 = 2824;
         assert_eq!(returned_hash, correct_hash);
+    }
+
+    #[test]
+    fn get_pid_max_when_correct() {
+        assert!(get_pid_max().is_ok());
     }
 
     // It doesn't work on Github actions, see
