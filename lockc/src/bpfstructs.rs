@@ -5,8 +5,6 @@
 #![allow(non_snake_case)]
 include!(concat!(env!("OUT_DIR"), "/bindings.rs"));
 
-use std::convert::TryInto;
-
 use byteorder::{NativeEndian, WriteBytesExt};
 
 #[derive(thiserror::Error, Debug)]

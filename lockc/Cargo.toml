@@ -2,7 +2,7 @@
 name = "lockc"
 version = "0.1.1"
 authors = ["Michal Rostecki <mrostecki@opensuse.org>"]
-edition = "2018"
+edition = "2021"
 
 description = "eBPF-based MAC security audit for container workloads"
 repository = "https://github.com/rancher-sandbox/lockc"

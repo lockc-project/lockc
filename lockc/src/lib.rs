@@ -5,7 +5,7 @@
 #[macro_use]
 extern crate lazy_static;
 
-use std::{convert::TryInto, fs, io, io::prelude::*, num, path};
+use std::{fs, io, io::prelude::*, num, path};
 
 use byteorder::{NativeEndian, WriteBytesExt};
 use sysctl::Sysctl;
