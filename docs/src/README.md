@@ -1,3 +1,5 @@
+![lockc](/images/logo-horizontal-lockc.png)
+
 # Introduction
 
 **lockc** is open source software for providing MAC (Mandatory Access Control)
@@ -37,7 +39,7 @@ guide and consider opening [pull request](https://github.com/rancher-sandbox/loc
 
 **lockc's** userspace part is licensed under [Apache License, version 2.0](https://github.com/rancher-sandbox/lockc/blob/main/LICENSE).
 
-eBPF programs inside [src/bpf directory](https://github.com/rancher-sandbox/lockc/tree/main/src/bpf)
-are licensed under [GNU General Public License, version 2](https://github.com/rancher-sandbox/lockc/blob/main/src/bpf/LICENSE).
+eBPF programs inside [lockc/src/bpf directory](https://github.com/rancher-sandbox/lockc/tree/main/lockc/src/bpf)
+are licensed under [GNU General Public License, version 2](https://github.com/rancher-sandbox/lockc/blob/main/lockc/src/bpf/LICENSE).
 
 Documentation is licensed under [Mozilla Public License v2.0](https://www.mozilla.org/MPL/2.0/).
