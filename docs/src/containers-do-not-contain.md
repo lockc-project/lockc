@@ -1,4 +1,4 @@
-# Containers to not contain
+# Containers do not contain
 
 Many people assume that containers:
 
@@ -32,10 +32,7 @@ filesystem are **not namespaced**, which means that the content of some
 directories is **exactly the same as on the host OS**. Examples:
 
 - Kernel filesystems under */sys*
-- */proc/bus*
-- */proc/irq*
-- */proc/sys*
-- */proc/sysrq-trigger*
+- many sysctls under */proc/sys*
 
 For non-privileged containers, the content of those directories is read-only.
 However, privileged containers can write to them. In both cases, we think that

@@ -1,8 +1,8 @@
-# lockc
+![lockc](docs/src/images/logo-horizontal-lockc.png)
 
 [![Crate](https://img.shields.io/crates/v/lockc)](https://crates.io/crates/lockc)
 [![Book](https://img.shields.io/website?url=https%3A%2F%2Francher-sandbox.github.io%2Flockc%2F)](https://rancher-sandbox.github.io/lockc/)
-[![Discord](https://img.shields.io/discord/874314181191565453)](https://discord.gg/799cmsYB4q)
+[![Discord](https://img.shields.io/discord/874314181191565453?label=discord&logo=discord)](https://discord.gg/799cmsYB4q)
 [![Docs](https://docs.rs/lockc/badge.svg)](https://docs.rs/lockc/)
 [![Build Status](https://github.com/rancher-sandbox/lockc/actions/workflows/rust.yml/badge.svg)](https://github.com/rancher-sandbox/lockc/actions/workflows/rust.yml)
 
@@ -34,5 +34,5 @@ on `#lockc` channel on the [Rust Cloud Native Discord server](https://discord.gg
 
 **lockc's** userspace part is licensed under [Apache License, version 2.0](https://github.com/rancher-sandbox/lockc/blob/main/LICENSE).
 
-eBPF programs inside [src/bpf directory](https://github.com/rancher-sandbox/lockc/tree/main/src/bpf)
-are licensed under [GNU General Public License, version 2](https://github.com/rancher-sandbox/lockc/blob/main/src/bpf/LICENSE).
+eBPF programs inside [lockc/src/bpf directory](https://github.com/rancher-sandbox/lockc/tree/main/lockc/src/bpf)
+are licensed under [GNU General Public License, version 2](https://github.com/rancher-sandbox/lockc/blob/main/lockc/src/bpf/LICENSE).
