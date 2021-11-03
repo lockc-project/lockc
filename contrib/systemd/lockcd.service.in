@@ -3,7 +3,9 @@ Description=lockc daemon
 After=network-online.target
 
 [Service]
-Type=oneshot
+Type=simple
+Restart=always
+RestartSec=1
 ExecStart={{ bindir }}/lockcd
 StandardOutput=journal
 

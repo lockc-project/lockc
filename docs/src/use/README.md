@@ -32,8 +32,9 @@ sudo bpftool prog
         btf_id 18711
 ```
 
-To check if containers get "hardened" by lockc, check if you are able to
-see the kernel logs from inside the container wrapped by **lockc-runc-wrapper**.
+To check if containers get "hardened" by lockc, check if you are able to see
+parts of container filesystem which are restricted by lockc.
+
 Example:
 
 ```bash

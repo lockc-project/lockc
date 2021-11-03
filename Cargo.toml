@@ -1,5 +1,6 @@
 [workspace]
 members = [
     "lockc",
+    "lockc-uprobes",
     "xtask",
 ]

@@ -20,6 +20,6 @@ By default, with the **baseline** policy level, this is a good example of
 not allowed behavior:
 
 ```bash
-# podman --runtime $(pwd)/build/src/lockc-runc-wrapper run -ti -v /:/rootfs --rm registry.opensuse.org/opensuse/toolbox:latest
+# docker run -ti -v /:/rootfs --rm registry.opensuse.org/opensuse/toolbox:latest
 Error: container create failed (no logs from conmon): EOF
 ```

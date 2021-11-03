@@ -84,8 +84,6 @@ EOF
 ### Rebuild initrd with dracut
 mkinitrd
 
-mv /etc/containerd/config.toml.rpmorig /etc/containerd/config.toml
-
 systemctl enable containerd
 systemctl enable docker
 

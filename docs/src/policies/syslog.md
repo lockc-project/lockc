@@ -11,7 +11,7 @@ By default, with the **baseline** policy level, checking the kernel logs from
 the container is not allowed:
 
 ```bash
-# podman --runtime $(pwd)/build/src/lockc-runc-wrapper run -ti --rm registry.opensuse.org/opensuse/toolbox:latest
+# docker run -it --rm registry.opensuse.org/opensuse/toolbox:latest
 b10f9fa4a385:/ # dmesg
 dmesg: read kernel buffer failed: Operation not permitted
 ```

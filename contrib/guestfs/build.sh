@@ -37,10 +37,6 @@ set -eux
 
 virt-customize -a \
     ${LOCKC_IMAGE} \
-    --mkdir /etc/containerd \
-    --mkdir /etc/docker \
-    --copy-in provision/etc/containerd/config.toml:/etc/containerd/ \
-    --copy-in provision/etc/docker/daemon.json:/etc/docker/ \
     --copy-in provision/etc/modules-load.d/99-k8s.conf:/etc/modules-load.d/ \
     --copy-in provision/etc/sysctl.d/99-k8s.conf:/etc/sysctl.d/ \
     --copy-in provision/systemd/containerd.service:/etc/systemd/system/ \
