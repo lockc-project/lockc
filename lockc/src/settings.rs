@@ -1,5 +1,3 @@
-use std::convert::TryInto;
-
 use crate::bpfstructs;
 
 /// Path to Pseudo-Terminal Device, needed for -it option in container
