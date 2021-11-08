@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: lockc-agent
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "lockc-agent.labels" . | nindent 4 }}
+spec:
+  selector:
+    matchLabels:
+      {{- include "lockc-agent.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "lockc-agent.selectorLabels" . | nindent 8 }}
+    spec:
+      containers:
+      - name: lockc-agent
+        image: "{{ .Values.lockcAgent.image.repository }}:{{ .Values.lockcAgent.image.tag | default .Chart.AppVersion }}"
+        imagePullPolicy: {{ .Values.lockcAgent.image.pullPolicy }}
+        env:
+        - name: RUST_LOG
+          value: info
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 8080
+          initialDelaySeconds: 3
+          periodSeconds: 3
+        volumeMounts:
+        - name: runlockc
+          mountPath: /run/lockc
+      serviceAccountName: {{ include "lockc.serviceAccountName" . }}
+      tolerations:
+      - operator: Exists
+      volumes:
+      - name: runlockc
+        hostPath:
+          path: /run/lockc
+

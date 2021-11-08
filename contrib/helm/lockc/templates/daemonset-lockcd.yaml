@@ -1,0 +1,88 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: lockcd
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "lockcd.labels" . | nindent 4 }}
+spec:
+  selector:
+    matchLabels:
+      {{- include "lockcd.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "lockcd.selectorLabels" . | nindent 8 }}
+    spec:
+      hostPID: true
+      initContainers:
+      - name: install-lockc-runc-wrapper
+        image: "{{ .Values.lockcRuncWrapper.image.repository }}:{{ .Values.lockcRuncWrapper.image.tag | default .Chart.AppVersion }}"
+        imagePullPolicy: {{ .Values.lockcRuncWrapper.image.pullPolicy }}
+        securityContext:
+          privileged: true
+        volumeMounts:
+        - name: opt-bin
+          mountPath: /host/opt/bin
+      - name: install-containerd-config
+        image: debian:latest
+        imagePullPolicy: Always
+        command:
+        - cp
+        - -f
+        - /config/config.toml
+        - /host/etc/containerd/config.toml
+        securityContext:
+          privileged: true
+        volumeMounts:
+        - name: etc-containerd
+          mountPath: /host/etc/containerd
+        - name: containerd-config
+          mountPath: /config
+      - name: restart-containerd
+        image: debian:latest
+        imagePullPolicy: Always
+        command:
+        - "nsenter"
+        - "-t"
+        - "1"
+        - "-m"
+        - "--"
+        - "/usr/bin/systemctl"
+        - "restart"
+        - "containerd"
+        securityContext:
+          privileged: true
+      containers:
+      - name: lockcd
+        image: "{{ .Values.lockcd.image.repository }}:{{ .Values.lockcd.image.tag | default .Chart.AppVersion }}"
+        imagePullPolicy: {{ .Values.lockcd.image.pullPolicy }}
+        securityContext:
+          privileged: true
+        env:
+        - name: LOCKC_CHECK_LSM_SKIP
+          value: "1"
+        volumeMounts:
+        - name: bpffs
+          mountPath: /sys/fs/bpf
+      tolerations:
+      - operator: Exists
+      volumes:
+      - name: bpffs
+        hostPath:
+          path: /sys/fs/bpf
+          type: Directory
+      - name: opt-bin
+        hostPath:
+          path: /opt/bin
+          type: DirectoryOrCreate
+      - name: etc-containerd
+        hostPath:
+          path: /etc/containerd
+          type: DirectoryOrCreate
+      - name: containerd-config
+        configMap:
+          name: containerd-config
+          items:
+          - key: "config.toml"
+            path: "config.toml"

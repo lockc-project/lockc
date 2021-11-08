@@ -1,0 +1,68 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: containerd-config
+  namespace: {{ .Release.Namespace }}
+data:
+  config.toml: |
+    version = 2
+    [plugins."io.containerd.grpc.v1.cri"]
+      disable_tcp_service = true
+      stream_server_address = "127.0.0.1"
+      stream_server_port = "0"
+      stream_idle_timeout = "4h"
+      enable_selinux = false
+      sandbox_image = "k8s.gcr.io/pause:3.6"
+      stats_collect_period = 10
+      max_container_log_line_size = 16384
+      disable_cgroup = false
+      disable_apparmor = true
+      restrict_oom_score_adj = false
+      max_concurrent_downloads = 3
+      [plugins."io.containerd.grpc.v1.cri".containerd]
+        default_runtime_name = "runc"
+        [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.runc]
+          runtime_type = "io.containerd.runc.v2"
+          pod_annotations = []
+          container_annotations = []
+          privileged_without_host_devices = false
+          base_runtime_spec = ""
+          cni_conf_dir = "/etc/cni/net.d"
+          cni_max_conf_num = 1
+          [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.runc.options]
+            NoPivotRoot = false
+            NoNewKeyring = false
+            ShimCgroup = ""
+            IoUid = 0
+            IoGid = 0
+            BinaryName = "/usr/bin/runc"
+            Root = ""
+            CriuPath = "/usr/sbin/criu"
+            SystemdCgroup = false
+            CriuImagePath = ""
+            CriuWorkPath = ""
+        [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.lockc-runc-wrapper]
+          runtime_type = "io.containerd.runc.v2"
+          pod_annotations = []
+          container_annotations = []
+          privileged_without_host_devices = false
+          base_runtime_spec = ""
+          cni_conf_dir = "/etc/cni/net.d"
+          cni_max_conf_num = 1
+          [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.lockc-runc-wrapper.options]
+            NoPivotRoot = false
+            NoNewKeyring = false
+            ShimCgroup = ""
+            IoUid = 0
+            IoGid = 0
+            BinaryName = "/opt/bin/lockc-runc-wrapper"
+            Root = ""
+            CriuPath = "/usr/sbin/criu"
+            SystemdCgroup = false
+            CriuImagePath = ""
+            CriuWorkPath = ""
+      [plugins."io.containerd.grpc.v1.cri".cni]
+        bin_dir = "/opt/cni/bin"
+        conf_dir = "/etc/cni/net.d"
+        max_conf_num = 1
+        ip_pref = "cni"

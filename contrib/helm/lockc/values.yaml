@@ -1,0 +1,17 @@
+lockcd:
+  image:
+    repository: docker.io/vadorovsky/lockcd
+    pullPolicy: IfNotPresent
+    tag: "latest"
+
+lockcRuncWrapper:
+  image:
+    repository: docker.io/vadorovsky/lockc-runc-wrapper
+    pullPolicy: IfNotPresent
+    tag: "latest"
+
+lockcAgent:
+  image:
+    repository: docker.io/vadorovsky/lockc-k8s-agent
+    pullPolicy: IfNotPresent
+    tag: "latest"
