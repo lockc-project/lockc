@@ -18,9 +18,18 @@ jobs:
       run: go install github.com/rancher/dapper@latest
     - name: Build
       run: dapper cargo build
+      env:
+        DOCKER_BUILDKIT: 1
+        COMPOSE_DOCKER_CLI_BUILD: 1
     - name: Test
       run: dapper cargo test
+      env:
+        DOCKER_BUILDKIT: 1
+        COMPOSE_DOCKER_CLI_BUILD: 1
     - name: Lint
       run: dapper cargo clippy -- -D warnings
+      env:
+        DOCKER_BUILDKIT: 1
+        COMPOSE_DOCKER_CLI_BUILD: 1
     - name: Build book
       run: ./scripts/mdbook.sh
