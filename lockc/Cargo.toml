@@ -28,7 +28,7 @@ kube = "0.63"
 k8s-openapi = { version = "0.13", default-features = false, features = ["v1_21"] }
 lazy_static = "1.4"
 libc = { version = "0.2", features = [ "extra_traits" ] }
-libbpf-rs = "0.13"
+libbpf-rs = "0.14"
 log = "0.4"
 log4rs = "1.0"
 nix = "0.23"
