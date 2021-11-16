@@ -5,5 +5,10 @@ authors = ["Michal Rostecki", "Michal Jura"]
 language = "en"
 multilingual = false
 
+[output.html]
+git-repository-url = "https://github.com/rancher-sandbox/lockc"
+git-repository-icon = "fa-github"
+site-url = "/lockc/"
+
 [rust]
 edition = "2018"
