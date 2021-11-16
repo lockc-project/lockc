@@ -64,38 +64,92 @@ pub struct Options {
 }
 
 impl Options {
-    fn full_destdir(&self) -> path::PathBuf {
+    /// Returns a destdir path.
+    fn destdir(&self) -> path::PathBuf {
         path::PathBuf::from(&self.destdir)
     }
 
+    /// Returns a prefix path.
+    /// Should be used for templating configuration and unit files.
+    fn prefix(&self) -> path::PathBuf {
+        path::Path::new("/").join(&self.prefix)
+    }
+
+    /// Returns a full prefix path (destdir + path).
+    /// Should be used as an installation target for files.
     fn full_prefix(&self) -> path::PathBuf {
-        return path::Path::new(&self.destdir).join(&self.prefix);
+        path::Path::new(&self.destdir).join(&self.prefix)
     }
 
+    /// Returns a bindir path (prefix + bindir).
+    /// Should be used for templating configuration and unit files.
+    fn bindir(&self) -> path::PathBuf {
+        path::Path::new("/").join(&self.prefix).join(&self.bindir)
+    }
+
+    /// Returns a full bindir path (destdir + prefix + bindir).
+    /// Should be used as an installation target for files.
     fn full_bindir(&self) -> path::PathBuf {
-        return path::Path::new(&self.destdir)
+        path::Path::new(&self.destdir)
             .join(&self.prefix)
-            .join(&self.bindir);
+            .join(&self.bindir)
     }
 
+    /// Returns a sysconfdir path (sysconfdir).
+    /// Should be used for templating configuration and unit files.
+    fn sysconfdir(&self) -> path::PathBuf {
+        path::Path::new("/").join(&self.sysconfdir)
+    }
+
+    /// Returns a full sysconfdir path (destdir + sysconfdir).
+    /// Should be used as an installation target for files.
     fn full_sysconfdir(&self) -> path::PathBuf {
-        return path::Path::new(&self.destdir).join(&self.sysconfdir);
+        path::Path::new(&self.destdir).join(&self.sysconfdir)
     }
 
+    /// Returns an unitdir path (prefix + unitdir).
+    /// Should be used for templating configuration and unit files.
+    fn unitdir(&self) -> path::PathBuf {
+        path::Path::new("/").join(&self.prefix).join(&self.unitdir)
+    }
+
+    /// Returns a full unitdir path (destdir + prefix + unitdir).
+    /// Should be used as an installation target for files.
     fn full_unitdir(&self) -> path::PathBuf {
-        return path::Path::new(&self.destdir)
+        path::Path::new(&self.destdir)
             .join(&self.prefix)
-            .join(&self.unitdir);
+            .join(&self.unitdir)
     }
 }
 
 #[derive(Serialize)]
 struct InstallDirs {
+    /// Destdir path.
     destdir: path::PathBuf,
+    /// Prefix path.
+    /// Should be used for templating configuration and unit files.
     prefix: path::PathBuf,
+    /// Full prefix path (destdir + prefix).
+    /// Should be used as an installation target for files.
+    prefix_full: path::PathBuf,
+    /// Bindir path (prefix + bindir).
+    /// Should be used for templating configuration and unit files.
     bindir: path::PathBuf,
+    /// Full bindir path (destdir + prefix + bindir).
+    /// Should be used as an installation target for files.
+    bindir_full: path::PathBuf,
+    /// Sysconfdir path.
+    /// Should be used for templating configuration and unit files.
     sysconfdir: path::PathBuf,
+    /// Full sysconfdir path.
+    /// Should be used as an installation target for files.
+    sysconfdir_full: path::PathBuf,
+    /// Unitdir path.
+    /// Should be used for templating configuration and unit files.
     unitdir: path::PathBuf,
+    /// Full unitdir path.
+    /// Should be used as an installation target for files.
+    unitdir_full: path::PathBuf,
 }
 
 pub struct Installer {
@@ -146,21 +200,25 @@ impl Installer {
     pub fn new(opts: Options) -> Installer {
         Installer {
             install_dirs: InstallDirs {
-                destdir: opts.full_destdir(),
-                prefix: opts.full_prefix(),
-                bindir: opts.full_bindir(),
-                sysconfdir: opts.full_sysconfdir(),
-                unitdir: opts.full_unitdir(),
+                destdir: opts.destdir(),
+                prefix: opts.prefix(),
+                prefix_full: opts.full_prefix(),
+                bindir: opts.bindir(),
+                bindir_full: opts.full_bindir(),
+                sysconfdir: opts.sysconfdir(),
+                sysconfdir_full: opts.full_sysconfdir(),
+                unitdir: opts.unitdir(),
+                unitdir_full: opts.full_unitdir(),
             },
             opts,
         }
     }
 
     fn install_binaries(&self) -> Result<(), InstallBinariesError> {
-        let bindir = self.install_dirs.bindir.clone();
+        let bindir_full = self.install_dirs.bindir_full.clone();
 
-        mkdir_if_not_exists(bindir.clone())?;
-        escalate_if_not_owned(bindir.clone())?;
+        mkdir_if_not_exists(bindir_full.clone())?;
+        escalate_if_not_owned(bindir_full.clone())?;
 
         let target_path = path::Path::new("target").join(self.opts.profile.clone());
         if !target_path.exists() {
@@ -185,7 +243,7 @@ impl Installer {
                     continue;
                 }
 
-                let path_dest = bindir.clone().join(file_name);
+                let path_dest = bindir_full.clone().join(file_name);
                 println!(
                     "Installing {} to {}",
                     file_name.to_string_lossy(),
@@ -198,10 +256,10 @@ impl Installer {
     }
 
     fn install_config(&self) -> Result<(), InstallConfigError> {
-        let sysconfdir = self.install_dirs.sysconfdir.clone();
+        let sysconfdir_full = self.install_dirs.sysconfdir_full.clone();
 
-        mkdir_if_not_exists(sysconfdir.clone())?;
-        escalate_if_not_owned(sysconfdir.clone())?;
+        mkdir_if_not_exists(sysconfdir_full.clone())?;
+        escalate_if_not_owned(sysconfdir_full.clone())?;
 
         let config_path = path::Path::new("contrib").join("etc");
         if !config_path.exists() {
@@ -217,7 +275,7 @@ impl Installer {
         println!("Installing config files");
         let mut options = fs_extra::dir::CopyOptions::new();
         options.overwrite = true;
-        fs_extra::copy_items(&paths, sysconfdir, &options)?;
+        fs_extra::copy_items(&paths, sysconfdir_full, &options)?;
 
         Ok(())
     }
@@ -232,7 +290,7 @@ impl Installer {
             Some(f) => f,
             None => return Err(InstallUnitsError::TemplatedFileName),
         };
-        let path_dest = self.install_dirs.unitdir.clone().join(file_name_new);
+        let path_dest = self.install_dirs.unitdir_full.clone().join(file_name_new);
 
         let tera = Tera::new(&unit_path.join("*.in").to_string_lossy())?;
         let content = tera.render(
@@ -256,7 +314,7 @@ impl Installer {
         path_cur: path::PathBuf,
         file_name: &OsStr,
     ) -> Result<(), InstallUnitsError> {
-        let path_dest = self.install_dirs.unitdir.clone().join(file_name);
+        let path_dest = self.install_dirs.unitdir_full.clone().join(file_name);
         println!(
             "Installing systemd unit {} to {}",
             file_name.to_string_lossy(),
@@ -268,10 +326,10 @@ impl Installer {
     }
 
     fn install_units(&self) -> Result<(), InstallUnitsError> {
-        let unitdir = self.install_dirs.unitdir.clone();
+        let unitdir_full = self.install_dirs.unitdir_full.clone();
 
-        mkdir_if_not_exists(unitdir.clone())?;
-        escalate_if_not_owned(unitdir)?;
+        mkdir_if_not_exists(unitdir_full.clone())?;
+        escalate_if_not_owned(unitdir_full)?;
 
         let unit_path = path::Path::new("contrib").join("systemd");
         if !unit_path.exists() {
