@@ -5,9 +5,13 @@ edition = "2021"
 
 [dependencies]
 anyhow = "1.0"
+flate2 = "1.0"
 fs_extra = "1.2"
+scopeguard = "1.1"
 serde = { version = "1.0", features = ["derive"] }
 structopt = { version = "0.3", default-features = false }
 sudo = "0.6"
+tar = "0.4"
+tempfile = "3.2"
 tera = "1.12"
 thiserror = "1.0"

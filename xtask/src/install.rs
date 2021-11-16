@@ -44,23 +44,23 @@ fn escalate_if_not_owned(p: path::PathBuf) -> Result<(), EscalateIfNotOwnedError
 }
 
 #[derive(StructOpt)]
-pub struct Options {
+pub(crate) struct Options {
     #[structopt(default_value = "debug", long)]
-    profile: String,
+    pub(crate) profile: String,
 
     #[structopt(default_value = "/", long)]
-    destdir: String,
+    pub(crate) destdir: String,
 
     #[structopt(default_value = "usr/local", long)]
-    prefix: String,
+    pub(crate) prefix: String,
 
     // Directories which belong under prefix.
     #[structopt(default_value = "bin", long)]
-    bindir: String,
+    pub(crate) bindir: String,
     #[structopt(default_value = "etc", long)]
-    sysconfdir: String,
+    pub(crate) sysconfdir: String,
     #[structopt(default_value = "lib/systemd/system", long)]
-    unitdir: String,
+    pub(crate) unitdir: String,
 }
 
 impl Options {
@@ -152,7 +152,7 @@ struct InstallDirs {
     unitdir_full: path::PathBuf,
 }
 
-pub struct Installer {
+pub(crate) struct Installer {
     opts: Options,
     install_dirs: InstallDirs,
 }
@@ -197,7 +197,7 @@ enum InstallUnitsError {
 }
 
 impl Installer {
-    pub fn new(opts: Options) -> Installer {
+    pub(crate) fn new(opts: Options) -> Installer {
         Installer {
             install_dirs: InstallDirs {
                 destdir: opts.destdir(),
@@ -364,7 +364,7 @@ impl Installer {
         Ok(())
     }
 
-    pub fn do_install(&self) -> anyhow::Result<()> {
+    pub(crate) fn do_install(&self) -> anyhow::Result<()> {
         self.install_binaries()?;
         self.install_config()?;
         self.install_units()?;
