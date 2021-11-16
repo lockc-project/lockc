@@ -12,6 +12,6 @@ The project consists of 3 parts:
 - **lockcd** - the userspace program (written in Rust)
   - loads the BPF programs into the kernel, pins them in BPFFS
   - monitors runc processes, registers new containers and determines which
-    policy should be applied on a container
+    policy should be applied to a container
   - in future, it's going to serve as the configuration manager and log
     collector

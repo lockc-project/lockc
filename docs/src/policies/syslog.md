@@ -1,4 +1,4 @@
-## Syslog
+# Syslog
 
 lockc comes with the following policies about access to the kernel message ring
 buffer for each policy level:

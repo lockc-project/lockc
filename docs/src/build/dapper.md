@@ -1,4 +1,6 @@
-### Dapper
+# Dapper
+
+## Building lockc
 
 One option for building lockc is using dapper to perform the build inside
 container, without installing needed dependencies on the host system.
@@ -57,3 +59,30 @@ Running lints:
 ```bash
 dapper cargo clippy
 ```
+
+## Building tarball with binary and unit
+
+To make distribution of lockc for Docker users easier, we have a possibility of
+building an archive with binary and systemd unit which can be just unpacked in
+`/` directory. It can be done by the following command:
+
+```bash
+dapper cargo xtask bintar
+```
+
+By default it archives lockcd binary in `usr/local/bin`, but the
+destination directory can be changed by the following arguments:
+
+* `--prefix` - prefix of the most of installation destinations, default:
+  `usr/local`
+* `--bindir` - directory for binary files, default: `bin`
+* `--unitdir` - directory for systemd units, default: `lib/systemd/system`
+* `--sysconfdir` - directory for configuration files, default: `etc`
+
+By default, binaries are installed from the `debug` target profile. If you want
+to change it, use the `--profile` argument. `--profile release` is what you
+most likely want to use when creating a tarball for releases and production
+systems.
+
+The resulting binary should be available as `target/[profile]/lockc.tar.gz`
+(i.e. `target/debug/lockc.tar.gz`).
