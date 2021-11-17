@@ -4,17 +4,17 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: nginx-default
+  name: nginx-default-success
   namespace: default
 spec:
   selector:
     matchLabels:
-      app: nginx-default
+      app: nginx-default-success
   replicas: 1
   template:
     metadata:
       labels:
-        app: nginx-default
+        app: nginx-default-success
     spec:
       containers:
       - name: nginx
@@ -25,17 +25,17 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: nginx-restricted
+  name: nginx-restricted-success
   namespace: restricted
 spec:
   selector:
     matchLabels:
-      app: nginx-restricted
+      app: nginx-restricted-success
   replicas: 1
   template:
     metadata:
       labels:
-        app: nginx-restricted
+        app: nginx-restricted-success
     spec:
       containers:
       - name: nginx
@@ -46,17 +46,17 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: nginx-baseline
+  name: nginx-baseline-success
   namespace: baseline
 spec:
   selector:
     matchLabels:
-      app: nginx-baseline
+      app: nginx-baseline-success
   replicas: 1
   template:
     metadata:
       labels:
-        app: nginx-baseline
+        app: nginx-baseline-success
     spec:
       containers:
       - name: nginx
@@ -67,17 +67,17 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: bpf-privileged
+  name: bpf-privileged-success
   namespace: privileged
 spec:
   selector:
     matchLabels:
-      app: bpf-privileged
+      app: bpf-privileged-success
   replicas: 1
   template:
     metadata:
       labels:
-        app: bpf-privileged
+        app: bpf-privileged-success
     spec:
       containers:
       - name: bpf
