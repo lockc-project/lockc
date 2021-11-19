@@ -9,7 +9,7 @@
 
 /* Our arbitrary path length limit. */
 #define PATH_LEN 64
-#define PATH_MAX_LIMIT 64
+#define PATH_MAX_LIMIT 128
 
 /* Max length of task name (comm). */
 #define TASK_COMM_LEN 16

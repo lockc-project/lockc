@@ -1,4 +1,4 @@
-### Cargo
+# Cargo
 
 If you are comfortable with installing all dependencies on your host system,
 you need to install the following software:
@@ -7,7 +7,7 @@ you need to install the following software:
 * libbpf, bpftool
 * Rust, Cargo
 
-#### LLVM
+## LLVM
 
 We need a recent version of LLVM (at least 12) to build BPF programs.
 
@@ -31,7 +31,7 @@ zypper in clang llvm
 If there is no packaging of recent LLVM versions for your distribution, there
 is also an option to [download binaries](https://releases.llvm.org/download.html).
 
-#### libbpf, bpftool
+## libbpf, bpftool
 
 libbpf is the official C library for writing, loading and managing BPF programs
 and entities. bpftool is the official CLI for interacting with BPF subsystem.
@@ -85,7 +85,7 @@ make -j $(nproc)
 make install prefix=/usr
 ```
 
-#### Installing Rust
+## Installing Rust
 
 Our recommended way of installing Rust is using **rustup**.
 [Their website](https://rustup.rs/) contains installation instruction.
@@ -102,7 +102,7 @@ And then cargo-libbpf, needed for building the BPF part:
 cargo install libbpf-cargo
 ```
 
-#### Building lockc
+## Building lockc
 
 After installing all needed dependencies, it's time to build lockc.
 
@@ -124,7 +124,7 @@ Running lints:
 cargo clippy
 ```
 
-#### Installing lockc
+## Installing lockc
 
 To install lockc on your host, use the following command:
 
@@ -142,7 +142,7 @@ root in `target`. When any destination directory is owned by root, sudo will
 be launched automatically by `xtask install` just to perform necessary
 installation steps.
 
-By default it tries to install lockc binaries in `/usr/local/bin`, but the
+By default it tries to install lockcd binary in `/usr/local/bin`, but the
 destination directory can be changed by the following arguments:
 
 * `--destdir` - the rootfs of your system, default: `/`
@@ -155,3 +155,30 @@ destination directory can be changed by the following arguments:
 By default, binaries are installed from the `debug` target profile. If you want
 to change it, use the `--profile` argument. `--profile release` is what you
 most likely want to use when packaging or installing on the production system.
+
+## Building tarball with binary and unit
+
+To make distribution of lockc for Docker users easier, we have a possibility of
+building an archive with binary and systemd unit which can be just unpacked in
+`/` directory. It can be done by the following command:
+
+```bash
+cargo xtask bintar
+```
+
+By default it archives lockcd binary in `usr/local/bin`, but the
+destination directory can be changed by the following arguments:
+
+* `--prefix` - prefix of the most of installation destinations, default:
+  `usr/local`
+* `--bindir` - directory for binary files, default: `bin`
+* `--unitdir` - directory for systemd units, default: `lib/systemd/system`
+* `--sysconfdir` - directory for configuration files, default: `etc`
+
+By default, binaries are installed from the `debug` target profile. If you want
+to change it, use the `--profile` argument. `--profile release` is what you
+most likely want to use when creating a tarball for releases and production
+systems.
+
+The resulting binary should be available as `target/[profile]/lockc.tar.gz`
+(i.e. `target/debug/lockc.tar.gz`).

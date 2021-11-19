@@ -1,6 +1,6 @@
-## Mount policies
+# Mount policies
 
-### Kubernetes
+## Kubernetes
 
 The following demo shows mount policies being enforced on Kubernetes pods.
 

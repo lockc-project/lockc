@@ -14,6 +14,8 @@ static DIR_STORAGE_DOCKER_OVERLAY2: &str = "/var/lib/docker/overlay2";
 static DIR_STORAGE_CONTAINERD: &str = "/var/run/container";
 /// Storage directory used by CRI containerd.
 static DIR_STORAGE_CRI_CONTAINERD: &str = "/run/containerd/io.containerd.runtime.v1.linux";
+/// Storage directory used by CRI containerd.
+static DIR_STORAGE_CRI_CONTAINERD2: &str = "/run/containerd/io.containerd.runtime.v2.task";
 
 /// Data directory used by docker.
 static DIR_DATA_DOCKER: &str = "/var/lib/docker/containers";
@@ -55,29 +57,88 @@ static DIR_CGROUP_SYSTEMD_LIBPOD: &str = "/sys/fs/cgroup/systemd/machine.slice";
 /// Cgroup v2 hierarchy (used by systemd) for libpod (podman, cri-o).
 static DIR_CGROUP_UNIFIED_LIBPOD: &str = "/sys/fs/cgroup/unified/machine.slice";
 /// Block I/O controller for kubelet.
-static DIR_CGROUP_BLKIO_K8S: &str = "/sys/fs/cgroup/blkio/kubepods.slice";
+static DIR_CGROUP_BLKIO_K8S1: &str = "/sys/fs/cgroup/blkio/kubepods.slice";
 /// CPU accounting controller for kubelet.
-static DIR_CGROUP_CPU_K8S: &str = "/sys/fs/cgroup/cpu,cpuacct/kubepods.slice";
+static DIR_CGROUP_CPU_K8S1: &str = "/sys/fs/cgroup/cpu,cpuacct/kubepods.slice";
 /// Cpusets for libpod for kubelet.
-static DIR_CGROUP_CPUSET_K8S: &str = "/sys/fs/cgroup/cpuset/kubepods.slice";
+static DIR_CGROUP_CPUSET_K8S1: &str = "/sys/fs/cgroup/cpuset/kubepods.slice";
 /// Device allowlist controller for kubelet.
-static DIR_CGROUP_DEVICES_K8S: &str = "/sys/fs/cgroup/devices/kubepods.slice";
+static DIR_CGROUP_DEVICES_K8S1: &str = "/sys/fs/cgroup/devices/kubepods.slice";
 /// Cgroup freezer for kubelet.
-static DIR_CGROUP_FREEZER_K8S: &str = "/sys/fs/cgroup/freezer/kubepods.slice";
+static DIR_CGROUP_FREEZER_K8S1: &str = "/sys/fs/cgroup/freezer/kubepods.slice";
 /// HugeTLB controller for kubelet.
-static DIR_CGROUP_HUGETLB_K8S: &str = "/sys/fs/cgroup/hugetlb/kubepods.slice";
+static DIR_CGROUP_HUGETLB_K8S1: &str = "/sys/fs/cgroup/hugetlb/kubepods.slice";
 /// Memory controller for kubelet.
-static DIR_CGROUP_MEMORY_K8S: &str = "/sys/fs/cgroup/memory/kubepods.slice";
+static DIR_CGROUP_MEMORY_K8S1: &str = "/sys/fs/cgroup/memory/kubepods.slice";
 /// Network classifier and priority controller for kubelet.
-static DIR_CGROUP_NET_K8S: &str = "/sys/fs/cgroup/net_cls,net_prio/kubepods.slice";
+static DIR_CGROUP_NET_K8S1: &str = "/sys/fs/cgroup/net_cls,net_prio/kubepods.slice";
 /// Perf event controller for kubelet.
-static DIR_CGROUP_PERF_K8S: &str = "/sys/fs/cgroup/perf_event/kubepods.slice";
+static DIR_CGROUP_PERF_K8S1: &str = "/sys/fs/cgroup/perf_event/kubepods.slice";
 /// Process number controller for kubelet.
-static DIR_CGROUP_PIDS_K8S: &str = "/sys/fs/cgroup/pids/kubepods.slice";
+static DIR_CGROUP_PIDS_K8S1: &str = "/sys/fs/cgroup/pids/kubepods.slice";
 /// Cgroup v1 hierarchy (used by systemd) for kubelet.
-static DIR_CGROUP_SYSTEMD_K8S: &str = "/sys/fs/cgroup/systemd/kubepods.slice";
+static DIR_CGROUP_SYSTEMD_K8S1: &str = "/sys/fs/cgroup/systemd/kubepods.slice";
 /// Cgroup v2 hierarchy (used by systemd) for kubelet.
-static DIR_CGROUP_UNIFIED_K8S: &str = "/sys/fs/cgroup/unified/kubepods.slice";
+static DIR_CGROUP_UNIFIED_K8S1: &str = "/sys/fs/cgroup/unified/kubepods.slice";
+/// Block I/O controller for kubelet.
+static DIR_CGROUP_BLKIO_K8S2: &str = "/sys/fs/cgroup/blkio/kubepods-besteffort";
+/// CPU accounting controller for kubelet.
+static DIR_CGROUP_CPU_K8S2: &str = "/sys/fs/cgroup/cpu,cpuacct/kubepods-besteffort";
+/// Cpusets for libpod for kubelet.
+static DIR_CGROUP_CPUSET_K8S2: &str = "/sys/fs/cgroup/cpuset/kubepods-besteffort";
+/// Device allowlist controller for kubelet.
+static DIR_CGROUP_DEVICES_K8S2: &str = "/sys/fs/cgroup/devices/kubepods-besteffort";
+/// Cgroup freezer for kubelet.
+static DIR_CGROUP_FREEZER_K8S2: &str = "/sys/fs/cgroup/freezer/kubepods-besteffort";
+/// HugeTLB controller for kubelet.
+static DIR_CGROUP_HUGETLB_K8S2: &str = "/sys/fs/cgroup/hugetlb/kubepods-besteffort";
+/// Memory controller for kubelet.
+static DIR_CGROUP_MEMORY_K8S2: &str = "/sys/fs/cgroup/memory/kubepods-besteffort";
+/// Network classifier and priority controller for kubelet.
+static DIR_CGROUP_NET_K8S2: &str = "/sys/fs/cgroup/net_cls,net_prio/kubepods-besteffort";
+/// Perf event controller for kubelet.
+static DIR_CGROUP_PERF_K8S2: &str = "/sys/fs/cgroup/perf_event/kubepods-besteffort";
+/// Process number controller for kubelet.
+static DIR_CGROUP_PIDS_K8S2: &str = "/sys/fs/cgroup/pids/kubepods-besteffort";
+/// Cgroup v1 hierarchy (used by systemd) for kubelet.
+static DIR_CGROUP_SYSTEMD_K8S2: &str = "/sys/fs/cgroup/systemd/kubepods-besteffort";
+/// Cgroup v2 hierarchy (used by systemd) for kubelet.
+static DIR_CGROUP_UNIFIED_K8S2: &str = "/sys/fs/cgroup/unified/kubepods-besteffort";
+/// Block I/O controller for containerd.
+static DIR_CGROUP_BLKIO_CONTAINERD_K8S: &str =
+    "/sys/fs/cgroup/blkio/system.slice/containerd.service";
+/// CPU accounting controller for containerd.
+static DIR_CGROUP_CPU_CONTAINERD_K8S: &str =
+    "/sys/fs/cgroup/cpu,cpuacct/system.slice/containerd.service";
+/// Cpusets for libpod for containerd.
+static DIR_CGROUP_CPUSET_CONTAINERD_K8S: &str =
+    "/sys/fs/cgroup/cpuset/system.slice/containerd.service";
+/// Device allowlist controller for containerd.
+static DIR_CGROUP_DEVICES_CONTAINERD_K8S: &str =
+    "/sys/fs/cgroup/devices/system.slice/containerd.service";
+/// Cgroup freezer for containerd.
+static DIR_CGROUP_FREEZER_CONTAINERD_K8S: &str =
+    "/sys/fs/cgroup/freezer/system.slice/containerd.service";
+/// HugeTLB controller for containerd.
+static DIR_CGROUP_HUGETLB_CONTAINERD_K8S: &str =
+    "/sys/fs/cgroup/hugetlb/system.slice/containerd.service";
+/// Memory controller for containerd.
+static DIR_CGROUP_MEMORY_CONTAINERD_K8S: &str =
+    "/sys/fs/cgroup/memory/system.slice/containerd.service";
+/// Network classifier and priority controller for containerd.
+static DIR_CGROUP_NET_CONTAINERD_K8S: &str =
+    "/sys/fs/cgroup/net_cls,net_prio/system.slice/containerd.service";
+/// Perf event controller for containerd.
+static DIR_CGROUP_PERF_CONTAINERD_K8S: &str =
+    "/sys/fs/cgroup/perf_event/system.slice/containerd.service";
+/// Process number controller for containerd.
+static DIR_CGROUP_PIDS_CONTAINERD_K8S: &str = "/sys/fs/cgroup/pids/system.slice/containerd.service";
+/// Cgroup v1 hierarchy (used by systemd) for containerd.
+static DIR_CGROUP_SYSTEMD_CONTAINERD_K8S: &str =
+    "/sys/fs/cgroup/systemd/system.slice/containerd.service";
+/// Cgroup v2 hierarchy (used by systemd) for containerd.
+static DIR_CGROUP_UNIFIED_CONTAINERD_K8S: &str =
+    "/sys/fs/cgroup/unified/system.slice/containerd.service";
 /// Block I/O controller for docker.
 static DIR_CGROUP_BLKIO_DOCKER: &str = "/sys/fs/cgroup/blkio/docker";
 /// CPU accounting controller for docker.
@@ -109,6 +170,24 @@ static DIR_PODS_KUBELET: &str = "/var/lib/kubelet/pods";
 static DIR_HOME: &str = "/home";
 static DIR_VAR_DATA: &str = "/var/data";
 
+/// Cgroup file, i.e. cgroup:[4026531835]
+static GROUP: &str = "cgroup:";
+/// IPC namespace file, i.e. ipc:[4026531839]
+static NS_IPC: &str = "ipc:";
+/// Mount namespace file, i.e. mnt:[4026531840]
+static NS_MNT: &str = "mnt:";
+/// Network namespace file, i.e. net:[4026531992]
+static NS_NET: &str = "net:";
+/// PID namespace file, i.e. pid:[4026531836]
+static NS_PID: &str = "pid:";
+/// Pipe
+static PIPE: &str = "pipe:";
+/// Time namespace file. i.e. time:[4026531834]
+static NS_TIME: &str = "time:";
+/// User namespace file, i.e. user:[4026531837]
+static NS_USER: &str = "user:";
+/// UTS namespace file, i.e. uts:[4026531838]
+static NS_UTS: &str = "uts:";
 static DIR_BIN: &str = "/bin";
 static DIR_DEV_CONSOLE: &str = "/dev/console";
 static DIR_DEV_FULL: &str = "/dev/full";
@@ -119,8 +198,12 @@ static DIR_DEV_URANDOM: &str = "/dev/urandom";
 static DIR_DEV_ZERO: &str = "/dev/zero";
 static DIR_ETC: &str = "/etc";
 static DIR_LIB: &str = "/lib";
+static DIR_LIB64: &str = "/lib64";
+static PAUSE: &str = "/pause";
 static DIR_PROC: &str = "/proc";
+static DIR_RUN: &str = "/run";
 static DIR_CGROUP: &str = "/sys/fs/cgroup";
+static DIR_MM: &str = "/sys/kernel/mm";
 static DIR_TMP: &str = "/tmp";
 static DIR_USR: &str = "/usr";
 static DIR_VAR: &str = "/var";
@@ -177,6 +260,7 @@ impl Settings {
                 DIR_STORAGE_DOCKER_OVERLAY2.to_string(),
                 DIR_STORAGE_CONTAINERD.to_string(),
                 DIR_STORAGE_CRI_CONTAINERD.to_string(),
+                DIR_STORAGE_CRI_CONTAINERD2.to_string(),
                 DIR_DATA_DOCKER.to_string(),
                 DIR_SANDBOXES_CRI_CONTAINERD1.to_string(),
                 DIR_SANDBOXES_CRI_CONTAINERD2.to_string(),
@@ -194,18 +278,42 @@ impl Settings {
                 DIR_CGROUP_PIDS_LIBPOD.to_string(),
                 DIR_CGROUP_SYSTEMD_LIBPOD.to_string(),
                 DIR_CGROUP_UNIFIED_LIBPOD.to_string(),
-                DIR_CGROUP_BLKIO_K8S.to_string(),
-                DIR_CGROUP_CPU_K8S.to_string(),
-                DIR_CGROUP_CPUSET_K8S.to_string(),
-                DIR_CGROUP_DEVICES_K8S.to_string(),
-                DIR_CGROUP_FREEZER_K8S.to_string(),
-                DIR_CGROUP_HUGETLB_K8S.to_string(),
-                DIR_CGROUP_MEMORY_K8S.to_string(),
-                DIR_CGROUP_NET_K8S.to_string(),
-                DIR_CGROUP_PERF_K8S.to_string(),
-                DIR_CGROUP_PIDS_K8S.to_string(),
-                DIR_CGROUP_SYSTEMD_K8S.to_string(),
-                DIR_CGROUP_UNIFIED_K8S.to_string(),
+                DIR_CGROUP_BLKIO_K8S1.to_string(),
+                DIR_CGROUP_CPU_K8S1.to_string(),
+                DIR_CGROUP_CPUSET_K8S1.to_string(),
+                DIR_CGROUP_DEVICES_K8S1.to_string(),
+                DIR_CGROUP_FREEZER_K8S1.to_string(),
+                DIR_CGROUP_HUGETLB_K8S1.to_string(),
+                DIR_CGROUP_MEMORY_K8S1.to_string(),
+                DIR_CGROUP_NET_K8S1.to_string(),
+                DIR_CGROUP_PERF_K8S1.to_string(),
+                DIR_CGROUP_PIDS_K8S1.to_string(),
+                DIR_CGROUP_SYSTEMD_K8S1.to_string(),
+                DIR_CGROUP_UNIFIED_K8S1.to_string(),
+                DIR_CGROUP_BLKIO_K8S2.to_string(),
+                DIR_CGROUP_CPU_K8S2.to_string(),
+                DIR_CGROUP_CPUSET_K8S2.to_string(),
+                DIR_CGROUP_DEVICES_K8S2.to_string(),
+                DIR_CGROUP_FREEZER_K8S2.to_string(),
+                DIR_CGROUP_HUGETLB_K8S2.to_string(),
+                DIR_CGROUP_MEMORY_K8S2.to_string(),
+                DIR_CGROUP_NET_K8S2.to_string(),
+                DIR_CGROUP_PERF_K8S2.to_string(),
+                DIR_CGROUP_PIDS_K8S2.to_string(),
+                DIR_CGROUP_SYSTEMD_K8S2.to_string(),
+                DIR_CGROUP_UNIFIED_K8S2.to_string(),
+                DIR_CGROUP_BLKIO_CONTAINERD_K8S.to_string(),
+                DIR_CGROUP_CPU_CONTAINERD_K8S.to_string(),
+                DIR_CGROUP_CPUSET_CONTAINERD_K8S.to_string(),
+                DIR_CGROUP_DEVICES_CONTAINERD_K8S.to_string(),
+                DIR_CGROUP_FREEZER_CONTAINERD_K8S.to_string(),
+                DIR_CGROUP_HUGETLB_CONTAINERD_K8S.to_string(),
+                DIR_CGROUP_MEMORY_CONTAINERD_K8S.to_string(),
+                DIR_CGROUP_NET_CONTAINERD_K8S.to_string(),
+                DIR_CGROUP_PERF_CONTAINERD_K8S.to_string(),
+                DIR_CGROUP_PIDS_CONTAINERD_K8S.to_string(),
+                DIR_CGROUP_SYSTEMD_CONTAINERD_K8S.to_string(),
+                DIR_CGROUP_UNIFIED_CONTAINERD_K8S.to_string(),
                 DIR_CGROUP_BLKIO_DOCKER.to_string(),
                 DIR_CGROUP_CPU_DOCKER.to_string(),
                 DIR_CGROUP_CPUSET_DOCKER.to_string(),
@@ -230,6 +338,7 @@ impl Settings {
                 DIR_STORAGE_DOCKER_OVERLAY2.to_string(),
                 DIR_STORAGE_CONTAINERD.to_string(),
                 DIR_STORAGE_CRI_CONTAINERD.to_string(),
+                DIR_STORAGE_CRI_CONTAINERD2.to_string(),
                 DIR_DATA_DOCKER.to_string(),
                 DIR_SANDBOXES_CRI_CONTAINERD1.to_string(),
                 DIR_SANDBOXES_CRI_CONTAINERD2.to_string(),
@@ -247,18 +356,42 @@ impl Settings {
                 DIR_CGROUP_PIDS_LIBPOD.to_string(),
                 DIR_CGROUP_SYSTEMD_LIBPOD.to_string(),
                 DIR_CGROUP_UNIFIED_LIBPOD.to_string(),
-                DIR_CGROUP_BLKIO_K8S.to_string(),
-                DIR_CGROUP_CPU_K8S.to_string(),
-                DIR_CGROUP_CPUSET_K8S.to_string(),
-                DIR_CGROUP_DEVICES_K8S.to_string(),
-                DIR_CGROUP_FREEZER_K8S.to_string(),
-                DIR_CGROUP_HUGETLB_K8S.to_string(),
-                DIR_CGROUP_MEMORY_K8S.to_string(),
-                DIR_CGROUP_NET_K8S.to_string(),
-                DIR_CGROUP_PERF_K8S.to_string(),
-                DIR_CGROUP_PIDS_K8S.to_string(),
-                DIR_CGROUP_SYSTEMD_K8S.to_string(),
-                DIR_CGROUP_UNIFIED_K8S.to_string(),
+                DIR_CGROUP_BLKIO_K8S1.to_string(),
+                DIR_CGROUP_CPU_K8S1.to_string(),
+                DIR_CGROUP_CPUSET_K8S1.to_string(),
+                DIR_CGROUP_DEVICES_K8S1.to_string(),
+                DIR_CGROUP_FREEZER_K8S1.to_string(),
+                DIR_CGROUP_HUGETLB_K8S1.to_string(),
+                DIR_CGROUP_MEMORY_K8S1.to_string(),
+                DIR_CGROUP_NET_K8S1.to_string(),
+                DIR_CGROUP_PERF_K8S1.to_string(),
+                DIR_CGROUP_PIDS_K8S1.to_string(),
+                DIR_CGROUP_SYSTEMD_K8S1.to_string(),
+                DIR_CGROUP_UNIFIED_K8S1.to_string(),
+                DIR_CGROUP_BLKIO_K8S2.to_string(),
+                DIR_CGROUP_CPU_K8S2.to_string(),
+                DIR_CGROUP_CPUSET_K8S2.to_string(),
+                DIR_CGROUP_DEVICES_K8S2.to_string(),
+                DIR_CGROUP_FREEZER_K8S2.to_string(),
+                DIR_CGROUP_HUGETLB_K8S2.to_string(),
+                DIR_CGROUP_MEMORY_K8S2.to_string(),
+                DIR_CGROUP_NET_K8S2.to_string(),
+                DIR_CGROUP_PERF_K8S2.to_string(),
+                DIR_CGROUP_PIDS_K8S2.to_string(),
+                DIR_CGROUP_SYSTEMD_K8S2.to_string(),
+                DIR_CGROUP_UNIFIED_K8S2.to_string(),
+                DIR_CGROUP_BLKIO_CONTAINERD_K8S.to_string(),
+                DIR_CGROUP_CPU_CONTAINERD_K8S.to_string(),
+                DIR_CGROUP_CPUSET_CONTAINERD_K8S.to_string(),
+                DIR_CGROUP_DEVICES_CONTAINERD_K8S.to_string(),
+                DIR_CGROUP_FREEZER_CONTAINERD_K8S.to_string(),
+                DIR_CGROUP_HUGETLB_CONTAINERD_K8S.to_string(),
+                DIR_CGROUP_MEMORY_CONTAINERD_K8S.to_string(),
+                DIR_CGROUP_NET_CONTAINERD_K8S.to_string(),
+                DIR_CGROUP_PERF_CONTAINERD_K8S.to_string(),
+                DIR_CGROUP_PIDS_CONTAINERD_K8S.to_string(),
+                DIR_CGROUP_SYSTEMD_CONTAINERD_K8S.to_string(),
+                DIR_CGROUP_UNIFIED_CONTAINERD_K8S.to_string(),
                 DIR_CGROUP_BLKIO_DOCKER.to_string(),
                 DIR_CGROUP_CPU_DOCKER.to_string(),
                 DIR_CGROUP_CPUSET_DOCKER.to_string(),
@@ -280,6 +413,15 @@ impl Settings {
         s.set(
             "allowed_paths_access_restricted",
             vec![
+                GROUP.to_string(),
+                NS_IPC.to_string(),
+                NS_MNT.to_string(),
+                NS_NET.to_string(),
+                NS_PID.to_string(),
+                PIPE.to_string(),
+                NS_TIME.to_string(),
+                NS_USER.to_string(),
+                NS_UTS.to_string(),
                 DIR_BIN.to_string(),
                 DIR_DEV_CONSOLE.to_string(),
                 DIR_DEV_FULL.to_string(),
@@ -291,8 +433,12 @@ impl Settings {
                 DIR_ETC.to_string(),
                 DIR_HOME.to_string(),
                 DIR_LIB.to_string(),
+                DIR_LIB64.to_string(),
+                PAUSE.to_string(),
                 DIR_PROC.to_string(),
+                DIR_RUN.to_string(),
                 DIR_CGROUP.to_string(),
+                DIR_MM.to_string(),
                 DIR_TMP.to_string(),
                 DIR_USR.to_string(),
                 DIR_VAR.to_string(),
@@ -301,6 +447,15 @@ impl Settings {
         s.set(
             "allowed_paths_access_baseline",
             vec![
+                GROUP.to_string(),
+                NS_IPC.to_string(),
+                NS_MNT.to_string(),
+                NS_NET.to_string(),
+                NS_PID.to_string(),
+                PIPE.to_string(),
+                NS_TIME.to_string(),
+                NS_USER.to_string(),
+                NS_UTS.to_string(),
                 DIR_BIN.to_string(),
                 DIR_DEV_CONSOLE.to_string(),
                 DIR_DEV_FULL.to_string(),
@@ -312,8 +467,12 @@ impl Settings {
                 DIR_ETC.to_string(),
                 DIR_HOME.to_string(),
                 DIR_LIB.to_string(),
+                DIR_LIB64.to_string(),
+                PAUSE.to_string(),
                 DIR_PROC.to_string(),
+                DIR_RUN.to_string(),
                 DIR_CGROUP.to_string(),
+                DIR_MM.to_string(),
                 DIR_TMP.to_string(),
                 DIR_USR.to_string(),
                 DIR_VAR.to_string(),
@@ -321,11 +480,11 @@ impl Settings {
         )?;
         s.set(
             "denied_paths_access_restricted",
-            vec![DIR_PROC_ACPI.to_string()],
+            vec![DIR_PROC_ACPI.to_string(), DIR_PROC_SYS.to_string()],
         )?;
         s.set(
             "denied_paths_access_baseline",
-            vec![DIR_PROC_ACPI.to_string(), DIR_PROC_SYS.to_string()],
+            vec![DIR_PROC_ACPI.to_string()],
         )?;
 
         s.merge(config::File::with_name("/etc/lockc/lockc.toml").required(false))?;

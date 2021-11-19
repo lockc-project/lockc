@@ -223,10 +223,10 @@ out:
 }
 
 /*
- * callback_ctx - input/output data for the `check_allowed_paths` callback
+ * paths_callback_ctx - input/output data for the `check_allowed_paths` callback
  * function.
  */
-struct callback_ctx {
+struct paths_callback_ctx {
 	/* Input path to compare all the allowed paths with. */
 	unsigned char *path;
 	/* Output whether a match was found. */
@@ -242,13 +242,13 @@ struct callback_ctx {
  * @allowed_path: the checked BPF map element
  * @data: input/output data shared between this callback and the BPF program
  *
- * Return: 0 if the match was found and next iterations should be stopped.
- * 1 if the match was not found and the search for a possible match should be
+ * Return: 1 if the match was found and next iterations should be stopped.
+ * 0 if the match was not found and the search for a possible match should be
  * continued.
  */
 static u64 check_paths(struct bpf_map *map, u32 *key,
 		       struct accessed_path *allowed_path,
-		       struct callback_ctx *data)
+		       struct paths_callback_ctx *data)
 {
 	/*
 	 * Shouldn't happen, but if in any case the checked path is NULL, skip
@@ -356,7 +356,7 @@ int BPF_PROG(mount_audit, const char *dev_name, const struct path *path,
 		ret = -EFAULT;
 		goto out;
 	}
-	struct callback_ctx cb = {
+	struct paths_callback_ctx cb = {
 		.found = false,
 		.path = dev_name_safe
 	};
@@ -449,9 +449,9 @@ int BPF_PROG(open_audit, struct file *file, int ret_prev)
 		bpf_printk("open: restricted: allow /\n");
 		goto out;
 	}
-	struct callback_ctx cb = {
+	struct paths_callback_ctx cb = {
 		.found = false,
-		.path = d_path_buf
+		.path = d_path_buf,
 	};
 
 	/*
@@ -474,7 +474,7 @@ int BPF_PROG(open_audit, struct file *file, int ret_prev)
 	 * If anyone can show or contribute the better solution, I owe them a
 	 * beer!
 	 */
-	switch (policy_level){
+	switch (policy_level) {
 	case POLICY_LEVEL_RESTRICTED:
 		bpf_for_each_map_elem(&denied_paths_access_restricted,
 				      check_paths, &cb, 0);
@@ -515,6 +515,147 @@ out:
 	if (ret_prev != 0)
 		return ret_prev;
 	return ret;
+}
+
+/*
+ * add_container - uprobe program triggered by lockc-runc-wrapper adding a new
+ * container. It registers that new container in BPF maps.
+ *
+ * This program is inspired by bpfcontain-rs project and its similar uprobe
+ * program:
+ * https://github.com/willfindlay/bpfcontain-rs/blob/ba4fde80b6bc75ef340dd22ac921206b18e350ab/src/bpf/bpfcontain.bpf.c#L2291-L2315
+ */
+SEC("uprobe/add_container")
+int BPF_KPROBE(add_container, int *retp, u32 container_id, pid_t pid, int policy)
+{
+	int ret = 0;
+	int err;
+	struct container c = {
+		.policy_level = policy,
+	};
+
+	err = bpf_map_update_elem(&containers, &container_id, &c, 0);
+	if (err < 0) {
+		bpf_printk("adding container: containers: error: %d\n", err);
+		ret = err;
+		goto out;
+	}
+
+	struct process p = {
+		.container_id = container_id,
+	};
+
+	err = bpf_map_update_elem(&processes, &pid, &p, 0);
+	if (err < 0) {
+		bpf_printk("adding container: processes: error: %d\n", err);
+		ret = err;
+		goto out;
+	}
+	bpf_printk("adding container: success\n");
+
+out:
+	bpf_probe_write_user(retp, &ret, sizeof(ret));
+	return ret;
+}
+
+/*
+ * processes_callback_ctx - input data for the `clean_processes` callback
+ * function.
+ */
+struct processes_callback_ctx {
+	u32 container_id;
+	int err;
+};
+
+/*
+ * clean_processes - callback function which removes all the processes
+ * associated with the given container (ID). It's supposed to be called on the
+ * processes BPF map when deleting a container.
+ */
+static u64 clean_processes(struct bpf_map *map, pid_t *key,
+			   struct process *process,
+			   struct processes_callback_ctx *data)
+{
+	int err;
+
+	if (unlikely(process == NULL))
+		return 0;
+
+	if (process->container_id == data->container_id) {
+		err = bpf_map_delete_elem(map, key);
+		if (err < 0) {
+			bpf_printk("clean_processes: could not delete process, "
+				   "err: %d\n", err);
+			data->err = err;
+			/* Continue removing next elements anyway. */
+			return 0;
+		}
+	}
+
+	return 0;
+}
+
+/*
+ * delete_container - uprobe program triggered by lockc-runc-wrapper deleting a
+ * container. It removes information about that container and its processes from
+ * BPF maps.
+ */
+SEC("uprobe/delete_container")
+int BPF_KPROBE(delete_container, int *retp, u32 container_id)
+{
+	int ret = 0;
+	int err;
+	err = bpf_map_delete_elem(&containers, &container_id);
+	struct processes_callback_ctx cb = {
+		.container_id = container_id,
+		.err = 0,
+	};
+	bpf_for_each_map_elem(&processes, clean_processes, &cb, 0);
+
+	/* Handle errors later, after attempting to remove everything. */
+	if (err < 0) {
+		bpf_printk("deleting container: error: %d\n", err);
+		ret = err;
+		goto out;
+	}
+	if (cb.err < 0) {
+		bpf_printk("deleting container: callbacks: error: %d\n",
+			   cb.err);
+		ret = cb.err;
+		goto out;
+	}
+	bpf_printk("deleting container: success\n");
+
+out:
+	bpf_probe_write_user(retp, &ret, sizeof(ret));
+	return ret;
+}
+
+/*
+ * add_process - uprobe program triggered by lockc-runc-wrapper adding a new
+ * process to the container when i.e. exec-ing a new process by runc. It
+ * registers that new process in the BPF map.
+ */
+SEC("uprobe/add_process")
+int BPF_KPROBE(add_process, int *retp, u32 container_id, pid_t pid)
+{
+	int ret = 0;
+	int err;
+	struct process p = {
+		.container_id = container_id,
+	};
+
+	err = bpf_map_update_elem(&processes, &pid, &p, 0);
+	if (err < 0) {
+		bpf_printk("adding process: error: %d\n", err);
+		ret = err;
+		goto out;
+	}
+	bpf_printk("adding process: success\n");
+
+out:
+	bpf_probe_write_user(retp, &ret, sizeof(ret));
+	return 0;
 }
 
 char __license[] SEC("license") = "GPL";

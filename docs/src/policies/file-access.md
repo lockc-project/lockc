@@ -1,4 +1,4 @@
-## File access
+# File access
 
 lockc comes with policies about file access which is based on allow- and
 deny-listing. **Baseline** and **restricted** policies have their own pairs of
@@ -60,3 +60,20 @@ By default, the contents of lists are:
   * deny list
     * */proc/acpi*
     * */proc/sys*
+
+By default, with the **baseline** policy level, this is a good exampole of not
+allowed behavior:
+
+```bash
+# docker run --rm -it registry.opensuse.org/opensuse/toolbox:latest
+9b34d760017f:/ # ls /sys
+ls: cannot open directory '/sys': Operation not permitted
+9b34d760017f:/ # ls /sys/fs/btrfs
+ls: cannot access '/sys/fs/btrfs': No such file or directory
+9b34d760017f:/ # ls /sys/fs/cgroup
+blkio  cpu,cpuacct  cpuset   freezer  memory  net_cls           net_prio    pids  systemd
+cpu    cpuacct      devices  hugetlb  misc    net_cls,net_prio  perf_event  rdma
+```
+
+We are able to see cgroups (which is fine), but other parts of */sys* are
+hidden.

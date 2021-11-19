@@ -5,20 +5,32 @@
 #[macro_use]
 extern crate lazy_static;
 
-use std::{fs, io, io::prelude::*, num, path};
+use std::{
+    fs,
+    io::{self, prelude::*},
+    num, path,
+    sync::{
+        atomic::{AtomicBool, Ordering},
+        Arc,
+    },
+    thread, time,
+};
 
 use byteorder::{NativeEndian, WriteBytesExt};
 use sysctl::Sysctl;
 
 use bpfstructs::BpfStruct;
-
+use lockc_uprobes::{add_container, add_process, delete_container};
+use uprobe_ext::FindSymbolUprobeExt;
 
 #[rustfmt::skip]
 mod bpf;
 use bpf::*;
 
 pub mod bpfstructs;
+pub mod runc;
 mod settings;
+mod uprobe_ext;
 
 lazy_static! {
     static ref SETTINGS: settings::Settings = settings::Settings::new().unwrap();
@@ -154,10 +166,17 @@ fn get_pid_max() -> Result<u32, GetPidMaxError> {
     Ok(pid_max)
 }
 
+pub struct BpfContext<'a> {
+    pub skel: LockcSkel<'a>,
+}
+
 #[derive(thiserror::Error, Debug)]
-pub enum LoadProgramError {
+pub enum NewBpfContextError {
     #[error(transparent)]
     Libbpf(#[from] libbpf_rs::Error),
+
+    #[error(transparent)]
+    AttachUprobeAddr(#[from] uprobe_ext::AttachUprobeAddrError),
 
     #[error(transparent)]
     GetPidMax(#[from] GetPidMaxError),
@@ -169,109 +188,173 @@ pub enum LoadProgramError {
     InitRuntimes(#[from] InitRuntimesError),
 }
 
-/// Performs the following BPF-related operations:
-/// - loading BPF programs
-/// - resizing PID-related BPF maps
-/// - pinning BPF maps in BPFFS
-/// - pinning BPF programs in BPFFS
-/// - attaching BPF programs, creating links
-/// - pinning links in BPFFS
-///
-/// All entities pinned in BPFFS have the dedicated directory signed with a
-/// timestamp. The reason behind it is to be able to still keep running
-/// previous instances of BPF programs while we are in the process of loading
-/// new programs. This is done to ensure that **some** instance of BPF programs
-/// is always running and that containers are secured.
-///
-/// TODO: The concept described above still has one hole - the contents of old
-/// BPF maps is not migrated in any way. We need to come up with some sane copy
-/// mechanism.
-pub fn load_programs<P: AsRef<path::Path>>(path_base_ts_r: P) -> Result<(), LoadProgramError> {
-    let path_base_ts = path_base_ts_r.as_ref();
-    let skel_builder = LockcSkelBuilder::default();
-    let mut open_skel = skel_builder.open()?;
+impl<'a> BpfContext<'a> {
+    /// Performs the following BPF-related operations:
+    /// - loading BPF programs
+    /// - resizing PID-related BPF maps
+    /// - pinning BPF maps in BPFFS
+    /// - pinning BPF programs in BPFFS
+    /// - attaching BPF programs, creating links
+    /// - pinning links in BPFFS
+    ///
+    /// All entities pinned in BPFFS have the dedicated directory signed with a
+    /// timestamp. The reason behind it is to be able to still keep running
+    /// previous instances of BPF programs while we are in the process of loading
+    /// new programs. This is done to ensure that **some** instance of BPF programs
+    /// is always running and that containers are secured.
+    ///
+    /// TODO: The concept described above still has one hole - the contents of old
+    /// BPF maps is not migrated in any way. We need to come up with some sane copy
+    /// mechanism.
+    pub fn new<P: AsRef<path::Path>>(path_base_ts_r: P) -> Result<Self, NewBpfContextError> {
+        let path_base_ts = path_base_ts_r.as_ref();
+        let skel_builder = LockcSkelBuilder::default();
+        let mut open_skel = skel_builder.open()?;
 
-    let pid_max = get_pid_max()?;
-    open_skel.maps_mut().containers().set_max_entries(pid_max)?;
-    open_skel.maps_mut().processes().set_max_entries(pid_max)?;
+        let pid_max = get_pid_max()?;
+        open_skel.maps_mut().containers().set_max_entries(pid_max)?;
+        open_skel.maps_mut().processes().set_max_entries(pid_max)?;
 
-    let mut skel = open_skel.load()?;
+        let mut skel = open_skel.load()?;
 
-    let mut path_map_runtimes = path_base_ts.join("map_runtimes");
-    skel.maps_mut().runtimes().pin(&mut path_map_runtimes)?;
+        let mut path_map_runtimes = path_base_ts.join("map_runtimes");
+        skel.maps_mut().runtimes().pin(&mut path_map_runtimes)?;
 
-    init_runtimes(skel.maps_mut().runtimes())?;
+        init_runtimes(skel.maps_mut().runtimes())?;
 
-    let path_map_containers = path_base_ts.join("map_containers");
-    skel.maps_mut().containers().pin(path_map_containers)?;
+        let path_map_containers = path_base_ts.join("map_containers");
+        skel.maps_mut().containers().pin(path_map_containers)?;
 
-    let path_map_processes = path_base_ts.join("map_processes");
-    skel.maps_mut().processes().pin(path_map_processes)?;
+        let path_map_processes = path_base_ts.join("map_processes");
+        skel.maps_mut().processes().pin(path_map_processes)?;
 
-    let path_map_allowed_paths_mount_restricted =
-        path_base_ts.join("map_allowed_paths_mount_restricted");
-    skel.maps_mut()
-        .allowed_paths_mount_restricted()
-        .pin(path_map_allowed_paths_mount_restricted)?;
+        let path_map_allowed_paths_mount_restricted =
+            path_base_ts.join("map_allowed_paths_mount_restricted");
+        skel.maps_mut()
+            .allowed_paths_mount_restricted()
+            .pin(path_map_allowed_paths_mount_restricted)?;
 
-    let path_map_allowed_paths_mount_baseline =
-        path_base_ts.join("map_allowed_paths_mount_baseline");
-    skel.maps_mut()
-        .allowed_paths_mount_baseline()
-        .pin(path_map_allowed_paths_mount_baseline)?;
+        let path_map_allowed_paths_mount_baseline =
+            path_base_ts.join("map_allowed_paths_mount_baseline");
+        skel.maps_mut()
+            .allowed_paths_mount_baseline()
+            .pin(path_map_allowed_paths_mount_baseline)?;
 
-    let path_map_allowed_paths_access_restricted =
-        path_base_ts.join("map_allowed_paths_access_restricted");
-    skel.maps_mut()
-        .allowed_paths_access_restricted()
-        .pin(path_map_allowed_paths_access_restricted)?;
+        let path_map_allowed_paths_access_restricted =
+            path_base_ts.join("map_allowed_paths_access_restricted");
+        skel.maps_mut()
+            .allowed_paths_access_restricted()
+            .pin(path_map_allowed_paths_access_restricted)?;
 
-    let path_map_allowed_paths_access_baseline =
-        path_base_ts.join("map_allowed_paths_access_baseline");
-    skel.maps_mut()
-        .allowed_paths_access_baseline()
-        .pin(path_map_allowed_paths_access_baseline)?;
+        let path_map_allowed_paths_access_baseline =
+            path_base_ts.join("map_allowed_paths_access_baseline");
+        skel.maps_mut()
+            .allowed_paths_access_baseline()
+            .pin(path_map_allowed_paths_access_baseline)?;
 
-    init_allowed_paths(skel.maps_mut())?;
+        init_allowed_paths(skel.maps_mut())?;
 
-    let path_program_fork = path_base_ts.join("prog_fork");
-    skel.progs_mut()
-        .sched_process_fork()
-        .pin(path_program_fork)?;
+        let path_program_fork = path_base_ts.join("prog_fork");
+        skel.progs_mut()
+            .sched_process_fork()
+            .pin(path_program_fork)?;
 
-    let path_program_clone = path_base_ts.join("prog_clone_audit");
-    skel.progs_mut().clone_audit().pin(path_program_clone)?;
+        let path_program_clone = path_base_ts.join("prog_clone_audit");
+        skel.progs_mut().clone_audit().pin(path_program_clone)?;
 
-    let path_program_syslog = path_base_ts.join("prog_syslog_audit");
-    skel.progs_mut().syslog_audit().pin(path_program_syslog)?;
+        let path_program_syslog = path_base_ts.join("prog_syslog_audit");
+        skel.progs_mut().syslog_audit().pin(path_program_syslog)?;
 
-    let path_program_mount = path_base_ts.join("prog_mount_audit");
-    skel.progs_mut().mount_audit().pin(path_program_mount)?;
+        let path_program_mount = path_base_ts.join("prog_mount_audit");
+        skel.progs_mut().mount_audit().pin(path_program_mount)?;
 
-    let path_program_open = path_base_ts.join("prog_open_audit");
-    skel.progs_mut().open_audit().pin(path_program_open)?;
+        let path_program_open = path_base_ts.join("prog_open_audit");
+        skel.progs_mut().open_audit().pin(path_program_open)?;
 
-    let mut link_fork = skel.progs_mut().sched_process_fork().attach()?;
-    let path_link_fork = path_base_ts.join("link_fork");
-    link_fork.pin(path_link_fork)?;
+        let path_program_add_container = path_base_ts.join("prog_add_container");
+        skel.progs_mut()
+            .add_container()
+            .pin(path_program_add_container)?;
 
-    let mut link_clone = skel.progs_mut().clone_audit().attach_lsm()?;
-    let path_link_clone = path_base_ts.join("link_clone_audit");
-    link_clone.pin(path_link_clone)?;
+        let path_program_delete_container = path_base_ts.join("prog_delete_container");
+        skel.progs_mut()
+            .delete_container()
+            .pin(path_program_delete_container)?;
 
-    let mut link_syslog = skel.progs_mut().syslog_audit().attach_lsm()?;
-    let path_link_syslog = path_base_ts.join("link_syslog_audit");
-    link_syslog.pin(path_link_syslog)?;
+        let path_program_add_process = path_base_ts.join("prog_add_process");
+        skel.progs_mut()
+            .add_process()
+            .pin(path_program_add_process)?;
 
-    let mut link_mount = skel.progs_mut().mount_audit().attach_lsm()?;
-    let path_link_mount = path_base_ts.join("link_mount_audit");
-    link_mount.pin(path_link_mount)?;
+        let mut link_fork = skel.progs_mut().sched_process_fork().attach()?;
+        let path_link_fork = path_base_ts.join("link_fork");
+        link_fork.pin(path_link_fork)?;
 
-    let mut link_open = skel.progs_mut().open_audit().attach_lsm()?;
-    let path_link_open = path_base_ts.join("link_open_audit");
-    link_open.pin(path_link_open)?;
+        let mut link_clone = skel.progs_mut().clone_audit().attach_lsm()?;
+        let path_link_clone = path_base_ts.join("link_clone_audit");
+        link_clone.pin(path_link_clone)?;
 
-    Ok(())
+        let mut link_syslog = skel.progs_mut().syslog_audit().attach_lsm()?;
+        let path_link_syslog = path_base_ts.join("link_syslog_audit");
+        link_syslog.pin(path_link_syslog)?;
+
+        let mut link_mount = skel.progs_mut().mount_audit().attach_lsm()?;
+        let path_link_mount = path_base_ts.join("link_mount_audit");
+        link_mount.pin(path_link_mount)?;
+
+        let mut link_open = skel.progs_mut().open_audit().attach_lsm()?;
+        let path_link_open = path_base_ts.join("link_open_audit");
+        link_open.pin(path_link_open)?;
+
+        let link_add_container = skel.progs_mut().add_container().attach_uprobe_addr(
+            false,
+            -1,
+            add_container as *const () as usize,
+        )?;
+        skel.links.add_container = link_add_container.into();
+        // NOTE(vadorovsky): Currently it's impossible to pin uprobe links, but
+        // it would be REALLY NICE to be able to do so.
+        // let path_link_add_container = path_base_ts.join("link_add_container");
+        // link_add_container.pin(path_link_add_container)?;
+
+        let link_delete_container = skel.progs_mut().delete_container().attach_uprobe_addr(
+            false,
+            -1,
+            delete_container as *const () as usize,
+        )?;
+        skel.links.delete_container = link_delete_container.into();
+        // NOTE(vadorovsky): Currently it's impossible to pin uprobe links, but
+        // it would be REALLY NICE to be able to do so.
+        // let path_link_delete_container = path_base_ts.join("link_delete_container");
+        // link_delete_container.pin(path_link_delete_container)?;
+
+        let link_add_process = skel.progs_mut().add_process().attach_uprobe_addr(
+            false,
+            -1,
+            add_process as *const () as usize,
+        )?;
+        skel.links.add_process = link_add_process.into();
+        // NOTE(vadorovsky): Currently it's impossible to pin uprobe links, but
+        // it would be REALLY NICE to be able to do so.
+        // let path_link_add_process = path_base_ts.join("link_add_process");
+        // link_add_process.pin(path_link_add_process)?;
+
+        Ok(BpfContext { skel })
+    }
+
+    pub fn work_loop(&self) -> Result<(), ctrlc::Error> {
+        let running = Arc::new(AtomicBool::new(true));
+        let r = running.clone();
+        ctrlc::set_handler(move || {
+            r.store(false, Ordering::SeqCst);
+        })?;
+        while running.load(Ordering::SeqCst) {
+            eprint!(".");
+            thread::sleep(time::Duration::from_secs(1));
+        }
+
+        Ok(())
+    }
 }
 
 #[derive(thiserror::Error, Debug)]
@@ -345,35 +428,6 @@ pub enum ReusedMapsOperationError {
     SkelReusedMapsError(#[from] SkelReusedMapsError),
 }
 
-/// Adds a new container and its first associated process into BPF maps.
-pub fn add_container(
-    container_key: u32,
-    pid: u32,
-    level: bpfstructs::container_policy_level,
-) -> Result<(), ReusedMapsOperationError> {
-    let mut skel = skel_reused_maps()?;
-
-    bpfstructs::container {
-        policy_level: level,
-    }
-    .map_update(skel.maps_mut().containers(), container_key)?;
-
-    bpfstructs::process {
-        container_id: container_key,
-    }
-    .map_update(skel.maps_mut().processes(), pid)?;
-
-    Ok(())
-}
-
-/// Deletes the given container from BPF map.
-pub fn delete_container(container_key: u32) -> Result<(), ReusedMapsOperationError> {
-    let mut skel = skel_reused_maps()?;
-    bpfstructs::map_delete(skel.maps_mut().containers(), container_key)?;
-
-    Ok(())
-}
-
 /// Writes the given policy to the container info in BPF map.
 pub fn write_policy(
     container_id: &str,
@@ -386,19 +440,6 @@ pub fn write_policy(
         policy_level: level,
     }
     .map_update(skel.maps_mut().containers(), container_key)?;
-
-    Ok(())
-}
-
-/// Adds the given process as a container's member in the BPF map. After this
-/// action, LSM BPF programs are going to enforce policies on that process.
-pub fn add_process(container_key: u32, pid: u32) -> Result<(), ReusedMapsOperationError> {
-    let mut skel = skel_reused_maps()?;
-
-    bpfstructs::process {
-        container_id: container_key,
-    }
-    .map_update(skel.maps_mut().processes(), pid)?;
 
     Ok(())
 }
@@ -517,9 +558,9 @@ mod tests {
     // https://github.com/rancher-sandbox/lockc/issues/65
     #[test]
     #[ignore]
-    fn test_load_programs() {
+    fn test_bpf_context() {
         let _cleanup = PathBase::new();
-        assert!(load_programs(PATH_BASE).is_ok());
+        assert!(BpfContext::new(PATH_BASE).is_ok());
     }
 
     #[test]

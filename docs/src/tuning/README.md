@@ -1,9 +1,9 @@
-## Tuning
+# Tuning
 
 This guide shows options and tricks to gain an optimal performance and resouce
 usage.
 
-### Memory usage
+## Memory usage
 
 Memory usage by lockc depends mostly on BPF maps size. BPF maps are stored in
 memory and the biggest BPF maps are the ones related to tracking processes and

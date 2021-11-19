@@ -1,22 +1,11 @@
-## Terraform
+# Development environment (Terraform)
 
-There is also a possibility to run lockc in virtual machines with
-Kubernetes.
+There is also a possibility to run lockc built from source in virtual machines.
 
-In order to do that, ensure that you have the following software installed:
+We support two virtual machine providers:
 
-* libvirt
-* guestfs-tools
+- **[libvirt]** - Configure and start VMs in libvirt environment, locally
+- **[OpenStack]** - Configure and start VMs in OpenStack environment, on the cloud
 
-Then we can proceed with following steps:
-
-- **[Base image]** - The first step is to build the VM image
-- **[Custom kernel]** *Optional* - building the image with a custom kernel
-- **[Use libvirt]** - Configure and start VMs in libvirt environment
-- **[Use OpenStack]** - Starting VMs in OpenStack environment
-
-[Base image]: base-image.md
-[Custom kernel]: custom-kernel.md
-[Use libvirt]: libvirt.md
-[Use OpenStack]: openstack.md
-
+[libvirt]: libvirt.md
+[OpenStack]: openstack.md

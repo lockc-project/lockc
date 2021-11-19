@@ -1,0 +1,8 @@
+lockc-agent and lockd installed SUCCESSFULLY
+
+lockc provides three policy levels for containers:
+  * baseline - meant for regular applications
+  * restricted - meant for applications for which we need to be more cautious and secure them more stricly
+  * privileged - meant for part of the infrastructure which can have full access to host resources
+
+For more information checkout https://rancher-sandbox.github.io/lockc/
