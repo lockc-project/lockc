@@ -1,51 +1,53 @@
-FROM docker.io/library/rust:latest as builder
-RUN wget https://apt.llvm.org/llvm-snapshot.gpg.key && \
-    apt-key add llvm-snapshot.gpg.key && \
-    rm -f llvm-snapshot.gpg.key && \
-    echo "deb http://apt.llvm.org/bullseye/ llvm-toolchain-bullseye-13 main" > /etc/apt/sources.list.d/llvm.list && \
-    apt update && \
-    apt upgrade -y --no-install-recommends && \
-    apt install -y --no-install-recommends \
-        clang-13 \
-        libelf-dev \
-        gcc-multilib \
-        lld-13 \
-        lldb-13 \
-        python3-pip \
-        sudo && \
-    apt purge --auto-remove && \
-    apt clean && \
-    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
-# Build libbpf and bpftool from the newest stable kernel sources.
-RUN curl -Lso linux.tar.xz \
-        $(curl -s https://www.kernel.org/ | grep -A1 "latest_link" | grep -Eo '(http|https)://[^"]+') && \
-    tar -xf linux.tar.xz && \
-    cd $(find . -maxdepth 1 -type d -name "linux*") && \
-    cd tools/lib/bpf && \
-    make -j $(nproc) && \
-    make install prefix=/usr && \
-    cd ../../bpf/bpftool && \
-    make -j $(nproc) && \
-    make install prefix=/usr && \
-    cd ../../../.. && \
-    rm -rf linux*
-RUN cargo install libbpf-cargo
+FROM registry.opensuse.org/opensuse/leap:15.3 as builder
+RUN zypper ar -p 90 -r https://download.opensuse.org/repositories/devel:/languages:/rust/openSUSE_Leap_15.3/devel:languages:rust.repo \
+    && zypper ar -p 90 -r https://download.opensuse.org/repositories/devel:/tools:/compiler/openSUSE_Leap_15.3/devel:tools:compiler.repo \
+    && zypper --gpg-auto-import-keys ref \
+    && zypper --non-interactive dup --allow-vendor-change
+RUN zypper --non-interactive install -t pattern \
+        devel_C_C++ \
+        devel_basis \
+    && zypper --non-interactive install \
+        clang \
+        curl \
+        libelf-devel \
+	libopenssl-devel \
+        llvm \
+        rustup \
+        sudo \
+        tar \
+        xz \
+        zlib-devel \
+    && zypper clean
+RUN rustup-init -y
+ENV PATH="/root/.cargo/bin:${PATH}"
 RUN rustup component add \
         clippy \
         rustfmt
+RUN cargo install \
+        libbpf-cargo
 
 FROM builder AS build
+WORKDIR /usr/local/src
+# Build bpftool from the newest stable kernel sources.
+RUN curl -Lso linux.tar.xz \
+        $(curl -s https://www.kernel.org/ | grep -A1 "latest_link" | grep -Eo '(http|https)://[^"]+') \
+    && tar -xf linux.tar.xz \
+    && mv $(find . -maxdepth 1 -type d -name "linux*") linux \
+    && cd linux \
+    && cd tools/bpf/bpftool \
+    && make -j $(nproc)
+# Prepare lockc sources and build it.
 WORKDIR /usr/local/src/lockc
 COPY . ./
-ENV CLANG /usr/bin/clang-13
 RUN cargo build
 
-FROM registry.opensuse.org/opensuse/leap-microdnf:15.3 AS lockcd
+FROM registry.opensuse.org/opensuse/leap:15.3 AS lockcd
 # runc links those libraries dynamically
-RUN microdnf install -y --nodocs \
+RUN zypper --non-interactive install \
         libseccomp2 \
         libselinux1 \
-    && microdnf clean all
+    && zypper clean
 ARG PROFILE=debug
+COPY --from=build /usr/local/src/linux/tools/bpf/bpftool/bpftool /usr/sbin/bpftool
 COPY --from=build /usr/local/src/lockc/target/$PROFILE/lockcd /usr/bin/lockcd
 ENTRYPOINT ["/usr/bin/lockcd"]
