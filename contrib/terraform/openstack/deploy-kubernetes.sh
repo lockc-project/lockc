@@ -1,70 +1,65 @@
 #!/bin/bash
 #shellcheck disable=SC2145,SC2016
+
+set -eux
+
 log()   { (>&1 echo -e "$@") ; }
-cmd()   { log "$@" ; }
 info()  { log "[ INFO ] $@" ; }
 error() { (>&2 echo -e "[ ERROR ] $@") ;}
 
 if [ -z "${TR_STACK}" ] || [ -z "${TR_LB_IP}" ] || \
-   [ -z "$TR_MASTER_IPS" ] || [ -z "$TR_WORKER_IPS" ] || \
-   [ -z "${TR_USERNAME}" ]; then
-    error '$TR_STACK $TR_LB_IP $TR_MASTER_IPS $TR_WORKER_IPS $TR_USERNAME must be specified'
+   [ -z "$TR_MASTER_IPS" ] || [ -z "${TR_USERNAME}" ]; then
+    error '$TR_STACK $TR_LB_IP $TR_MASTER_IPS $TR_USERNAME must be specified'
     exit 1
 fi
 
+sleep 5
+
+CILIUM_VERSION=$(curl -s https://api.github.com/repos/cilium/cilium/releases/latest | jq -r '.tag_name' | sed -e 's/^v//')
+
 info "### Run following commands to bootstrap Kubernetes cluster:\\n"
-cmd ""
 
 i=0
 for MASTER in $TR_MASTER_IPS; do
-    cmd "ssh -o 'StrictHostKeyChecking no' -l ${TR_USERNAME} ${MASTER} /bin/bash <<EOF"
-    cmd ""
-    
     if [ $i -eq "0" ]; then
-        cmd "  sudo kubeadm init --cri-socket /run/containerd/containerd.sock --control-plane-endpoint ${TR_LB_IP}:6443 | tee kubeadm-init.log"
-        cmd ""
-        cmd "  mkdir -p /home/${TR_USERNAME}/.kube"
-        cmd "  sudo cp /etc/kubernetes/admin.conf /home/${TR_USERNAME}/.kube/config"
-        cmd "  sudo chown ${TR_USERNAME}:users /home/${TR_USERNAME}/.kube/config"
-        cmd "EOF"
-
         ssh -o 'StrictHostKeyChecking no' -l ${TR_USERNAME} ${MASTER} /bin/bash <<-EOF
-          sudo kubeadm init --cri-socket /run/containerd/containerd.sock --control-plane-endpoint ${TR_LB_IP}:6443 | tee kubeadm-init.log
+          set -eux
+          sudo kubeadm init --cri-socket /run/containerd/containerd.sock --control-plane-endpoint ${MASTER}:6443 --upload-certs | tee kubeadm-init.log
+          mkdir -p /home/${TR_USERNAME}/.kube
+          sudo cp /etc/kubernetes/admin.conf /home/${TR_USERNAME}/.kube/config
+          sudo chown ${TR_USERNAME}:users /home/${TR_USERNAME}/.kube/config
+          helm repo add cilium https://helm.cilium.io/
+          helm install cilium cilium/cilium --version ${CILIUM_VERSION} --namespace kube-system
+EOF
+
+        export KUBEADM_MASTER_JOIN=`ssh -o 'StrictHostKeyChecking no' -l ${TR_USERNAME} ${MASTER} tail -n12 kubeadm-init.log | head -n3`
+        export KUBEADM_WORKER_JOIN=`ssh -o 'StrictHostKeyChecking no' -l ${TR_USERNAME} ${MASTER} tail -n2 kubeadm-init.log`
+    else
+        ssh -o 'StrictHostKeyChecking no' -l ${TR_USERNAME} ${MASTER} /bin/bash <<-EOF
+          set -eux
+          sudo ${KUBEADM_MASTER_JOIN}
           mkdir -p /home/${TR_USERNAME}/.kube
           sudo cp /etc/kubernetes/admin.conf /home/${TR_USERNAME}/.kube/config
           sudo chown ${TR_USERNAME}:users /home/${TR_USERNAME}/.kube/config
 EOF
-
-        cmd ""
-        export KUBEADM_JOIN=`ssh -l ${TR_USERNAME} ${MASTER} tail -n2 kubeadm-init.log`
-        export KUBEADM_CMD=`echo $KUBEADM_JOIN | sed -e 's/\\\ //'`
-        echo $KUBEADM_CMD
-    else
-        cmd ""
-        cmd " sudo kubeadm join"
-        cmd "EOF"
-        cmd ""
     fi
     ((++i))
 done
 
 i=0
 for WORKER in $TR_WORKER_IPS; do
-    cmd "ssh -o 'StrictHostKeyChecking no' -l ${TR_USERNAME} ${WORKER} sudo ${KUBEADM_CMD}"
-    ssh -o 'StrictHostKeyChecking no' -l ${TR_USERNAME} ${WORKER} sudo ${KUBEADM_CMD}
+    ssh -o 'StrictHostKeyChecking no' -l ${TR_USERNAME} ${WORKER} /bin/bash <<-EOF
+      set -eux
+      sudo ${KUBEADM_WORKER_JOIN}
+EOF
     ((++i))
 done
-
-cmd ""
-cmd "scp ${TR_USERNAME}@${MASTER}:/home/${TR_USERNAME}/.kube/config ./admin.conf"
-cmd "export KUBECONFIG=`pwd`/admin.conf"
-cmd ""
 
 scp ${TR_USERNAME}@${MASTER}:/home/${TR_USERNAME}/.kube/config ./admin.conf
 export KUBECONFIG=`pwd`/admin.conf
 kubectl get nodes
 
-cmd ""
-cmd "WARNING!!! To start with K8s cluster please run following command:"
-cmd "export KUBECONFIG=`pwd`/admin.conf"
-cmd ""
+log ""
+log "WARNING!!! To start with K8s cluster please run following command:"
+log "export KUBECONFIG=`pwd`/admin.conf"
+log ""
