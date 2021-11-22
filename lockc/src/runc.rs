@@ -466,6 +466,7 @@ impl RuncWatcher {
                 "--log" => opt_parsing_action = OptParsingAction::Skip,
                 "--log-format" => opt_parsing_action = OptParsingAction::Skip,
                 "--pid-file" => opt_parsing_action = OptParsingAction::Skip,
+                "--process" => opt_parsing_action = OptParsingAction::Skip,
                 "--console-socket" => opt_parsing_action = OptParsingAction::Skip,
                 "--root" => opt_parsing_action = OptParsingAction::Skip,
                 // We want to explicitly store the value of --bundle and --root
