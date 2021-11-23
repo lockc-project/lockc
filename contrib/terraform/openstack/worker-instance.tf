@@ -10,25 +10,26 @@ data "template_file" "worker_repositories" {
 
 data "template_file" "worker_commands" {
   template = file("cloud-init/commands.tpl")
-  count    = join("", var.packages) == "" ? 0 : 1
+  count    = length(var.packages)
 
   vars = {
     packages = join(", ", var.packages)
   }
 }
 
-data "template_file" "worker-cloud-init" {
+data "template_file" "worker_cloud_init" {
   template = file("cloud-init/common.tpl")
   count    = var.workers
 
   vars = {
+    hostname           = "${var.stack_name}-k8s-worker${count.index}"
+    locale             = var.locale
+    timezone           = var.timezone
+    username           = var.username
     authorized_keys    = join("\n", formatlist("  - %s", var.authorized_keys))
     repositories       = join("\n", data.template_file.worker_repositories.*.rendered)
     commands           = join("\n", data.template_file.worker_commands.*.rendered)
-    username           = var.username
     ntp_servers        = join("\n", formatlist("    - %s", var.ntp_servers))
-    hostname           = "${var.stack_name}-k8s-worker${count.index}"
-    hostname_from_dhcp = var.hostname_from_dhcp
   }
 }
 
@@ -41,6 +42,7 @@ resource "openstack_blockstorage_volume_v2" "worker_vol" {
 resource "openstack_compute_volume_attach_v2" "worker_vol_attach" {
   count       = var.workers_vol_enabled ? var.workers : 0
   instance_id = element(openstack_compute_instance_v2.worker.*.id, count.index)
+
   volume_id = element(
     openstack_blockstorage_volume_v2.worker_vol.*.id,
     count.index,
@@ -68,7 +70,7 @@ resource "openstack_compute_instance_v2" "worker" {
     openstack_networking_secgroup_v2.common.id,
   ]
 
-  user_data = data.template_file.worker-cloud-init[count.index].rendered
+  user_data = data.template_file.worker_cloud_init[count.index].rendered
 }
 
 resource "openstack_networking_floatingip_v2" "worker_ext" {
@@ -79,10 +81,12 @@ resource "openstack_networking_floatingip_v2" "worker_ext" {
 resource "openstack_compute_floatingip_associate_v2" "worker_ext_ip" {
   depends_on = [openstack_compute_instance_v2.worker]
   count      = var.workers
+
   floating_ip = element(
     openstack_networking_floatingip_v2.worker_ext.*.address,
     count.index,
   )
+
   instance_id = element(openstack_compute_instance_v2.worker.*.id, count.index)
 }
 
@@ -109,8 +113,55 @@ resource "null_resource" "worker_wait_cloudinit" {
   }
 }
 
+resource "null_resource" "worker_provision" {
+  depends_on = [
+    null_resource.worker_wait_cloudinit
+  ]
+  count      = var.workers
+
+  connection {
+    host = element(
+      openstack_compute_floatingip_associate_v2.worker_ext_ip.*.floating_ip,
+      count.index
+    )
+    user = "opensuse"
+    type = "ssh"
+  }
+
+  provisioner "remote-exec" {
+    script = "provision.sh"
+  }
+}
+
+resource "null_resource" "worker_provision_k8s_containerd" {
+  depends_on = [
+    null_resource.worker_provision
+  ]
+  count      = var.workers
+
+  connection {
+    host = element(
+      openstack_compute_floatingip_associate_v2.worker_ext_ip.*.floating_ip,
+      count.index
+    )
+    user = var.username
+    type = "ssh"
+  }
+
+  provisioner "remote-exec" {
+    script = "provision-k8s-containerd.sh"
+  }
+
+  provisioner "remote-exec" {
+    script = "provision-k8s-containerd-cp.sh"
+  }
+}
+
+
 resource "null_resource" "worker_reboot" {
-  depends_on = [null_resource.worker_wait_cloudinit]
+  depends_on = [
+    null_resource.worker_provision_k8s_containerd,
+  ]
   count      = var.workers
 
   provisioner "local-exec" {
@@ -132,6 +183,7 @@ if ! ssh $sshopts $user@$host 'sudo needs-restarting -r'; then
         sleep $delay
         delay=$((delay+1))
         [ $delay -gt 30 ] && exit 1
+        ssh $sshopts $user@$host 'sudo needs-restarting -r'
     done
 fi
 EOT

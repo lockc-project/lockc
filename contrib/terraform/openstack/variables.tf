@@ -79,6 +79,16 @@ variable "stack_name" {
   description = "Identifier to make all your resources unique and avoid clashes with other users of this terraform project"
 }
 
+variable "locale" {
+  description = "System locales to set on all the nodes"
+  default     = "en_US.UTF-8"
+}
+
+variable "timezone" {
+  description = "Timezone to set on all the nodes"
+  default     = "Etc/UTC"
+}
+
 variable "authorized_keys" {
   type        = list(string)
   default     = []
@@ -120,9 +130,4 @@ variable "password" {
 variable "ca_file" {
   default     = ""
   description = "Used to specify the path to your custom CA file"
-}
-
-variable "hostname_from_dhcp" {
-  default     = true
-  description = "Set node's hostname from DHCP server"
 }

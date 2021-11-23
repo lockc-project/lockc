@@ -146,11 +146,6 @@ resource "null_resource" "worker_provision_k8s_containerd" {
     type = "ssh"
   }
 
-  provisioner "file" {
-    source =      "../../../target/debug/lockc.tar.gz"
-    destination = "/home/opensuse/lockc.tar.gz"
-  }
-
   provisioner "remote-exec" {
     script = "provision-k8s-containerd.sh"
   }
@@ -177,13 +172,13 @@ export sshopts="-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -oCo
 if ! ssh $sshopts $user@$host 'sudo needs-restarting -r'; then
     ssh $sshopts $user@$host sudo reboot || :
     export delay=5
-    # # wait for node reboot completed
-    # # lol, doesn't work
-    # while ! ssh $sshopts $user@$host 'sudo needs-restarting -r'; do
-    #     sleep $delay
-    #     delay=$((delay+1))
-    #     [ $delay -gt 60 ] && exit 1
-    # done
+    # wait for node reboot completed
+    while ! ssh $sshopts $user@$host 'sudo needs-restarting -r'; do
+        sleep $delay
+        delay=$((delay+1))
+        [ $delay -gt 60 ] && exit 1
+        ssh $sshopts $user@$host 'sudo needs-restarting -r'
+    done
 fi
 EOT
   }

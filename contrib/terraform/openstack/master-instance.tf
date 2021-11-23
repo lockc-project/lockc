@@ -10,25 +10,26 @@ data "template_file" "master_repositories" {
 
 data "template_file" "master_commands" {
   template = file("cloud-init/commands.tpl")
-  count    = join("", var.packages) == "" ? 0 : 1
+  count    = length(var.packages)
 
   vars = {
     packages = join(", ", var.packages)
   }
 }
 
-data "template_file" "master-cloud-init" {
+data "template_file" "master_cloud_init" {
   template = file("cloud-init/common.tpl")
   count    = var.masters
 
   vars = {
+    hostname           = "${var.stack_name}-k8s-master${count.index}"
+    locale             = var.locale
+    timezone           = var.timezone
+    username           = var.username
     authorized_keys    = join("\n", formatlist("  - %s", var.authorized_keys))
     repositories       = join("\n", data.template_file.master_repositories.*.rendered)
     commands           = join("\n", data.template_file.master_commands.*.rendered)
-    username           = var.username
     ntp_servers        = join("\n", formatlist("    - %s", var.ntp_servers))
-    hostname           = "${var.stack_name}-k8s-master${count.index}"
-    hostname_from_dhcp = var.hostname_from_dhcp
   }
 }
 
@@ -54,7 +55,7 @@ resource "openstack_compute_instance_v2" "master" {
     openstack_networking_secgroup_v2.master_nodes.id,
   ]
 
-  user_data = data.template_file.master-cloud-init[count.index].rendered
+  user_data = data.template_file.master_cloud_init[count.index].rendered
 }
 
 resource "openstack_networking_floatingip_v2" "master_ext" {
@@ -95,8 +96,50 @@ resource "null_resource" "master_wait_cloudinit" {
   }
 }
 
-resource "null_resource" "master_reboot" {
+resource "null_resource" "master_provision" {
   depends_on = [null_resource.master_wait_cloudinit]
+  count      = var.masters
+  connection {
+    host = element(
+      openstack_compute_floatingip_associate_v2.master_ext_ip.*.floating_ip,
+      count.index
+    )
+    user = var.username
+    type = "ssh"
+  }
+
+  provisioner "remote-exec" {
+    script = "provision.sh"
+  }
+}
+
+resource "null_resource" "master_provision_k8s_containerd" {
+  depends_on = [null_resource.master_provision]
+  count      = var.masters
+
+  connection {
+    host = element(
+      openstack_compute_floatingip_associate_v2.master_ext_ip.*.floating_ip,
+      count.index
+    )
+    user = var.username
+    type = "ssh"
+  }
+
+  provisioner "remote-exec" {
+    script = "provision-k8s-containerd.sh"
+  }
+
+  provisioner "remote-exec" {
+    script = "provision-k8s-containerd-cp.sh"
+  }
+}
+
+
+resource "null_resource" "master_reboot" {
+  depends_on = [
+    null_resource.master_provision_k8s_containerd,
+  ]
   count      = var.masters
 
   provisioner "local-exec" {
@@ -118,6 +161,7 @@ if ! ssh $sshopts $user@$host 'sudo needs-restarting -r'; then
         sleep $delay
         delay=$((delay+1))
         [ $delay -gt 30 ] && exit 1
+        ssh $sshopts $user@$host 'sudo needs-restarting -r'
     done
 fi
 EOT
