@@ -379,8 +379,10 @@ allowed_paths_access_baseline = [
 denied_paths_access_restricted = [
     "/proc/acpi",
     "/proc/sys",
+    "/var/run/secrets/kubernetes.io",
 ]
 
 denied_paths_access_baseline = [
     "/proc/acpi",
+    "/var/run/secrets/kubernetes.io",
 ]
