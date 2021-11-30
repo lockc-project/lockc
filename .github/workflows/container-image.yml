@@ -4,9 +4,6 @@ on:
     - main
     tags:
     - 'v*'
-  pull_request:
-    branches:
-    - main
 
 name: build container image
 
@@ -36,32 +33,12 @@ jobs:
         if: ${{ startsWith(github.ref, 'refs/heads/') }}
         uses: docker/build-push-action@v2
         with:
-          build-args: |
-            PROFILE=debug
           context: .
           file: ./Dockerfile
           platforms: linux/amd64
           push: true
           tags: |
             ghcr.io/rancher-sandbox/lockc:latest
-      -
-        name: Retrieve pull request number
-        if: ${{ startsWith(github.ref, 'refs/pull/') }}
-        run: |
-          echo PR_NUMBER=$(echo $GITHUB_REF | sed -e "s|^refs/pull/||" -e "s|/merge$||")
-      -
-        name: Build and push pull request container image
-        if: ${{ startsWith(github.ref, 'refs/pull/') }}
-        uses: docker/build-push-action@v2
-        with:
-          build-args:
-            PROFILE=debug
-          context: .
-          file: ./Dockerfile
-          platforms: linux/amd64
-          push: true
-          tags: |
-            ghcr.io/rancher-sandbox/lockc:pr${{ env.PR_NUMBER }}
       -
         name: Retrieve tag name
         if: ${{ startsWith(github.ref, 'refs/tags/') }}
@@ -72,8 +49,6 @@ jobs:
         if: ${{ startsWith(github.ref, 'refs/tags/') }}
         uses: docker/build-push-action@v2
         with:
-          build-args: |
-            PROFILE=release
           context: .
           file: ./Dockerfile
           platforms: linux/amd64
