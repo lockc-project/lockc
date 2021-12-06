@@ -62,12 +62,12 @@ enum ContainerType {
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
 struct Mount {
-    destination: String,
-    r#type: String,
     source: String,
-    options: Vec<String>,
 }
 
+// NOTE(vadorovsky): Rust complains about `mounts` field not being used, but it
+// IS FRICKING USED in the `container_type_data` function. Bug in the compiler?
+#[allow(dead_code)]
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
 struct ContainerConfig {
