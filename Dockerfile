@@ -20,6 +20,9 @@ RUN zypper --non-interactive install -t pattern \
     && zypper clean
 RUN rustup-init -y
 ENV PATH="/root/.cargo/bin:${PATH}"
+# Pin to Rust 1.56.1.
+RUN rustup install 1.56.1 \
+    && rustup default 1.56.1-x86_64-unknown-linux-gnu
 RUN rustup component add \
         clippy \
         rustfmt
