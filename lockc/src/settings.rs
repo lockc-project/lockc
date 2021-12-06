@@ -207,6 +207,7 @@ static DIR_MM: &str = "/sys/kernel/mm";
 static DIR_TMP: &str = "/tmp";
 static DIR_USR: &str = "/usr";
 static DIR_VAR: &str = "/var";
+static DIR_K8S_SECRETS: &str = "/var/run/secrets/kubernetes.io";
 
 static DIR_PROC_ACPI: &str = "/proc/acpi";
 static DIR_PROC_SYS: &str = "/proc/sys";
@@ -480,11 +481,11 @@ impl Settings {
         )?;
         s.set(
             "denied_paths_access_restricted",
-            vec![DIR_PROC_ACPI.to_string(), DIR_PROC_SYS.to_string()],
+            vec![DIR_PROC_ACPI.to_string(), DIR_PROC_SYS.to_string(), DIR_K8S_SECRETS.to_string()],
         )?;
         s.set(
             "denied_paths_access_baseline",
-            vec![DIR_PROC_ACPI.to_string()],
+            vec![DIR_PROC_ACPI.to_string(), DIR_K8S_SECRETS.to_string()],
         )?;
 
         s.merge(config::File::with_name("/etc/lockc/lockc.toml").required(false))?;
