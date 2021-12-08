@@ -1,7 +1,0 @@
-lockcd:
-  image:
-    repository: docker.io/vadorovsky/lockcd
-    pullPolicy: IfNotPresent
-    tag: "latest"
-  debug:
-    enabled: false
