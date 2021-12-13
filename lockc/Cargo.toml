@@ -37,7 +37,7 @@ log = "0.4"
 log4rs = "1.0"
 nix = "0.23"
 plain = "0.2"
-procfs = "0.11"
+procfs = "0.12"
 regex = { version = "1.5", default-features = false, features = ["perf"] }
 scopeguard = "1.1"
 serde = "1.0"
