@@ -25,23 +25,33 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: nginx-restricted-success
+  name: app-restricted-success
   namespace: restricted
 spec:
   selector:
     matchLabels:
-      app: nginx-restricted-success
+      app: app-restricted-success
   replicas: 1
   template:
     metadata:
       labels:
-        app: nginx-restricted-success
+        app: app-restricted-success
     spec:
+      securityContext:
+        runAsUser: 101
+        seccompProfile:
+          type: "RuntimeDefault"
       containers:
-      - name: nginx
-        image: nginx:1.14.2
+      - name: app-restricted
+        image: busybox
+        command: [ "sh", "-c", "sleep 3600" ]
         ports:
         - containerPort: 80
+        securityContext:
+          allowPrivilegeEscalation: false
+          runAsNonRoot: true
+          capabilities:
+            drop: ["ALL"]
 ---
 apiVersion: apps/v1
 kind: Deployment
