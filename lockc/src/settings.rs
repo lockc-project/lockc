@@ -212,6 +212,7 @@ static DIR_ETC: &str = "/etc";
 static DIR_LIB: &str = "/lib";
 static DIR_LIB64: &str = "/lib64";
 static PAUSE: &str = "/pause";
+static DIR_OPT: &str = "/opt";
 static DIR_PROC: &str = "/proc";
 static DIR_RUN: &str = "/run";
 static DIR_CGROUP: &str = "/sys/fs/cgroup";
@@ -460,6 +461,7 @@ impl Settings {
                 DIR_LIB.to_string(),
                 DIR_LIB64.to_string(),
                 PAUSE.to_string(),
+                DIR_OPT.to_string(),
                 DIR_PROC.to_string(),
                 DIR_RUN.to_string(),
                 DIR_CGROUP.to_string(),
@@ -494,6 +496,7 @@ impl Settings {
                 DIR_LIB.to_string(),
                 DIR_LIB64.to_string(),
                 PAUSE.to_string(),
+                DIR_OPT.to_string(),
                 DIR_PROC.to_string(),
                 DIR_RUN.to_string(),
                 DIR_CGROUP.to_string(),
