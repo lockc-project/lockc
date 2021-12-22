@@ -10,8 +10,20 @@ allowed_paths_mount_restricted = [
     "/dev/pts",
     # Storage directory used by libpod (podman, cri-o).
     "/var/lib/containers/storage",
+    # Storage directory used by docker (aufs driver).
+    "/var/lib/docker/aufs",
+    # Storage directory used by docker (btrfs driver).
+    "/var/lib/docker/btrfs",
+    # Storage directory used by docker (devmapper driver).
+    "/var/lib/docker/devmapper",
+    # Storage directory used by docker (overlay driver)
+    "/var/lib/docker/overlay",
     # Storage directory used by docker (overlay2 driver).
     "/var/lib/docker/overlay2",
+    # Storage directory used by docker (vfs driver).
+    "/var/lib/docker/vfs",
+    # Storage directory used by docker (zfs driver).
+    "/var/lib/docker/zfs",
     # Storage directory used by containerd.
     "/var/run/container",
     # Storage directory used by CRI containerd.
@@ -165,8 +177,20 @@ allowed_paths_mount_baseline = [
     "/dev/pts",
     # Storage directory used by libpod (podman, cri-o).
     "/var/lib/containers/storage",
+    # Storage directory used by docker (aufs driver).
+    "/var/lib/docker/aufs",
+    # Storage directory used by docker (btrfs driver).
+    "/var/lib/docker/btrfs",
+    # Storage directory used by docker (devmapper driver).
+    "/var/lib/docker/devmapper",
+    # Storage directory used by docker (overlay driver)
+    "/var/lib/docker/overlay",
     # Storage directory used by docker (overlay2 driver).
     "/var/lib/docker/overlay2",
+    # Storage directory used by docker (vfs driver).
+    "/var/lib/docker/vfs",
+    # Storage directory used by docker (zfs driver).
+    "/var/lib/docker/zfs",
     # Storage directory used by containerd.
     "/var/run/container",
     # Storage directory used by CRI containerd.

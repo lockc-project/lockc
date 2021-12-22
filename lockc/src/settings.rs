@@ -8,8 +8,20 @@ static DIR_PTS: &str = "/dev/pts";
 
 /// Storage directory used by libpod (podman, cri-o).
 static DIR_STORAGE_LIBPOD: &str = "/var/lib/containers/storage";
+/// Storage directory used by docker (aufs driver).
+static DIR_STORAGE_DOCKER_AUFS: &str = "/var/lib/docker/aufs";
+/// Storage directory used by docker (btrfs driver).
+static DIR_STORAGE_DOCKER_BTRFS: &str = "/var/lib/docker/btrfs";
+/// Storage directory used by docker (devmapper driver).
+static DIR_STORAGE_DOCKER_DEVMAPPER: &str = "/var/lib/docker/devmapper";
+/// Storage directory used by docker (overlay driver).
+static DIR_STORAGE_DOCKER_OVERLAY: &str = "/var/lib/docker/overlay";
 /// Storage directory used by docker (overlay2 driver).
 static DIR_STORAGE_DOCKER_OVERLAY2: &str = "/var/lib/docker/overlay2";
+/// Storage directory used by docker (vfs driver).
+static DIR_STORAGE_DOCKER_VFS: &str = "/var/lib/docker/vfs";
+/// Storage directory used by docker (zfs driver).
+static DIR_STORAGE_DOCKER_ZFS: &str = "/var/lib/docker/zfs";
 /// Storage directory used by containerd.
 static DIR_STORAGE_CONTAINERD: &str = "/var/run/container";
 /// Storage directory used by CRI containerd.
@@ -258,7 +270,13 @@ impl Settings {
             vec![
                 DIR_PTS.to_string(),
                 DIR_STORAGE_LIBPOD.to_string(),
+                DIR_STORAGE_DOCKER_AUFS.to_string(),
+                DIR_STORAGE_DOCKER_BTRFS.to_string(),
+                DIR_STORAGE_DOCKER_DEVMAPPER.to_string(),
+                DIR_STORAGE_DOCKER_OVERLAY.to_string(),
                 DIR_STORAGE_DOCKER_OVERLAY2.to_string(),
+                DIR_STORAGE_DOCKER_VFS.to_string(),
+                DIR_STORAGE_DOCKER_ZFS.to_string(),
                 DIR_STORAGE_CONTAINERD.to_string(),
                 DIR_STORAGE_CRI_CONTAINERD.to_string(),
                 DIR_STORAGE_CRI_CONTAINERD2.to_string(),
@@ -336,7 +354,13 @@ impl Settings {
                 // Paths used by container runtimes.
                 DIR_PTS.to_string(),
                 DIR_STORAGE_LIBPOD.to_string(),
+                DIR_STORAGE_DOCKER_AUFS.to_string(),
+                DIR_STORAGE_DOCKER_BTRFS.to_string(),
+                DIR_STORAGE_DOCKER_DEVMAPPER.to_string(),
+                DIR_STORAGE_DOCKER_OVERLAY.to_string(),
                 DIR_STORAGE_DOCKER_OVERLAY2.to_string(),
+                DIR_STORAGE_DOCKER_VFS.to_string(),
+                DIR_STORAGE_DOCKER_ZFS.to_string(),
                 DIR_STORAGE_CONTAINERD.to_string(),
                 DIR_STORAGE_CRI_CONTAINERD.to_string(),
                 DIR_STORAGE_CRI_CONTAINERD2.to_string(),
