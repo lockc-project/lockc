@@ -42,7 +42,7 @@ The build (of both BPF and userspace part) can be performed by running the
 following command:
 
 ```bash
-dapper cargo build
+DOCKER_BUILDKIT=1 dapper cargo build
 ```
 
 A successful build should result in binaries being present in `target/debug`
