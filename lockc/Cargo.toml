@@ -31,7 +31,7 @@ kube = "0.65"
 k8s-openapi = { version = "0.13", default-features = false, features = ["v1_21"] }
 lazy_static = "1.4"
 libc = { version = "0.2", features = [ "extra_traits" ] }
-libbpf-rs = "0.14"
+libbpf-rs = "0.16"
 lockc-uprobes = { path = "../lockc-uprobes" }
 log = "0.4"
 log4rs = "1.0"
@@ -52,7 +52,7 @@ which = "4.2"
 [build-dependencies]
 anyhow = "1.0"
 bindgen = "0.59"
-libbpf-cargo = "0.9"
+libbpf-cargo = "0.10"
 reqwest = { version = "0.11", features = ["blocking"] }
 tempfile = "3.2"
 thiserror = "1.0"
