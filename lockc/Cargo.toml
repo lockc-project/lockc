@@ -48,7 +48,7 @@ which = "4.2"
 [build-dependencies]
 anyhow = "1.0"
 bindgen = "0.59"
-libbpf-cargo = "0.9"
+libbpf-sys = { version = "0.6.1-1" }
 reqwest = { version = "0.11", features = ["blocking"] }
 tempfile = "3.2"
 thiserror = "1.0"
