@@ -59,8 +59,8 @@ static __always_inline int strcmp(const unsigned char *p1,
 	size_t i;
 
 	for (i = 0; i < len; i++) {
-		c1 = (unsigned char) p1[i];
-		c2 = (unsigned char) p2[i];
+		c1 = (unsigned char)p1[i];
+		c2 = (unsigned char)p2[i];
 
 		if (c1 != c2 || c1 == '\0' || c2 == '\0')
 			return c1 - c2;

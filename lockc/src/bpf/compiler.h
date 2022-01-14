@@ -6,5 +6,5 @@
  * given condition is unlikely to be true.
  */
 #ifndef unlikely
-# define unlikely(X)		__builtin_expect(!!(X), 0)
+#define unlikely(X) __builtin_expect(!!(X), 0)
 #endif
