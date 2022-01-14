@@ -5,63 +5,51 @@
 #![allow(non_snake_case)]
 include!(concat!(env!("OUT_DIR"), "/bindings.rs"));
 
-use byteorder::{NativeEndian, WriteBytesExt};
+use std::ffi::CString;
 
-#[derive(thiserror::Error, Debug)]
+use thiserror::Error;
+
+#[derive(Error, Debug)]
 pub enum NewBpfstructError {
-    #[error("FFI nul error")]
+    #[error(transparent)]
     NulError(#[from] std::ffi::NulError),
+
+    #[error("could not convert Vec<u8> to CString")]
+    VecU8CStringConv,
 }
-
-#[derive(thiserror::Error, Debug)]
-pub enum MapOperationError {
-    #[error("could not convert the key to a byte array")]
-    ByteWriteError(#[from] std::io::Error),
-
-    #[error("libbpf error")]
-    LibbpfError(#[from] libbpf_rs::Error),
-}
-
-/// Deletes an entry from the given map under the given key.
-pub fn map_delete(map: &mut libbpf_rs::Map, key: u32) -> Result<(), MapOperationError> {
-    let mut key_b = vec![];
-    key_b.write_u32::<NativeEndian>(key)?;
-
-    map.delete(&key_b)?;
-
-    Ok(())
-}
-
-pub trait BpfStruct {
-    /// Updates the given map with an entry under the given key and a value
-    /// with a binary representation of the struct.
-    fn map_update(&self, map: &mut libbpf_rs::Map, key: u32) -> Result<(), MapOperationError> {
-        let mut key_b = vec![];
-        key_b.write_u32::<NativeEndian>(key)?;
-
-        let val_b = unsafe { plain::as_bytes(self) };
-
-        map.update(&key_b, val_b, libbpf_rs::MapFlags::empty())?;
-
-        Ok(())
-    }
-}
-
-impl BpfStruct for container {}
-impl BpfStruct for process {}
-impl BpfStruct for accessed_path {}
 
 impl accessed_path {
     /// Creates a new accessed_path instance and converts the given Rust string
     /// into C fixed-size char array.
     pub fn new(path: &str) -> Result<Self, NewBpfstructError> {
-        let mut path_b = std::ffi::CString::new(path)?.into_bytes_with_nul();
+        let mut path_b = CString::new(path)?.into_bytes_with_nul();
         path_b.resize(PATH_LEN as usize, 0);
         Ok(accessed_path {
-            path: path_b.try_into().unwrap(),
+            path: path_b
+                .try_into()
+                .map_err(|_| NewBpfstructError::VecU8CStringConv)?,
         })
     }
 }
+
+impl container_id {
+    /// Creates a new container_id instance and converts the given Rust string
+    /// into C fixed size char array.
+    pub fn new(id: &str) -> Result<Self, NewBpfstructError> {
+        let mut id_b = CString::new(id)?.into_bytes_with_nul();
+        id_b.resize(CONTAINER_ID_LIMIT as usize, 0);
+        Ok(container_id {
+            id: id_b
+                .try_into()
+                .map_err(|_| NewBpfstructError::VecU8CStringConv)?,
+        })
+    }
+}
+
+unsafe impl aya::Pod for accessed_path {}
+unsafe impl aya::Pod for container {}
+unsafe impl aya::Pod for container_id {}
+unsafe impl aya::Pod for process {}
 
 #[cfg(test)]
 mod tests {

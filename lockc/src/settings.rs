@@ -1,3 +1,5 @@
+use lazy_static::lazy_static;
+
 use crate::bpfstructs;
 
 /// Path to Pseudo-Terminal Device, needed for -it option in container
@@ -224,6 +226,10 @@ static DIR_K8S_SECRETS: &str = "/var/run/secrets/kubernetes.io";
 
 static DIR_PROC_ACPI: &str = "/proc/acpi";
 static DIR_PROC_SYS: &str = "/proc/sys";
+
+lazy_static! {
+    pub static ref SETTINGS: Settings = Settings::new().unwrap();
+}
 
 #[derive(Debug, serde::Deserialize)]
 pub struct Settings {
@@ -508,7 +514,11 @@ impl Settings {
         )?;
         s.set_default(
             "denied_paths_access_restricted",
-            vec![DIR_PROC_ACPI.to_string(), DIR_PROC_SYS.to_string(), DIR_K8S_SECRETS.to_string()],
+            vec![
+                DIR_PROC_ACPI.to_string(),
+                DIR_PROC_SYS.to_string(),
+                DIR_K8S_SECRETS.to_string(),
+            ],
         )?;
         s.set_default(
             "denied_paths_access_baseline",
