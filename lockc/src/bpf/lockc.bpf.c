@@ -126,10 +126,9 @@ static __always_inline enum container_policy_level get_policy_level(pid_t pid)
  * sched_process_fork - tracepoint program triggered by fork() function.
  */
 SEC("tp_btf/sched_process_fork")
-int sched_process_fork(struct bpf_raw_tracepoint_args *args)
+int BPF_PROG(sched_process_fork, struct task_struct *parent,
+	     struct task_struct *child)
 {
-	struct task_struct *parent = (struct task_struct *)args->args[0];
-	struct task_struct *child = (struct task_struct *)args->args[1];
 	if (parent == NULL || child == NULL) {
 		/* Shouldn't happen */
 		bpf_printk("error: sched_process_fork: parent or child is "
