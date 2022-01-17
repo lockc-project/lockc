@@ -62,10 +62,7 @@ enum ContainerType {
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
 struct Mount {
-    destination: String,
-    r#type: String,
     source: String,
-    options: Vec<String>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -222,12 +219,6 @@ fn policy_kubernetes_sync(
         Ok(p) => Ok(p),
         Err(e) => Err(PolicyKubernetesSyncError::from(e)),
     }
-}
-
-#[derive(Debug, Deserialize)]
-#[serde(rename_all = "camelCase")]
-struct Mounts {
-    mounts: Vec<Mount>,
 }
 
 fn policy_docker<P: AsRef<Path>>(
