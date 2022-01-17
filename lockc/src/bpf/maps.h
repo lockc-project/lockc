@@ -39,75 +39,73 @@ struct {
 } processes SEC(".maps");
 
 /*
- * allowed_paths_mount_restricted - BPF map which contains the source path
- * prefixes allowed to bind mount from host to restricted containers. It should
- * contain only paths used by default by container runtimes, not paths mounted
- * with the -v option.
+ * ap_mnt_restr - BPF map which contains the source path prefixes allowed to
+ * bind mount from host to restricted containers. It should contain only
+ * paths used by default by container runtimes, not paths mounted with the -v
+ * option.
  */
 struct {
 	__uint(type, BPF_MAP_TYPE_HASH);
 	__uint(max_entries, PATH_MAX_LIMIT);
 	__type(key, u32);
 	__type(value, struct accessed_path);
-} allowed_paths_mount_restricted SEC(".maps");
+} ap_mnt_restr SEC(".maps");
 
 /*
- * allowed_paths_mount_baseline - BPF map which contains the source path
- * prefixes allowed to bind mount from host to baseline containers. It
- * should contain both paths used by default by container runtimes and
- * paths we allow to mount with -v option.
+ * ap_mnt_base - BPF map which contains the source path prefixes allowed to
+ * bind mount from host to baseline containers. It should contain both paths
+ * used by default by container runtimes and paths we allow to mount with -v
+ * option.
  */
 struct {
 	__uint(type, BPF_MAP_TYPE_HASH);
 	__uint(max_entries, PATH_MAX_LIMIT);
 	__type(key, u32);
 	__type(value, struct accessed_path);
-} allowed_paths_mount_baseline SEC(".maps");
+} ap_mnt_base SEC(".maps");
 
 /*
- * allowed_paths_access_restricted - BPF map which contains the path prefixes
- * allowed to access (open, create, delete, move etc.) inside filesystems of
- * restricted containers.
+ * ap_acc_restr - BPF map which contains the path prefixes allowed to access
+ * (open, create, delete, move etc.) inside filesystems of restricted
+ * containers.
  */
 struct {
 	__uint(type, BPF_MAP_TYPE_HASH);
 	__uint(max_entries, PATH_MAX_LIMIT);
 	__type(key, u32);
 	__type(value, struct accessed_path);
-} allowed_paths_access_restricted SEC(".maps");
+} ap_acc_restr SEC(".maps");
 
 /*
- * allowed_paths_access_baseline - BPF map which contains the path prefixes
- * allowed to access (open, create, delete, move etc.) inside filesystems of
- * baseline containers.
+ * ap_acc_base - BPF map which contains the path prefixes allowed to access
+ * (open, create, delete, move etc.) inside filesystems of baseline containers.
  */
 struct {
 	__uint(type, BPF_MAP_TYPE_HASH);
 	__uint(max_entries, PATH_MAX_LIMIT);
 	__type(key, u32);
 	__type(value, struct accessed_path);
-} allowed_paths_access_baseline SEC(".maps");
+} ap_acc_base SEC(".maps");
 
 /*
- * denied_paths_access_restricted - BPF map which contains the path prefixes
- * denied to access (open, create, delete, move etc.) inside filesystems of
- * restricted containers.
+ * dp_acc_restr - BPF map which contains the path prefixes denied to access
+ * (open, create, delete, move etc.) inside filesystems of restricted
+ * containers.
  */
 struct {
 	__uint(type, BPF_MAP_TYPE_HASH);
 	__uint(max_entries, PATH_MAX_LIMIT);
 	__type(key, u32);
 	__type(value, struct accessed_path);
-} denied_paths_access_restricted SEC(".maps");
+} dp_acc_restr SEC(".maps");
 
 /*
- * denied_paths_access_baseline - BPF map which contains the path prefixes
- * denied to access (open, create, delete, move etc.) inside filesystems of
- * baseline containers.
+ * dp_acc_base - BPF map which contains the path prefixes denied to access
+ * (open, create, delete, move etc.) inside filesystems of baseline containers.
  */
 struct {
 	__uint(type, BPF_MAP_TYPE_HASH);
 	__uint(max_entries, PATH_MAX_LIMIT);
 	__type(key, u32);
 	__type(value, struct accessed_path);
-} denied_paths_access_baseline SEC(".maps");
+} dp_acc_base SEC(".maps");

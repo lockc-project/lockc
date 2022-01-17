@@ -127,24 +127,22 @@ pub enum InitAllowedPathsError {
 pub fn init_allowed_paths(mut maps: LockcMapsMut) -> Result<(), InitAllowedPathsError> {
     for (i, allowed_path_s) in SETTINGS.allowed_paths_mount_restricted.iter().enumerate() {
         bpfstructs::accessed_path::new(allowed_path_s)?
-            .map_update(maps.allowed_paths_mount_restricted(), i.try_into().unwrap())?;
+            .map_update(maps.ap_mnt_restr(), i.try_into().unwrap())?;
     }
 
     for (i, allowed_path_s) in SETTINGS.allowed_paths_mount_baseline.iter().enumerate() {
         bpfstructs::accessed_path::new(allowed_path_s)?
-            .map_update(maps.allowed_paths_mount_baseline(), i.try_into().unwrap())?;
+            .map_update(maps.ap_mnt_base(), i.try_into().unwrap())?;
     }
 
     for (i, allowed_path_s) in SETTINGS.allowed_paths_access_restricted.iter().enumerate() {
-        bpfstructs::accessed_path::new(allowed_path_s)?.map_update(
-            maps.allowed_paths_access_restricted(),
-            i.try_into().unwrap(),
-        )?;
+        bpfstructs::accessed_path::new(allowed_path_s)?
+            .map_update(maps.ap_acc_restr(), i.try_into().unwrap())?;
     }
 
     for (i, allowed_path_s) in SETTINGS.allowed_paths_access_baseline.iter().enumerate() {
         bpfstructs::accessed_path::new(allowed_path_s)?
-            .map_update(maps.allowed_paths_access_baseline(), i.try_into().unwrap())?;
+            .map_update(maps.ap_acc_base(), i.try_into().unwrap())?;
     }
 
     Ok(())
@@ -173,6 +171,9 @@ pub struct BpfContext<'a> {
 #[derive(thiserror::Error, Debug)]
 pub enum NewBpfContextError {
     #[error(transparent)]
+    IO(#[from] io::Error),
+
+    #[error(transparent)]
     Libbpf(#[from] libbpf_rs::Error),
 
     #[error(transparent)]
@@ -191,6 +192,8 @@ pub enum NewBpfContextError {
 impl<'a> BpfContext<'a> {
     /// Performs the following BPF-related operations:
     /// - loading BPF programs
+    /// - trying to reuse pinned BPF maps from BPFFS (if there was a previous
+    ///   lockc instance running in the system)
     /// - resizing PID-related BPF maps
     /// - pinning BPF maps in BPFFS
     /// - pinning BPF programs in BPFFS
@@ -202,108 +205,210 @@ impl<'a> BpfContext<'a> {
     /// previous instances of BPF programs while we are in the process of loading
     /// new programs. This is done to ensure that **some** instance of BPF programs
     /// is always running and that containers are secured.
-    ///
-    /// TODO: The concept described above still has one hole - the contents of old
-    /// BPF maps is not migrated in any way. We need to come up with some sane copy
-    /// mechanism.
-    pub fn new<P: AsRef<path::Path>>(path_base_ts_r: P) -> Result<Self, NewBpfContextError> {
-        let path_base_ts = path_base_ts_r.as_ref();
+    pub fn new<P: AsRef<path::Path>>(path_base_r: P) -> Result<Self, NewBpfContextError> {
+        let path_base = path_base_r.as_ref();
         let skel_builder = LockcSkelBuilder::default();
         let mut open_skel = skel_builder.open()?;
 
+        let path_map_runtimes = path_base.join("map_runtimes");
+        if path_map_runtimes.exists() {
+            open_skel
+                .maps_mut()
+                .runtimes()
+                .reuse_pinned_map(path_map_runtimes.clone())?;
+        }
+
         let pid_max = get_pid_max()?;
-        open_skel.maps_mut().containers().set_max_entries(pid_max)?;
-        open_skel.maps_mut().processes().set_max_entries(pid_max)?;
+
+        let path_map_containers = path_base.join("map_containers");
+        if path_map_containers.exists() {
+            open_skel
+                .maps_mut()
+                .containers()
+                .reuse_pinned_map(path_map_containers.clone())?;
+        } else {
+            open_skel.maps_mut().containers().set_max_entries(pid_max)?;
+        }
+
+        let path_map_processes = path_base.join("map_processes");
+        if path_map_processes.exists() {
+            open_skel
+                .maps_mut()
+                .processes()
+                .reuse_pinned_map(path_map_processes.clone())?;
+        } else {
+            open_skel.maps_mut().processes().set_max_entries(pid_max)?;
+        }
+
+        let path_map_ap_mnt_restr = path_base.join("map_ap_mnt_restr");
+        if path_map_ap_mnt_restr.exists() {
+            open_skel
+                .maps_mut()
+                .ap_mnt_restr()
+                .reuse_pinned_map(path_map_ap_mnt_restr.clone())?;
+        }
+
+        let path_map_ap_mnt_base = path_base.join("map_ap_mnt_base");
+        if path_map_ap_mnt_base.exists() {
+            open_skel
+                .maps_mut()
+                .ap_mnt_base()
+                .reuse_pinned_map(path_map_ap_mnt_base.clone())?;
+        }
+
+        let path_map_ap_acc_restr = path_base.join("map_ap_acc_restr");
+        if path_map_ap_acc_restr.exists() {
+            open_skel
+                .maps_mut()
+                .ap_acc_restr()
+                .reuse_pinned_map(path_map_ap_acc_restr.clone())?;
+        }
+
+        let path_map_ap_acc_base = path_base.join("map_ap_acc_base");
+        if path_map_ap_acc_base.exists() {
+            open_skel
+                .maps_mut()
+                .ap_acc_base()
+                .reuse_pinned_map(path_map_ap_acc_base.clone())?;
+        }
+
+        let path_map_dp_acc_restr = path_base.join("map_dp_acc_restr");
+        if path_map_dp_acc_restr.exists() {
+            open_skel
+                .maps_mut()
+                .dp_acc_restr()
+                .reuse_pinned_map(path_map_dp_acc_restr.clone())?;
+        }
+
+        let path_map_dp_acc_base = path_base.join("map_dp_acc_base");
+        if path_map_dp_acc_base.exists() {
+            open_skel
+                .maps_mut()
+                .dp_acc_base()
+                .reuse_pinned_map(path_map_dp_acc_base.clone())?;
+        }
 
         let mut skel = open_skel.load()?;
 
-        let mut path_map_runtimes = path_base_ts.join("map_runtimes");
-        skel.maps_mut().runtimes().pin(&mut path_map_runtimes)?;
-
+        if !path_map_runtimes.exists() {
+            skel.maps_mut().runtimes().pin(path_map_runtimes)?;
+        }
         init_runtimes(skel.maps_mut().runtimes())?;
-
-        let path_map_containers = path_base_ts.join("map_containers");
-        skel.maps_mut().containers().pin(path_map_containers)?;
-
-        let path_map_processes = path_base_ts.join("map_processes");
-        skel.maps_mut().processes().pin(path_map_processes)?;
-
-        let path_map_allowed_paths_mount_restricted =
-            path_base_ts.join("map_allowed_paths_mount_restricted");
-        skel.maps_mut()
-            .allowed_paths_mount_restricted()
-            .pin(path_map_allowed_paths_mount_restricted)?;
-
-        let path_map_allowed_paths_mount_baseline =
-            path_base_ts.join("map_allowed_paths_mount_baseline");
-        skel.maps_mut()
-            .allowed_paths_mount_baseline()
-            .pin(path_map_allowed_paths_mount_baseline)?;
-
-        let path_map_allowed_paths_access_restricted =
-            path_base_ts.join("map_allowed_paths_access_restricted");
-        skel.maps_mut()
-            .allowed_paths_access_restricted()
-            .pin(path_map_allowed_paths_access_restricted)?;
-
-        let path_map_allowed_paths_access_baseline =
-            path_base_ts.join("map_allowed_paths_access_baseline");
-        skel.maps_mut()
-            .allowed_paths_access_baseline()
-            .pin(path_map_allowed_paths_access_baseline)?;
-
+        if !path_map_containers.exists() {
+            skel.maps_mut().containers().pin(path_map_containers)?;
+        }
+        if !path_map_processes.exists() {
+            skel.maps_mut().processes().pin(path_map_processes)?;
+        }
+        if !path_map_ap_mnt_restr.exists() {
+            skel.maps_mut().ap_mnt_restr().pin(path_map_ap_mnt_restr)?;
+        }
+        if !path_map_ap_mnt_base.exists() {
+            skel.maps_mut().ap_mnt_base().pin(path_map_ap_mnt_base)?;
+        }
+        if !path_map_ap_acc_restr.exists() {
+            skel.maps_mut().ap_acc_restr().pin(path_map_ap_acc_restr)?;
+        }
+        if !path_map_ap_acc_base.exists() {
+            skel.maps_mut().ap_acc_base().pin(path_map_ap_acc_base)?;
+        }
+        if !path_map_dp_acc_restr.exists() {
+            skel.maps_mut().dp_acc_restr().pin(path_map_dp_acc_restr)?;
+        }
+        if !path_map_dp_acc_base.exists() {
+            skel.maps_mut().dp_acc_base().pin(path_map_dp_acc_base)?;
+        }
         init_allowed_paths(skel.maps_mut())?;
 
-        let path_program_fork = path_base_ts.join("prog_fork");
+        let path_program_fork = path_base.join("prog_fork");
+        if path_program_fork.exists() {
+            fs::remove_file(path_program_fork.clone())?;
+        }
         skel.progs_mut()
             .sched_process_fork()
             .pin(path_program_fork)?;
 
-        let path_program_clone = path_base_ts.join("prog_clone_audit");
+        let path_program_clone = path_base.join("prog_clone_audit");
+        if path_program_clone.exists() {
+            fs::remove_file(path_program_clone.clone())?;
+        }
         skel.progs_mut().clone_audit().pin(path_program_clone)?;
 
-        let path_program_syslog = path_base_ts.join("prog_syslog_audit");
+        let path_program_syslog = path_base.join("prog_syslog_audit");
+        if path_program_syslog.exists() {
+            fs::remove_file(path_program_syslog.clone())?;
+        }
         skel.progs_mut().syslog_audit().pin(path_program_syslog)?;
 
-        let path_program_mount = path_base_ts.join("prog_mount_audit");
+        let path_program_mount = path_base.join("prog_mount_audit");
+        if path_program_mount.exists() {
+            fs::remove_file(path_program_mount.clone())?;
+        }
         skel.progs_mut().mount_audit().pin(path_program_mount)?;
 
-        let path_program_open = path_base_ts.join("prog_open_audit");
+        let path_program_open = path_base.join("prog_open_audit");
+        if path_program_open.exists() {
+            fs::remove_file(path_program_open.clone())?;
+        }
         skel.progs_mut().open_audit().pin(path_program_open)?;
 
-        let path_program_add_container = path_base_ts.join("prog_add_container");
+        let path_program_add_container = path_base.join("prog_add_container");
+        if path_program_add_container.exists() {
+            fs::remove_file(path_program_add_container.clone())?;
+        }
         skel.progs_mut()
             .add_container()
             .pin(path_program_add_container)?;
 
-        let path_program_delete_container = path_base_ts.join("prog_delete_container");
+        let path_program_delete_container = path_base.join("prog_delete_container");
+        if path_program_delete_container.exists() {
+            fs::remove_file(path_program_delete_container.clone())?;
+        }
         skel.progs_mut()
             .delete_container()
             .pin(path_program_delete_container)?;
 
-        let path_program_add_process = path_base_ts.join("prog_add_process");
+        let path_program_add_process = path_base.join("prog_add_process");
+        if path_program_add_process.exists() {
+            fs::remove_file(path_program_add_process.clone())?;
+        }
         skel.progs_mut()
             .add_process()
             .pin(path_program_add_process)?;
 
         let mut link_fork = skel.progs_mut().sched_process_fork().attach()?;
-        let path_link_fork = path_base_ts.join("link_fork");
+        let path_link_fork = path_base.join("link_fork");
+        if path_link_fork.exists() {
+            fs::remove_file(path_link_fork.clone())?;
+        }
         link_fork.pin(path_link_fork)?;
 
         let mut link_clone = skel.progs_mut().clone_audit().attach_lsm()?;
-        let path_link_clone = path_base_ts.join("link_clone_audit");
+        let path_link_clone = path_base.join("link_clone_audit");
+        if path_link_clone.exists() {
+            fs::remove_file(path_link_clone.clone())?;
+        }
         link_clone.pin(path_link_clone)?;
 
         let mut link_syslog = skel.progs_mut().syslog_audit().attach_lsm()?;
-        let path_link_syslog = path_base_ts.join("link_syslog_audit");
+        let path_link_syslog = path_base.join("link_syslog_audit");
+        if path_link_syslog.exists() {
+            fs::remove_file(path_link_syslog.clone())?;
+        }
         link_syslog.pin(path_link_syslog)?;
 
         let mut link_mount = skel.progs_mut().mount_audit().attach_lsm()?;
-        let path_link_mount = path_base_ts.join("link_mount_audit");
+        let path_link_mount = path_base.join("link_mount_audit");
+        if path_link_mount.exists() {
+            fs::remove_file(path_link_mount.clone())?;
+        }
         link_mount.pin(path_link_mount)?;
 
         let mut link_open = skel.progs_mut().open_audit().attach_lsm()?;
-        let path_link_open = path_base_ts.join("link_open_audit");
+        let path_link_open = path_base.join("link_open_audit");
+        if path_link_open.exists() {
+            fs::remove_file(path_link_open.clone())?;
+        }
         link_open.pin(path_link_open)?;
 
         let link_add_container = skel.progs_mut().add_container().attach_uprobe_addr(
@@ -314,7 +419,7 @@ impl<'a> BpfContext<'a> {
         skel.links.add_container = link_add_container.into();
         // NOTE(vadorovsky): Currently it's impossible to pin uprobe links, but
         // it would be REALLY NICE to be able to do so.
-        // let path_link_add_container = path_base_ts.join("link_add_container");
+        // let path_link_add_container = path_base.join("link_add_container");
         // link_add_container.pin(path_link_add_container)?;
 
         let link_delete_container = skel.progs_mut().delete_container().attach_uprobe_addr(
@@ -325,7 +430,7 @@ impl<'a> BpfContext<'a> {
         skel.links.delete_container = link_delete_container.into();
         // NOTE(vadorovsky): Currently it's impossible to pin uprobe links, but
         // it would be REALLY NICE to be able to do so.
-        // let path_link_delete_container = path_base_ts.join("link_delete_container");
+        // let path_link_delete_container = path_base.join("link_delete_container");
         // link_delete_container.pin(path_link_delete_container)?;
 
         let link_add_process = skel.progs_mut().add_process().attach_uprobe_addr(
@@ -336,7 +441,7 @@ impl<'a> BpfContext<'a> {
         skel.links.add_process = link_add_process.into();
         // NOTE(vadorovsky): Currently it's impossible to pin uprobe links, but
         // it would be REALLY NICE to be able to do so.
-        // let path_link_add_process = path_base_ts.join("link_add_process");
+        // let path_link_add_process = path_base.join("link_add_process");
         // link_add_process.pin(path_link_add_process)?;
 
         Ok(BpfContext { skel })
@@ -464,24 +569,6 @@ pub enum CleanupError {
     PathToStrConvError,
 }
 
-/// Removes all old BPF entities (programs, maps, links) from BPFFS, to stop
-/// the execution of old BPF programs. All directories with timestamp lower
-/// than the current one get removed.
-pub fn cleanup(path_base: path::PathBuf, dirname: &str) -> Result<(), CleanupError> {
-    let rx = regex::Regex::new(dirname.to_string().as_str())?;
-
-    for entry in fs::read_dir(path_base)? {
-        let path = entry?.path();
-        let path_s = path.to_str().ok_or(CleanupError::PathToStrConvError)?;
-
-        if !rx.is_match(path_s) {
-            fs::remove_dir_all(path)?;
-        }
-    }
-
-    Ok(())
-}
-
 #[cfg(test)]
 mod tests {
     use std::panic;
@@ -490,7 +577,7 @@ mod tests {
 
     use super::*;
 
-    static PATH_BASE: &str = "/sys/fs/bpf/lockc/test";
+    static PATH_BASE: &str = "/sys/fs/bpf/lockc-test";
 
     /// Represents the real base path for lockc's test BPF objects (programs,
     /// maps, links).
