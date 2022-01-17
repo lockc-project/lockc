@@ -2,34 +2,39 @@ name: Rust
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
-    - uses: actions/setup-go@v2
-      with:
-        go-version: '1.17'
-    - name: Install dapper
-      run: go install github.com/rancher/dapper@latest
-    - name: Build
-      run: dapper cargo build
-      env:
-        DOCKER_BUILDKIT: 1
-        COMPOSE_DOCKER_CLI_BUILD: 1
-    - name: Test
-      run: dapper cargo test
-      env:
-        DOCKER_BUILDKIT: 1
-        COMPOSE_DOCKER_CLI_BUILD: 1
-    - name: Lint
-      run: dapper cargo clippy -- -D warnings
-      env:
-        DOCKER_BUILDKIT: 1
-        COMPOSE_DOCKER_CLI_BUILD: 1
-    - name: Build book
-      run: ./scripts/mdbook.sh
+      - uses: actions/checkout@v2
+      - uses: actions/setup-go@v2
+        with:
+          go-version: "1.17"
+      - name: Install dapper
+        run: go install github.com/rancher/dapper@latest
+      - name: Build
+        run: dapper cargo build
+        env:
+          DOCKER_BUILDKIT: 1
+          COMPOSE_DOCKER_CLI_BUILD: 1
+      - name: Test
+        run: dapper cargo test
+        env:
+          DOCKER_BUILDKIT: 1
+          COMPOSE_DOCKER_CLI_BUILD: 1
+      - name: Lint
+        run: dapper cargo clippy -- -D warnings
+        env:
+          DOCKER_BUILDKIT: 1
+          COMPOSE_DOCKER_CLI_BUILD: 1
+      - name: Check unused dependencies
+        run: dapper cargo +nightly udeps --all-targets
+        env:
+          DOCKER_BUILDKIT: 1
+          COMPOSE_DOCKER_CLI_BUILD: 1
+      - name: Build book
+        run: ./scripts/mdbook.sh

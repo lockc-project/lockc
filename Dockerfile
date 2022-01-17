@@ -20,11 +20,14 @@ RUN zypper --non-interactive install -t pattern \
     && zypper clean
 RUN rustup-init -y
 ENV PATH="/root/.cargo/bin:${PATH}"
+RUN rustup toolchain install nightly
 RUN rustup component add \
     clippy \
     rustfmt
 RUN cargo install \
     libbpf-cargo
+RUN cargo +nightly install \
+    cargo-udeps
 
 FROM builder AS build
 WORKDIR /usr/local/src
