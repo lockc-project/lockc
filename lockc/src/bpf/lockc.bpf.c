@@ -81,9 +81,7 @@ static __always_inline int handle_new_process(struct task_struct *parent,
 		return -EPERM;
 	}
 
-	struct process new_p = {
-		.container_id = container_id
-	};
+	struct process new_p = { .container_id = container_id };
 
 	bpf_printk("adding containerized process: %d\n", pid);
 	err = bpf_map_update_elem(&processes, &pid, &new_p, 0);
@@ -114,8 +112,8 @@ static __always_inline enum container_policy_level get_policy_level(pid_t pid)
 		return POLICY_LEVEL_NOT_FOUND;
 	}
 
-	struct container *c = bpf_map_lookup_elem(&containers,
-						  &p->container_id);
+	struct container *c =
+		bpf_map_lookup_elem(&containers, &p->container_id);
 	if (!c) {
 		/* Shouldn't happen */
 		bpf_printk("error: get_policy_level: could not found a "
@@ -161,8 +159,8 @@ int sched_process_fork(struct bpf_raw_tracepoint_args *args)
  * clone_audit - LSM program triggered by clone().
  */
 SEC("lsm/task_alloc")
-int BPF_PROG(clone_audit, struct task_struct *task,
-	     unsigned long clone_flags, int ret_prev)
+int BPF_PROG(clone_audit, struct task_struct *task, unsigned long clone_flags,
+	     int ret_prev)
 {
 	struct task_struct *parent = BPF_CORE_READ(task, real_parent);
 	if (parent == NULL) {
@@ -258,8 +256,8 @@ static u64 check_paths(struct bpf_map *map, u32 *key,
 	if (unlikely(allowed_path == NULL))
 		return 0;
 
-	bpf_printk("checking path: key: %u, dev_name: %s, current: %s\n",
-		   *key, data->path, allowed_path->path);
+	bpf_printk("checking path: key: %u, dev_name: %s, current: %s\n", *key,
+		   data->path, allowed_path->path);
 
 	size_t allowed_path_len = strlen(allowed_path->path, PATH_LEN);
 
@@ -302,7 +300,7 @@ int BPF_PROG(mount_audit, const char *dev_name, const struct path *path,
 	int ret = 0;
 	pid_t pid = bpf_get_current_pid_tgid() >> 32;
 	enum container_policy_level policy_level = get_policy_level(pid);
-	struct path *path_mut = (struct path *) path;
+	struct path *path_mut = (struct path *)path;
 	unsigned char type_bind[MOUNT_TYPE_LEN] = MOUNT_TYPE_BIND;
 	unsigned char type_safe[MOUNT_TYPE_LEN];
 	unsigned char dev_name_safe[PATH_LEN];
@@ -332,8 +330,7 @@ int BPF_PROG(mount_audit, const char *dev_name, const struct path *path,
 		bpf_printk("warning: mount type is NULL\n");
 		goto out;
 	}
-	if (unlikely(bpf_probe_read_kernel_str(&type_safe,
-					       MOUNT_TYPE_LEN,
+	if (unlikely(bpf_probe_read_kernel_str(&type_safe, MOUNT_TYPE_LEN,
 					       type) < 0)) {
 		bpf_printk("error: could not read the mount type\n");
 		ret = -EFAULT;
@@ -356,10 +353,8 @@ int BPF_PROG(mount_audit, const char *dev_name, const struct path *path,
 		ret = -EFAULT;
 		goto out;
 	}
-	struct paths_callback_ctx cb = {
-		.found = false,
-		.path = dev_name_safe
-	};
+	struct paths_callback_ctx cb = { .found = false,
+					 .path = dev_name_safe };
 
 	/*
 	 * NOTE(vadorovsky): Yeah, we need to check the policy yet another
@@ -420,7 +415,6 @@ int BPF_PROG(open_audit, struct file *file, int ret_prev)
 	enum container_policy_level policy_level = get_policy_level(pid);
 	unsigned char d_path_buf[PATH_LEN] = {};
 
-
 	switch (policy_level) {
 	case POLICY_LEVEL_LOOKUP_ERR:
 		/* Shouldn't happen */
@@ -440,7 +434,7 @@ int BPF_PROG(open_audit, struct file *file, int ret_prev)
 	if (unlikely(bpf_d_path(&file->f_path, d_path_buf, PATH_LEN) < 0)) {
 		bpf_printk("warn: could not read the path of opened "
 			   "file\n");
-			goto out;
+		goto out;
 	}
 	/*
 	 * Allow /, but ensure it's only / (not a prefix of everything)
@@ -526,7 +520,8 @@ out:
  * https://github.com/willfindlay/bpfcontain-rs/blob/ba4fde80b6bc75ef340dd22ac921206b18e350ab/src/bpf/bpfcontain.bpf.c#L2291-L2315
  */
 SEC("uprobe/add_container")
-int BPF_KPROBE(add_container, int *retp, u32 container_id, pid_t pid, int policy)
+int BPF_KPROBE(add_container, int *retp, u32 container_id, pid_t pid,
+	       int policy)
 {
 	int ret = 0;
 	int err;
@@ -585,7 +580,8 @@ static u64 clean_processes(struct bpf_map *map, pid_t *key,
 		err = bpf_map_delete_elem(map, key);
 		if (err < 0) {
 			bpf_printk("clean_processes: could not delete process, "
-				   "err: %d\n", err);
+				   "err: %d\n",
+				   err);
 			data->err = err;
 			/* Continue removing next elements anyway. */
 			return 0;
