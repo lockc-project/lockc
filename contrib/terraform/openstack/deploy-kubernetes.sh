@@ -22,6 +22,7 @@ info "### Run following commands to bootstrap Kubernetes cluster:\\n"
 i=0
 for MASTER in $TR_MASTER_IPS; do
     if [ $i -eq "0" ]; then
+        # As temporary fix we have to disable kubeProxyReplacement for Cilium, https://github.com/cilium/cilium/pull/16084
         ssh -o 'StrictHostKeyChecking no' -l ${TR_USERNAME} ${MASTER} /bin/bash <<-EOF
           set -eux
           sudo kubeadm init --cri-socket /run/containerd/containerd.sock --control-plane-endpoint ${MASTER}:6443 --upload-certs | tee kubeadm-init.log
@@ -29,7 +30,7 @@ for MASTER in $TR_MASTER_IPS; do
           sudo cp /etc/kubernetes/admin.conf /home/${TR_USERNAME}/.kube/config
           sudo chown ${TR_USERNAME}:users /home/${TR_USERNAME}/.kube/config
           helm repo add cilium https://helm.cilium.io/
-          helm install cilium cilium/cilium --version ${CILIUM_VERSION} --namespace kube-system
+          helm install cilium cilium/cilium --version ${CILIUM_VERSION} --namespace kube-system --set kubeProxyReplacement=disabled
 EOF
 
         export KUBEADM_MASTER_JOIN=`ssh -o 'StrictHostKeyChecking no' -l ${TR_USERNAME} ${MASTER} tail -n12 kubeadm-init.log | head -n3`
