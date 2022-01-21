@@ -1,6 +1,5 @@
 use std::{env, path};
 
-use chrono::prelude::*;
 use log::debug;
 use simplelog::{ColorChoice, ConfigBuilder, LevelFilter, TermLogger, TerminalMode};
 
@@ -27,8 +26,6 @@ fn main() -> anyhow::Result<()> {
         lockc::check_bpf_lsm_enabled(sys_lsm_path)?;
     }
 
-    let now = Utc::now();
-    let dirname = now.format("%s").to_string();
     let path_base = std::path::Path::new("/sys")
         .join("fs")
         .join("bpf")
@@ -36,12 +33,8 @@ fn main() -> anyhow::Result<()> {
 
     std::fs::create_dir_all(&path_base)?;
 
-    let path_base_ts = path_base.join(&dirname);
-
-    let _skel = lockc::BpfContext::new(path_base_ts)?;
+    let _skel = lockc::BpfContext::new(path_base)?;
     debug!("initialized BPF skeleton, loaded programs");
-    lockc::cleanup(path_base, &dirname)?;
-    debug!("cleaned up old BPF programs");
 
     lockc::runc::RuncWatcher::new()?.work_loop()?;
 

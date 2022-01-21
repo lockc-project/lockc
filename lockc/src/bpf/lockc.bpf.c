@@ -378,16 +378,14 @@ int BPF_PROG(mount_audit, const char *dev_name, const struct path *path,
 	 */
 	switch (policy_level) {
 	case POLICY_LEVEL_RESTRICTED:
-		bpf_for_each_map_elem(&allowed_paths_mount_restricted,
-				      check_paths, &cb, 0);
+		bpf_for_each_map_elem(&ap_mnt_restr, check_paths, &cb, 0);
 		if (cb.found) {
 			bpf_printk("mount: restricted: allow\n");
 			goto out;
 		}
 		break;
 	case POLICY_LEVEL_BASELINE:
-		bpf_for_each_map_elem(&allowed_paths_mount_baseline,
-				      check_paths, &cb, 0);
+		bpf_for_each_map_elem(&ap_mnt_base, check_paths, &cb, 0);
 		if (cb.found) {
 			bpf_printk("mount: baseline: allow\n");
 			goto out;
@@ -470,32 +468,28 @@ int BPF_PROG(open_audit, struct file *file, int ret_prev)
 	 */
 	switch (policy_level) {
 	case POLICY_LEVEL_RESTRICTED:
-		bpf_for_each_map_elem(&denied_paths_access_restricted,
-				      check_paths, &cb, 0);
+		bpf_for_each_map_elem(&ap_acc_restr, check_paths, &cb, 0);
 		if (cb.found) {
 			bpf_printk("open: restricted: deny\n");
 			ret = -EPERM;
 			goto out;
 		}
 		cb.found = false;
-		bpf_for_each_map_elem(&allowed_paths_access_restricted,
-				      check_paths, &cb, 0);
+		bpf_for_each_map_elem(&ap_acc_restr, check_paths, &cb, 0);
 		if (cb.found) {
 			bpf_printk("open: restricted: allow\n");
 			goto out;
 		}
 		break;
 	case POLICY_LEVEL_BASELINE:
-		bpf_for_each_map_elem(&denied_paths_access_baseline,
-				      check_paths, &cb, 0);
+		bpf_for_each_map_elem(&dp_acc_base, check_paths, &cb, 0);
 		if (cb.found) {
 			bpf_printk("open: baseline: deny\n");
 			ret = -EPERM;
 			goto out;
 		}
 		cb.found = false;
-		bpf_for_each_map_elem(&allowed_paths_access_baseline,
-				      check_paths, &cb, 0);
+		bpf_for_each_map_elem(&ap_acc_base, check_paths, &cb, 0);
 		if (cb.found) {
 			bpf_printk("open: baseline: allow\n");
 			goto out;
