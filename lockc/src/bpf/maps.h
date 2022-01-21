@@ -4,18 +4,6 @@
 #include "map_structs.h"
 
 /*
- * runtimes - BPF map containing the process names of container runtime init
- * processes (for example: `runc:[2:INIT]` which is the name of every init
- * process for runc).
- */
-struct {
-	__uint(type, BPF_MAP_TYPE_HASH);
-	__uint(max_entries, 16);
-	__type(key, u32);
-	__type(value, u32);
-} runtimes SEC(".maps");
-
-/*
  * containers - BPF map containing the info about a policy which should be
  * enforced on the given container.
  */

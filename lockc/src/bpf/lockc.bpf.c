@@ -44,21 +44,6 @@ static __always_inline int handle_new_process(struct task_struct *parent,
 	/* Check if parent process is containerized. */
 	struct process *parent_lookup = bpf_map_lookup_elem(&processes, &ppid);
 	if (!parent_lookup) {
-		/* If not, check whether it's a container runtime process. */
-		// const char *comm = BPF_CORE_READ(child, comm);
-		// u32 runtime_key = hash(comm, TASK_COMM_LEN);
-		// u32 *runtime_lookup = bpf_map_lookup_elem(&runtimes,
-		// 					  &runtime_key);
-		// if (runtime_lookup) {
-		// 	/*
-		// 	 * If yes, it means that's an unwrapped container
-		// 	 * runtime process. Deny it.
-		// 	 */
-		// 	bpf_printk("deny: unwrapped runtime process %d: %s\n",
-		// 		   pid,
-		// 		   BPF_CORE_READ(child, comm));
-		// 	return -EPERM;
-		// }
 		return 0;
 	}
 
