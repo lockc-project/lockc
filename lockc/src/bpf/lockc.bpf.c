@@ -55,14 +55,15 @@ static __always_inline int handle_new_process(struct task_struct *parent,
 	bpf_printk("found parent containerized process: %d\n", ppid);
 	bpf_printk("comm: %s\n", BPF_CORE_READ(child, comm));
 
-	u32 container_id = parent_lookup->container_id;
-	u32 *container_lookup = bpf_map_lookup_elem(&containers, &container_id);
+	struct container_id container_id = parent_lookup->container_id;
+	struct container *container_lookup =
+		bpf_map_lookup_elem(&containers, &container_id);
 	if (!container_lookup) {
 		/* Shouldn't happen */
 		bpf_printk("error: handle_new_process: cound not find a "
 			   "container for a registered process %d, "
-			   "container id: %d\n",
-			   pid, container_id);
+			   "container id: %s\n",
+			   pid, container_id.id);
 		return -EPERM;
 	}
 

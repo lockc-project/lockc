@@ -4,12 +4,16 @@
 #include "limits.h"
 #include "policy.h"
 
+struct container_id {
+	unsigned char id[CONTAINER_ID_LIMIT];
+};
+
 struct container {
 	enum container_policy_level policy_level;
 };
 
 struct process {
-	unsigned int container_id;
+	struct container_id container_id;
 };
 
 struct accessed_path {

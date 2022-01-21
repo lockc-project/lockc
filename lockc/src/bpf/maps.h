@@ -11,7 +11,7 @@
 struct bpf_map_def SEC("maps/containers") containers = {
 	.type = BPF_MAP_TYPE_HASH,
 	.max_entries = PID_MAX_LIMIT,
-	.key_size = sizeof(u32),
+	.key_size = sizeof(struct container_id),
 	.value_size = sizeof(struct container),
 };
 
