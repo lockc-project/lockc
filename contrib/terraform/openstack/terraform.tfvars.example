@@ -1,7 +1,7 @@
 # Name of the image to use
 # EXAMPLE:
 # image_name = "
-image_name = "SLES15-SP2-JeOS.x86_64-15.2-OpenStack-Cloud-GM"
+image_name = "openSUSE-Leap-15.3-JeOS.x86_64-OpenStack-Cloud"
 
 # Name of the internal network to be created
 # EXAMPLE:
