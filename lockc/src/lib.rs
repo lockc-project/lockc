@@ -16,7 +16,6 @@ use std::{
     thread, time,
 };
 
-use byteorder::{NativeEndian, WriteBytesExt};
 use sysctl::Sysctl;
 
 use bpfstructs::BpfStruct;
@@ -81,35 +80,6 @@ pub fn hash(s: &str) -> Result<u32, HashError> {
     }
 
     Ok(hash)
-}
-
-#[derive(thiserror::Error, Debug)]
-pub enum InitRuntimesError {
-    #[error("hash error")]
-    HashError(#[from] HashError),
-
-    #[error("could not convert the hash to a byte array")]
-    ByteWriteError(#[from] io::Error),
-
-    #[error("libbpf error")]
-    LibbpfError(#[from] libbpf_rs::Error),
-}
-
-/// Registers the names of supported container runtime init processes in a BPF
-/// map. Based on that information, BPF programs will track those processes and
-/// their children.
-pub fn init_runtimes(map: &mut libbpf_rs::Map) -> Result<(), InitRuntimesError> {
-    let runtimes = &SETTINGS.runtimes;
-    let val: [u8; 4] = [0, 0, 0, 0];
-
-    for runtime in runtimes.iter() {
-        let key = hash(runtime)?;
-        let mut key_b = vec![];
-        key_b.write_u32::<NativeEndian>(key)?;
-        map.update(&key_b, &val, libbpf_rs::MapFlags::empty())?;
-    }
-
-    Ok(())
 }
 
 #[derive(thiserror::Error, Debug)]
@@ -184,9 +154,6 @@ pub enum NewBpfContextError {
 
     #[error(transparent)]
     InitAllowedPaths(#[from] InitAllowedPathsError),
-
-    #[error(transparent)]
-    InitRuntimes(#[from] InitRuntimesError),
 }
 
 impl<'a> BpfContext<'a> {
@@ -209,14 +176,6 @@ impl<'a> BpfContext<'a> {
         let path_base = path_base_r.as_ref();
         let skel_builder = LockcSkelBuilder::default();
         let mut open_skel = skel_builder.open()?;
-
-        let path_map_runtimes = path_base.join("map_runtimes");
-        if path_map_runtimes.exists() {
-            open_skel
-                .maps_mut()
-                .runtimes()
-                .reuse_pinned_map(path_map_runtimes.clone())?;
-        }
 
         let pid_max = get_pid_max()?;
 
@@ -290,10 +249,6 @@ impl<'a> BpfContext<'a> {
 
         let mut skel = open_skel.load()?;
 
-        if !path_map_runtimes.exists() {
-            skel.maps_mut().runtimes().pin(path_map_runtimes)?;
-        }
-        init_runtimes(skel.maps_mut().runtimes())?;
         if !path_map_containers.exists() {
             skel.maps_mut().containers().pin(path_map_containers)?;
         }
