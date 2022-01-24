@@ -265,8 +265,8 @@ impl Settings {
     pub fn new() -> Result<Self, config::ConfigError> {
         let mut s = config::Config::default();
 
-        s.set("runtimes", vec![trim_task_comm_len("runc".to_string())])?;
-        s.set(
+        s.set_default("runtimes", vec![trim_task_comm_len("runc".to_string())])?;
+        s.set_default(
             "allowed_paths_mount_restricted",
             vec![
                 DIR_PTS.to_string(),
@@ -349,7 +349,7 @@ impl Settings {
                 DIR_PODS_KUBELET.to_string(),
             ],
         )?;
-        s.set(
+        s.set_default(
             "allowed_paths_mount_baseline",
             vec![
                 // Paths used by container runtimes.
@@ -436,7 +436,7 @@ impl Settings {
                 DIR_VAR_DATA.to_string(),
             ],
         )?;
-        s.set(
+        s.set_default(
             "allowed_paths_access_restricted",
             vec![
                 GROUP.to_string(),
@@ -471,7 +471,7 @@ impl Settings {
                 DIR_VAR.to_string(),
             ],
         )?;
-        s.set(
+        s.set_default(
             "allowed_paths_access_baseline",
             vec![
                 GROUP.to_string(),
@@ -506,11 +506,11 @@ impl Settings {
                 DIR_VAR.to_string(),
             ],
         )?;
-        s.set(
+        s.set_default(
             "denied_paths_access_restricted",
             vec![DIR_PROC_ACPI.to_string(), DIR_PROC_SYS.to_string(), DIR_K8S_SECRETS.to_string()],
         )?;
-        s.set(
+        s.set_default(
             "denied_paths_access_baseline",
             vec![DIR_PROC_ACPI.to_string(), DIR_K8S_SECRETS.to_string()],
         )?;
