@@ -25,7 +25,7 @@ ctrlc = "3.2"
 fanotify-rs = { git = "https://github.com/vadorovsky/fanotify-rs", branch = "fix-pid-type" }
 futures = "0.3"
 goblin = "0.4"
-kube = "0.66"
+kube = "0.67"
 k8s-openapi = { version = "0.13", default-features = false, features = ["v1_21"] }
 lazy_static = "1.4"
 libc = { version = "0.2", features = [ "extra_traits" ] }
