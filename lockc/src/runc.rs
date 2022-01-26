@@ -5,14 +5,17 @@ use fanotify::{
     low_level::FAN_OPEN_EXEC_PERM,
 };
 use k8s_openapi::api::core::v1;
-use log::{debug, error};
 use nix::poll::{poll, PollFd, PollFlags};
 use procfs::{process::Process, ProcError};
 use scopeguard::defer;
 use serde::Deserialize;
 use serde_json::Value;
 use thiserror::Error;
-use tokio::runtime::Builder;
+use tokio::{
+    runtime::Builder,
+    sync::{mpsc, oneshot},
+};
+use tracing::{debug, error};
 
 use crate::{
     bpfstructs::{
@@ -20,9 +23,9 @@ use crate::{
         container_policy_level_POLICY_LEVEL_PRIVILEGED,
         container_policy_level_POLICY_LEVEL_RESTRICTED,
     },
-    hash, HashError,
+    communication::EbpfCommand,
+    maps::MapOperationError,
 };
-use lockc_uprobes::{add_container, add_process, delete_container};
 
 // static LABEL_NAMESPACE: &str = "io.kubernetes.pod.namespace";
 static LABEL_POLICY_ENFORCE: &str = "pod-security.kubernetes.io/enforce";
@@ -100,9 +103,9 @@ fn container_type_data<P: AsRef<std::path::Path>>(
     // Kubernetes
     if let Some(annotations) = config.annotations {
         debug!(
-            "detected kubernetes container with bundle {}, config {}",
-            bundle_path.display(),
-            config_path.display(),
+            bundle = ?bundle_path,
+            config = ?config_path,
+            "detected kubernetes container",
         );
         match kubernetes_type(annotations.clone()) {
             KubernetesContainerType::ContainerdMain => {
@@ -111,8 +114,8 @@ fn container_type_data<P: AsRef<std::path::Path>>(
                 // part of the filename is the namespace.
                 let log_directory = &annotations[ANNOTATION_CONTAINERD_LOG_DIRECTORY];
                 debug!(
-                    "detected k8s+containerd container with log directory {}",
-                    log_directory
+                    log_directory = log_directory.as_str(),
+                    "detected k8s+containerd container",
                 );
                 let log_path = std::path::PathBuf::from(log_directory);
                 let file_name = log_path
@@ -134,8 +137,8 @@ fn container_type_data<P: AsRef<std::path::Path>>(
                 // sandbox container.
                 let sandbox_id = &annotations[ANNOTATION_CONTAINERD_SANDBOX_ID];
                 debug!(
-                    "detected k8s+containerd container with sandbox id {}",
-                    sandbox_id
+                    sandbox_id = sandbox_id.as_str(),
+                    "detected k8s+containerd container",
                 );
 
                 // Go one directory up from the current bundle.
@@ -159,7 +162,10 @@ fn container_type_data<P: AsRef<std::path::Path>>(
         let source: Vec<&str> = mount.source.split('/').collect();
         if source.len() > 1 && source[source.len() - 1] == "hostname" {
             let config_v2 = str::replace(&mount.source, "hostname", "config.v2.json");
-            debug!("detected docker container with config path {}", config_v2);
+            debug!(
+                config_path = config_v2.as_str(),
+                "detected docker container"
+            );
             return Ok((ContainerType::Docker, Some(config_v2)));
         }
     }
@@ -285,28 +291,9 @@ enum ContainerAction {
     Delete,
 }
 
-#[derive(Error, Debug)]
-pub enum UprobeError {
-    #[error("failed to call into uprobe, BPF programs are most likely not running")]
-    Call,
-
-    #[error("BPF program error")]
-    BPF,
-
-    #[error("unknown uprobe error")]
-    Unknown,
-}
-
-fn check_uprobe_ret(ret: i32) -> Result<(), UprobeError> {
-    match ret {
-        0 => Ok(()),
-        n if n == -libc::EAGAIN => Err(UprobeError::Call),
-        n if n == -libc::EINVAL => Err(UprobeError::BPF),
-        _ => Err(UprobeError::Unknown),
-    }
-}
-
 pub struct RuncWatcher {
+    bootstrap_rx: oneshot::Receiver<()>,
+    ebpf_tx: mpsc::Sender<EbpfCommand>,
     fd: Fanotify,
 }
 
@@ -319,19 +306,25 @@ pub enum HandleRuncEventError {
     Errno(#[from] nix::errno::Errno),
 
     #[error(transparent)]
+    CommandSend(#[from] mpsc::error::SendError<EbpfCommand>),
+
+    #[error(transparent)]
+    CommandRecv(#[from] oneshot::error::RecvError),
+
+    #[error(transparent)]
+    BootstrapTryRecv(#[from] oneshot::error::TryRecvError),
+
+    #[error(transparent)]
     Proc(#[from] ProcError),
 
     #[error(transparent)]
     Container(#[from] ContainerError),
 
     #[error(transparent)]
-    Hash(#[from] HashError),
-
-    #[error(transparent)]
     PolicyKubernetes(#[from] PolicyKubernetesSyncError),
 
     #[error(transparent)]
-    Uprobe(#[from] UprobeError),
+    MapOperation(#[from] MapOperationError),
 
     #[error("container data missing")]
     ContainerData,
@@ -341,7 +334,10 @@ pub enum HandleRuncEventError {
 }
 
 impl RuncWatcher {
-    pub fn new() -> Result<Self, io::Error> {
+    pub fn new(
+        bootstrap_rx: oneshot::Receiver<()>,
+        ebpf_tx: mpsc::Sender<EbpfCommand>,
+    ) -> Result<Self, io::Error> {
         let runc_paths = vec![
             "/usr/bin/runc",
             "/usr/sbin/runc",
@@ -352,10 +348,10 @@ impl RuncWatcher {
             "/host/usr/local/bin/runc",
             "/host/usr/local/sbin/runc",
         ];
-        let fd = Fanotify::new_with_nonblocking(FanotifyMode::CONTENT);
+        let fd = Fanotify::new_with_blocking(FanotifyMode::CONTENT);
 
         for runc_path in runc_paths {
-            debug!("checking runc path {}", runc_path);
+            debug!(path = runc_path, "checking runc");
             let p = Path::new(&runc_path);
             if p.exists() {
                 let metadata = p.metadata()?;
@@ -370,17 +366,105 @@ impl RuncWatcher {
 
                 // If the file is executable.
                 if metadata.permissions().mode() & 0o111 != 0 {
-                    debug!(
-                        "runc path {} exists and is an excecutable binary",
-                        runc_path
-                    );
+                    debug!(path = runc_path, "excecutable runc binary found");
                     fd.add_path(FAN_OPEN_EXEC_PERM, runc_path)?;
-                    debug!("added runc path {} to fanotify", runc_path);
+                    debug!(path = runc_path, "added runc to fanotify");
                 }
             }
         }
 
-        Ok(RuncWatcher { fd })
+        Ok(RuncWatcher {
+            bootstrap_rx,
+            ebpf_tx,
+            fd,
+        })
+    }
+
+    async fn add_container(
+        &self,
+        container_id: String,
+        pid: i32,
+        policy_level: container_policy_level,
+    ) -> Result<(), HandleRuncEventError> {
+        let (responder_tx, responder_rx) = oneshot::channel();
+
+        self.ebpf_tx
+            .send(EbpfCommand::AddContainer {
+                container_id,
+                pid,
+                policy_level,
+                responder_tx,
+            })
+            .await?;
+        responder_rx.await??;
+
+        Ok(())
+    }
+
+    fn add_container_sync(
+        &self,
+        container_id: String,
+        pid: i32,
+        policy_level: container_policy_level,
+    ) -> Result<(), HandleRuncEventError> {
+        debug!(container_id = container_id.as_str(), "adding container");
+
+        Builder::new_current_thread()
+            .build()?
+            .block_on(self.add_container(container_id, pid, policy_level))
+    }
+
+    async fn delete_container(&self, container_id: String) -> Result<(), HandleRuncEventError> {
+        let (responder_tx, responder_rx) = oneshot::channel();
+
+        self.ebpf_tx
+            .send(EbpfCommand::DeleteContainer {
+                container_id,
+                responder_tx,
+            })
+            .await?;
+        responder_rx.await??;
+
+        Ok(())
+    }
+
+    fn delete_container_sync(&self, container_id: String) -> Result<(), HandleRuncEventError> {
+        debug!(container_id = container_id.as_str(), "deleting container");
+
+        Builder::new_current_thread()
+            .build()?
+            .block_on(self.delete_container(container_id))
+    }
+
+    async fn add_process(
+        &self,
+        container_id: String,
+        pid: i32,
+    ) -> Result<(), HandleRuncEventError> {
+        let (responder_tx, responder_rx) = oneshot::channel();
+
+        self.ebpf_tx
+            .send(EbpfCommand::AddProcess {
+                container_id,
+                pid,
+                responder_tx,
+            })
+            .await?;
+        responder_rx.await??;
+
+        Ok(())
+    }
+
+    fn add_process_sync(&self, container_id: String, pid: i32) -> Result<(), HandleRuncEventError> {
+        debug!(
+            container = container_id.as_str(),
+            pid = pid,
+            "adding process"
+        );
+
+        Builder::new_current_thread()
+            .build()?
+            .block_on(self.add_process(container_id, pid))
     }
 
     fn handle_containerd_shim_event(
@@ -393,7 +477,7 @@ impl RuncWatcher {
         let mut container_id_o: Option<String> = None;
 
         for arg in containerd_shim_process.cmdline()? {
-            debug!("containerd-shim argument: {}", arg);
+            debug!(argument = arg.as_str(), "containerd-shim");
             match arg.as_str() {
                 "-address" => opt_parsing_action = ShimOptParsingAction::Skip,
                 "-bundle" => opt_parsing_action = ShimOptParsingAction::Skip,
@@ -427,13 +511,10 @@ impl RuncWatcher {
         match container_action {
             ShimContainerAction::Other => {}
             ShimContainerAction::Delete => {
-                let container_key =
-                    hash(&container_id_o.ok_or(HandleRuncEventError::ContainerID)?)?;
-                debug!("deleting container with key {}", container_key);
+                let container_id = container_id_o.ok_or(HandleRuncEventError::ContainerID)?;
+                debug!(container = container_id.as_str(), "deleting container");
 
-                let mut ret: i32 = -libc::EAGAIN;
-                delete_container(&mut ret as *mut i32, container_key);
-                check_uprobe_ret(ret)?;
+                self.delete_container_sync(container_id)?;
             }
         }
 
@@ -450,7 +531,7 @@ impl RuncWatcher {
 
         // for arg in cmdline.split(CMDLINE_DELIMITER) {
         for arg in runc_process.cmdline()? {
-            debug!("runc argument: {}", arg);
+            debug!(argument = arg.as_str(), "runc");
             match arg.as_str() {
                 // Options which are followed with a positional arguments we don't
                 // want to store.
@@ -521,21 +602,12 @@ impl RuncWatcher {
         match container_action {
             ContainerAction::Other => {
                 debug!("other container action");
-                if let Some(v) = container_id_o {
-                    let container_key = hash(&v)?;
-
-                    let mut ret: i32 = -libc::EAGAIN;
-                    add_process(&mut ret as *mut i32, container_key, runc_process.pid);
-                    check_uprobe_ret(ret)?;
+                if let Some(container_id) = container_id_o {
+                    self.add_process_sync(container_id, runc_process.pid)?;
                 }
             }
             ContainerAction::Create => {
                 let container_id = container_id_o.ok_or(HandleRuncEventError::ContainerID)?;
-                let container_key = hash(&container_id)?;
-                debug!(
-                    "creating containerd with id {} key {}",
-                    container_id, container_key
-                );
                 let container_bundle = match container_bundle_o {
                     Some(v) => std::path::PathBuf::from(v),
                     None => std::env::current_dir()?,
@@ -553,26 +625,11 @@ impl RuncWatcher {
                     ContainerType::Unknown => container_policy_level_POLICY_LEVEL_BASELINE,
                 };
 
-                let mut ret: i32 = -libc::EAGAIN;
-                add_container(
-                    &mut ret as *mut i32,
-                    container_key,
-                    runc_process.pid,
-                    policy,
-                );
-                check_uprobe_ret(ret)?;
+                self.add_container_sync(container_id, runc_process.pid, policy)?;
             }
             ContainerAction::Delete => {
                 let container_id = container_id_o.ok_or(HandleRuncEventError::ContainerID)?;
-                let container_key = hash(&container_id)?;
-                debug!(
-                    "deleting container with id {} key {}",
-                    container_id, container_key
-                );
-
-                let mut ret: i32 = -libc::EAGAIN;
-                delete_container(&mut ret as *mut i32, container_key);
-                check_uprobe_ret(ret)?;
+                self.delete_container_sync(container_id)?;
             }
         }
 
@@ -583,7 +640,11 @@ impl RuncWatcher {
         // Let the process execute again
         defer!(self.fd.send_response(event.fd, FanotifyResponse::Allow));
 
-        debug!("received fanotify event: {:#?}", event);
+        debug!(
+            path = event.path.as_str(),
+            pid = event.pid,
+            "received fanotify event"
+        );
 
         let p = Process::new(event.pid)?;
 
@@ -593,7 +654,6 @@ impl RuncWatcher {
         // We are interested in parsing only runc arguments rather than
         // containerd-shim.
         let comm = p.stat()?.comm;
-        debug!("event's process comm: {}", comm);
         match comm.as_str() {
             "runc" => {
                 self.handle_runc_event(p)?;
@@ -607,7 +667,23 @@ impl RuncWatcher {
         Ok(())
     }
 
-    pub fn work_loop(&self) -> Result<(), HandleRuncEventError> {
+    pub fn work_loop(&mut self) -> Result<(), HandleRuncEventError> {
+        // Wait for the bootstrap request from the main, asynchronous part of
+        // lockc.
+        loop {
+            match self.bootstrap_rx.try_recv() {
+                Ok(_) => {
+                    break;
+                }
+                Err(oneshot::error::TryRecvError::Empty) => {
+                    // Keep waiting.
+                }
+                Err(e) => return Err(HandleRuncEventError::from(e)),
+            }
+        }
+
+        debug!("starting work loop");
+
         let mut fds = [PollFd::new(self.fd.as_raw_fd(), PollFlags::POLLIN)];
         loop {
             let poll_num = poll(&mut fds, -1)?;
@@ -615,9 +691,7 @@ impl RuncWatcher {
                 for event in self.fd.read_event() {
                     match self.handle_event(event) {
                         Ok(_) => {}
-                        Err(e) => {
-                            error!("failed to handle event: {}", e);
-                        }
+                        Err(e) => error!(error = e.to_string().as_str(), "failed to handle event"),
                     };
                 }
             } else {

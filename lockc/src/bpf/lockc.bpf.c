@@ -55,14 +55,15 @@ static __always_inline int handle_new_process(struct task_struct *parent,
 	bpf_printk("found parent containerized process: %d\n", ppid);
 	bpf_printk("comm: %s\n", BPF_CORE_READ(child, comm));
 
-	u32 container_id = parent_lookup->container_id;
-	u32 *container_lookup = bpf_map_lookup_elem(&containers, &container_id);
+	struct container_id container_id = parent_lookup->container_id;
+	struct container *container_lookup =
+		bpf_map_lookup_elem(&containers, &container_id);
 	if (!container_lookup) {
 		/* Shouldn't happen */
 		bpf_printk("error: handle_new_process: cound not find a "
 			   "container for a registered process %d, "
-			   "container id: %d\n",
-			   pid, container_id);
+			   "container id: %s\n",
+			   pid, container_id.id);
 		return -EPERM;
 	}
 
@@ -126,10 +127,9 @@ static __always_inline enum container_policy_level get_policy_level(pid_t pid)
  * sched_process_fork - tracepoint program triggered by fork() function.
  */
 SEC("tp_btf/sched_process_fork")
-int sched_process_fork(struct bpf_raw_tracepoint_args *args)
+int BPF_PROG(sched_process_fork, struct task_struct *parent,
+	     struct task_struct *child)
 {
-	struct task_struct *parent = (struct task_struct *)args->args[0];
-	struct task_struct *child = (struct task_struct *)args->args[1];
 	if (parent == NULL || child == NULL) {
 		/* Shouldn't happen */
 		bpf_printk("error: sched_process_fork: parent or child is "
@@ -488,149 +488,6 @@ out:
 	if (ret_prev != 0)
 		return ret_prev;
 	return ret;
-}
-
-/*
- * add_container - uprobe program triggered by lockc-runc-wrapper adding a new
- * container. It registers that new container in BPF maps.
- *
- * This program is inspired by bpfcontain-rs project and its similar uprobe
- * program:
- * https://github.com/willfindlay/bpfcontain-rs/blob/ba4fde80b6bc75ef340dd22ac921206b18e350ab/src/bpf/bpfcontain.bpf.c#L2291-L2315
- */
-SEC("uprobe/add_container")
-int BPF_KPROBE(add_container, int *retp, u32 container_id, pid_t pid,
-	       int policy)
-{
-	int ret = 0;
-	int err;
-	struct container c = {
-		.policy_level = policy,
-	};
-
-	err = bpf_map_update_elem(&containers, &container_id, &c, 0);
-	if (err < 0) {
-		bpf_printk("adding container: containers: error: %d\n", err);
-		ret = err;
-		goto out;
-	}
-
-	struct process p = {
-		.container_id = container_id,
-	};
-
-	err = bpf_map_update_elem(&processes, &pid, &p, 0);
-	if (err < 0) {
-		bpf_printk("adding container: processes: error: %d\n", err);
-		ret = err;
-		goto out;
-	}
-	bpf_printk("adding container: success\n");
-
-out:
-	bpf_probe_write_user(retp, &ret, sizeof(ret));
-	return ret;
-}
-
-/*
- * processes_callback_ctx - input data for the `clean_processes` callback
- * function.
- */
-struct processes_callback_ctx {
-	u32 container_id;
-	int err;
-};
-
-/*
- * clean_processes - callback function which removes all the processes
- * associated with the given container (ID). It's supposed to be called on the
- * processes BPF map when deleting a container.
- */
-static u64 clean_processes(struct bpf_map *map, pid_t *key,
-			   struct process *process,
-			   struct processes_callback_ctx *data)
-{
-	int err;
-
-	if (unlikely(process == NULL))
-		return 0;
-
-	if (process->container_id == data->container_id) {
-		err = bpf_map_delete_elem(map, key);
-		if (err < 0) {
-			bpf_printk("clean_processes: could not delete process, "
-				   "err: %d\n",
-				   err);
-			data->err = err;
-			/* Continue removing next elements anyway. */
-			return 0;
-		}
-	}
-
-	return 0;
-}
-
-/*
- * delete_container - uprobe program triggered by lockc-runc-wrapper deleting a
- * container. It removes information about that container and its processes from
- * BPF maps.
- */
-SEC("uprobe/delete_container")
-int BPF_KPROBE(delete_container, int *retp, u32 container_id)
-{
-	int ret = 0;
-	int err;
-	err = bpf_map_delete_elem(&containers, &container_id);
-	struct processes_callback_ctx cb = {
-		.container_id = container_id,
-		.err = 0,
-	};
-	bpf_for_each_map_elem(&processes, clean_processes, &cb, 0);
-
-	/* Handle errors later, after attempting to remove everything. */
-	if (err < 0) {
-		bpf_printk("deleting container: error: %d\n", err);
-		ret = err;
-		goto out;
-	}
-	if (cb.err < 0) {
-		bpf_printk("deleting container: callbacks: error: %d\n",
-			   cb.err);
-		ret = cb.err;
-		goto out;
-	}
-	bpf_printk("deleting container: success\n");
-
-out:
-	bpf_probe_write_user(retp, &ret, sizeof(ret));
-	return ret;
-}
-
-/*
- * add_process - uprobe program triggered by lockc-runc-wrapper adding a new
- * process to the container when i.e. exec-ing a new process by runc. It
- * registers that new process in the BPF map.
- */
-SEC("uprobe/add_process")
-int BPF_KPROBE(add_process, int *retp, u32 container_id, pid_t pid)
-{
-	int ret = 0;
-	int err;
-	struct process p = {
-		.container_id = container_id,
-	};
-
-	err = bpf_map_update_elem(&processes, &pid, &p, 0);
-	if (err < 0) {
-		bpf_printk("adding process: error: %d\n", err);
-		ret = err;
-		goto out;
-	}
-	bpf_printk("adding process: success\n");
-
-out:
-	bpf_probe_write_user(retp, &ret, sizeof(ret));
-	return 0;
 }
 
 char __license[] SEC("license") = "GPL";
