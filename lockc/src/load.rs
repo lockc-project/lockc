@@ -66,6 +66,13 @@ pub fn attach_programs(bpf: &mut Bpf) -> Result<(), AttachError> {
     open_audit.load("file_open", &btf)?;
     open_audit.attach()?;
 
+    let setuid_audit: &mut Lsm = bpf
+        .program_mut("setuid_audit")
+        .ok_or(AttachError::ProgLoad)?
+        .try_into()?;
+    setuid_audit.load("setuid_audit", &btf)?;
+    setuid_audit.attach()?;
+
     Ok(())
 }
 
