@@ -10,19 +10,13 @@ use tokio::{
 use tracing::{debug, error, Level};
 use tracing_subscriber::FmtSubscriber;
 
-mod bpfstructs;
-mod communication;
-mod load;
-mod maps;
-mod runc;
-mod settings;
-mod sysutils;
-
-use communication::EbpfCommand;
-use load::{attach_programs, load_bpf};
-use maps::{add_container, add_process, delete_container, init_allowed_paths};
-use runc::RuncWatcher;
-use sysutils::check_bpf_lsm_enabled;
+use lockc::{
+    communication::EbpfCommand,
+    load::{attach_programs, load_bpf},
+    maps::{add_container, add_process, delete_container, init_allowed_paths},
+    runc::RuncWatcher,
+    sysutils::check_bpf_lsm_enabled,
+};
 
 #[derive(Error, Debug)]
 enum FanotifyError {
