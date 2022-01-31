@@ -390,6 +390,67 @@ out:
 	return ret;
 }
 
+/*
+ * setuid_audit - LSM program triggered when user UID is changed.
+ * The goal is to deny changing user ID from regular account to root user account.
+ * @cred *new: data structure with new user context
+ * @cred *old: data structure with old user context
+ * @flags: additional flags
+ * @ret_prev: return code of a previous BPF program using the sb_mount hook
+ *
+ * Return: 0 if changing UID is allowed. -EPERM if root account not allowed. -EFAULT if there was
+ * a problem with reading the kernel strings into buffers or any important
+ * buffer is NULL.
+ */
+SEC("lsm/task_fix_setuid")
+int BPF_PROG(setuid_audit, struct cred *new, const struct cred *old, int flags, int ret_prev)
+{
+	int ret = 0;
+	char comm[TASK_COMM_LEN];
+
+	pid_t pid = bpf_get_current_pid_tgid() >> 32;
+	enum container_policy_level policy_level = get_policy_level(pid);
+
+	if (bpf_get_current_comm(&comm, sizeof(comm)) < 0)
+		return -EFAULT;
+
+	bpf_printk("setuid: process command: %s\n", comm);
+
+	uid_t uid_old = BPF_CORE_READ(old, uid).val;
+	bpf_printk("setuid: user current UID: %d\n", uid_old);
+
+	uid_t uid_new = BPF_CORE_READ(new, uid).val;
+	bpf_printk("setuid: user requested UID: %d\n", uid_new);
+
+	switch (policy_level) {
+	case POLICY_LEVEL_LOOKUP_ERR:
+		ret = -EPERM;
+		goto out;
+	case POLICY_LEVEL_NOT_FOUND:
+		goto out;
+	case POLICY_LEVEL_RESTRICTED:
+		bpf_printk("setuid: policy: restricted\n");
+		break;
+	case POLICY_LEVEL_BASELINE:
+		bpf_printk("setuid: policy: baseline\n");
+		break;
+	case POLICY_LEVEL_PRIVILEGED:
+		bpf_printk("setuid: root user allow\n");
+		goto out;
+	}
+
+	// TODO mjura: add configuration option for what UID this restrion should be applied
+	if ((uid_new == 0) && (uid_old >= 1000)) {
+		bpf_printk("setuid: root user deny\n");
+		ret = -EPERM;
+	}
+
+out:
+	if (ret_prev != 0)
+		return ret_prev;
+	return ret;
+}
+
 SEC("lsm/file_open")
 int BPF_PROG(open_audit, struct file *file, int ret_prev)
 {
