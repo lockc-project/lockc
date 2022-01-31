@@ -343,10 +343,12 @@ impl RuncWatcher {
             "/usr/sbin/runc",
             "/usr/local/bin/runc",
             "/usr/local/sbin/runc",
+            "/run/torcx/unpack/docker/bin/runc",
             "/host/usr/bin/runc",
             "/host/usr/sbin/runc",
             "/host/usr/local/bin/runc",
             "/host/usr/local/sbin/runc",
+            "/host/run/torcx/unpack/docker/bin/runc",
         ];
         let fd = Fanotify::new_with_blocking(FanotifyMode::CONTENT);
 
