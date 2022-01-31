@@ -50,9 +50,9 @@ impl BinTar {
         .do_install()?;
 
         let tar_gz_path = Path::new("target")
-            .join(self.opts.profile.clone())
+            .join(&self.opts.profile)
             .join("lockc.tar.gz");
-        let tar_gz = File::create(tar_gz_path.clone())?;
+        let tar_gz = File::create(&tar_gz_path)?;
         let enc = GzEncoder::new(tar_gz, Compression::default());
         let mut tar = tar::Builder::new(enc);
         tar.append_dir_all("", dir.path())?;

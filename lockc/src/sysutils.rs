@@ -40,18 +40,18 @@ mod tests {
     fn check_bpf_lsm_enabled_when_correct() {
         let dir = tempdir().unwrap();
         let sys_lsm_path = dir.path().join("lsm");
-        let mut f = File::create(sys_lsm_path.clone()).unwrap();
+        let mut f = File::create(&sys_lsm_path).unwrap();
         f.write_all(b"lockdown,capability,bpf").unwrap();
-        assert!(check_bpf_lsm_enabled(sys_lsm_path).is_ok());
+        assert!(check_bpf_lsm_enabled(&sys_lsm_path).is_ok());
     }
 
     #[test]
     fn check_bpf_lsm_enabled_should_return_error() {
         let dir = tempdir().unwrap();
         let sys_lsm_path = dir.path().join("lsm");
-        let mut f = File::create(sys_lsm_path.clone()).unwrap();
+        let mut f = File::create(&sys_lsm_path).unwrap();
         f.write_all(b"lockdown,capability,selinux").unwrap();
-        let res = check_bpf_lsm_enabled(sys_lsm_path);
+        let res = check_bpf_lsm_enabled(&sys_lsm_path);
         assert!(res.is_err());
         assert!(matches!(res.unwrap_err(), CheckBpfLsmError::BpfLsmDisabled));
     }
