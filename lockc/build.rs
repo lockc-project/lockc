@@ -80,7 +80,7 @@ fn build_ebpf<P: Clone + AsRef<Path>>(out_path: P, include_path: P) -> Result<()
     println!("cargo:rerun-if-changed={}", HEADER_STRUTILS);
     println!("cargo:rerun-if-changed={}", MODULE_BPF);
 
-    extract_libbpf_headers(include_path.clone())?;
+    extract_libbpf_headers(&include_path)?;
 
     let bpf_dir = Path::new("src").join("bpf");
     let src = bpf_dir.join("lockc.bpf.c");
@@ -143,11 +143,11 @@ fn generate_bindings<P: AsRef<Path>>(out_path: P) -> Result<()> {
 fn main() -> Result<()> {
     let out_path = PathBuf::from(env::var("OUT_DIR")?);
     let include_path = out_path.join("include");
-    fs::create_dir_all(include_path.clone())?;
+    fs::create_dir_all(&include_path)?;
 
-    generate_vmlinux(include_path.clone())?;
-    build_ebpf(out_path.clone(), include_path)?;
-    generate_bindings(out_path)?;
+    generate_vmlinux(&include_path)?;
+    build_ebpf(&out_path, &include_path)?;
+    generate_bindings(&out_path)?;
 
     Ok(())
 }

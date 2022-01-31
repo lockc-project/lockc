@@ -58,7 +58,7 @@ async fn ebpf(
 
     std::fs::create_dir_all(&path_base)?;
 
-    let mut bpf = load_bpf(path_base.clone())?;
+    let mut bpf = load_bpf(&path_base)?;
 
     init_allowed_paths(&mut bpf)?;
     debug!("allowed paths initialized");

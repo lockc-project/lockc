@@ -20,7 +20,7 @@ enum EscalateIfNotOwnedError {
     SudoError,
 }
 
-fn mkdir_if_not_exists(p: path::PathBuf) -> Result<(), io::Error> {
+fn mkdir_if_not_exists(p: &path::Path) -> Result<(), io::Error> {
     if !p.exists() {
         fs::create_dir_all(p)?;
     }
@@ -28,7 +28,7 @@ fn mkdir_if_not_exists(p: path::PathBuf) -> Result<(), io::Error> {
     Ok(())
 }
 
-fn escalate_if_not_owned(p: path::PathBuf) -> Result<(), EscalateIfNotOwnedError> {
+fn escalate_if_not_owned(p: &path::Path) -> Result<(), EscalateIfNotOwnedError> {
     if p.metadata()?.uid() == 0 {
         match sudo::escalate_if_needed() {
             Ok(_) => {}
@@ -215,12 +215,12 @@ impl Installer {
     }
 
     fn install_binaries(&self) -> Result<(), InstallBinariesError> {
-        let bindir_full = self.install_dirs.bindir_full.clone();
+        let bindir_full = &self.install_dirs.bindir_full;
 
-        mkdir_if_not_exists(bindir_full.clone())?;
-        escalate_if_not_owned(bindir_full.clone())?;
+        mkdir_if_not_exists(bindir_full)?;
+        escalate_if_not_owned(bindir_full)?;
 
-        let target_path = path::Path::new("target").join(self.opts.profile.clone());
+        let target_path = path::Path::new("target").join(&self.opts.profile);
         if !target_path.exists() {
             return Err(InstallBinariesError::NotBuilt);
         }
@@ -256,10 +256,10 @@ impl Installer {
     }
 
     fn install_config(&self) -> Result<(), InstallConfigError> {
-        let sysconfdir_full = self.install_dirs.sysconfdir_full.clone();
+        let sysconfdir_full = &self.install_dirs.sysconfdir_full;
 
-        mkdir_if_not_exists(sysconfdir_full.clone())?;
-        escalate_if_not_owned(sysconfdir_full.clone())?;
+        mkdir_if_not_exists(sysconfdir_full)?;
+        escalate_if_not_owned(sysconfdir_full)?;
 
         let config_path = path::Path::new("contrib").join("etc");
         if !config_path.exists() {
@@ -282,7 +282,7 @@ impl Installer {
 
     fn __install_and_template_units(
         &self,
-        unit_path: path::PathBuf,
+        unit_path: &path::Path,
         file_name: &OsStr,
     ) -> Result<(), InstallUnitsError> {
         // Remove ".in" suffix.
@@ -298,7 +298,7 @@ impl Installer {
             &Context::from_serialize(&self.install_dirs)?,
         )?;
 
-        let mut file_dst = fs::File::create(path_dest.clone())?;
+        let mut file_dst = fs::File::create(&path_dest)?;
         println!(
             "Templating and installing systemd unit {} to {}",
             file_name.to_string_lossy(),
@@ -311,7 +311,7 @@ impl Installer {
 
     fn __install_units(
         &self,
-        path_cur: path::PathBuf,
+        path_cur: &path::Path,
         file_name: &OsStr,
     ) -> Result<(), InstallUnitsError> {
         let path_dest = self.install_dirs.unitdir_full.clone().join(file_name);
@@ -326,9 +326,9 @@ impl Installer {
     }
 
     fn install_units(&self) -> Result<(), InstallUnitsError> {
-        let unitdir_full = self.install_dirs.unitdir_full.clone();
+        let unitdir_full = &self.install_dirs.unitdir_full;
 
-        mkdir_if_not_exists(unitdir_full.clone())?;
+        mkdir_if_not_exists(unitdir_full)?;
         escalate_if_not_owned(unitdir_full)?;
 
         let unit_path = path::Path::new("contrib").join("systemd");
@@ -336,7 +336,7 @@ impl Installer {
             return Ok(());
         }
 
-        for entry in fs::read_dir(unit_path.clone())? {
+        for entry in fs::read_dir(&unit_path)? {
             let path_cur = entry?.path();
             let metadata = path_cur.metadata()?;
 
@@ -350,13 +350,13 @@ impl Installer {
             match path_cur.extension() {
                 Some(ext) => {
                     if ext == "in" {
-                        self.__install_and_template_units(unit_path.clone(), file_name)?;
+                        self.__install_and_template_units(&unit_path, file_name)?;
                     } else {
-                        self.__install_units(path_cur.clone(), file_name)?;
+                        self.__install_units(&path_cur, file_name)?;
                     }
                 }
                 None => {
-                    self.__install_units(path_cur.clone(), file_name)?;
+                    self.__install_units(&path_cur, file_name)?;
                 }
             }
         }

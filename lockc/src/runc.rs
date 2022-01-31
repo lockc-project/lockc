@@ -46,7 +46,7 @@ enum KubernetesContainerType {
     Unknown,
 }
 
-fn kubernetes_type(annotations: HashMap<String, String>) -> KubernetesContainerType {
+fn kubernetes_type(annotations: &HashMap<String, String>) -> KubernetesContainerType {
     if annotations.contains_key(ANNOTATION_CONTAINERD_LOG_DIRECTORY) {
         return KubernetesContainerType::ContainerdMain;
     } else if annotations.contains_key(ANNOTATION_CONTAINERD_SANDBOX_ID) {
@@ -95,7 +95,7 @@ fn container_type_data<P: AsRef<std::path::Path>>(
 ) -> Result<(ContainerType, Option<std::string::String>), ContainerError> {
     let bundle_path = container_bundle.as_ref();
     let config_path = bundle_path.join("config.json");
-    let f = fs::File::open(config_path.clone())?;
+    let f = fs::File::open(&config_path)?;
     let r = io::BufReader::new(f);
 
     let config: ContainerConfig = serde_json::from_reader(r)?;
@@ -107,7 +107,7 @@ fn container_type_data<P: AsRef<std::path::Path>>(
             config = ?config_path,
             "detected kubernetes container",
         );
-        match kubernetes_type(annotations.clone()) {
+        match kubernetes_type(&annotations) {
             KubernetesContainerType::ContainerdMain => {
                 // containerd doesn't expose k8s namespaces directly. They have
                 // to be parsed from the log directory path, where the first
