@@ -1,4 +1,4 @@
-![lockc](/images/logo-horizontal-lockc.png)
+![lockc](https://rancher-sandbox.github.io/lockc/images/logo-horizontal-lockc.png)
 
 # Introduction
 
