@@ -56,7 +56,7 @@ EOF
     ((++i))
 done
 
-scp ${TR_USERNAME}@${MASTER}:/home/${TR_USERNAME}/.kube/config ./admin.conf
+scp -o 'StrictHostKeyChecking no' ${TR_USERNAME}@${MASTER}:/home/${TR_USERNAME}/.kube/config ./admin.conf
 export KUBECONFIG=`pwd`/admin.conf
 kubectl get nodes
 
