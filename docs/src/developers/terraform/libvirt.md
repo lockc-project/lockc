@@ -20,7 +20,8 @@ sudo systemctl restart libvirtd
 
 ## Running VMs
 
-Now it's time to prepare Terraform environment.
+Now it's time to prepare Terraform environment. Terraform files are included in
+the main lockc git repository.
 
 ```bash
 cd contrib/terraform/libvirt
@@ -130,13 +131,10 @@ kube-system   kube-scheduler-lockc-control-plane-0            1/1     Running   
 kube-system   kube-scheduler-lockc-control-plane-1            1/1     Running   0             14m
 ```
 
-Now it's time to build and deploy lockc! Detailed instructions how to do that
-are in the following documentation sections:
+Now it's time to build and deploy lockc!
 
-* [Container image](../build/container-image.md)
-* [Install on Kubernetes](../install/kubernetes.md)
-
-But let's continue with a short summary of the easiest way to do that:
+To build lockc container image, we have to go to the main directory in lockc
+git repository:
 
 ```bash
 # Go to the main directory of lockc sources
@@ -144,7 +142,14 @@ cd ../../..
 export IMAGE_NAME=$(uuidgen)
 docker build -t ttl.sh/${IMAGE_NAME}:30m .
 docker push ttl.sh/${IMAGE_NAME}:30m
-helm install lockc contrib/helm/lockc/ --namespace kube-system \
+```
+
+Then we need to go to the lockc-helm-charts git repository:
+
+```bash
+# Go to the main directory of lockc-helm-charts sources
+cd ../lockc-helm-charts
+helm install lockc charts/lockc/ --namespace kube-system \
     --set lockcd.image.repository=ttl.sh/${IMAGE_NAME} \
     --set lockcd.image.tag=30m \
     --set lockcd.debug.enabled=true

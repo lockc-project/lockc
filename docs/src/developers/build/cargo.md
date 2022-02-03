@@ -4,7 +4,7 @@ If you are comfortable with installing all dependencies on your host system,
 you need to install the following software:
 
 * LLVM
-* libbpf, bpftool
+* bpftool
 * Rust, Cargo
 
 ## LLVM
@@ -31,58 +31,25 @@ zypper in clang llvm
 If there is no packaging of recent LLVM versions for your distribution, there
 is also an option to [download binaries](https://releases.llvm.org/download.html).
 
-## libbpf, bpftool
+## bpftool
 
-libbpf is the official C library for writing, loading and managing BPF programs
-and entities. bpftool is the official CLI for interacting with BPF subsystem.
+bpftool is the official CLI for interacting with BPF subsystem.
 
 Distributions with up to date software (Arch, Fedora, openSUSE Tumbleweed)
-usually provide packaging for both.
+usually provide packaging for it.
 
 Especially for more stable and less up to date distributions, but even
-generally, we would recommend to build both dependencies from source. Both of
+generally, we would recommend to build bpftool from source. Both of
 them are the part of the Linux kernel source.
 
-The easiest way to get the kernel source is to download a tarball available on
-[kernel.org](https://www.kernel.org/). Then build and install tools from it
-(the version might vary from this snippet):
+bpftool is available in its own repo - [github.com/libbpf/bpftool](https://github.com/libbpf/bpftool).
+It lets you to build bpftool with the following commands:
 
 ```bash
-tar -xvf linux-5.14.9.tar.xz
-cd linux-5.14.9
-cd tools/lib/bpf
-make -j $(nproc)
-make install prefix=/usr
-cd ../../bpf/bpftool
-make -j $(nproc)
-make install prefix=/usr
-```
-
-If you are interested in tracking the history of Linux kernel source and/or are
-comfortable using git for it, you can clone one of the git trees:
-
-* [stable tree](https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git/) -
-  stable releases and release candidates, this is where the tarball comes from
-* [mainline tree](https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/) -
-  patches accepted by Linus, release candidates
-* [bpf-next tree](https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git/) -
-  development of BPF features, before being mainlined
-* [bpf tree](https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf.git/) -
-  BPF bugfixes which are backported to the stable tree
-
-Assuming you want to use the stable tree:
-
-```bash
-git clone git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git
-cd linux
-git tag -l # List available tags
-git checkout v5.14.9 # Check out to whatever is the newest
-cd tools/lib/bpf
-make -j $(nproc)
-make install prefix=/usr
-cd ../../bpf/bpftool
-make -j $(nproc)
-make install prefix=/usr
+git clone --recurse-submodules https://github.com/libbpf/bpftool.git
+cd src
+make
+sudo make install prefix=/usr
 ```
 
 ## Installing Rust
