@@ -144,10 +144,10 @@ async fn ebpf(
 #[derive(Parser, Debug)]
 #[clap(author, version, about, long_about = None)]
 struct Args {
-    #[clap(long, default_value = "info", possible_values = &["trace", "debug", "info", "warn", "error"])]
+    #[clap(long, env="LOCKC_LOG_LEVEL", default_value = "info", possible_values = &["trace", "debug", "info", "warn", "error"])]
     log_level: String,
 
-    #[clap(long, default_value = "text", possible_values = &["json", "text"])]
+    #[clap(long, env="LOCKC_LOG_FMT", default_value = "text", possible_values = &["json", "text"])]
     log_fmt: String,
 }
 
