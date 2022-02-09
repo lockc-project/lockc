@@ -42,7 +42,8 @@ RUN curl -Lso linux.tar.xz \
 # Prepare lockc sources and build it.
 WORKDIR /usr/local/src/lockc
 COPY . ./
-RUN cargo build --release
+ARG profile=release
+RUN if [[ "$profile" == "debug" ]]; then cargo build; else cargo build --profile ${profile}; fi
 
 FROM registry.opensuse.org/opensuse/leap:15.3 AS lockcd
 # runc links those libraries dynamically
@@ -50,6 +51,8 @@ RUN zypper --non-interactive install \
     libseccomp2 \
     libselinux1 \
     && zypper clean
+ARG profile=release
+RUN if [[ "$profile" == "debug" ]]; then zypper --non-interactive install gdb lldb; fi
 COPY --from=build /usr/local/src/linux/tools/bpf/bpftool/bpftool /usr/sbin/bpftool
-COPY --from=build /usr/local/src/lockc/target/release/lockcd /usr/bin/lockcd
+COPY --from=build /usr/local/src/lockc/target/${profile}/lockcd /usr/bin/lockcd
 ENTRYPOINT ["/usr/bin/lockcd"]
