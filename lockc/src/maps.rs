@@ -143,19 +143,31 @@ pub fn add_process(bpf: &mut Bpf, container_id: String, pid: i32) -> Result<(), 
 
 #[cfg(test)]
 mod tests {
+    use tempfile::{Builder, TempDir};
+
     use crate::{bpfstructs::container_policy_level_POLICY_LEVEL_BASELINE, load::load_bpf};
 
     use super::*;
 
+    fn tmp_path_base() -> TempDir {
+        Builder::new()
+            .prefix("lockc-temp")
+            .rand_bytes(5)
+            .tempdir_in("/sys/fs/bpf")
+            .expect("Creating temporary dir in BPFFS failed")
+    }
+
     #[test]
     fn test_init_allowed_paths() {
-        let mut bpf = load_bpf("/sys/fs/bpf/lockc-test").expect("Loading BPF failed");
+        let path_base = tmp_path_base();
+        let mut bpf = load_bpf(path_base).expect("Loading BPF failed");
         init_allowed_paths(&mut bpf).expect("Initializing allowed paths failed");
     }
 
     #[test]
     fn test_add_container() {
-        let mut bpf = load_bpf("/sys/fs/bpf/lockc-test").expect("Loading BPF failed");
+        let path_base = tmp_path_base();
+        let mut bpf = load_bpf(path_base).expect("Loading BPF failed");
         add_container(
             &mut bpf,
             "5833851e673d45fab4d12105bf61c3f4892b2bbf9c12d811db509a4f22475ec9".to_string(),
