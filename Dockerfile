@@ -43,7 +43,10 @@ RUN curl -Lso linux.tar.xz \
 WORKDIR /usr/local/src/lockc
 COPY . ./
 ARG profile=release
-RUN if [[ "$profile" == "debug" ]]; then cargo build; else cargo build --profile ${profile}; fi
+RUN --mount=type=cache,target=/.root/cargo/registry \
+    --mount=type=cache,target=/usr/local/src/lockc/target \
+    if [[ "$profile" == "debug" ]]; then cargo build; else cargo build --profile ${profile}; fi \
+    && cp target/${profile}/lockcd /usr/local/bin/lockcd
 
 FROM registry.opensuse.org/opensuse/leap:15.3 AS lockcd
 # runc links those libraries dynamically
@@ -54,5 +57,5 @@ RUN zypper --non-interactive install \
 ARG profile=release
 RUN if [[ "$profile" == "debug" ]]; then zypper --non-interactive install gdb lldb; fi
 COPY --from=build /usr/local/src/linux/tools/bpf/bpftool/bpftool /usr/sbin/bpftool
-COPY --from=build /usr/local/src/lockc/target/${profile}/lockcd /usr/bin/lockcd
+COPY --from=build /usr/local/bin/lockcd /usr/bin/lockcd
 ENTRYPOINT ["/usr/bin/lockcd"]
