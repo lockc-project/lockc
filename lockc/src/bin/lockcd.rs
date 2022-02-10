@@ -81,17 +81,10 @@ async fn ebpf(
                 let res = add_container(&mut bpf, container_id, pid, policy_level);
                 match responder_tx.send(res) {
                     Ok(_) => {}
-                    Err(res2) => match res2 {
-                        Ok(_) => error!(
-                            command = "add_container",
-                            "could not send eBPF command result although the operation was succeessful"
-                        ),
-                        Err(e) => error!(
-                            error = e.to_string().as_str(),
-                            command = "add_container",
-                            "could not execute eBPF command"
-                        ),
-                    },
+                    Err(_) => error!(
+                        command = "add_container",
+                        "could not send eBPF command result although the operation was succeessful"
+                    ),
                 }
             }
             EbpfCommand::DeleteContainer {
@@ -101,17 +94,10 @@ async fn ebpf(
                 let res = delete_container(&mut bpf, container_id);
                 match responder_tx.send(res) {
                     Ok(_) => {}
-                    Err(res2) => match res2 {
-                        Ok(_) => error!(
-                            command = "delete_container",
-                            "could not send eBPF command result although the operation was succeessful"
-                        ),
-                        Err(e) => error!(
-                            error = e.to_string().as_str(),
-                            command = "delete_container",
-                            "could not execute eBPF command"
-                        ),
-                    },
+                    Err(_) => error!(
+                        command = "delete_container",
+                        "could not send eBPF command result although the operation was succeessful"
+                    ),
                 }
             }
             EbpfCommand::AddProcess {
@@ -121,18 +107,11 @@ async fn ebpf(
             } => {
                 let res = add_process(&mut bpf, container_id, pid);
                 match responder_tx.send(res) {
-                    Ok(_) => error!(
+                    Ok(_) => {}
+                    Err(_) => error!(
                         command = "add_proceess",
                         "could not send eBPF command result although the operation was succeessful"
                     ),
-                    Err(res2) => match res2 {
-                        Ok(_) => {}
-                        Err(e) => error!(
-                            error = e.to_string().as_str(),
-                            command = "add_process",
-                            "could not execute eBPF command"
-                        ),
-                    },
                 }
             }
         }
