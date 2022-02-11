@@ -55,7 +55,8 @@ RUN zypper --non-interactive install \
     libselinux1 \
     && zypper clean
 ARG profile=release
-RUN if [[ "$profile" == "debug" ]]; then zypper --non-interactive install gdb lldb; fi
+# Install rust-gdb and rust-lldb for debug profile
+RUN if [[ "$profile" == "debug" ]]; then zypper --non-interactive install gdb lldb python3-lldb rust; fi
 COPY --from=build /usr/local/src/linux/tools/bpf/bpftool/bpftool /usr/sbin/bpftool
 COPY --from=build /usr/local/bin/lockcd /usr/bin/lockcd
 ENTRYPOINT ["/usr/bin/lockcd"]
