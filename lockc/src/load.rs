@@ -1,4 +1,4 @@
-use std::path::Path;
+use std::{io, path::Path};
 
 use aya::{
     include_bytes_aligned,
@@ -7,9 +7,20 @@ use aya::{
 };
 use thiserror::Error;
 
+#[derive(Error, Debug)]
+pub enum LoadError {
+    #[error(transparent)]
+    IO(#[from] io::Error),
+
+    #[error(transparent)]
+    Bpf(#[from] BpfError),
+}
+
 /// Loads BPF programs from the object file built with clang.
-pub fn load_bpf<P: AsRef<Path>>(path_base_r: P) -> Result<Bpf, BpfError> {
+pub fn load_bpf<P: AsRef<Path>>(path_base_r: P) -> Result<Bpf, LoadError> {
     let path_base = path_base_r.as_ref();
+    std::fs::create_dir_all(&path_base)?;
+
     let data = include_bytes_aligned!(concat!(env!("OUT_DIR"), "/lockc.bpf.o"));
     let bpf = BpfLoader::new().map_pin_path(path_base).load(data)?;
 
