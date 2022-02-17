@@ -1,6 +1,6 @@
 FROM registry.opensuse.org/opensuse/leap:15.3 as builder
-RUN zypper ar -p 90 -r https://download.opensuse.org/repositories/devel:/languages:/rust/openSUSE_Leap_15.3/devel:languages:rust.repo \
-    && zypper ar -p 90 -r https://download.opensuse.org/repositories/devel:/tools:/compiler/openSUSE_Leap_15.3/devel:tools:compiler.repo \
+# zypper ar -p 90 -r https://download.opensuse.org/repositories/devel:/languages:/rust/openSUSE_Leap_15.3/devel:languages:rust.repo
+RUN zypper ar -p 90 -r https://download.opensuse.org/repositories/devel:/tools:/compiler/openSUSE_Leap_15.3/devel:tools:compiler.repo \
     && zypper --gpg-auto-import-keys ref \
     && zypper --non-interactive dup --allow-vendor-change
 RUN zypper --non-interactive install -t pattern \
