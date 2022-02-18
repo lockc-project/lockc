@@ -38,7 +38,7 @@ jobs:
           platforms: linux/amd64
           push: true
           tags: |
-            ghcr.io/rancher-sandbox/lockc:latest
+            ghcr.io/mjura/lockc:latest
       -
         name: Retrieve tag name
         if: ${{ startsWith(github.ref, 'refs/tags/') }}
@@ -54,4 +54,4 @@ jobs:
           platforms: linux/amd64
           push: true
           tags: |
-            ghcr.io/rancher-sandbox/lockc:${{ env.TAG_NAME }}
+            ghcr.io/mjura/lockc:${{ env.TAG_NAME }}
