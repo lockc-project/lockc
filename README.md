@@ -37,4 +37,4 @@ on `#lockc` channel on the [Rust Cloud Native Discord server](https://discord.gg
 eBPF programs inside [lockc/src/bpf directory](https://github.com/rancher-sandbox/lockc/tree/main/lockc/src/bpf)
 are licensed under [GNU General Public License, version 2](https://github.com/rancher-sandbox/lockc/blob/main/lockc/src/bpf/LICENSE).
 
-Test
+Test v0.1.3
