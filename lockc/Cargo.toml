@@ -14,11 +14,12 @@ maintenance = { status = "actively-developed" }
 
 [dependencies]
 anyhow = "1.0"
+async-trait = "0.1"
 aya = { git = "https://github.com/aya-rs/aya", branch = "main", features=["async_tokio"] }
 bindgen = "0.59"
 byteorder = "1.4"
 clap = { version = "3.0", features = ["derive", "env"] }
-config = { version = "0.11", default-features = false, features = ["toml"] }
+config = { version = "0.12", default-features = false, features = ["toml"] }
 fanotify-rs = { git = "https://github.com/vadorovsky/fanotify-rs", branch = "fix-pid-type" }
 futures = "0.3"
 kube = "0.68"
@@ -32,7 +33,7 @@ scopeguard = "1.1"
 serde = "1.0"
 serde_json = "1.0"
 thiserror = "1.0"
-tokio = { version = "1.7", features = ["macros", "process", "rt-multi-thread"] }
+tokio = { version = "1.17", features = ["fs", "macros", "process", "rt-multi-thread"] }
 tracing = "0.1"
 tracing-core = "0.1"
 tracing-subscriber = { version = "0.3", features = ["json"] }

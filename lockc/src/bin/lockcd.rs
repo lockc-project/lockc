@@ -15,6 +15,7 @@ use lockc::{
     load::{attach_programs, load_bpf},
     maps::{add_container, add_process, delete_container, init_allowed_paths},
     runc::RuncWatcher,
+    settings::new_config,
     sysutils::check_bpf_lsm_enabled,
 };
 
@@ -51,6 +52,8 @@ async fn ebpf(
         check_bpf_lsm_enabled(sys_lsm_path)?;
     }
 
+    let config = new_config().await?;
+
     let path_base = std::path::Path::new("/sys")
         .join("fs")
         .join("bpf")
@@ -58,7 +61,7 @@ async fn ebpf(
 
     let mut bpf = load_bpf(&path_base)?;
 
-    init_allowed_paths(&mut bpf)?;
+    init_allowed_paths(&mut bpf, &config)?;
     debug!("allowed paths initialized");
     attach_programs(&mut bpf)?;
     debug!("attached programs");

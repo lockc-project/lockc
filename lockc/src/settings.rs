@@ -1,6 +1,14 @@
-use lazy_static::lazy_static;
+use std::{
+    fmt::Debug,
+    path::{Path, PathBuf},
+};
 
-use crate::bpfstructs;
+use async_trait::async_trait;
+use config::{
+    builder::AsyncState, AsyncSource, Config, ConfigBuilder, ConfigError, FileFormat, Format, Map,
+    Value,
+};
+use tokio::fs::read_to_string;
 
 /// Path to Pseudo-Terminal Device, needed for -it option in container
 /// runtimes.
@@ -227,52 +235,68 @@ static DIR_K8S_SECRETS: &str = "/var/run/secrets/kubernetes.io";
 static DIR_PROC_ACPI: &str = "/proc/acpi";
 static DIR_PROC_SYS: &str = "/proc/sys";
 
-lazy_static! {
-    pub static ref SETTINGS: Settings = Settings::new().unwrap();
+// TODO(vadorovsky): The AsyncFile trait might be worth upstreaming to the
+// config crate once we are happy with it.
+
+/// Configuration source which retrieves the content of config file in
+/// asynchronous way.
+///
+/// It supports optional automatic file format discovery.
+#[derive(Debug)]
+pub struct AsyncFile<F> {
+    source: PathBuf,
+
+    /// Format of file (which dictates what driver to use).
+    format: F,
+
+    /// A required AsyncFile will error if it cannot be found
+    required: bool,
 }
 
-#[derive(Debug, serde::Deserialize)]
-pub struct Settings {
-    pub runtimes: Vec<String>,
-    /// Paths which are allowed in restricted policy. These are only paths
-    /// which are used by default by container runtimes, not paths mounted
-    /// with the -v option.
-    pub allowed_paths_mount_restricted: Vec<String>,
-    /// Paths which are allowed in baseline policy. These are both paths
-    /// used by default by container runtimes and few directories which we
-    /// allow to mount with -v option.
-    pub allowed_paths_mount_baseline: Vec<String>,
-    pub allowed_paths_access_restricted: Vec<String>,
-    pub allowed_paths_access_baseline: Vec<String>,
-    pub denied_paths_access_restricted: Vec<String>,
-    pub denied_paths_access_baseline: Vec<String>,
-}
+impl<F> AsyncFile<F>
+where
+    F: Format + Send + Sync + Debug,
+{
+    pub fn new<P: AsRef<Path>>(path: P, format: F) -> Self {
+        Self {
+            source: PathBuf::from(path.as_ref()),
+            format,
+            required: false,
+        }
+    }
 
-fn trim_task_comm_len(mut s: std::string::String) -> std::string::String {
-    s.truncate((bpfstructs::TASK_COMM_LEN - 1).try_into().unwrap());
-    s
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn test_trim_task_comm_len() {
-        assert_eq!(
-            trim_task_comm_len("abcdefgijklmnopqrstuvwxyz".to_string()),
-            "abcdefgijklmnop".to_string()
-        );
-        assert_eq!(trim_task_comm_len("foo".to_string()), "foo".to_string());
+    #[must_use]
+    pub fn required(mut self, required: bool) -> Self {
+        self.required = required;
+        self
     }
 }
 
-impl Settings {
-    pub fn new() -> Result<Self, config::ConfigError> {
-        let mut s = config::Config::default();
+#[async_trait]
+impl<F> AsyncSource for AsyncFile<F>
+where
+    F: Format + Send + Sync + Debug,
+{
+    async fn collect(&self) -> Result<Map<String, Value>, ConfigError> {
+        let text = match read_to_string(&self.source).await {
+            Ok(r) => r,
+            Err(e) => {
+                if self.required {
+                    return Err(ConfigError::Foreign(Box::new(e)));
+                }
+                return Ok(Map::new());
+            }
+        };
 
-        s.set_default("runtimes", vec![trim_task_comm_len("runc".to_string())])?;
-        s.set_default(
+        self.format
+            .parse(Some(&self.source.to_string_lossy().to_string()), &text)
+            .map_err(|e| ConfigError::Foreign(e))
+    }
+}
+
+pub async fn new_config() -> Result<Config, ConfigError> {
+    ConfigBuilder::<AsyncState>::default()
+        .set_default(
             "allowed_paths_mount_restricted",
             vec![
                 DIR_PTS.to_string(),
@@ -354,8 +378,8 @@ impl Settings {
                 DIR_CGROUP_UNIFIED_DOCKER.to_string(),
                 DIR_PODS_KUBELET.to_string(),
             ],
-        )?;
-        s.set_default(
+        )?
+        .set_default(
             "allowed_paths_mount_baseline",
             vec![
                 // Paths used by container runtimes.
@@ -441,8 +465,8 @@ impl Settings {
                 DIR_HOME.to_string(),
                 DIR_VAR_DATA.to_string(),
             ],
-        )?;
-        s.set_default(
+        )?
+        .set_default(
             "allowed_paths_access_restricted",
             vec![
                 GROUP.to_string(),
@@ -476,8 +500,8 @@ impl Settings {
                 DIR_USR.to_string(),
                 DIR_VAR.to_string(),
             ],
-        )?;
-        s.set_default(
+        )?
+        .set_default(
             "allowed_paths_access_baseline",
             vec![
                 GROUP.to_string(),
@@ -511,21 +535,20 @@ impl Settings {
                 DIR_USR.to_string(),
                 DIR_VAR.to_string(),
             ],
-        )?;
-        s.set_default(
+        )?
+        .set_default(
             "denied_paths_access_restricted",
             vec![
                 DIR_PROC_ACPI.to_string(),
                 DIR_PROC_SYS.to_string(),
                 DIR_K8S_SECRETS.to_string(),
             ],
-        )?;
-        s.set_default(
+        )?
+        .set_default(
             "denied_paths_access_baseline",
             vec![DIR_PROC_ACPI.to_string(), DIR_K8S_SECRETS.to_string()],
-        )?;
-
-        s.merge(config::File::with_name("/etc/lockc/lockc.toml").required(false))?;
-        s.try_into()
-    }
+        )?
+        .add_async_source(AsyncFile::new("/etc/lockc/lockc.toml", FileFormat::Toml).required(false))
+        .build()
+        .await
 }
