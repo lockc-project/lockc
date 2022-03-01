@@ -2,18 +2,19 @@ use aya::{
     maps::{HashMap, MapError},
     Bpf,
 };
+use config::{Config, ConfigError};
 use thiserror::Error;
 use tracing::debug;
 
-use crate::{
-    bpfstructs::{
-        accessed_path, container, container_id, container_policy_level, process, NewBpfstructError,
-    },
-    settings::SETTINGS,
+use crate::bpfstructs::{
+    accessed_path, container, container_id, container_policy_level, process, NewBpfstructError,
 };
 
 #[derive(Error, Debug)]
 pub enum MapOperationError {
+    #[error(transparent)]
+    Config(#[from] ConfigError),
+
     #[error(transparent)]
     Map(#[from] MapError),
 
@@ -24,45 +25,69 @@ pub enum MapOperationError {
 /// Registers the allowed directories for restricted and baseline containers in
 /// BPF maps. Based on that information, mount_audit BPF prrogram will make a
 /// decision whether to allow a bind mount for a given container.
-pub fn init_allowed_paths(bpf: &mut Bpf) -> Result<(), MapOperationError> {
+pub fn init_allowed_paths(bpf: &mut Bpf, config: &Config) -> Result<(), MapOperationError> {
     let mut allowed_paths_mount_restricted: HashMap<_, u32, accessed_path> =
         bpf.map_mut("ap_mnt_restr")?.try_into()?;
-    for (i, allowed_path_s) in SETTINGS.allowed_paths_mount_restricted.iter().enumerate() {
+    for (i, allowed_path_s) in config
+        .get::<Vec<String>>("allowed_paths_mount_restricted")?
+        .iter()
+        .enumerate()
+    {
         let ap = accessed_path::new(allowed_path_s)?;
         allowed_paths_mount_restricted.insert(i as u32, ap, 0)?;
     }
 
     let mut allowed_paths_mount_baseline: HashMap<_, u32, accessed_path> =
         bpf.map_mut("ap_mnt_base")?.try_into()?;
-    for (i, allowed_path_s) in SETTINGS.allowed_paths_mount_baseline.iter().enumerate() {
+    for (i, allowed_path_s) in config
+        .get::<Vec<String>>("allowed_paths_mount_baseline")?
+        .iter()
+        .enumerate()
+    {
         let ap = accessed_path::new(allowed_path_s)?;
         allowed_paths_mount_baseline.insert(i as u32, ap, 0)?;
     }
 
     let mut allowed_paths_access_restricted: HashMap<_, u32, accessed_path> =
         bpf.map_mut("ap_acc_restr")?.try_into()?;
-    for (i, allowed_path_s) in SETTINGS.allowed_paths_access_restricted.iter().enumerate() {
+    for (i, allowed_path_s) in config
+        .get::<Vec<String>>("allowed_paths_access_restricted")?
+        .iter()
+        .enumerate()
+    {
         let ap = accessed_path::new(allowed_path_s)?;
         allowed_paths_access_restricted.insert(i as u32, ap, 0)?;
     }
 
     let mut allowed_paths_access_baseline: HashMap<_, u32, accessed_path> =
         bpf.map_mut("ap_acc_base")?.try_into()?;
-    for (i, allowed_path_s) in SETTINGS.allowed_paths_access_baseline.iter().enumerate() {
+    for (i, allowed_path_s) in config
+        .get::<Vec<String>>("allowed_paths_access_baseline")?
+        .iter()
+        .enumerate()
+    {
         let ap = accessed_path::new(allowed_path_s)?;
         allowed_paths_access_baseline.insert(i as u32, ap, 0)?;
     }
 
     let mut denied_paths_access_restricted: HashMap<_, u32, accessed_path> =
         bpf.map_mut("dp_acc_restr")?.try_into()?;
-    for (i, allowed_path_s) in SETTINGS.denied_paths_access_restricted.iter().enumerate() {
+    for (i, allowed_path_s) in config
+        .get::<Vec<String>>("denied_paths_access_restricted")?
+        .iter()
+        .enumerate()
+    {
         let ap = accessed_path::new(allowed_path_s)?;
         denied_paths_access_restricted.insert(i as u32, ap, 0)?;
     }
 
     let mut denied_paths_access_baseline: HashMap<_, u32, accessed_path> =
         bpf.map_mut("dp_acc_base")?.try_into()?;
-    for (i, allowed_path_s) in SETTINGS.denied_paths_access_baseline.iter().enumerate() {
+    for (i, allowed_path_s) in config
+        .get::<Vec<String>>("denied_paths_access_baseline")?
+        .iter()
+        .enumerate()
+    {
         let ap = accessed_path::new(allowed_path_s)?;
         denied_paths_access_baseline.insert(i as u32, ap, 0)?;
     }
@@ -145,7 +170,10 @@ pub fn add_process(bpf: &mut Bpf, container_id: String, pid: i32) -> Result<(), 
 mod tests {
     use tempfile::{Builder, TempDir};
 
-    use crate::{bpfstructs::container_policy_level_POLICY_LEVEL_BASELINE, load::load_bpf};
+    use crate::{
+        bpfstructs::container_policy_level_POLICY_LEVEL_BASELINE, load::load_bpf,
+        settings::new_config,
+    };
 
     use super::*;
 
@@ -157,11 +185,14 @@ mod tests {
             .expect("Creating temporary dir in BPFFS failed")
     }
 
-    #[test]
-    fn test_init_allowed_paths() {
+    #[tokio::test]
+    async fn test_init_allowed_paths() {
         let path_base = tmp_path_base();
+        let config = new_config()
+            .await
+            .expect("Failed to get the default config");
         let mut bpf = load_bpf(path_base).expect("Loading BPF failed");
-        init_allowed_paths(&mut bpf).expect("Initializing allowed paths failed");
+        init_allowed_paths(&mut bpf, &config).expect("Initializing allowed paths failed");
     }
 
     #[test]
