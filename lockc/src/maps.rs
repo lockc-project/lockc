@@ -137,7 +137,7 @@ pub fn delete_container(bpf: &mut Bpf, container_id: String) -> Result<(), MapOp
     containers.remove(&container_key)?;
 
     let processes: HashMap<_, i32, process> = bpf.map("processes")?.try_into()?;
-    let mut processes_mut: HashMap<_, i32, process> = bpf.map_mut("process")?.try_into()?;
+    let mut processes_mut: HashMap<_, i32, process> = bpf.map_mut("processes")?.try_into()?;
     for res in processes.iter() {
         let (pid, process) = res?;
         if process.container_id.id == container_key.id {
