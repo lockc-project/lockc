@@ -20,7 +20,7 @@ static HEADER_STRUTILS: &str = "src/bpf/strutils.h";
 static MODULE_BPF: &str = "src/bpf/lockc.bpf.c";
 
 static VMLINUX_URL: &str =
-    "https://raw.githubusercontent.com/libbpf/libbpf-bootstrap/master/vmlinux/vmlinux_508.h";
+    "https://raw.githubusercontent.com/libbpf/libbpf-bootstrap/master/vmlinux/x86/vmlinux_508.h";
 
 /// Downloads vmlinux.h from github (which is generated from 5.8 kernel).
 fn download_vmlinux(mut f: fs::File) -> Result<()> {
