@@ -5,6 +5,8 @@ if [ "$(id -u)" != "0" ]; then
   exec sudo "$0" "$@"
 fi
 
+set -eux
+
 #CONTAINERD_URL=$(curl -s https://api.github.com/repos/containerd/containerd/releases/latest | jq -r '.assets[] | select(.browser_download_url | contains("cri-containerd-cni") and endswith("linux-amd64.tar.gz")) | .browser_download_url')
 # https://github.com/rancher-sandbox/lockc/issues/178
 # Using latest containerd v1.6.0 will cause following issue 
@@ -21,6 +23,9 @@ curl -L "https://github.com/containernetworking/plugins/releases/download/${CNI_
 
 DOWNLOAD_DIR=/usr/local/bin
 mkdir -p $DOWNLOAD_DIR
+
+CRICTRL_VERSION=$(curl -s https://api.github.com/repos/kubernetes-sigs/cri-tools/releases/latest | jq -r '.tag_name')
+curl -L "https://github.com/kubernetes-sigs/cri-tools/releases/download/${CRICTL_VERSION}/crictl-${CRICTL_VERSION}-linux-amd64.tar.gz" | sudo tar -C /usr/local/bin -xz
 
 RELEASE="$(curl -sSL https://dl.k8s.io/release/stable.txt)"
 cd $DOWNLOAD_DIR
