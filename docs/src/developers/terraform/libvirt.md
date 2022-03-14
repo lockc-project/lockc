@@ -159,7 +159,7 @@ helm install lockc charts/lockc/ --namespace lockc \
 Then wait until the `lockcd` DaemonSet is ready:
 
 ```
-$ kubectl -n kube-system get ds lockcd
+$ kubectl -n lockc get ds lockcd
 NAME     DESIRED   CURRENT   READY   UP-TO-DATE   AVAILABLE   NODE SELECTOR   AGE
 lockcd   4         4         4       4            4           <none>          42s
 ```
