@@ -1,11 +1,11 @@
 [package]
 name = "lockc"
 version = "0.1.5"
-authors = ["Michal Rostecki <mrostecki@opensuse.org>"]
+authors = ["Michal Rostecki <vadorovsky@gmail.com>"]
 edition = "2021"
 
 description = "eBPF-based MAC security audit for container workloads"
-repository = "https://github.com/rancher-sandbox/lockc"
+repository = "https://github.com/lockc-project/lockc"
 keywords = ["bpf", "containers", "ebpf", "linux", "security"]
 license = "Apache-2.0 AND GPL-2.0-or-later"
 

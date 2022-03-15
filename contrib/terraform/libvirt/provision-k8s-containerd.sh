@@ -8,7 +8,7 @@ fi
 set -eux
 
 #CONTAINERD_URL=$(curl -s https://api.github.com/repos/containerd/containerd/releases/latest | jq -r '.assets[] | select(.browser_download_url | contains("cri-containerd-cni") and endswith("linux-amd64.tar.gz")) | .browser_download_url')
-# https://github.com/rancher-sandbox/lockc/issues/178
+# https://github.com/lockc-project/lockc/issues/178
 # Using latest containerd v1.6.0 will cause following issue 
 # runc: symbol lookup error: runc: undefined symbol: seccomp_notify_respond
 CONTAINERD_URL=https://github.com/containerd/containerd/releases/download/v1.5.9/cri-containerd-cni-1.5.9-linux-amd64.tar.gz
