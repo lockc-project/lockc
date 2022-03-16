@@ -4,7 +4,7 @@ use aya::{
 };
 use config::{Config, ConfigError};
 use thiserror::Error;
-use tracing::debug;
+use tracing::{debug, warn};
 
 use crate::bpfstructs::{
     accessed_path, container, container_id, container_policy_level, process, NewBpfstructError,
@@ -134,7 +134,19 @@ pub fn delete_container(bpf: &mut Bpf, container_id: String) -> Result<(), MapOp
     let mut containers: HashMap<_, container_id, container> =
         bpf.map_mut("containers")?.try_into()?;
     let container_key = container_id::new(&container_id)?;
-    containers.remove(&container_key)?;
+
+    // An error while removing a container entry is expected when lockc was
+    // installed after some containers were running (which is always the case
+    // on Kubernetes). Instead of returning an error, let's warn users.
+    if let Err(e) = containers.remove(&container_key) {
+        if let MapError::SyscallError { .. } = e {
+            warn!(
+                container = container_id.as_str(),
+                error = e.to_string().as_str(),
+                "could not remove the eBPF map container entry"
+            );
+        }
+    }
 
     let processes: HashMap<_, i32, process> = bpf.map("processes")?.try_into()?;
     let mut processes_mut: HashMap<_, i32, process> = bpf.map_mut("processes")?.try_into()?;
