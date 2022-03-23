@@ -15,7 +15,7 @@ a lot of information about host OS and provide ways to "break out" from the
 container. **lockc** aims to provide more isolation to containers and make them
 more secure.
 
-The [Containers do not contain](https://lockc-project.github.io/lockc/containers-do-not-contain.html)
+The [Containers do not contain](https://lockc-project.github.io/book/containers-do-not-contain.html)
 documentation section explains what we mean by that phrase and what kind of
 behavior we want to restrict with **lockc**.
 
@@ -26,7 +26,7 @@ Please note that currently lockc is an experimental project, not meant for
 production environment and without any official binaries or packages to use -
 currently the only way to use it is building from sources.
 
-See [the full documentation here](https://lockc-project.github.io/lockc/).
+See [the full documentation here](https://lockc-project.github.io/book/).
 And [the code documentation here](https://docs.rs/lockc/).
 
 If you need help or want to talk with contributors, plese come chat with us
