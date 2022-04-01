@@ -1,4 +1,4 @@
-use std::{env, path, thread};
+use std::{env, fs, path, thread};
 
 use anyhow::Result;
 use clap::Parser;
@@ -58,6 +58,7 @@ async fn ebpf(
         .join("fs")
         .join("bpf")
         .join("lockc");
+    fs::create_dir_all(&path_base)?;
 
     let mut bpf = load_bpf(&path_base)?;
 
