@@ -1,10 +1,11 @@
-use std::{collections::HashMap, fs, io, os::unix::fs::PermissionsExt, path::Path, string::String};
+use std::{collections, fs, io, os::unix::fs::PermissionsExt, path::Path, string::String};
 
 use fanotify::{
     high_level::{Event, Fanotify, FanotifyMode, FanotifyResponse},
     low_level::FAN_OPEN_EXEC_PERM,
 };
 use k8s_openapi::api::core::v1;
+use lockc_common::ContainerPolicyLevel;
 use nix::poll::{poll, PollFd, PollFlags};
 use procfs::{process::Process, ProcError};
 use scopeguard::defer;
@@ -17,15 +18,7 @@ use tokio::{
 };
 use tracing::{debug, error};
 
-use crate::{
-    bpfstructs::{
-        container_policy_level, container_policy_level_POLICY_LEVEL_BASELINE,
-        container_policy_level_POLICY_LEVEL_PRIVILEGED,
-        container_policy_level_POLICY_LEVEL_RESTRICTED,
-    },
-    communication::EbpfCommand,
-    maps::MapOperationError,
-};
+use crate::{communication::EbpfCommand, maps::MapOperationError};
 
 // static LABEL_NAMESPACE: &str = "io.kubernetes.pod.namespace";
 static LABEL_POLICY_ENFORCE: &str = "pod-security.kubernetes.io/enforce";
@@ -46,7 +39,7 @@ enum KubernetesContainerType {
     Unknown,
 }
 
-fn kubernetes_type(annotations: &HashMap<String, String>) -> KubernetesContainerType {
+fn kubernetes_type(annotations: &collections::HashMap<String, String>) -> KubernetesContainerType {
     if annotations.contains_key(ANNOTATION_CONTAINERD_LOG_DIRECTORY) {
         return KubernetesContainerType::ContainerdMain;
     } else if annotations.contains_key(ANNOTATION_CONTAINERD_SANDBOX_ID) {
@@ -72,7 +65,7 @@ struct Mount {
 #[serde(rename_all = "camelCase")]
 struct ContainerConfig {
     mounts: Vec<Mount>,
-    annotations: Option<HashMap<String, String>>,
+    annotations: Option<collections::HashMap<String, String>>,
 }
 
 #[derive(Error, Debug)]
@@ -175,13 +168,13 @@ fn container_type_data<P: AsRef<std::path::Path>>(
 
 /// Finds the policy for the given Kubernetes namespace. If none, the baseline
 /// policy is returned. Otherwise checks the Kubernetes namespace labels.
-async fn policy_kubernetes(namespace: String) -> Result<container_policy_level, kube::Error> {
+async fn policy_kubernetes(namespace: String) -> Result<ContainerPolicyLevel, kube::Error> {
     // Apply the privileged policy for kube-system containers immediately.
     // Otherwise the core k8s components (apiserver, scheduler) won't be able
     // to run.
     // If container has no k8s namespace, apply the baseline policy.
     if namespace.as_str() == "kube-system" {
-        return Ok(container_policy_level_POLICY_LEVEL_PRIVILEGED);
+        return Ok(ContainerPolicyLevel::Privileged);
     }
 
     let client = kube::Client::try_default().await?;
@@ -192,14 +185,14 @@ async fn policy_kubernetes(namespace: String) -> Result<container_policy_level, 
     match namespace.metadata.labels {
         Some(v) => match v.get(LABEL_POLICY_ENFORCE) {
             Some(v) => match v.as_str() {
-                "restricted" => Ok(container_policy_level_POLICY_LEVEL_RESTRICTED),
-                "baseline" => Ok(container_policy_level_POLICY_LEVEL_BASELINE),
-                "privileged" => Ok(container_policy_level_POLICY_LEVEL_PRIVILEGED),
-                _ => Ok(container_policy_level_POLICY_LEVEL_BASELINE),
+                "restricted" => Ok(ContainerPolicyLevel::Restricted),
+                "baseline" => Ok(ContainerPolicyLevel::Baseline),
+                "privileged" => Ok(ContainerPolicyLevel::Privileged),
+                _ => Ok(ContainerPolicyLevel::Baseline),
             },
-            None => Ok(container_policy_level_POLICY_LEVEL_BASELINE),
+            None => Ok(ContainerPolicyLevel::Baseline),
         },
-        None => Ok(container_policy_level_POLICY_LEVEL_BASELINE),
+        None => Ok(ContainerPolicyLevel::Baseline),
     }
 }
 
@@ -216,7 +209,7 @@ pub enum PolicyKubernetesSyncError {
 /// poll(2) syscall, which is definitely not meant for multithreaded code.
 fn policy_kubernetes_sync(
     namespace: String,
-) -> Result<container_policy_level, PolicyKubernetesSyncError> {
+) -> Result<ContainerPolicyLevel, PolicyKubernetesSyncError> {
     match Builder::new_current_thread()
         .enable_all()
         .build()?
@@ -227,9 +220,7 @@ fn policy_kubernetes_sync(
     }
 }
 
-fn policy_docker<P: AsRef<Path>>(
-    docker_bundle: P,
-) -> Result<container_policy_level, ContainerError> {
+fn policy_docker<P: AsRef<Path>>(docker_bundle: P) -> Result<ContainerPolicyLevel, ContainerError> {
     let config_path = docker_bundle.as_ref();
     let f = std::fs::File::open(config_path)?;
     let r = std::io::BufReader::new(f);
@@ -240,12 +231,12 @@ fn policy_docker<P: AsRef<Path>>(
 
     match x {
         Some(x) => match x {
-            "restricted" => Ok(container_policy_level_POLICY_LEVEL_RESTRICTED),
-            "baseline" => Ok(container_policy_level_POLICY_LEVEL_BASELINE),
-            "privileged" => Ok(container_policy_level_POLICY_LEVEL_PRIVILEGED),
-            _ => Ok(container_policy_level_POLICY_LEVEL_BASELINE),
+            "restricted" => Ok(ContainerPolicyLevel::Restricted),
+            "baseline" => Ok(ContainerPolicyLevel::Baseline),
+            "privileged" => Ok(ContainerPolicyLevel::Privileged),
+            _ => Ok(ContainerPolicyLevel::Baseline),
         },
-        None => Ok(container_policy_level_POLICY_LEVEL_BASELINE),
+        None => Ok(ContainerPolicyLevel::Baseline),
     }
 }
 
@@ -386,7 +377,7 @@ impl RuncWatcher {
         &self,
         container_id: String,
         pid: i32,
-        policy_level: container_policy_level,
+        policy_level: ContainerPolicyLevel,
     ) -> Result<(), HandleRuncEventError> {
         let (responder_tx, responder_rx) = oneshot::channel();
 
@@ -407,7 +398,7 @@ impl RuncWatcher {
         &self,
         container_id: String,
         pid: i32,
-        policy_level: container_policy_level,
+        policy_level: ContainerPolicyLevel,
     ) -> Result<(), HandleRuncEventError> {
         debug!(container_id = container_id.as_str(), "adding container");
 
@@ -617,14 +608,14 @@ impl RuncWatcher {
 
                 // let policy;
                 let (container_type, container_data) = container_type_data(container_bundle)?;
-                let policy: container_policy_level = match container_type {
+                let policy: ContainerPolicyLevel = match container_type {
                     ContainerType::Docker => {
                         policy_docker(container_data.ok_or(HandleRuncEventError::ContainerData)?)?
                     }
                     ContainerType::KubernetesContainerd => policy_kubernetes_sync(
                         container_data.ok_or(HandleRuncEventError::ContainerData)?,
                     )?,
-                    ContainerType::Unknown => container_policy_level_POLICY_LEVEL_BASELINE,
+                    ContainerType::Unknown => ContainerPolicyLevel::Baseline,
                 };
 
                 self.add_container_sync(container_id, runc_process.pid, policy)?;
