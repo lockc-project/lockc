@@ -1,53 +1,38 @@
 [package]
 name = "lockc"
-version = "0.1.5"
-authors = ["Michal Rostecki <vadorovsky@gmail.com>"]
+version = "0.1.0"
 edition = "2021"
-
-description = "eBPF-based MAC security audit for container workloads"
-repository = "https://github.com/lockc-project/lockc"
-keywords = ["bpf", "containers", "ebpf", "linux", "security"]
-license = "Apache-2.0 AND GPL-2.0-or-later"
-
-[badges]
-maintenance = { status = "actively-developed" }
+publish = false
 
 [dependencies]
-anyhow = "1.0"
-async-trait = "0.1"
-aya = { git = "https://github.com/aya-rs/aya", branch = "main", features=["async_tokio"] }
-bindgen = "0.59"
-byteorder = "1.4"
-clap = { version = "3.0", features = ["derive", "env"] }
-config = { version = "0.12", default-features = false, features = ["toml"] }
+aya = { git = "https://github.com/aya-rs/aya", branch = "main" }
+aya-log = "0.1"
+bytes = "1.1"
+lockc-common = { path = "../lockc-common", features=["user"] }
+anyhow = "1.0.42"
+clap = { version = "3.1", features = ["derive", "env"] }
+config = "0.13"
 fanotify-rs = { git = "https://github.com/vadorovsky/fanotify-rs", branch = "fix-pid-type" }
-futures = "0.3"
-kube = "0.69"
-k8s-openapi = { version = "0.14", default-features = false, features = ["v1_23"] }
-lazy_static = "1.4"
-libc = { version = "0.2", features = [ "extra_traits" ] }
-nix = "0.23"
+kube = { version = "0.71", features = ["runtime", "derive"] }
+k8s-openapi = { version = "0.14", features = ["v1_23"] }
+libc = "0.2.102"
+log = "0.4"
+nix = "0.24"
 procfs = "0.12"
-regex = { version = "1.5", default-features = false, features = ["perf"] }
+regex = { version = "1.5", default-features = false, features = ["perf", "std"] }
 scopeguard = "1.1"
 serde = "1.0"
 serde_json = "1.0"
 thiserror = "1.0"
-tokio = { version = "1.17", features = ["fs", "macros", "process", "rt-multi-thread"] }
+tokio = { version = "1.18", features = ["macros", "rt", "rt-multi-thread", "net", "signal"] }
 tracing = "0.1"
 tracing-core = "0.1"
+tracing-log = "0.1"
 tracing-subscriber = { version = "0.3", features = ["json"] }
 
-[build-dependencies]
-anyhow = "1.0"
-bindgen = "0.59"
-libbpf-sys = { version = "0.6.1-1" }
-reqwest = { version = "0.11", features = ["blocking"] }
-tempfile = "3.2"
-thiserror = "1.0"
-
 [dev-dependencies]
-tempfile = "3.2.0"
+tempfile = "3.3"
 
-[features]
-tests_bpf = []
+[[bin]]
+name = "lockc"
+path = "src/main.rs"

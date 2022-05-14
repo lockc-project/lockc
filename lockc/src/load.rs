@@ -3,7 +3,7 @@ use std::{io, path::Path};
 use aya::{
     include_bytes_aligned,
     programs::{BtfTracePoint, Lsm, ProgramError},
-    Bpf, BpfError, BpfLoader, Btf, BtfError,
+    Bpf, BpfError, Btf, BtfError,
 };
 use thiserror::Error;
 
@@ -21,8 +21,14 @@ pub fn load_bpf<P: AsRef<Path>>(path_base_r: P) -> Result<Bpf, LoadError> {
     let path_base = path_base_r.as_ref();
     std::fs::create_dir_all(&path_base)?;
 
-    let data = include_bytes_aligned!(concat!(env!("OUT_DIR"), "/lockc.bpf.o"));
-    let bpf = BpfLoader::new().map_pin_path(path_base).load(data)?;
+    #[cfg(debug_assertions)]
+    let bpf = Bpf::load(include_bytes_aligned!(
+        "../../target/bpfel-unknown-none/debug/lockc"
+    ))?;
+    #[cfg(not(debug_assertions))]
+    let bpf = Bpf::load(include_bytes_aligned!(
+        "../../target/bpfel-unknown-none/release/lockc"
+    ))?;
 
     Ok(bpf)
 }
@@ -42,47 +48,54 @@ pub enum AttachError {
 pub fn attach_programs(bpf: &mut Bpf) -> Result<(), AttachError> {
     let btf = Btf::from_sys_fs()?;
 
-    let sched_process_fork: &mut BtfTracePoint = bpf
+    let program: &mut BtfTracePoint = bpf
         .program_mut("sched_process_fork")
         .ok_or(AttachError::ProgLoad)?
         .try_into()?;
-    sched_process_fork.load("sched_process_fork", &btf)?;
-    sched_process_fork.attach()?;
+    program.load("sched_process_fork", &btf)?;
+    program.attach()?;
 
-    let clone_audit: &mut Lsm = bpf
-        .program_mut("task_alloc")
+    let program: &mut BtfTracePoint = bpf
+        .program_mut("sched_process_exec")
         .ok_or(AttachError::ProgLoad)?
         .try_into()?;
-    clone_audit.load("task_alloc", &btf)?;
-    clone_audit.attach()?;
+    program.load("sched_process_exec", &btf)?;
+    program.attach()?;
 
-    let syslog: &mut Lsm = bpf
+    let program: &mut BtfTracePoint = bpf
+        .program_mut("sched_process_exit")
+        .ok_or(AttachError::ProgLoad)?
+        .try_into()?;
+    program.load("sched_process_exit", &btf)?;
+    program.attach()?;
+
+    let program: &mut Lsm = bpf
         .program_mut("syslog")
         .ok_or(AttachError::ProgLoad)?
         .try_into()?;
-    syslog.load("syslog", &btf)?;
-    syslog.attach()?;
+    program.load("syslog", &btf)?;
+    program.attach()?;
 
-    let mount_audit: &mut Lsm = bpf
+    let program: &mut Lsm = bpf
         .program_mut("sb_mount")
         .ok_or(AttachError::ProgLoad)?
         .try_into()?;
-    mount_audit.load("sb_mount", &btf)?;
-    mount_audit.attach()?;
+    program.load("sb_mount", &btf)?;
+    program.attach()?;
 
-    let open_audit: &mut Lsm = bpf
-        .program_mut("file_open")
-        .ok_or(AttachError::ProgLoad)?
-        .try_into()?;
-    open_audit.load("file_open", &btf)?;
-    open_audit.attach()?;
-
-    let setuid_audit: &mut Lsm = bpf
+    let program: &mut Lsm = bpf
         .program_mut("task_fix_setuid")
         .ok_or(AttachError::ProgLoad)?
         .try_into()?;
-    setuid_audit.load("task_fix_setuid", &btf)?;
-    setuid_audit.attach()?;
+    program.load("task_fix_setuid", &btf)?;
+    program.attach()?;
+
+    // let open_audit: &mut Lsm = bpf
+    //     .program_mut("file_open")
+    //     .ok_or(AttachError::ProgLoad)?
+    //     .try_into()?;
+    // open_audit.load("file_open", &btf)?;
+    // open_audit.attach()?;
 
     Ok(())
 }

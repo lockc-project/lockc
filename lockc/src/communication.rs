@@ -1,15 +1,17 @@
 use tokio::sync::oneshot;
 
-use crate::{bpfstructs::container_policy_level, maps::MapOperationError};
+use lockc_common::ContainerPolicyLevel;
 
-/// Set of commands that the fanotify thread can send to the eBPF thread
-/// to request eBPF map operations.
+use crate::maps::MapOperationError;
+
+/// Set of commands that the other tokio threads can use to request eBPF map
+/// operations.
 #[derive(Debug)]
 pub enum EbpfCommand {
     AddContainer {
         container_id: String,
         pid: i32,
-        policy_level: container_policy_level,
+        policy_level: ContainerPolicyLevel,
         responder_tx: oneshot::Sender<Result<(), MapOperationError>>,
     },
     DeleteContainer {

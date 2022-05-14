@@ -1,6 +1,6 @@
 use std::{env, fs, path, thread};
 
-use anyhow::Result;
+use aya_log::BpfLogger;
 use clap::Parser;
 use thiserror::Error;
 use tokio::{
@@ -8,16 +8,21 @@ use tokio::{
     sync::{mpsc, oneshot},
 };
 use tracing::{debug, error, Level};
+use tracing_log::LogTracer;
 use tracing_subscriber::FmtSubscriber;
 
-use lockc::{
-    communication::EbpfCommand,
-    load::{attach_programs, load_bpf},
-    maps::{add_container, add_process, delete_container, init_allowed_paths},
-    runc::RuncWatcher,
-    settings::new_config,
-    sysutils::check_bpf_lsm_enabled,
-};
+mod communication;
+mod load;
+mod maps;
+mod runc;
+mod sysutils;
+
+use communication::EbpfCommand;
+use load::{attach_programs, load_bpf};
+use maps::{add_container, add_process, delete_container};
+// use runc::{attach_runc_nsexec, handle_events, mark_runc_binaries};
+use runc::RuncWatcher;
+use sysutils::check_bpf_lsm_enabled;
 
 #[derive(Error, Debug)]
 enum FanotifyError {
@@ -30,7 +35,7 @@ enum FanotifyError {
 fn fanotify(
     fanotify_bootstrap_rx: oneshot::Receiver<()>,
     ebpf_tx: mpsc::Sender<EbpfCommand>,
-) -> Result<()> {
+) -> Result<(), anyhow::Error> {
     RuncWatcher::new(fanotify_bootstrap_rx, ebpf_tx)?.work_loop()?;
     Ok(())
 }
@@ -39,7 +44,7 @@ fn fanotify(
 async fn ebpf(
     fanotify_bootstrap_tx: oneshot::Sender<()>,
     mut ebpf_rx: mpsc::Receiver<EbpfCommand>,
-) -> Result<()> {
+) -> Result<(), anyhow::Error> {
     // Check whether BPF LSM is enabled in the kernel. That check should be
     // omitted in Kubernetes (where lockc runs in a container) or nested
     // containers, because sysctls inside containers might hide the fact
@@ -52,7 +57,7 @@ async fn ebpf(
         check_bpf_lsm_enabled(sys_lsm_path)?;
     }
 
-    let config = new_config().await?;
+    // let config = new_config().await?;
 
     let path_base = std::path::Path::new("/sys")
         .join("fs")
@@ -61,8 +66,9 @@ async fn ebpf(
     fs::create_dir_all(&path_base)?;
 
     let mut bpf = load_bpf(&path_base)?;
+    BpfLogger::init(&mut bpf)?;
 
-    init_allowed_paths(&mut bpf, &config)?;
+    // init_allowed_paths(&mut bpf, &config)?;
     debug!("allowed paths initialized");
     attach_programs(&mut bpf)?;
     debug!("attached programs");
@@ -122,9 +128,9 @@ async fn ebpf(
     Ok(())
 }
 
-#[derive(Parser, Debug)]
+#[derive(Debug, Parser)]
 #[clap(author, version, about, long_about = None)]
-struct Args {
+struct Opt {
     #[cfg_attr(
         debug_assertions,
         clap(
@@ -152,6 +158,9 @@ struct Args {
 #[derive(Error, Debug)]
 enum SetupTracingError {
     #[error(transparent)]
+    SetLogger(#[from] log::SetLoggerError),
+
+    #[error(transparent)]
     SetGlobalDefault(#[from] tracing_core::dispatcher::SetGlobalDefaultError),
 
     #[error("unknown log level")]
@@ -161,18 +170,18 @@ enum SetupTracingError {
     UnknownLogFormat,
 }
 
-fn setup_tracing(matches: &Args) -> Result<(), SetupTracingError> {
-    let level = match matches.log_level.as_str() {
-        "trace" => Level::TRACE,
-        "debug" => Level::DEBUG,
-        "info" => Level::INFO,
-        "warn" => Level::WARN,
-        "error" => Level::ERROR,
+fn setup_tracing(opt: &Opt) -> Result<(), SetupTracingError> {
+    let (level_tracing, level_log) = match opt.log_level.as_str() {
+        "trace" => (Level::TRACE, log::LevelFilter::Trace),
+        "debug" => (Level::DEBUG, log::LevelFilter::Debug),
+        "info" => (Level::INFO, log::LevelFilter::Info),
+        "warn" => (Level::WARN, log::LevelFilter::Warn),
+        "error" => (Level::ERROR, log::LevelFilter::Error),
         _ => return Err(SetupTracingError::UnknownLogLevel),
     };
 
-    let builder = FmtSubscriber::builder().with_max_level(level);
-    match matches.log_fmt.as_str() {
+    let builder = FmtSubscriber::builder().with_max_level(level_tracing);
+    match opt.log_fmt.as_str() {
         "json" => {
             let subscriber = builder.json().finish();
             tracing::subscriber::set_global_default(subscriber)?;
@@ -184,12 +193,14 @@ fn setup_tracing(matches: &Args) -> Result<(), SetupTracingError> {
         _ => return Err(SetupTracingError::UnknownLogFormat),
     };
 
+    LogTracer::builder().with_max_level(level_log).init()?;
+
     Ok(())
 }
 
-fn main() -> Result<()> {
-    let args = Args::parse();
-    setup_tracing(&args)?;
+fn main() -> Result<(), anyhow::Error> {
+    let opt = Opt::parse();
+    setup_tracing(&opt)?;
 
     // Step 1: Create a synchronous thread which takes care of fanotify
     // polling on runc binaries. We monitor all possible runc binaries to get

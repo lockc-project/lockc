@@ -11,28 +11,34 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: actions/setup-go@v2
+      - name: Install rustc nightly
+        uses: actions-rs/toolchain@v1
         with:
-          go-version: "1.17"
-      - name: Install dapper
-        run: go install github.com/rancher/dapper@latest
+          toolchain: nightly
+          components: rustfmt, clippy, rust-src
+      - name: Install bpf-linker
+        run: cargo install bpf-linker
+      - name: Build eBPF
+        run: cargo xtask build-ebpf
       - name: Build
-        run: dapper cargo build
+        run: cargo build
         env:
           DOCKER_BUILDKIT: 1
           COMPOSE_DOCKER_CLI_BUILD: 1
       - name: Test
-        run: dapper cargo test
+        run: cargo test
         env:
           DOCKER_BUILDKIT: 1
           COMPOSE_DOCKER_CLI_BUILD: 1
       - name: Lint
-        run: dapper cargo clippy -- -D warnings
+        run: cargo clippy -- -D warnings
         env:
           DOCKER_BUILDKIT: 1
           COMPOSE_DOCKER_CLI_BUILD: 1
+      - name: Install udeps
+        run: cargo install cargo-udeps
       - name: Check unused dependencies
-        run: dapper cargo +nightly udeps --all-targets
+        run: cargo udeps --all-targets
         env:
           DOCKER_BUILDKIT: 1
           COMPOSE_DOCKER_CLI_BUILD: 1
