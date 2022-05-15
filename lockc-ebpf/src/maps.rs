@@ -3,7 +3,7 @@ use aya_bpf::{
     maps::{HashMap, PerCpuArray},
 };
 
-use lockc_common::{Container, ContainerID, ContainerPath, MountType, Process, PID_MAX_LIMIT};
+use lockc_common::{Container, ContainerID, MountType, Path, Process, PID_MAX_LIMIT};
 
 /// BPF map containing the info about a policy which should be enforced on the
 /// given container.
@@ -26,5 +26,4 @@ pub(crate) static mut CONTAINER_INITIAL_SETUID: HashMap<ContainerID, bool> =
 pub(crate) static mut MOUNT_TYPE_BUF: PerCpuArray<MountType> = PerCpuArray::with_max_entries(1, 0);
 
 #[map]
-pub(crate) static mut CONTAINER_PATH_BUF: PerCpuArray<ContainerPath> =
-    PerCpuArray::with_max_entries(1, 0);
+pub(crate) static mut PATH_BUF: PerCpuArray<Path> = PerCpuArray::with_max_entries(1, 0);

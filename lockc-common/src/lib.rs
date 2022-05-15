@@ -95,7 +95,7 @@ pub struct MountType {
 
 #[derive(Copy, Clone)]
 #[repr(C)]
-pub struct ContainerPath {
+pub struct Path {
     pub path: [u8; PATH_LEN],
 }
 
