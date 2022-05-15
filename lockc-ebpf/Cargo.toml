@@ -7,7 +7,6 @@ edition = "2021"
 aya-bpf = { git = "https://github.com/aya-rs/aya", branch = "main" }
 aya-log-ebpf = { git = "https://github.com/aya-rs/aya-log", branch = "main" }
 lockc-common = { path = "../lockc-common" }
-unroll = "0.1"
 
 [[bin]]
 name = "lockc"

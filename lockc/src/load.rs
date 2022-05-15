@@ -90,12 +90,12 @@ pub fn attach_programs(bpf: &mut Bpf) -> Result<(), AttachError> {
     program.load("task_fix_setuid", &btf)?;
     program.attach()?;
 
-    // let open_audit: &mut Lsm = bpf
-    //     .program_mut("file_open")
-    //     .ok_or(AttachError::ProgLoad)?
-    //     .try_into()?;
-    // open_audit.load("file_open", &btf)?;
-    // open_audit.attach()?;
+    let program: &mut Lsm = bpf
+        .program_mut("file_open")
+        .ok_or(AttachError::ProgLoad)?
+        .try_into()?;
+    program.load("file_open", &btf)?;
+    program.attach()?;
 
     Ok(())
 }

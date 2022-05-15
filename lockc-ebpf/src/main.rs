@@ -1,10 +1,16 @@
 #![no_std]
 #![no_main]
 
-use aya_bpf::{cty::c_char, helpers::bpf_probe_read_kernel_str, macros::lsm, programs::LsmContext};
+use aya_bpf::{
+    bindings::path,
+    cty::{c_char, c_long},
+    helpers::{bpf_d_path, bpf_probe_read_kernel_str},
+    macros::lsm,
+    programs::LsmContext,
+};
 use aya_log_ebpf::{debug, error, info};
 
-use lockc_common::{ContainerPath, ContainerPolicyLevel};
+use lockc_common::{ContainerPolicyLevel, PATH_LEN};
 
 mod maps;
 mod policy;
@@ -15,9 +21,9 @@ mod proc;
 #[allow(dead_code)]
 mod vmlinux;
 
-use maps::{CONTAINER_INITIAL_SETUID, CONTAINER_PATH_BUF, MOUNT_TYPE_BUF};
+use maps::{CONTAINER_INITIAL_SETUID, MOUNT_TYPE_BUF, PATH_BUF};
 use policy::get_container_and_policy_level;
-use vmlinux::cred;
+use vmlinux::{cred, file};
 
 /// LSM program triggered by attempts to access the kernel logs. Behavior based
 /// on policy levels:
@@ -100,7 +106,7 @@ fn try_sb_mount(ctx: LsmContext) -> Result<i32, i32> {
 
     let src_path = unsafe {
         let dev_name: *const c_char = ctx.arg(0);
-        let path_buf = CONTAINER_PATH_BUF.get_mut(0).ok_or(0)?;
+        let path_buf = PATH_BUF.get_mut(0).ok_or(0)?;
         let len = bpf_probe_read_kernel_str(dev_name as *const u8, &mut path_buf.path)
             .map_err(|e| e as i32)?;
         core::str::from_utf8_unchecked(&path_buf.path[..len])
@@ -177,6 +183,72 @@ fn try_task_fix_setuid(ctx: LsmContext) -> Result<i32, i32> {
                 .insert(&container_id, &true, 0)
                 .map_err(|e| e as i32)?
         };
+    }
+
+    Ok(0)
+}
+
+// TODO(vadorovsky): Remove this once the following PR is merged:
+// https://github.com/aya-rs/aya/pull/257
+#[inline(always)]
+pub fn my_bpf_d_path(path: *mut path, buf: &mut [u8]) -> Result<usize, c_long> {
+    let ret = unsafe { bpf_d_path(path, buf.as_mut_ptr() as *mut c_char, buf.len() as u32) };
+    if ret < 0 {
+        return Err(ret);
+    }
+
+    Ok(ret as usize)
+}
+
+/// LSM program triggered by opening a file. It denies access to directories
+/// which might leak information about host (/sys/fs, /proc/acpi etc.) to
+/// restricted and baseline containers.
+#[lsm(name = "file_open")]
+pub fn file_open(ctx: LsmContext) -> i32 {
+    match { try_file_open(ctx) } {
+        Ok(ret) => ret,
+        Err(ret) => ret,
+    }
+}
+
+fn try_file_open(ctx: LsmContext) -> Result<i32, i32> {
+    let (container_id, policy_level) = get_container_and_policy_level()?;
+    match policy_level {
+        ContainerPolicyLevel::NotFound => {
+            return Ok(0);
+        }
+        ContainerPolicyLevel::Lockc => {
+            return Ok(0);
+        }
+        ContainerPolicyLevel::Restricted => {}
+        ContainerPolicyLevel::Baseline => {}
+        ContainerPolicyLevel::Privileged => {
+            return Ok(0);
+        }
+    }
+
+    let buf = unsafe { PATH_BUF.get_mut(0).ok_or(0)? };
+
+    let p = unsafe {
+        let f: *const file = ctx.arg(0);
+        let p = &(*f).f_path as *const _ as *mut path;
+        let len = my_bpf_d_path(p, &mut buf.path).map_err(|_| 0)?;
+        if len >= PATH_LEN {
+            return Err(0);
+        }
+        core::str::from_utf8_unchecked(&buf.path[..len])
+    };
+
+    let container_id = container_id.ok_or(-1)?;
+    let container_id = unsafe { container_id.as_str() };
+    debug!(&ctx, "file_open: {}, path: {}", container_id, p);
+
+    if p.starts_with("/proc/acpi")
+        || p.starts_with("/sys/fs")
+        || p.starts_with("/var/run/secrets/kubernetes.io")
+    {
+        error!(&ctx, "file_open: {}: deny opening {}", container_id, p);
+        return Err(-1);
     }
 
     Ok(0)
