@@ -1,62 +1,34 @@
-FROM registry.opensuse.org/opensuse/leap:15.3 as builder
-# zypper ar -p 90 -r https://download.opensuse.org/repositories/devel:/languages:/rust/openSUSE_Leap_15.3/devel:languages:rust.repo
-RUN zypper ar -p 90 -r https://download.opensuse.org/repositories/devel:/tools:/compiler/openSUSE_Leap_15.3/devel:tools:compiler.repo \
-    && zypper --gpg-auto-import-keys ref \
-    && zypper --non-interactive dup --allow-vendor-change
-RUN zypper --non-interactive install -t pattern \
-    devel_C_C++ \
-    devel_basis \
-    && zypper --non-interactive install \
-    clang \
-    curl \
-    libelf-devel \
-    libopenssl-devel \
-    llvm \
-    rustup \
-    sudo \
-    tar \
-    xz \
-    zlib-devel \
-    && zypper clean
-RUN rustup-init -y
-ENV PATH="/root/.cargo/bin:${PATH}"
-RUN rustup toolchain install nightly
-RUN rustup component add \
-    clippy \
-    rustfmt
-RUN cargo install \
-    libbpf-cargo
-RUN cargo +nightly install \
-    cargo-udeps
+FROM rustlang/rust:nightly-bullseye as builder
 
-FROM builder AS build
-WORKDIR /usr/local/src
-# Build bpftool from the newest stable kernel sources.
-RUN curl -Lso linux.tar.xz \
-    $(curl -s https://www.kernel.org/ | grep -A1 "latest_link" | grep -Eo '(http|https)://[^"]+') \
-    && tar -xf linux.tar.xz \
-    && mv $(find . -maxdepth 1 -type d -name "linux*") linux \
-    && cd linux \
-    && cd tools/bpf/bpftool \
-    && make -j $(nproc)
-# Prepare lockc sources and build it.
-WORKDIR /usr/local/src/lockc
-COPY . ./
-ARG profile=release
+RUN apt-get update \
+    && apt-get install -y software-properties-common \
+    && wget https://apt.llvm.org/llvm-snapshot.gpg.key \
+    && apt-key add llvm-snapshot.gpg.key \
+    && rm -f llvm-snapshot.gpg.key \
+    && add-apt-repository "deb http://apt.llvm.org/bullseye/ llvm-toolchain-bullseye-14 main" \
+    && apt-get update \
+    && apt-get install -y \
+    libssl-dev \
+    llvm-14-dev \
+    musl \
+    musl-dev \
+    musl-tools \
+    pkg-config
+RUN rustup component add rust-src
+RUN rustup target add x86_64-unknown-linux-musl
+RUN cargo install bpf-linker
+COPY . /src
+WORKDIR /src
 RUN --mount=type=cache,target=/.root/cargo/registry \
-    --mount=type=cache,target=/usr/local/src/lockc/target \
-    if [[ "$profile" == "debug" ]]; then cargo build; else cargo build --profile ${profile}; fi \
-    && cp target/${profile}/lockcd /usr/local/bin/lockcd
+    --mount=type=cache,target=/src/target \
+    cargo xtask build-ebpf --release \
+    && cargo build --release --target=x86_64-unknown-linux-musl \
+    && cp /src/target/x86_64-unknown-linux-musl/release/lockc /usr/sbin
 
-FROM registry.opensuse.org/opensuse/leap:15.3 AS lockcd
+FROM alpine:3.15
 # runc links those libraries dynamically
-RUN zypper --non-interactive install \
-    libseccomp2 \
-    libselinux1 \
-    && zypper clean
-ARG profile=release
-# Install rust-gdb and rust-lldb for debug profile
-RUN if [[ "$profile" == "debug" ]]; then zypper --non-interactive install gdb lldb python3-lldb rust; fi
-COPY --from=build /usr/local/src/linux/tools/bpf/bpftool/bpftool /usr/sbin/bpftool
-COPY --from=build /usr/local/bin/lockcd /usr/bin/lockcd
-ENTRYPOINT ["/usr/bin/lockcd"]
+RUN apk update \
+    && apk add libseccomp \
+    libselinux
+COPY --from=builder /usr/sbin/lockc /usr/sbin/
+ENTRYPOINT [ "/usr/sbin/lockc" ]
