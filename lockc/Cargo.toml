@@ -18,6 +18,7 @@ k8s-openapi = { version = "0.14", features = ["v1_23"] }
 libc = "0.2.102"
 log = "0.4"
 nix = "0.24"
+openssl-sys = { version = "0.9", features = ["vendored"] }
 procfs = "0.12"
 regex = { version = "1.5", default-features = false, features = ["perf", "std"] }
 scopeguard = "1.1"

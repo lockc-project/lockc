@@ -4,6 +4,9 @@ on:
       - main
     tags:
       - "v*"
+  pull_request:
+    branches:
+      - main
 
 name: build container image
 
@@ -24,6 +27,16 @@ jobs:
           registry: ghcr.io
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build container image
+        if: ${{ github.event_name == 'pull_request' }}
+        uses: docker/build-push-action@v2
+        with:
+          context:
+          file: ./Dockerfile
+          platforms: linux/amd64
+          push: false
+          tags: |
+            ghcr.io/lockc-project/lockc:latest
       - name: Build and push development container image
         if: ${{ startsWith(github.ref, 'refs/heads/') }}
         uses: docker/build-push-action@v2
