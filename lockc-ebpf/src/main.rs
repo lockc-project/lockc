@@ -244,10 +244,16 @@ fn try_file_open(ctx: LsmContext) -> Result<i32, i32> {
 
     let container_id = container_id.ok_or(-1)?;
     let container_id = unsafe { container_id.as_str() };
-    debug!(&ctx, "file_open: {}, path: {}", container_id, p);
+
+    if p.starts_with("/sys/devices")
+        || p.starts_with("/sys/fs/cgroup")
+        || p.starts_with("/sys/kernel/mm")
+    {
+        return Ok(0);
+    }
 
     if p.starts_with("/proc/acpi")
-        || p.starts_with("/sys/fs")
+        || p.starts_with("/sys/")
         || p.starts_with("/var/run/secrets/kubernetes.io")
     {
         error!(&ctx, "file_open: {}: deny opening {}", container_id, p);
