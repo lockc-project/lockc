@@ -112,9 +112,12 @@ fn try_sb_mount(ctx: LsmContext) -> Result<i32, i32> {
         core::str::from_utf8_unchecked(&path_buf.path[..len])
     };
 
-    debug!(&ctx, "sb_mount: source path: {}", src_path);
-
-    if src_path.starts_with("/var/lib/docker") || src_path.starts_with("/dev/pts") {
+    if src_path.starts_with("/run/k3s")
+        || src_path.starts_with("/var/lib/docker")
+        || src_path.starts_with("/var/lib/kubelet")
+        || src_path.starts_with("/var/lib/rancher")
+        || src_path.starts_with("/dev/pts")
+    {
         return Ok(0);
     }
 
