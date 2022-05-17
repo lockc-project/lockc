@@ -16,7 +16,8 @@ use tokio::{
     runtime::Builder,
     sync::{mpsc, oneshot},
 };
-use tracing::{debug, error};
+use tracing::{debug, error, warn};
+use walkdir::WalkDir;
 
 use crate::{communication::EbpfCommand, maps::MapOperationError};
 
@@ -362,6 +363,32 @@ impl RuncWatcher {
                     debug!(path = runc_path, "excecutable runc binary found");
                     fd.add_path(FAN_OPEN_EXEC_PERM, runc_path)?;
                     debug!(path = runc_path, "added runc to fanotify");
+                }
+            }
+        }
+
+        let runc_lookup_paths = vec![
+            Path::new("/var/lib/rancher/k3s/data"),
+            Path::new("/host/var/lib/rancher/k3s/data"),
+        ];
+        for path in runc_lookup_paths {
+            debug!("looking for runc in: {}", path.display());
+            for entry in WalkDir::new(path) {
+                match entry {
+                    Ok(entry) => {
+                        let path = entry.path();
+                        if path.is_file() && path.file_name().unwrap().to_string_lossy() == "runc" {
+                            debug!("excecutable runc binary found: {}", path.display());
+                            fd.add_path(FAN_OPEN_EXEC_PERM, path)?;
+                            debug!("added runc to fanotify: {}", path.display());
+                        }
+                    }
+                    Err(e) => {
+                        warn!(
+                            error = e.to_string().as_str(),
+                            "could not process the walkdir entry"
+                        );
+                    }
                 }
             }
         }
