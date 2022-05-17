@@ -153,7 +153,6 @@ impl<T> ::core::cmp::PartialEq for __BindgenUnionField<T> {
     }
 }
 impl<T> ::core::cmp::Eq for __BindgenUnionField<T> {}
-pub type __s8 = ::aya_bpf::cty::c_schar;
 pub type __u8 = ::aya_bpf::cty::c_uchar;
 pub type __s16 = ::aya_bpf::cty::c_short;
 pub type __u16 = ::aya_bpf::cty::c_ushort;
@@ -161,7 +160,6 @@ pub type __s32 = ::aya_bpf::cty::c_int;
 pub type __u32 = ::aya_bpf::cty::c_uint;
 pub type __s64 = ::aya_bpf::cty::c_longlong;
 pub type __u64 = ::aya_bpf::cty::c_ulonglong;
-pub type s8 = __s8;
 pub type u8_ = __u8;
 pub type s16 = __s16;
 pub type u16_ = __u16;
@@ -199,43 +197,43 @@ pub type gfp_t = ::aya_bpf::cty::c_uint;
 pub type fmode_t = ::aya_bpf::cty::c_uint;
 pub type phys_addr_t = u64_;
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct atomic_t {
     pub counter: ::aya_bpf::cty::c_int,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct atomic64_t {
     pub counter: s64,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct list_head {
     pub next: *mut list_head,
     pub prev: *mut list_head,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct hlist_head {
     pub first: *mut hlist_node,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct hlist_node {
     pub next: *mut hlist_node,
     pub pprev: *mut *mut hlist_node,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct callback_head {
     pub next: *mut callback_head,
     pub func: ::core::option::Option<unsafe extern "C" fn(arg1: *mut callback_head)>,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct lock_class_key {}
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct file_system_type {
     pub name: *const ::aya_bpf::cty::c_char,
     pub fs_flags: ::aya_bpf::cty::c_int,
@@ -261,15 +259,7 @@ pub struct file_system_type {
     pub s_writers_key: [lock_class_key; 3usize],
     pub i_lock_key: lock_class_key,
     pub i_mutex_key: lock_class_key,
-    pub invalidate_lock_key: lock_class_key,
     pub i_mutex_dir_key: lock_class_key,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct kernel_symbol {
-    pub value_offset: ::aya_bpf::cty::c_int,
-    pub name_offset: ::aya_bpf::cty::c_int,
-    pub namespace_offset: ::aya_bpf::cty::c_int,
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
@@ -284,13 +274,13 @@ pub union qspinlock__bindgen_ty_1 {
     pub __bindgen_anon_2: qspinlock__bindgen_ty_1__bindgen_ty_2,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct qspinlock__bindgen_ty_1__bindgen_ty_1 {
     pub locked: u8_,
     pub pending: u8_,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct qspinlock__bindgen_ty_1__bindgen_ty_2 {
     pub locked_pending: u16_,
     pub tail: u16_,
@@ -309,21 +299,34 @@ pub union qrwlock__bindgen_ty_1 {
     pub __bindgen_anon_1: qrwlock__bindgen_ty_1__bindgen_ty_1,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct qrwlock__bindgen_ty_1__bindgen_ty_1 {
     pub wlocked: u8_,
     pub __lstate: [u8_; 3usize],
 }
 pub type arch_rwlock_t = qrwlock;
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct lockdep_map {}
-#[repr(C)]
 #[derive(Copy, Clone)]
 pub struct raw_spinlock {
     pub raw_lock: arch_spinlock_t,
 }
 pub type raw_spinlock_t = raw_spinlock;
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct spinlock {
+    pub __bindgen_anon_1: spinlock__bindgen_ty_1,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub union spinlock__bindgen_ty_1 {
+    pub rlock: raw_spinlock,
+}
+pub type spinlock_t = spinlock;
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct rwlock_t {
+    pub raw_lock: arch_rwlock_t,
+}
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct ratelimit_state {
@@ -335,39 +338,9 @@ pub struct ratelimit_state {
     pub begin: ::aya_bpf::cty::c_ulong,
     pub flags: ::aya_bpf::cty::c_ulong,
 }
-#[repr(C, packed)]
-#[derive(Debug, Copy, Clone)]
-pub struct pi_entry {
-    pub fmt: *const ::aya_bpf::cty::c_char,
-    pub func: *const ::aya_bpf::cty::c_char,
-    pub file: *const ::aya_bpf::cty::c_char,
-    pub line: ::aya_bpf::cty::c_uint,
-    pub level: *const ::aya_bpf::cty::c_char,
-    pub subsys_fmt_prefix: *const ::aya_bpf::cty::c_char,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct jump_entry {
-    pub code: s32,
-    pub target: s32,
-    pub key: ::aya_bpf::cty::c_long,
-}
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct static_key {
-    pub enabled: atomic_t,
-    pub __bindgen_anon_1: static_key__bindgen_ty_1,
-}
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub union static_key__bindgen_ty_1 {
-    pub type_: ::aya_bpf::cty::c_ulong,
-    pub entries: *mut jump_entry,
-    pub next: *mut static_key_mod,
-}
 pub type fl_owner_t = *mut ::aya_bpf::cty::c_void;
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct file_operations {
     pub owner: *mut module,
     pub llseek: ::core::option::Option<
@@ -396,11 +369,7 @@ pub struct file_operations {
         unsafe extern "C" fn(arg1: *mut kiocb, arg2: *mut iov_iter) -> ssize_t,
     >,
     pub iopoll: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut kiocb,
-            arg2: *mut io_comp_batch,
-            arg3: ::aya_bpf::cty::c_uint,
-        ) -> ::aya_bpf::cty::c_int,
+        unsafe extern "C" fn(arg1: *mut kiocb, arg2: bool_) -> ::aya_bpf::cty::c_int,
     >,
     pub iterate: ::core::option::Option<
         unsafe extern "C" fn(arg1: *mut file, arg2: *mut dir_context) -> ::aya_bpf::cty::c_int,
@@ -554,42 +523,15 @@ pub struct file_operations {
         ) -> ::aya_bpf::cty::c_int,
     >,
 }
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct static_call_site {
-    pub addr: s32,
-    pub key: s32,
-}
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct static_call_key {
-    pub func: *mut ::aya_bpf::cty::c_void,
-    pub __bindgen_anon_1: static_call_key__bindgen_ty_1,
-}
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub union static_call_key__bindgen_ty_1 {
-    pub type_: ::aya_bpf::cty::c_ulong,
-    pub mods: *mut static_call_mod,
-    pub sites: *mut static_call_site,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct bug_entry {
-    pub bug_addr_disp: ::aya_bpf::cty::c_int,
-    pub file_disp: ::aya_bpf::cty::c_int,
-    pub line: ::aya_bpf::cty::c_ushort,
-    pub flags: ::aya_bpf::cty::c_ushort,
-}
 pub type time64_t = __s64;
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct __kernel_timespec {
     pub tv_sec: __kernel_time64_t,
     pub tv_nsec: ::aya_bpf::cty::c_longlong,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct timespec64 {
     pub tv_sec: time64_t,
     pub tv_nsec: ::aya_bpf::cty::c_long,
@@ -602,7 +544,7 @@ pub mod timespec_type {
 }
 pub type old_time32_t = s32;
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct old_timespec32 {
     pub tv_sec: old_time32_t,
     pub tv_nsec: s32,
@@ -624,7 +566,7 @@ pub union restart_block__bindgen_ty_1 {
     pub poll: restart_block__bindgen_ty_1__bindgen_ty_3,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct restart_block__bindgen_ty_1__bindgen_ty_1 {
     pub uaddr: *mut u32_,
     pub val: u32_,
@@ -648,7 +590,7 @@ pub union restart_block__bindgen_ty_1__bindgen_ty_2__bindgen_ty_1 {
     pub compat_rmtp: *mut old_timespec32,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct restart_block__bindgen_ty_1__bindgen_ty_3 {
     pub ufds: *mut pollfd,
     pub nfds: ::aya_bpf::cty::c_int,
@@ -657,21 +599,20 @@ pub struct restart_block__bindgen_ty_1__bindgen_ty_3 {
     pub tv_nsec: ::aya_bpf::cty::c_ulong,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct thread_info {
     pub flags: ::aya_bpf::cty::c_ulong,
     pub syscall_work: ::aya_bpf::cty::c_ulong,
     pub status: u32_,
-    pub cpu: u32_,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct refcount_struct {
     pub refs: atomic_t,
 }
 pub type refcount_t = refcount_struct;
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct llist_node {
     pub next: *mut llist_node,
 }
@@ -690,26 +631,57 @@ pub union __call_single_node__bindgen_ty_1 {
     pub a_flags: atomic_t,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct load_weight {
     pub weight: ::aya_bpf::cty::c_ulong,
     pub inv_weight: u32_,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct rb_node {
     pub __rb_parent_color: ::aya_bpf::cty::c_ulong,
     pub rb_right: *mut rb_node,
     pub rb_left: *mut rb_node,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
+pub struct sched_statistics {
+    pub wait_start: u64_,
+    pub wait_max: u64_,
+    pub wait_count: u64_,
+    pub wait_sum: u64_,
+    pub iowait_count: u64_,
+    pub iowait_sum: u64_,
+    pub sleep_start: u64_,
+    pub sleep_max: u64_,
+    pub sum_sleep_runtime: s64,
+    pub block_start: u64_,
+    pub block_max: u64_,
+    pub exec_max: u64_,
+    pub slice_max: u64_,
+    pub nr_migrations_cold: u64_,
+    pub nr_failed_migrations_affine: u64_,
+    pub nr_failed_migrations_running: u64_,
+    pub nr_failed_migrations_hot: u64_,
+    pub nr_forced_migrations: u64_,
+    pub nr_wakeups: u64_,
+    pub nr_wakeups_sync: u64_,
+    pub nr_wakeups_migrate: u64_,
+    pub nr_wakeups_local: u64_,
+    pub nr_wakeups_remote: u64_,
+    pub nr_wakeups_affine: u64_,
+    pub nr_wakeups_affine_attempts: u64_,
+    pub nr_wakeups_passive: u64_,
+    pub nr_wakeups_idle: u64_,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
 pub struct util_est {
     pub enqueued: ::aya_bpf::cty::c_uint,
     pub ewma: ::aya_bpf::cty::c_uint,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct sched_avg {
     pub last_update_time: u64_,
     pub load_sum: u64_,
@@ -722,7 +694,7 @@ pub struct sched_avg {
     pub util_est: util_est,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct sched_entity {
     pub load: load_weight,
     pub run_node: rb_node,
@@ -733,17 +705,25 @@ pub struct sched_entity {
     pub vruntime: u64_,
     pub prev_sum_exec_runtime: u64_,
     pub nr_migrations: u64_,
+    pub statistics: sched_statistics,
     pub depth: ::aya_bpf::cty::c_int,
     pub parent: *mut sched_entity,
     pub cfs_rq: *mut cfs_rq,
     pub my_q: *mut cfs_rq,
     pub runnable_weight: ::aya_bpf::cty::c_ulong,
     pub _bitfield_align_1: [u8; 0],
-    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 48usize]>,
+    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 24usize]>,
     pub avg: sched_avg,
 }
+impl sched_entity {
+    #[inline]
+    pub fn new_bitfield_1() -> __BindgenBitfieldUnit<[u8; 24usize]> {
+        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 24usize]> = Default::default();
+        __bindgen_bitfield_unit
+    }
+}
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct sched_rt_entity {
     pub run_list: list_head,
     pub timeout: ::aya_bpf::cty::c_ulong,
@@ -755,7 +735,7 @@ pub struct sched_rt_entity {
 }
 pub type ktime_t = s64;
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct timerqueue_node {
     pub node: rb_node,
     pub expires: ktime_t,
@@ -766,7 +746,7 @@ pub mod hrtimer_restart {
     pub const HRTIMER_RESTART: Type = 1;
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct hrtimer {
     pub node: timerqueue_node,
     pub _softexpires: ktime_t,
@@ -779,7 +759,7 @@ pub struct hrtimer {
     pub is_hard: u8_,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct sched_dl_entity {
     pub rb_node: rb_node,
     pub dl_runtime: u64_,
@@ -870,7 +850,7 @@ impl sched_dl_entity {
 }
 #[repr(C)]
 #[repr(align(4))]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct uclamp_se {
     pub _bitfield_align_1: [u16; 0],
     pub _bitfield_1: __BindgenBitfieldUnit<[u8; 2usize]>,
@@ -949,51 +929,9 @@ impl uclamp_se {
     }
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct sched_statistics {
-    pub wait_start: u64_,
-    pub wait_max: u64_,
-    pub wait_count: u64_,
-    pub wait_sum: u64_,
-    pub iowait_count: u64_,
-    pub iowait_sum: u64_,
-    pub sleep_start: u64_,
-    pub sleep_max: u64_,
-    pub sum_sleep_runtime: s64,
-    pub block_start: u64_,
-    pub block_max: u64_,
-    pub sum_block_runtime: s64,
-    pub exec_max: u64_,
-    pub slice_max: u64_,
-    pub nr_migrations_cold: u64_,
-    pub nr_failed_migrations_affine: u64_,
-    pub nr_failed_migrations_running: u64_,
-    pub nr_failed_migrations_hot: u64_,
-    pub nr_forced_migrations: u64_,
-    pub nr_wakeups: u64_,
-    pub nr_wakeups_sync: u64_,
-    pub nr_wakeups_migrate: u64_,
-    pub nr_wakeups_local: u64_,
-    pub nr_wakeups_remote: u64_,
-    pub nr_wakeups_affine: u64_,
-    pub nr_wakeups_affine_attempts: u64_,
-    pub nr_wakeups_passive: u64_,
-    pub nr_wakeups_idle: u64_,
-    pub core_forceidle_sum: u64_,
-    pub _bitfield_align_1: [u8; 0],
-    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 24usize]>,
-}
-impl sched_statistics {
-    #[inline]
-    pub fn new_bitfield_1() -> __BindgenBitfieldUnit<[u8; 24usize]> {
-        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 24usize]> = Default::default();
-        __bindgen_bitfield_unit
-    }
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct cpumask {
-    pub bits: [::aya_bpf::cty::c_ulong; 5usize],
+    pub bits: [::aya_bpf::cty::c_ulong; 128usize],
 }
 pub type cpumask_t = cpumask;
 #[repr(C)]
@@ -1003,7 +941,7 @@ pub union rcu_special {
     pub s: u32_,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct rcu_special__bindgen_ty_1 {
     pub blocked: u8_,
     pub need_qs: u8_,
@@ -1011,7 +949,7 @@ pub struct rcu_special__bindgen_ty_1 {
     pub need_mb: u8_,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct sched_info {
     pub pcount: ::aya_bpf::cty::c_ulong,
     pub run_delay: ::aya_bpf::cty::c_ulonglong,
@@ -1019,20 +957,20 @@ pub struct sched_info {
     pub last_queued: ::aya_bpf::cty::c_ulonglong,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct plist_node {
     pub prio: ::aya_bpf::cty::c_int,
     pub prio_list: list_head,
     pub node_list: list_head,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct vmacache {
     pub seqnum: u64_,
     pub vmas: [*mut vm_area_struct; 4usize],
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct task_rss_stat {
     pub events: ::aya_bpf::cty::c_int,
     pub count: [::aya_bpf::cty::c_int; 4usize],
@@ -1045,75 +983,75 @@ pub struct prev_cputime {
     pub lock: raw_spinlock_t,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct rb_root {
     pub rb_node: *mut rb_node,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct rb_root_cached {
     pub rb_root: rb_root,
     pub rb_leftmost: *mut rb_node,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct timerqueue_head {
     pub rb_root: rb_root_cached,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct posix_cputimer_base {
     pub nextevt: u64_,
     pub tqhead: timerqueue_head,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct posix_cputimers {
     pub bases: [posix_cputimer_base; 3usize],
     pub timers_active: ::aya_bpf::cty::c_uint,
     pub expiry_active: ::aya_bpf::cty::c_uint,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct posix_cputimers_work {
     pub work: callback_head,
     pub scheduled: ::aya_bpf::cty::c_uint,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct sysv_sem {
     pub undo_list: *mut sem_undo_list,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct sysv_shm {
     pub shm_clist: list_head,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct sigset_t {
     pub sig: [::aya_bpf::cty::c_ulong; 1usize],
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct sigpending {
     pub list: list_head,
     pub signal: sigset_t,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct kuid_t {
     pub val: uid_t,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct seccomp {
     pub mode: ::aya_bpf::cty::c_int,
     pub filter_count: atomic_t,
     pub filter: *mut seccomp_filter,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct syscall_user_dispatch {
     pub selector: *mut ::aya_bpf::cty::c_char,
     pub offset: ::aya_bpf::cty::c_ulong,
@@ -1122,22 +1060,11 @@ pub struct syscall_user_dispatch {
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
-pub struct spinlock {
-    pub __bindgen_anon_1: spinlock__bindgen_ty_1,
-}
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub union spinlock__bindgen_ty_1 {
-    pub rlock: raw_spinlock,
-}
-pub type spinlock_t = spinlock;
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
 pub struct wake_q_node {
     pub next: *mut wake_q_node,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct task_io_accounting {
     pub rchar: u64_,
     pub wchar: u64_,
@@ -1148,25 +1075,25 @@ pub struct task_io_accounting {
     pub cancelled_write_bytes: u64_,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct nodemask_t {
-    pub bits: [::aya_bpf::cty::c_ulong; 1usize],
+    pub bits: [::aya_bpf::cty::c_ulong; 16usize],
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct seqcount {
     pub sequence: ::aya_bpf::cty::c_uint,
 }
 pub type seqcount_t = seqcount;
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct seqcount_spinlock {
     pub seqcount: seqcount_t,
 }
 pub type seqcount_spinlock_t = seqcount_spinlock;
 pub type atomic_long_t = atomic64_t;
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct optimistic_spin_queue {
     pub tail: atomic_t,
 }
@@ -1174,47 +1101,39 @@ pub struct optimistic_spin_queue {
 #[derive(Copy, Clone)]
 pub struct mutex {
     pub owner: atomic_long_t,
-    pub wait_lock: raw_spinlock_t,
+    pub wait_lock: spinlock_t,
     pub osq: optimistic_spin_queue,
     pub wait_list: list_head,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct arch_tlbflush_unmap_batch {
     pub cpumask: cpumask,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct tlbflush_unmap_batch {
     pub arch: arch_tlbflush_unmap_batch,
     pub flush_required: bool_,
     pub writable: bool_,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct page_frag {
     pub page: *mut page,
     pub offset: __u32,
     pub size: __u32,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct latency_record {
-    pub backtrace: [::aya_bpf::cty::c_ulong; 12usize],
-    pub count: ::aya_bpf::cty::c_uint,
-    pub time: ::aya_bpf::cty::c_ulong,
-    pub max: ::aya_bpf::cty::c_ulong,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct kmap_ctrl {}
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct llist_head {
     pub first: *mut llist_node,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct desc_struct {
     pub limit0: u16_,
     pub base0: u16_,
@@ -1406,14 +1325,7 @@ impl desc_struct {
     }
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct fpu_state_perm {
-    pub __state_perm: u64_,
-    pub __state_size: ::aya_bpf::cty::c_uint,
-    pub __user_state_size: ::aya_bpf::cty::c_uint,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct fregs_state {
     pub cwd: u32_,
     pub swd: u32_,
@@ -1447,13 +1359,13 @@ pub union fxregs_state__bindgen_ty_1 {
     pub __bindgen_anon_2: fxregs_state__bindgen_ty_1__bindgen_ty_2,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct fxregs_state__bindgen_ty_1__bindgen_ty_1 {
     pub rip: u64_,
     pub rdp: u64_,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct fxregs_state__bindgen_ty_1__bindgen_ty_2 {
     pub fip: u32_,
     pub fcs: u32_,
@@ -1467,7 +1379,7 @@ pub union fxregs_state__bindgen_ty_2 {
     pub sw_reserved: [u32_; 12usize],
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct swregs_state {
     pub cwd: u32_,
     pub swd: u32_,
@@ -1487,7 +1399,7 @@ pub struct swregs_state {
     pub entry_eip: u32_,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct xstate_header {
     pub xfeatures: u64_,
     pub xcomp_bv: u64_,
@@ -1509,97 +1421,12 @@ pub struct fpregs_state {
     pub bindgen_union_field: [u64; 512usize],
 }
 #[repr(C)]
-pub struct fpstate {
-    pub size: ::aya_bpf::cty::c_uint,
-    pub user_size: ::aya_bpf::cty::c_uint,
-    pub xfeatures: u64_,
-    pub user_xfeatures: u64_,
-    pub xfd: u64_,
-    pub _bitfield_align_1: [u8; 0],
-    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 32usize]>,
-    pub regs: fpregs_state,
-}
-impl fpstate {
-    #[inline]
-    pub fn is_valloc(&self) -> ::aya_bpf::cty::c_uint {
-        unsafe { ::core::mem::transmute(self._bitfield_1.get(0usize, 1u8) as u32) }
-    }
-    #[inline]
-    pub fn set_is_valloc(&mut self, val: ::aya_bpf::cty::c_uint) {
-        unsafe {
-            let val: u32 = ::core::mem::transmute(val);
-            self._bitfield_1.set(0usize, 1u8, val as u64)
-        }
-    }
-    #[inline]
-    pub fn is_guest(&self) -> ::aya_bpf::cty::c_uint {
-        unsafe { ::core::mem::transmute(self._bitfield_1.get(1usize, 1u8) as u32) }
-    }
-    #[inline]
-    pub fn set_is_guest(&mut self, val: ::aya_bpf::cty::c_uint) {
-        unsafe {
-            let val: u32 = ::core::mem::transmute(val);
-            self._bitfield_1.set(1usize, 1u8, val as u64)
-        }
-    }
-    #[inline]
-    pub fn is_confidential(&self) -> ::aya_bpf::cty::c_uint {
-        unsafe { ::core::mem::transmute(self._bitfield_1.get(2usize, 1u8) as u32) }
-    }
-    #[inline]
-    pub fn set_is_confidential(&mut self, val: ::aya_bpf::cty::c_uint) {
-        unsafe {
-            let val: u32 = ::core::mem::transmute(val);
-            self._bitfield_1.set(2usize, 1u8, val as u64)
-        }
-    }
-    #[inline]
-    pub fn in_use(&self) -> ::aya_bpf::cty::c_uint {
-        unsafe { ::core::mem::transmute(self._bitfield_1.get(3usize, 1u8) as u32) }
-    }
-    #[inline]
-    pub fn set_in_use(&mut self, val: ::aya_bpf::cty::c_uint) {
-        unsafe {
-            let val: u32 = ::core::mem::transmute(val);
-            self._bitfield_1.set(3usize, 1u8, val as u64)
-        }
-    }
-    #[inline]
-    pub fn new_bitfield_1(
-        is_valloc: ::aya_bpf::cty::c_uint,
-        is_guest: ::aya_bpf::cty::c_uint,
-        is_confidential: ::aya_bpf::cty::c_uint,
-        in_use: ::aya_bpf::cty::c_uint,
-    ) -> __BindgenBitfieldUnit<[u8; 32usize]> {
-        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 32usize]> = Default::default();
-        __bindgen_bitfield_unit.set(0usize, 1u8, {
-            let is_valloc: u32 = unsafe { ::core::mem::transmute(is_valloc) };
-            is_valloc as u64
-        });
-        __bindgen_bitfield_unit.set(1usize, 1u8, {
-            let is_guest: u32 = unsafe { ::core::mem::transmute(is_guest) };
-            is_guest as u64
-        });
-        __bindgen_bitfield_unit.set(2usize, 1u8, {
-            let is_confidential: u32 = unsafe { ::core::mem::transmute(is_confidential) };
-            is_confidential as u64
-        });
-        __bindgen_bitfield_unit.set(3usize, 1u8, {
-            let in_use: u32 = unsafe { ::core::mem::transmute(in_use) };
-            in_use as u64
-        });
-        __bindgen_bitfield_unit
-    }
-}
-#[repr(C)]
 pub struct fpu {
     pub last_cpu: ::aya_bpf::cty::c_uint,
     pub avx512_timestamp: ::aya_bpf::cty::c_ulong,
-    pub fpstate: *mut fpstate,
-    pub __task_fpstate: *mut fpstate,
-    pub perm: fpu_state_perm,
-    pub guest_perm: fpu_state_perm,
-    pub __fpstate: fpstate,
+    pub _bitfield_align_1: [u8; 0],
+    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 48usize]>,
+    pub state: fpregs_state,
 }
 #[repr(C)]
 pub struct thread_struct {
@@ -1620,10 +1447,7 @@ pub struct thread_struct {
     pub io_bitmap: *mut io_bitmap,
     pub iopl_emul: ::aya_bpf::cty::c_ulong,
     pub _bitfield_align_1: [u8; 0],
-    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 1usize]>,
-    pub pkru: u32_,
-    pub _bitfield_align_2: [u8; 0],
-    pub _bitfield_2: __BindgenBitfieldUnit<[u8; 40usize]>,
+    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 48usize]>,
     pub fpu: fpu,
 }
 impl thread_struct {
@@ -1649,34 +1473,19 @@ impl thread_struct {
             self._bitfield_1.set(1usize, 1u8, val as u64)
         }
     }
-    #[inline]
-    pub fn new_bitfield_1(
-        iopl_warn: ::aya_bpf::cty::c_uint,
-        sig_on_uaccess_err: ::aya_bpf::cty::c_uint,
-    ) -> __BindgenBitfieldUnit<[u8; 1usize]> {
-        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 1usize]> = Default::default();
-        __bindgen_bitfield_unit.set(0usize, 1u8, {
-            let iopl_warn: u32 = unsafe { ::core::mem::transmute(iopl_warn) };
-            iopl_warn as u64
-        });
-        __bindgen_bitfield_unit.set(1usize, 1u8, {
-            let sig_on_uaccess_err: u32 = unsafe { ::core::mem::transmute(sig_on_uaccess_err) };
-            sig_on_uaccess_err as u64
-        });
-        __bindgen_bitfield_unit
-    }
 }
 pub type kernel_siginfo_t = kernel_siginfo;
 #[repr(C)]
 pub struct task_struct {
     pub thread_info: thread_info,
-    pub __state: ::aya_bpf::cty::c_uint,
+    pub state: ::aya_bpf::cty::c_long,
     pub stack: *mut ::aya_bpf::cty::c_void,
     pub usage: refcount_t,
     pub flags: ::aya_bpf::cty::c_uint,
     pub ptrace: ::aya_bpf::cty::c_uint,
     pub on_cpu: ::aya_bpf::cty::c_int,
     pub wake_entry: __call_single_node,
+    pub cpu: ::aya_bpf::cty::c_uint,
     pub wakee_flips: ::aya_bpf::cty::c_uint,
     pub wakee_flip_decay_ts: ::aya_bpf::cty::c_ulong,
     pub last_wakee: *mut task_struct,
@@ -1687,38 +1496,24 @@ pub struct task_struct {
     pub static_prio: ::aya_bpf::cty::c_int,
     pub normal_prio: ::aya_bpf::cty::c_int,
     pub rt_priority: ::aya_bpf::cty::c_uint,
+    pub sched_class: *const sched_class,
+    pub _bitfield_align_1: [u8; 0],
+    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 56usize]>,
     pub se: sched_entity,
     pub rt: sched_rt_entity,
-    pub dl: sched_dl_entity,
-    pub sched_class: *const sched_class,
-    pub core_node: rb_node,
-    pub core_cookie: ::aya_bpf::cty::c_ulong,
-    pub core_occupation: ::aya_bpf::cty::c_uint,
     pub sched_task_group: *mut task_group,
+    pub dl: sched_dl_entity,
     pub uclamp_req: [uclamp_se; 2usize],
     pub uclamp: [uclamp_se; 2usize],
-    pub _bitfield_align_1: [u8; 0],
-    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 40usize]>,
-    pub stats: sched_statistics,
     pub preempt_notifiers: hlist_head,
     pub btrace_seq: ::aya_bpf::cty::c_uint,
     pub policy: ::aya_bpf::cty::c_uint,
     pub nr_cpus_allowed: ::aya_bpf::cty::c_int,
     pub cpus_ptr: *const cpumask_t,
-    pub user_cpus_ptr: *mut cpumask_t,
     pub cpus_mask: cpumask_t,
     pub migration_pending: *mut ::aya_bpf::cty::c_void,
     pub migration_disabled: ::aya_bpf::cty::c_ushort,
     pub migration_flags: ::aya_bpf::cty::c_ushort,
-    pub rcu_read_lock_nesting: ::aya_bpf::cty::c_int,
-    pub rcu_read_unlock_special: rcu_special,
-    pub rcu_node_entry: list_head,
-    pub rcu_blocked_node: *mut rcu_node,
-    pub rcu_tasks_nvcsw: ::aya_bpf::cty::c_ulong,
-    pub rcu_tasks_holdout: u8_,
-    pub rcu_tasks_idx: u8_,
-    pub rcu_tasks_idle_cpu: ::aya_bpf::cty::c_int,
-    pub rcu_tasks_holdout_list: list_head,
     pub trc_reader_nesting: ::aya_bpf::cty::c_int,
     pub trc_ipi_to_cpu: ::aya_bpf::cty::c_int,
     pub trc_reader_special: rcu_special,
@@ -1759,7 +1554,7 @@ pub struct task_struct {
     pub vfork_done: *mut completion,
     pub set_child_tid: *mut ::aya_bpf::cty::c_int,
     pub clear_child_tid: *mut ::aya_bpf::cty::c_int,
-    pub worker_private: *mut ::aya_bpf::cty::c_void,
+    pub pf_io_worker: *mut ::aya_bpf::cty::c_void,
     pub utime: u64_,
     pub stime: u64_,
     pub gtime: u64_,
@@ -1868,8 +1663,6 @@ pub struct task_struct {
     pub nr_dirtied: ::aya_bpf::cty::c_int,
     pub nr_dirtied_pause: ::aya_bpf::cty::c_int,
     pub dirty_paused_when: ::aya_bpf::cty::c_ulong,
-    pub latency_record_count: ::aya_bpf::cty::c_int,
-    pub latency_record: [latency_record; 32usize],
     pub timer_slack_ns: u64_,
     pub default_timer_slack_ns: u64_,
     pub curr_ret_stack: ::aya_bpf::cty::c_int,
@@ -1894,9 +1687,9 @@ pub struct task_struct {
     pub oom_reaper_list: *mut task_struct,
     pub stack_vm_area: *mut vm_struct,
     pub stack_refcount: refcount_t,
+    pub patch_state: ::aya_bpf::cty::c_int,
     pub security: *mut ::aya_bpf::cty::c_void,
     pub bpf_storage: *mut bpf_local_storage,
-    pub bpf_ctx: *mut bpf_run_ctx,
     pub mce_vaddr: *mut ::aya_bpf::cty::c_void,
     pub mce_kflags: __u64,
     pub mce_addr: u64_,
@@ -1905,7 +1698,8 @@ pub struct task_struct {
     pub mce_kill_me: callback_head,
     pub mce_count: ::aya_bpf::cty::c_int,
     pub kretprobe_instances: llist_head,
-    pub l1d_flush_kill: callback_head,
+    pub _bitfield_align_4: [u8; 0],
+    pub _bitfield_4: __BindgenBitfieldUnit<[u8; 24usize]>,
     pub thread: thread_struct,
 }
 #[repr(C)]
@@ -2059,17 +1853,6 @@ impl task_struct {
         }
     }
     #[inline]
-    pub fn in_eventfd_signal(&self) -> ::aya_bpf::cty::c_uint {
-        unsafe { ::core::mem::transmute(self._bitfield_2.get(41usize, 1u8) as u32) }
-    }
-    #[inline]
-    pub fn set_in_eventfd_signal(&mut self, val: ::aya_bpf::cty::c_uint) {
-        unsafe {
-            let val: u32 = ::core::mem::transmute(val);
-            self._bitfield_2.set(41usize, 1u8, val as u64)
-        }
-    }
-    #[inline]
     pub fn new_bitfield_2(
         sched_reset_on_fork: ::aya_bpf::cty::c_uint,
         sched_contributes_to_load: ::aya_bpf::cty::c_uint,
@@ -2084,7 +1867,6 @@ impl task_struct {
         frozen: ::aya_bpf::cty::c_uint,
         use_memdelay: ::aya_bpf::cty::c_uint,
         in_memstall: ::aya_bpf::cty::c_uint,
-        in_eventfd_signal: ::aya_bpf::cty::c_uint,
     ) -> __BindgenBitfieldUnit<[u8; 6usize]> {
         let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 6usize]> = Default::default();
         __bindgen_bitfield_unit.set(0usize, 1u8, {
@@ -2140,10 +1922,6 @@ impl task_struct {
         __bindgen_bitfield_unit.set(40usize, 1u8, {
             let in_memstall: u32 = unsafe { ::core::mem::transmute(in_memstall) };
             in_memstall as u64
-        });
-        __bindgen_bitfield_unit.set(41usize, 1u8, {
-            let in_eventfd_signal: u32 = unsafe { ::core::mem::transmute(in_eventfd_signal) };
-            in_eventfd_signal as u64
         });
         __bindgen_bitfield_unit
     }
@@ -2201,15 +1979,20 @@ impl task_struct {
         });
         __bindgen_bitfield_unit
     }
+    #[inline]
+    pub fn new_bitfield_4() -> __BindgenBitfieldUnit<[u8; 24usize]> {
+        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 24usize]> = Default::default();
+        __bindgen_bitfield_unit
+    }
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct range {
     pub start: u64_,
     pub end: u64_,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct pt_regs {
     pub r15: ::aya_bpf::cty::c_ulong,
     pub r14: ::aya_bpf::cty::c_ulong,
@@ -2239,28 +2022,28 @@ pub type pudval_t = ::aya_bpf::cty::c_ulong;
 pub type pgdval_t = ::aya_bpf::cty::c_ulong;
 pub type pgprotval_t = ::aya_bpf::cty::c_ulong;
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct pte_t {
     pub pte: pteval_t,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct pgprot {
     pub pgprot: pgprotval_t,
 }
 pub type pgprot_t = pgprot;
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct pgd_t {
     pub pgd: pgdval_t,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct pud_t {
     pub pud: pudval_t,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct pmd_t {
     pub pmd: pmdval_t,
 }
@@ -2283,10 +2066,11 @@ pub union page__bindgen_ty_1 {
     pub __bindgen_anon_4: page__bindgen_ty_1__bindgen_ty_4,
     pub __bindgen_anon_5: page__bindgen_ty_1__bindgen_ty_5,
     pub __bindgen_anon_6: page__bindgen_ty_1__bindgen_ty_6,
+    pub __bindgen_anon_7: page__bindgen_ty_1__bindgen_ty_7,
     pub callback_head: callback_head,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct page__bindgen_ty_1__bindgen_ty_1 {
     pub lru: list_head,
     pub mapping: *mut address_space,
@@ -2296,21 +2080,102 @@ pub struct page__bindgen_ty_1__bindgen_ty_1 {
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct page__bindgen_ty_1__bindgen_ty_2 {
-    pub pp_magic: ::aya_bpf::cty::c_ulong,
-    pub pp: *mut page_pool,
-    pub _pp_mapping_pad: ::aya_bpf::cty::c_ulong,
-    pub dma_addr: ::aya_bpf::cty::c_ulong,
-    pub __bindgen_anon_1: page__bindgen_ty_1__bindgen_ty_2__bindgen_ty_1,
+    pub dma_addr: [::aya_bpf::cty::c_ulong; 2usize],
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
-pub union page__bindgen_ty_1__bindgen_ty_2__bindgen_ty_1 {
-    pub dma_addr_upper: ::aya_bpf::cty::c_ulong,
-    pub pp_frag_count: atomic_long_t,
+pub struct page__bindgen_ty_1__bindgen_ty_3 {
+    pub __bindgen_anon_1: page__bindgen_ty_1__bindgen_ty_3__bindgen_ty_1,
+    pub slab_cache: *mut kmem_cache,
+    pub freelist: *mut ::aya_bpf::cty::c_void,
+    pub __bindgen_anon_2: page__bindgen_ty_1__bindgen_ty_3__bindgen_ty_2,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct page__bindgen_ty_1__bindgen_ty_3 {
+#[derive(Copy, Clone)]
+pub union page__bindgen_ty_1__bindgen_ty_3__bindgen_ty_1 {
+    pub slab_list: list_head,
+    pub __bindgen_anon_1: page__bindgen_ty_1__bindgen_ty_3__bindgen_ty_1__bindgen_ty_1,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct page__bindgen_ty_1__bindgen_ty_3__bindgen_ty_1__bindgen_ty_1 {
+    pub next: *mut page,
+    pub pages: ::aya_bpf::cty::c_int,
+    pub pobjects: ::aya_bpf::cty::c_int,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub union page__bindgen_ty_1__bindgen_ty_3__bindgen_ty_2 {
+    pub s_mem: *mut ::aya_bpf::cty::c_void,
+    pub counters: ::aya_bpf::cty::c_ulong,
+    pub __bindgen_anon_1: page__bindgen_ty_1__bindgen_ty_3__bindgen_ty_2__bindgen_ty_1,
+}
+#[repr(C)]
+#[repr(align(4))]
+#[derive(Copy, Clone)]
+pub struct page__bindgen_ty_1__bindgen_ty_3__bindgen_ty_2__bindgen_ty_1 {
+    pub _bitfield_align_1: [u16; 0],
+    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 4usize]>,
+}
+impl page__bindgen_ty_1__bindgen_ty_3__bindgen_ty_2__bindgen_ty_1 {
+    #[inline]
+    pub fn inuse(&self) -> ::aya_bpf::cty::c_uint {
+        unsafe { ::core::mem::transmute(self._bitfield_1.get(0usize, 16u8) as u32) }
+    }
+    #[inline]
+    pub fn set_inuse(&mut self, val: ::aya_bpf::cty::c_uint) {
+        unsafe {
+            let val: u32 = ::core::mem::transmute(val);
+            self._bitfield_1.set(0usize, 16u8, val as u64)
+        }
+    }
+    #[inline]
+    pub fn objects(&self) -> ::aya_bpf::cty::c_uint {
+        unsafe { ::core::mem::transmute(self._bitfield_1.get(16usize, 15u8) as u32) }
+    }
+    #[inline]
+    pub fn set_objects(&mut self, val: ::aya_bpf::cty::c_uint) {
+        unsafe {
+            let val: u32 = ::core::mem::transmute(val);
+            self._bitfield_1.set(16usize, 15u8, val as u64)
+        }
+    }
+    #[inline]
+    pub fn frozen(&self) -> ::aya_bpf::cty::c_uint {
+        unsafe { ::core::mem::transmute(self._bitfield_1.get(31usize, 1u8) as u32) }
+    }
+    #[inline]
+    pub fn set_frozen(&mut self, val: ::aya_bpf::cty::c_uint) {
+        unsafe {
+            let val: u32 = ::core::mem::transmute(val);
+            self._bitfield_1.set(31usize, 1u8, val as u64)
+        }
+    }
+    #[inline]
+    pub fn new_bitfield_1(
+        inuse: ::aya_bpf::cty::c_uint,
+        objects: ::aya_bpf::cty::c_uint,
+        frozen: ::aya_bpf::cty::c_uint,
+    ) -> __BindgenBitfieldUnit<[u8; 4usize]> {
+        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 4usize]> = Default::default();
+        __bindgen_bitfield_unit.set(0usize, 16u8, {
+            let inuse: u32 = unsafe { ::core::mem::transmute(inuse) };
+            inuse as u64
+        });
+        __bindgen_bitfield_unit.set(16usize, 15u8, {
+            let objects: u32 = unsafe { ::core::mem::transmute(objects) };
+            objects as u64
+        });
+        __bindgen_bitfield_unit.set(31usize, 1u8, {
+            let frozen: u32 = unsafe { ::core::mem::transmute(frozen) };
+            frozen as u64
+        });
+        __bindgen_bitfield_unit
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct page__bindgen_ty_1__bindgen_ty_4 {
     pub compound_head: ::aya_bpf::cty::c_ulong,
     pub compound_dtor: ::aya_bpf::cty::c_uchar,
     pub compound_order: ::aya_bpf::cty::c_uchar,
@@ -2318,30 +2183,30 @@ pub struct page__bindgen_ty_1__bindgen_ty_3 {
     pub compound_nr: ::aya_bpf::cty::c_uint,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct page__bindgen_ty_1__bindgen_ty_4 {
+#[derive(Copy, Clone)]
+pub struct page__bindgen_ty_1__bindgen_ty_5 {
     pub _compound_pad_1: ::aya_bpf::cty::c_ulong,
     pub hpage_pinned_refcount: atomic_t,
     pub deferred_list: list_head,
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
-pub struct page__bindgen_ty_1__bindgen_ty_5 {
+pub struct page__bindgen_ty_1__bindgen_ty_6 {
     pub _pt_pad_1: ::aya_bpf::cty::c_ulong,
     pub pmd_huge_pte: pgtable_t,
     pub _pt_pad_2: ::aya_bpf::cty::c_ulong,
-    pub __bindgen_anon_1: page__bindgen_ty_1__bindgen_ty_5__bindgen_ty_1,
+    pub __bindgen_anon_1: page__bindgen_ty_1__bindgen_ty_6__bindgen_ty_1,
     pub ptl: spinlock_t,
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
-pub union page__bindgen_ty_1__bindgen_ty_5__bindgen_ty_1 {
+pub union page__bindgen_ty_1__bindgen_ty_6__bindgen_ty_1 {
     pub pt_mm: *mut mm_struct,
     pub pt_frag_refcount: atomic_t,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct page__bindgen_ty_1__bindgen_ty_6 {
+#[derive(Copy, Clone)]
+pub struct page__bindgen_ty_1__bindgen_ty_7 {
     pub pgmap: *mut dev_pagemap,
     pub zone_device_data: *mut ::aya_bpf::cty::c_void,
 }
@@ -2350,86 +2215,8 @@ pub struct page__bindgen_ty_1__bindgen_ty_6 {
 pub union page__bindgen_ty_2 {
     pub _mapcount: atomic_t,
     pub page_type: ::aya_bpf::cty::c_uint,
-}
-#[repr(C, packed)]
-#[derive(Debug, Copy, Clone)]
-pub struct orc_entry {
-    pub sp_offset: s16,
-    pub bp_offset: s16,
-    pub _bitfield_align_1: [u8; 0],
-    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 2usize]>,
-}
-impl orc_entry {
-    #[inline]
-    pub fn sp_reg(&self) -> ::aya_bpf::cty::c_uint {
-        unsafe { ::core::mem::transmute(self._bitfield_1.get(0usize, 4u8) as u32) }
-    }
-    #[inline]
-    pub fn set_sp_reg(&mut self, val: ::aya_bpf::cty::c_uint) {
-        unsafe {
-            let val: u32 = ::core::mem::transmute(val);
-            self._bitfield_1.set(0usize, 4u8, val as u64)
-        }
-    }
-    #[inline]
-    pub fn bp_reg(&self) -> ::aya_bpf::cty::c_uint {
-        unsafe { ::core::mem::transmute(self._bitfield_1.get(4usize, 4u8) as u32) }
-    }
-    #[inline]
-    pub fn set_bp_reg(&mut self, val: ::aya_bpf::cty::c_uint) {
-        unsafe {
-            let val: u32 = ::core::mem::transmute(val);
-            self._bitfield_1.set(4usize, 4u8, val as u64)
-        }
-    }
-    #[inline]
-    pub fn type_(&self) -> ::aya_bpf::cty::c_uint {
-        unsafe { ::core::mem::transmute(self._bitfield_1.get(8usize, 2u8) as u32) }
-    }
-    #[inline]
-    pub fn set_type(&mut self, val: ::aya_bpf::cty::c_uint) {
-        unsafe {
-            let val: u32 = ::core::mem::transmute(val);
-            self._bitfield_1.set(8usize, 2u8, val as u64)
-        }
-    }
-    #[inline]
-    pub fn end(&self) -> ::aya_bpf::cty::c_uint {
-        unsafe { ::core::mem::transmute(self._bitfield_1.get(10usize, 1u8) as u32) }
-    }
-    #[inline]
-    pub fn set_end(&mut self, val: ::aya_bpf::cty::c_uint) {
-        unsafe {
-            let val: u32 = ::core::mem::transmute(val);
-            self._bitfield_1.set(10usize, 1u8, val as u64)
-        }
-    }
-    #[inline]
-    pub fn new_bitfield_1(
-        sp_reg: ::aya_bpf::cty::c_uint,
-        bp_reg: ::aya_bpf::cty::c_uint,
-        type_: ::aya_bpf::cty::c_uint,
-        end: ::aya_bpf::cty::c_uint,
-    ) -> __BindgenBitfieldUnit<[u8; 2usize]> {
-        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 2usize]> = Default::default();
-        __bindgen_bitfield_unit.set(0usize, 4u8, {
-            let sp_reg: u32 = unsafe { ::core::mem::transmute(sp_reg) };
-            sp_reg as u64
-        });
-        __bindgen_bitfield_unit.set(4usize, 4u8, {
-            let bp_reg: u32 = unsafe { ::core::mem::transmute(bp_reg) };
-            bp_reg as u64
-        });
-        __bindgen_bitfield_unit.set(8usize, 2u8, {
-            let type_: u32 = unsafe { ::core::mem::transmute(type_) };
-            type_ as u64
-        });
-        __bindgen_bitfield_unit.set(10usize, 1u8, {
-            let end: u32 = unsafe { ::core::mem::transmute(end) };
-            end as u64
-        });
-        __bindgen_bitfield_unit
-    }
+    pub active: ::aya_bpf::cty::c_uint,
+    pub units: ::aya_bpf::cty::c_int,
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
@@ -2441,7 +2228,7 @@ pub struct rw_semaphore {
     pub wait_list: list_head,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct mm_rss_stat {
     pub count: [atomic_long_t; 4usize],
 }
@@ -2461,13 +2248,13 @@ pub struct mm_context_t {
     pub execute_only_pkey: s16,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct uprobes_state {
     pub xol_area: *mut xol_area,
 }
 pub type work_func_t = ::core::option::Option<unsafe extern "C" fn(arg1: *mut work_struct)>;
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct work_struct {
     pub data: atomic_long_t,
     pub entry: list_head,
@@ -2503,6 +2290,7 @@ pub struct mm_struct__bindgen_ty_1 {
     pub membarrier_state: atomic_t,
     pub mm_users: atomic_t,
     pub mm_count: atomic_t,
+    pub has_pinned: atomic_t,
     pub pgtables_bytes: atomic_long_t,
     pub map_count: ::aya_bpf::cty::c_int,
     pub page_table_lock: spinlock_t,
@@ -2530,11 +2318,12 @@ pub struct mm_struct__bindgen_ty_1 {
     pub arg_end: ::aya_bpf::cty::c_ulong,
     pub env_start: ::aya_bpf::cty::c_ulong,
     pub env_end: ::aya_bpf::cty::c_ulong,
-    pub saved_auxv: [::aya_bpf::cty::c_ulong; 48usize],
+    pub saved_auxv: [::aya_bpf::cty::c_ulong; 46usize],
     pub rss_stat: mm_rss_stat,
     pub binfmt: *mut linux_binfmt,
     pub context: mm_context_t,
     pub flags: ::aya_bpf::cty::c_ulong,
+    pub core_state: *mut core_state,
     pub ioctx_lock: spinlock_t,
     pub ioctx_table: *mut kioctx_table,
     pub owner: *mut task_struct,
@@ -2545,14 +2334,14 @@ pub struct mm_struct__bindgen_ty_1 {
     pub numa_scan_offset: ::aya_bpf::cty::c_ulong,
     pub numa_scan_seq: ::aya_bpf::cty::c_int,
     pub tlb_flush_pending: atomic_t,
-    pub tlb_flush_batched: atomic_t,
+    pub tlb_flush_batched: bool_,
     pub uprobes_state: uprobes_state,
     pub hugetlb_usage: atomic_long_t,
     pub async_put_work: work_struct,
     pub pasid: u32_,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct vm_userfaultfd_ctx {
     pub ctx: *mut userfaultfd_ctx,
 }
@@ -2568,7 +2357,7 @@ pub struct vm_area_struct {
     pub vm_mm: *mut mm_struct,
     pub vm_page_prot: pgprot_t,
     pub vm_flags: ::aya_bpf::cty::c_ulong,
-    pub __bindgen_anon_1: vm_area_struct__bindgen_ty_1,
+    pub shared: vm_area_struct__bindgen_ty_1,
     pub anon_vma_chain: list_head,
     pub anon_vma: *mut anon_vma,
     pub vm_ops: *const vm_operations_struct,
@@ -2581,66 +2370,18 @@ pub struct vm_area_struct {
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
-pub union vm_area_struct__bindgen_ty_1 {
-    pub shared: vm_area_struct__bindgen_ty_1__bindgen_ty_1,
-    pub anon_name: *mut anon_vma_name,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct vm_area_struct__bindgen_ty_1__bindgen_ty_1 {
+pub struct vm_area_struct__bindgen_ty_1 {
     pub rb: rb_node,
     pub rb_subtree_last: ::aya_bpf::cty::c_ulong,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct math_emu_info {
     pub ___orig_eip: ::aya_bpf::cty::c_long,
     pub regs: *mut pt_regs,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct tracepoint_func {
-    pub func: *mut ::aya_bpf::cty::c_void,
-    pub data: *mut ::aya_bpf::cty::c_void,
-    pub prio: ::aya_bpf::cty::c_int,
-}
-#[repr(C)]
 #[derive(Copy, Clone)]
-pub struct tracepoint {
-    pub name: *const ::aya_bpf::cty::c_char,
-    pub key: static_key,
-    pub static_call_key: *mut static_call_key,
-    pub static_call_tramp: *mut ::aya_bpf::cty::c_void,
-    pub iterator: *mut ::aya_bpf::cty::c_void,
-    pub regfunc: ::core::option::Option<unsafe extern "C" fn() -> ::aya_bpf::cty::c_int>,
-    pub unregfunc: ::core::option::Option<unsafe extern "C" fn()>,
-    pub funcs: *mut tracepoint_func,
-}
-pub type tracepoint_ptr_t = ::aya_bpf::cty::c_int;
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct bpf_raw_event_map {
-    pub tp: *mut tracepoint,
-    pub bpf_func: *mut ::aya_bpf::cty::c_void,
-    pub num_args: u32_,
-    pub writable_size: u32_,
-    pub _bitfield_align_1: [u8; 0],
-    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 8usize]>,
-}
-impl bpf_raw_event_map {
-    #[inline]
-    pub fn new_bitfield_1() -> __BindgenBitfieldUnit<[u8; 8usize]> {
-        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 8usize]> = Default::default();
-        __bindgen_bitfield_unit
-    }
-}
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct rwlock_t {
-    pub raw_lock: arch_rwlock_t,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
 pub struct vm_struct {
     pub next: *mut vm_struct,
     pub addr: *mut ::aya_bpf::cty::c_void,
@@ -2659,28 +2400,7 @@ pub struct wait_queue_head {
 }
 pub type wait_queue_head_t = wait_queue_head;
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct attribute_group {
-    pub name: *const ::aya_bpf::cty::c_char,
-    pub is_visible: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut kobject,
-            arg2: *mut attribute,
-            arg3: ::aya_bpf::cty::c_int,
-        ) -> umode_t,
-    >,
-    pub is_bin_visible: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut kobject,
-            arg2: *mut bin_attribute,
-            arg3: ::aya_bpf::cty::c_int,
-        ) -> umode_t,
-    >,
-    pub attrs: *mut *mut attribute,
-    pub bin_attrs: *mut *mut bin_attribute,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct seqcount_raw_spinlock {
     pub seqcount: seqcount_t,
 }
@@ -2690,11 +2410,6 @@ pub type seqcount_raw_spinlock_t = seqcount_raw_spinlock;
 pub struct seqlock_t {
     pub seqcount: seqcount_spinlock_t,
     pub lock: spinlock_t,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct kref {
-    pub refcount: refcount_t,
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
@@ -2709,94 +2424,7 @@ pub struct completion {
     pub wait: swait_queue_head,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct timer_list {
-    pub entry: hlist_node,
-    pub expires: ::aya_bpf::cty::c_ulong,
-    pub function: ::core::option::Option<unsafe extern "C" fn(arg1: *mut timer_list)>,
-    pub flags: u32_,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct delayed_work {
-    pub work: work_struct,
-    pub timer: timer_list,
-    pub wq: *mut workqueue_struct,
-    pub cpu: ::aya_bpf::cty::c_int,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct rcu_segcblist {
-    pub head: *mut callback_head,
-    pub tails: [*mut *mut callback_head; 4usize],
-    pub gp_seq: [::aya_bpf::cty::c_ulong; 4usize],
-    pub len: ::aya_bpf::cty::c_long,
-    pub seglen: [::aya_bpf::cty::c_long; 4usize],
-    pub flags: u8_,
-}
-#[repr(C)]
 #[derive(Copy, Clone)]
-pub struct srcu_data {
-    pub srcu_lock_count: [::aya_bpf::cty::c_ulong; 2usize],
-    pub srcu_unlock_count: [::aya_bpf::cty::c_ulong; 2usize],
-    pub _bitfield_align_1: [u8; 0],
-    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 32usize]>,
-    pub lock: spinlock_t,
-    pub srcu_cblist: rcu_segcblist,
-    pub srcu_gp_seq_needed: ::aya_bpf::cty::c_ulong,
-    pub srcu_gp_seq_needed_exp: ::aya_bpf::cty::c_ulong,
-    pub srcu_cblist_invoking: bool_,
-    pub delay_work: timer_list,
-    pub work: work_struct,
-    pub srcu_barrier_head: callback_head,
-    pub mynode: *mut srcu_node,
-    pub grpmask: ::aya_bpf::cty::c_ulong,
-    pub cpu: ::aya_bpf::cty::c_int,
-    pub ssp: *mut srcu_struct,
-    pub _bitfield_align_2: [u8; 0],
-    pub _bitfield_2: __BindgenBitfieldUnit<[u8; 48usize]>,
-}
-impl srcu_data {
-    #[inline]
-    pub fn new_bitfield_1() -> __BindgenBitfieldUnit<[u8; 32usize]> {
-        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 32usize]> = Default::default();
-        __bindgen_bitfield_unit
-    }
-}
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct srcu_node {
-    pub lock: spinlock_t,
-    pub srcu_have_cbs: [::aya_bpf::cty::c_ulong; 4usize],
-    pub srcu_data_have_cbs: [::aya_bpf::cty::c_ulong; 4usize],
-    pub srcu_gp_seq_needed_exp: ::aya_bpf::cty::c_ulong,
-    pub srcu_parent: *mut srcu_node,
-    pub grplo: ::aya_bpf::cty::c_int,
-    pub grphi: ::aya_bpf::cty::c_int,
-}
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct srcu_struct {
-    pub node: [srcu_node; 21usize],
-    pub level: [*mut srcu_node; 3usize],
-    pub srcu_cb_mutex: mutex,
-    pub lock: spinlock_t,
-    pub srcu_gp_mutex: mutex,
-    pub srcu_idx: ::aya_bpf::cty::c_uint,
-    pub srcu_gp_seq: ::aya_bpf::cty::c_ulong,
-    pub srcu_gp_seq_needed: ::aya_bpf::cty::c_ulong,
-    pub srcu_gp_seq_needed_exp: ::aya_bpf::cty::c_ulong,
-    pub srcu_last_gp_end: ::aya_bpf::cty::c_ulong,
-    pub sda: *mut srcu_data,
-    pub srcu_barrier_seq: ::aya_bpf::cty::c_ulong,
-    pub srcu_barrier_mutex: mutex,
-    pub srcu_barrier_completion: completion,
-    pub srcu_barrier_cpu_cnt: atomic_t,
-    pub work: delayed_work,
-    pub dep_map: lockdep_map,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
 pub struct arch_uprobe_task {
     pub saved_scratch_register: ::aya_bpf::cty::c_ulong,
     pub saved_trap_nr: ::aya_bpf::cty::c_uint,
@@ -2826,19 +2454,19 @@ pub union uprobe_task__bindgen_ty_1 {
     pub __bindgen_anon_2: uprobe_task__bindgen_ty_1__bindgen_ty_2,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct uprobe_task__bindgen_ty_1__bindgen_ty_1 {
     pub autask: arch_uprobe_task,
     pub vaddr: ::aya_bpf::cty::c_ulong,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct uprobe_task__bindgen_ty_1__bindgen_ty_2 {
     pub dup_xol_work: callback_head,
     pub dup_xol_addr: ::aya_bpf::cty::c_ulong,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct return_instance {
     pub uprobe: *mut uprobe,
     pub func: ::aya_bpf::cty::c_ulong,
@@ -2848,7 +2476,7 @@ pub struct return_instance {
     pub next: *mut return_instance,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct vdso_image {
     pub data: *mut ::aya_bpf::cty::c_void,
     pub size: ::aya_bpf::cty::c_ulong,
@@ -2883,10 +2511,8 @@ pub type errseq_t = u32_;
 pub struct address_space {
     pub host: *mut inode,
     pub i_pages: xarray,
-    pub invalidate_lock: rw_semaphore,
     pub gfp_mask: gfp_t,
     pub i_mmap_writable: atomic_t,
-    pub nr_thps: atomic_t,
     pub i_mmap: rb_root_cached,
     pub i_mmap_rwsem: rw_semaphore,
     pub nrpages: ::aya_bpf::cty::c_ulong,
@@ -2899,7 +2525,7 @@ pub struct address_space {
     pub private_data: *mut ::aya_bpf::cty::c_void,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct vmem_altmap {
     pub base_pfn: ::aya_bpf::cty::c_ulong,
     pub end_pfn: ::aya_bpf::cty::c_ulong,
@@ -2909,7 +2535,7 @@ pub struct vmem_altmap {
     pub alloc: ::aya_bpf::cty::c_ulong,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct percpu_ref {
     pub percpu_count_ptr: ::aya_bpf::cty::c_ulong,
     pub data: *mut percpu_ref_data,
@@ -2924,11 +2550,11 @@ pub mod memory_type {
 #[repr(C)]
 pub struct dev_pagemap {
     pub altmap: vmem_altmap,
-    pub ref_: percpu_ref,
+    pub ref_: *mut percpu_ref,
+    pub internal_ref: percpu_ref,
     pub done: completion,
     pub type_: memory_type::Type,
     pub flags: ::aya_bpf::cty::c_uint,
-    pub vmemmap_shift: ::aya_bpf::cty::c_ulong,
     pub ops: *const dev_pagemap_ops,
     pub owner: *mut ::aya_bpf::cty::c_void,
     pub nr_range: ::aya_bpf::cty::c_int,
@@ -2941,7 +2567,7 @@ pub struct dev_pagemap__bindgen_ty_1 {
     pub bindgen_union_field: [u64; 2usize],
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct path {
     pub mnt: *mut vfsmount,
     pub dentry: *mut dentry,
@@ -2974,7 +2600,7 @@ pub struct fown_struct {
     pub signum: ::aya_bpf::cty::c_int,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct file_ra_state {
     pub start: ::aya_bpf::cty::c_ulong,
     pub size: ::aya_bpf::cty::c_uint,
@@ -3014,12 +2640,6 @@ pub union file__bindgen_ty_1 {
     pub fu_llist: llist_node,
     pub fu_rcuhead: callback_head,
 }
-#[repr(C)]
-#[derive(Debug)]
-pub struct anon_vma_name {
-    pub kref: kref,
-    pub name: __IncompleteArrayField<::aya_bpf::cty::c_char>,
-}
 pub type vm_fault_t = ::aya_bpf::cty::c_uint;
 pub mod page_entry_size {
     pub type Type = ::aya_bpf::cty::c_uint;
@@ -3028,7 +2648,7 @@ pub mod page_entry_size {
     pub const PE_SIZE_PUD: Type = 2;
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct vm_operations_struct {
     pub open: ::core::option::Option<unsafe extern "C" fn(arg1: *mut vm_area_struct)>,
     pub close: ::core::option::Option<unsafe extern "C" fn(arg1: *mut vm_area_struct)>,
@@ -3095,6 +2715,19 @@ pub struct vm_operations_struct {
         unsafe extern "C" fn(arg1: *mut vm_area_struct, arg2: ::aya_bpf::cty::c_ulong) -> *mut page,
     >,
 }
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct core_thread {
+    pub task: *mut task_struct,
+    pub next: *mut core_thread,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct core_state {
+    pub nr_threads: atomic_t,
+    pub dumper: core_thread,
+    pub startup: completion,
+}
 pub mod fault_flag {
     pub type Type = ::aya_bpf::cty::c_uint;
     pub const FAULT_FLAG_WRITE: Type = 1;
@@ -3115,7 +2748,7 @@ pub struct vm_fault {
     pub flags: fault_flag::Type,
     pub pmd: *mut pmd_t,
     pub pud: *mut pud_t,
-    pub __bindgen_anon_2: vm_fault__bindgen_ty_2,
+    pub orig_pte: pte_t,
     pub cow_page: *mut page,
     pub page: *mut page,
     pub pte: *mut pte_t,
@@ -3123,23 +2756,17 @@ pub struct vm_fault {
     pub prealloc_pte: pgtable_t,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct vm_fault__bindgen_ty_1 {
     pub vma: *mut vm_area_struct,
     pub gfp_mask: gfp_t,
     pub pgoff: ::aya_bpf::cty::c_ulong,
     pub address: ::aya_bpf::cty::c_ulong,
 }
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub union vm_fault__bindgen_ty_2 {
-    pub orig_pte: pte_t,
-    pub orig_pmd: pmd_t,
-}
 pub type isolate_mode_t = ::aya_bpf::cty::c_uint;
 pub type percpu_ref_func_t = ::core::option::Option<unsafe extern "C" fn(arg1: *mut percpu_ref)>;
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct percpu_ref_data {
     pub count: atomic_long_t,
     pub release: percpu_ref_func_t,
@@ -3190,7 +2817,7 @@ impl percpu_ref_data {
     }
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct shrink_control {
     pub gfp_mask: gfp_t,
     pub nid: ::aya_bpf::cty::c_int,
@@ -3199,7 +2826,7 @@ pub struct shrink_control {
     pub memcg: *mut mem_cgroup,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct shrinker {
     pub count_objects: ::core::option::Option<
         unsafe extern "C" fn(
@@ -3221,20 +2848,22 @@ pub struct shrinker {
     pub nr_deferred: *mut atomic_long_t,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct rlimit {
     pub rlim_cur: __kernel_ulong_t,
     pub rlim_max: __kernel_ulong_t,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct dev_pagemap_ops {
     pub page_free: ::core::option::Option<unsafe extern "C" fn(arg1: *mut page)>,
+    pub kill: ::core::option::Option<unsafe extern "C" fn(arg1: *mut dev_pagemap)>,
+    pub cleanup: ::core::option::Option<unsafe extern "C" fn(arg1: *mut dev_pagemap)>,
     pub migrate_to_ram:
         ::core::option::Option<unsafe extern "C" fn(arg1: *mut vm_fault) -> vm_fault_t>,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct upid {
     pub nr: ::aya_bpf::cty::c_int,
     pub ns: *mut pid_namespace,
@@ -3252,12 +2881,12 @@ pub struct pid {
     pub numbers: [upid; 1usize],
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct kgid_t {
     pub val: gid_t,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct hrtimer_clock_base {
     pub cpu_base: *mut hrtimer_cpu_base,
     pub index: ::aya_bpf::cty::c_uint,
@@ -3382,7 +3011,7 @@ pub union __sifields {
     pub _sigsys: __sifields__bindgen_ty_7,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct __sifields__bindgen_ty_1 {
     pub _pid: __kernel_pid_t,
     pub _uid: __kernel_uid32_t,
@@ -3403,7 +3032,7 @@ pub struct __sifields__bindgen_ty_3 {
     pub _sigval: sigval_t,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct __sifields__bindgen_ty_4 {
     pub _pid: __kernel_pid_t,
     pub _uid: __kernel_uid32_t,
@@ -3427,32 +3056,32 @@ pub union __sifields__bindgen_ty_5__bindgen_ty_1 {
     pub _perf: __sifields__bindgen_ty_5__bindgen_ty_1__bindgen_ty_3,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct __sifields__bindgen_ty_5__bindgen_ty_1__bindgen_ty_1 {
     pub _dummy_bnd: [::aya_bpf::cty::c_char; 8usize],
     pub _lower: *mut ::aya_bpf::cty::c_void,
     pub _upper: *mut ::aya_bpf::cty::c_void,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct __sifields__bindgen_ty_5__bindgen_ty_1__bindgen_ty_2 {
     pub _dummy_pkey: [::aya_bpf::cty::c_char; 8usize],
     pub _pkey: __u32,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct __sifields__bindgen_ty_5__bindgen_ty_1__bindgen_ty_3 {
     pub _data: ::aya_bpf::cty::c_ulong,
     pub _type: __u32,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct __sifields__bindgen_ty_6 {
     pub _band: ::aya_bpf::cty::c_long,
     pub _fd: ::aya_bpf::cty::c_int,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct __sifields__bindgen_ty_7 {
     pub _call_addr: *mut ::aya_bpf::cty::c_void,
     pub _syscall: ::aya_bpf::cty::c_int,
@@ -3472,7 +3101,24 @@ pub struct kernel_siginfo__bindgen_ty_1 {
     pub _sifields: __sifields,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
+pub struct user_struct {
+    pub __count: refcount_t,
+    pub processes: atomic_t,
+    pub sigpending: atomic_t,
+    pub epoll_watches: atomic_long_t,
+    pub mq_bytes: ::aya_bpf::cty::c_ulong,
+    pub locked_shm: ::aya_bpf::cty::c_ulong,
+    pub unix_inflight: ::aya_bpf::cty::c_ulong,
+    pub pipe_bufs: atomic_long_t,
+    pub uidhash_node: hlist_node,
+    pub uid: kuid_t,
+    pub locked_vm: atomic_long_t,
+    pub nr_watches: atomic_t,
+    pub ratelimit: ratelimit_state,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
 pub struct sigaction {
     pub sa_handler: __sighandler_t,
     pub sa_flags: ::aya_bpf::cty::c_ulong,
@@ -3480,30 +3126,30 @@ pub struct sigaction {
     pub sa_mask: sigset_t,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct k_sigaction {
     pub sa: sigaction,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct cpu_itimer {
     pub expires: u64_,
     pub incr: u64_,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct task_cputime_atomic {
     pub utime: atomic64_t,
     pub stime: atomic64_t,
     pub sum_exec_runtime: atomic64_t,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct thread_group_cputimer {
     pub cputime_atomic: task_cputime_atomic,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct pacct_struct {
     pub ac_flag: ::aya_bpf::cty::c_int,
     pub ac_exitcode: ::aya_bpf::cty::c_long,
@@ -3526,10 +3172,9 @@ pub struct signal_struct {
     pub multiprocess: hlist_head,
     pub group_exit_code: ::aya_bpf::cty::c_int,
     pub notify_count: ::aya_bpf::cty::c_int,
-    pub group_exec_task: *mut task_struct,
+    pub group_exit_task: *mut task_struct,
     pub group_stop_count: ::aya_bpf::cty::c_int,
     pub flags: ::aya_bpf::cty::c_uint,
-    pub core_state: *mut core_state,
     pub _bitfield_align_1: [u8; 0],
     pub _bitfield_1: __BindgenBitfieldUnit<[u8; 1usize]>,
     pub posix_timer_id: ::aya_bpf::cty::c_int,
@@ -3644,7 +3289,7 @@ impl rseq {
     }
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct sched_class {
     pub uclamp_enabled: ::aya_bpf::cty::c_int,
     pub enqueue_task: ::core::option::Option<
@@ -3681,7 +3326,6 @@ pub struct sched_class {
             arg3: ::aya_bpf::cty::c_int,
         ) -> ::aya_bpf::cty::c_int,
     >,
-    pub pick_task: ::core::option::Option<unsafe extern "C" fn(arg1: *mut rq) -> *mut task_struct>,
     pub migrate_task_rq: ::core::option::Option<
         unsafe extern "C" fn(arg1: *mut task_struct, arg2: ::aya_bpf::cty::c_int),
     >,
@@ -3716,7 +3360,7 @@ pub struct sched_class {
     >,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct kernel_cap_struct {
     pub cap: [__u32; 2usize],
 }
@@ -3775,7 +3419,7 @@ pub union keyring_index_key__bindgen_ty_1 {
     pub x: ::aya_bpf::cty::c_ulong,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct keyring_index_key__bindgen_ty_1__bindgen_ty_1 {
     pub desc_len: u16_,
     pub desc: [::aya_bpf::cty::c_char; 6usize],
@@ -3787,12 +3431,12 @@ pub union key_payload {
     pub data: [*mut ::aya_bpf::cty::c_void; 4usize],
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct assoc_array_ptr {
     _unused: [u8; 0],
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct assoc_array {
     pub root: *mut assoc_array_ptr,
     pub nr_leaves_on_tree: ::aya_bpf::cty::c_ulong,
@@ -3839,7 +3483,7 @@ pub union key__bindgen_ty_3 {
     pub __bindgen_anon_1: key__bindgen_ty_3__bindgen_ty_1,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct key__bindgen_ty_3__bindgen_ty_1 {
     pub hash: ::aya_bpf::cty::c_ulong,
     pub len_desc: ::aya_bpf::cty::c_ulong,
@@ -3854,7 +3498,7 @@ pub union key__bindgen_ty_4 {
     pub __bindgen_anon_1: key__bindgen_ty_4__bindgen_ty_1,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct key__bindgen_ty_4__bindgen_ty_1 {
     pub name_link: list_head,
     pub keys: assoc_array,
@@ -3872,20 +3516,21 @@ pub struct sighand_struct {
 pub struct io_context {
     pub refcount: atomic_long_t,
     pub active_ref: atomic_t,
-    pub ioprio: ::aya_bpf::cty::c_ushort,
+    pub nr_tasks: atomic_t,
     pub lock: spinlock_t,
+    pub ioprio: ::aya_bpf::cty::c_ushort,
     pub icq_tree: xarray,
     pub icq_hint: *mut io_cq,
     pub icq_list: hlist_head,
     pub release_work: work_struct,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct hlist_bl_head {
     pub first: *mut hlist_bl_node,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct hlist_bl_node {
     pub next: *mut hlist_bl_node,
     pub pprev: *mut *mut hlist_bl_node,
@@ -3920,7 +3565,7 @@ pub union qstr__bindgen_ty_1 {
     pub hash_len: u64_,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct qstr__bindgen_ty_1__bindgen_ty_1 {
     pub hash: u32_,
     pub len: u32_,
@@ -4043,7 +3688,7 @@ pub union inode__bindgen_ty_4 {
     pub i_dir_seq: ::aya_bpf::cty::c_uint,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct dentry_operations {
     pub d_revalidate: ::core::option::Option<
         unsafe extern "C" fn(
@@ -4100,13 +3745,13 @@ impl dentry_operations {
     }
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct mtd_info {
     _unused: [u8; 0],
 }
 pub type qsize_t = ::aya_bpf::cty::c_longlong;
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct mem_dqinfo {
     pub dqi_format: *mut quota_format_type,
     pub dqi_fmt_id: ::aya_bpf::cty::c_int,
@@ -4136,7 +3781,7 @@ pub struct rcu_sync {
     pub cb_head: callback_head,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct rcuwait {
     pub task: *mut task_struct,
 }
@@ -4157,12 +3802,12 @@ pub struct sb_writers {
     pub rw_sem: [percpu_rw_semaphore; 3usize],
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct uuid_t {
     pub b: [__u8; 16usize],
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct list_lru {
     pub node: *mut list_lru_node,
     pub list: list_head,
@@ -4218,9 +3863,10 @@ pub struct super_block {
     pub s_vfs_rename_mutex: mutex,
     pub s_subtype: *const ::aya_bpf::cty::c_char,
     pub s_d_op: *const dentry_operations,
+    pub cleancache_poolid: ::aya_bpf::cty::c_int,
     pub s_shrink: shrinker,
     pub s_remove_count: atomic_long_t,
-    pub s_fsnotify_connectors: atomic_long_t,
+    pub s_fsnotify_inode_refs: atomic_long_t,
     pub s_readonly_remount: ::aya_bpf::cty::c_int,
     pub s_wb_err: errseq_t,
     pub s_dio_done_wq: *mut workqueue_struct,
@@ -4233,7 +3879,7 @@ pub struct super_block {
     pub s_sync_lock: mutex,
     pub s_stack_depth: ::aya_bpf::cty::c_int,
     pub _bitfield_align_1: [u8; 0],
-    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 16usize]>,
+    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 4usize]>,
     pub s_inode_list_lock: spinlock_t,
     pub s_inodes: list_head,
     pub s_inode_wblist_lock: spinlock_t,
@@ -4243,8 +3889,8 @@ pub struct super_block {
 }
 impl super_block {
     #[inline]
-    pub fn new_bitfield_1() -> __BindgenBitfieldUnit<[u8; 16usize]> {
-        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 16usize]> = Default::default();
+    pub fn new_bitfield_1() -> __BindgenBitfieldUnit<[u8; 4usize]> {
+        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 4usize]> = Default::default();
         __bindgen_bitfield_unit
     }
     #[inline]
@@ -4254,7 +3900,7 @@ impl super_block {
     }
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct vfsmount {
     pub mnt_root: *mut dentry,
     pub mnt_sb: *mut super_block,
@@ -4262,7 +3908,7 @@ pub struct vfsmount {
     pub mnt_userns: *mut user_namespace,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct kstat {
     pub result_mask: u32_,
     pub mode: umode_t,
@@ -4284,13 +3930,12 @@ pub struct kstat {
     pub mnt_id: u64_,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct list_lru_one {
     pub list: list_head,
     pub nr_items: ::aya_bpf::cty::c_long,
 }
 #[repr(C)]
-#[derive(Debug)]
 pub struct list_lru_memcg {
     pub rcu: callback_head,
     pub lru: __IncompleteArrayField<*mut list_lru_one>,
@@ -4320,14 +3965,7 @@ pub mod migrate_mode {
     pub const MIGRATE_SYNC_NO_COPY: Type = 3;
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct exception_table_entry {
-    pub insn: ::aya_bpf::cty::c_int,
-    pub fixup: ::aya_bpf::cty::c_int,
-    pub data: ::aya_bpf::cty::c_int,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct key_tag {
     pub rcu: callback_head,
     pub usage: refcount_t,
@@ -4340,7 +3978,7 @@ pub type request_key_actor_t = ::core::option::Option<
     ) -> ::aya_bpf::cty::c_int,
 >;
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct key_type {
     pub name: *const ::aya_bpf::cty::c_char,
     pub def_datalen: size_t,
@@ -4416,55 +4054,20 @@ pub type key_restrict_link_func_t = ::core::option::Option<
     ) -> ::aya_bpf::cty::c_int,
 >;
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct key_restriction {
     pub check: key_restrict_link_func_t,
     pub key: *mut key,
     pub keytype: *mut key_type,
 }
 #[repr(C)]
-#[derive(Copy, Clone)]
-pub struct percpu_counter {
-    pub lock: raw_spinlock_t,
-    pub count: s64,
-    pub list: list_head,
-    pub counters: *mut s32,
-}
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct user_struct {
-    pub __count: refcount_t,
-    pub epoll_watches: percpu_counter,
-    pub unix_inflight: ::aya_bpf::cty::c_ulong,
-    pub pipe_bufs: atomic_long_t,
-    pub uidhash_node: hlist_node,
-    pub uid: kuid_t,
-    pub locked_vm: atomic_long_t,
-    pub nr_watches: atomic_t,
-    pub ratelimit: ratelimit_state,
-}
-#[repr(C)]
-#[derive(Debug)]
 pub struct group_info {
     pub usage: atomic_t,
     pub ngroups: ::aya_bpf::cty::c_int,
     pub gid: __IncompleteArrayField<kgid_t>,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct core_thread {
-    pub task: *mut task_struct,
-    pub next: *mut core_thread,
-}
-#[repr(C)]
 #[derive(Copy, Clone)]
-pub struct core_state {
-    pub nr_threads: atomic_t,
-    pub dumper: core_thread,
-    pub startup: completion,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
 pub struct delayed_call {
     pub fn_: ::core::option::Option<unsafe extern "C" fn(arg1: *mut ::aya_bpf::cty::c_void)>,
     pub arg: *mut ::aya_bpf::cty::c_void,
@@ -4491,21 +4094,31 @@ pub union io_cq__bindgen_ty_2 {
     pub __rcu_head: callback_head,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct kiocb {
     pub ki_filp: *mut file,
     pub ki_pos: loff_t,
     pub ki_complete: ::core::option::Option<
-        unsafe extern "C" fn(arg1: *mut kiocb, arg2: ::aya_bpf::cty::c_long),
+        unsafe extern "C" fn(
+            arg1: *mut kiocb,
+            arg2: ::aya_bpf::cty::c_long,
+            arg3: ::aya_bpf::cty::c_long,
+        ),
     >,
     pub private: *mut ::aya_bpf::cty::c_void,
     pub ki_flags: ::aya_bpf::cty::c_int,
     pub ki_hint: u16_,
     pub ki_ioprio: u16_,
+    pub __bindgen_anon_1: kiocb__bindgen_ty_1,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub union kiocb__bindgen_ty_1 {
+    pub ki_cookie: ::aya_bpf::cty::c_uint,
     pub ki_waitq: *mut wait_page_queue,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct iattr {
     pub ia_valid: ::aya_bpf::cty::c_uint,
     pub ia_mode: umode_t,
@@ -4519,7 +4132,7 @@ pub struct iattr {
 }
 pub type projid_t = __kernel_uid32_t;
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct kprojid_t {
     pub val: projid_t,
 }
@@ -4543,7 +4156,7 @@ pub union kqid__bindgen_ty_1 {
     pub projid: kprojid_t,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct mem_dqblk {
     pub dqb_bhardlimit: qsize_t,
     pub dqb_bsoftlimit: qsize_t,
@@ -4572,7 +4185,7 @@ pub struct dquot {
     pub dq_dqb: mem_dqblk,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct quota_format_type {
     pub qf_fmt_id: ::aya_bpf::cty::c_int,
     pub qf_ops: *const quota_format_ops,
@@ -4580,7 +4193,7 @@ pub struct quota_format_type {
     pub qf_next: *mut quota_format_type,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct quota_format_ops {
     pub check_quota_file: ::core::option::Option<
         unsafe extern "C" fn(
@@ -4617,7 +4230,7 @@ pub struct quota_format_ops {
     >,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct dquot_operations {
     pub write_dquot:
         ::core::option::Option<unsafe extern "C" fn(arg1: *mut dquot) -> ::aya_bpf::cty::c_int>,
@@ -4650,7 +4263,7 @@ pub struct dquot_operations {
     >,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct qc_dqblk {
     pub d_fieldmask: ::aya_bpf::cty::c_int,
     pub d_spc_hardlimit: u64_,
@@ -4670,7 +4283,7 @@ pub struct qc_dqblk {
     pub d_rt_spc_warns: ::aya_bpf::cty::c_int,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct qc_type_state {
     pub flags: ::aya_bpf::cty::c_uint,
     pub spc_timelimit: ::aya_bpf::cty::c_uint,
@@ -4684,13 +4297,13 @@ pub struct qc_type_state {
     pub nextents: blkcnt_t,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct qc_state {
     pub s_incoredqs: ::aya_bpf::cty::c_uint,
     pub s_state: [qc_type_state; 3usize],
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct qc_info {
     pub i_fieldmask: ::aya_bpf::cty::c_int,
     pub i_flags: ::aya_bpf::cty::c_uint,
@@ -4702,7 +4315,7 @@ pub struct qc_info {
     pub i_rt_spc_warnlimit: ::aya_bpf::cty::c_uint,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct quotactl_ops {
     pub quota_on: ::core::option::Option<
         unsafe extern "C" fn(
@@ -4774,252 +4387,8 @@ pub struct quotactl_ops {
         ) -> ::aya_bpf::cty::c_int,
     >,
 }
-pub mod module_state {
-    pub type Type = ::aya_bpf::cty::c_uint;
-    pub const MODULE_STATE_LIVE: Type = 0;
-    pub const MODULE_STATE_COMING: Type = 1;
-    pub const MODULE_STATE_GOING: Type = 2;
-    pub const MODULE_STATE_UNFORMED: Type = 3;
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct kobject {
-    pub name: *const ::aya_bpf::cty::c_char,
-    pub entry: list_head,
-    pub parent: *mut kobject,
-    pub kset: *mut kset,
-    pub ktype: *const kobj_type,
-    pub sd: *mut kernfs_node,
-    pub kref: kref,
-    pub _bitfield_align_1: [u8; 0],
-    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 1usize]>,
-    pub __bindgen_padding_0: [u8; 3usize],
-}
-impl kobject {
-    #[inline]
-    pub fn state_initialized(&self) -> ::aya_bpf::cty::c_uint {
-        unsafe { ::core::mem::transmute(self._bitfield_1.get(0usize, 1u8) as u32) }
-    }
-    #[inline]
-    pub fn set_state_initialized(&mut self, val: ::aya_bpf::cty::c_uint) {
-        unsafe {
-            let val: u32 = ::core::mem::transmute(val);
-            self._bitfield_1.set(0usize, 1u8, val as u64)
-        }
-    }
-    #[inline]
-    pub fn state_in_sysfs(&self) -> ::aya_bpf::cty::c_uint {
-        unsafe { ::core::mem::transmute(self._bitfield_1.get(1usize, 1u8) as u32) }
-    }
-    #[inline]
-    pub fn set_state_in_sysfs(&mut self, val: ::aya_bpf::cty::c_uint) {
-        unsafe {
-            let val: u32 = ::core::mem::transmute(val);
-            self._bitfield_1.set(1usize, 1u8, val as u64)
-        }
-    }
-    #[inline]
-    pub fn state_add_uevent_sent(&self) -> ::aya_bpf::cty::c_uint {
-        unsafe { ::core::mem::transmute(self._bitfield_1.get(2usize, 1u8) as u32) }
-    }
-    #[inline]
-    pub fn set_state_add_uevent_sent(&mut self, val: ::aya_bpf::cty::c_uint) {
-        unsafe {
-            let val: u32 = ::core::mem::transmute(val);
-            self._bitfield_1.set(2usize, 1u8, val as u64)
-        }
-    }
-    #[inline]
-    pub fn state_remove_uevent_sent(&self) -> ::aya_bpf::cty::c_uint {
-        unsafe { ::core::mem::transmute(self._bitfield_1.get(3usize, 1u8) as u32) }
-    }
-    #[inline]
-    pub fn set_state_remove_uevent_sent(&mut self, val: ::aya_bpf::cty::c_uint) {
-        unsafe {
-            let val: u32 = ::core::mem::transmute(val);
-            self._bitfield_1.set(3usize, 1u8, val as u64)
-        }
-    }
-    #[inline]
-    pub fn uevent_suppress(&self) -> ::aya_bpf::cty::c_uint {
-        unsafe { ::core::mem::transmute(self._bitfield_1.get(4usize, 1u8) as u32) }
-    }
-    #[inline]
-    pub fn set_uevent_suppress(&mut self, val: ::aya_bpf::cty::c_uint) {
-        unsafe {
-            let val: u32 = ::core::mem::transmute(val);
-            self._bitfield_1.set(4usize, 1u8, val as u64)
-        }
-    }
-    #[inline]
-    pub fn new_bitfield_1(
-        state_initialized: ::aya_bpf::cty::c_uint,
-        state_in_sysfs: ::aya_bpf::cty::c_uint,
-        state_add_uevent_sent: ::aya_bpf::cty::c_uint,
-        state_remove_uevent_sent: ::aya_bpf::cty::c_uint,
-        uevent_suppress: ::aya_bpf::cty::c_uint,
-    ) -> __BindgenBitfieldUnit<[u8; 1usize]> {
-        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 1usize]> = Default::default();
-        __bindgen_bitfield_unit.set(0usize, 1u8, {
-            let state_initialized: u32 = unsafe { ::core::mem::transmute(state_initialized) };
-            state_initialized as u64
-        });
-        __bindgen_bitfield_unit.set(1usize, 1u8, {
-            let state_in_sysfs: u32 = unsafe { ::core::mem::transmute(state_in_sysfs) };
-            state_in_sysfs as u64
-        });
-        __bindgen_bitfield_unit.set(2usize, 1u8, {
-            let state_add_uevent_sent: u32 =
-                unsafe { ::core::mem::transmute(state_add_uevent_sent) };
-            state_add_uevent_sent as u64
-        });
-        __bindgen_bitfield_unit.set(3usize, 1u8, {
-            let state_remove_uevent_sent: u32 =
-                unsafe { ::core::mem::transmute(state_remove_uevent_sent) };
-            state_remove_uevent_sent as u64
-        });
-        __bindgen_bitfield_unit.set(4usize, 1u8, {
-            let uevent_suppress: u32 = unsafe { ::core::mem::transmute(uevent_suppress) };
-            uevent_suppress as u64
-        });
-        __bindgen_bitfield_unit
-    }
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct module_kobject {
-    pub kobj: kobject,
-    pub mod_: *mut module,
-    pub drivers_dir: *mut kobject,
-    pub mp: *mut module_param_attrs,
-    pub kobj_completion: *mut completion,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct latch_tree_node {
-    pub node: [rb_node; 2usize],
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct mod_tree_node {
-    pub mod_: *mut module,
-    pub node: latch_tree_node,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct module_layout {
-    pub base: *mut ::aya_bpf::cty::c_void,
-    pub size: ::aya_bpf::cty::c_uint,
-    pub text_size: ::aya_bpf::cty::c_uint,
-    pub ro_size: ::aya_bpf::cty::c_uint,
-    pub ro_after_init_size: ::aya_bpf::cty::c_uint,
-    pub mtn: mod_tree_node,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct mod_arch_specific {
-    pub num_orcs: ::aya_bpf::cty::c_uint,
-    pub orc_unwind_ip: *mut ::aya_bpf::cty::c_int,
-    pub orc_unwind: *mut orc_entry,
-}
-pub type Elf64_Sym = elf64_sym;
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct mod_kallsyms {
-    pub symtab: *mut Elf64_Sym,
-    pub num_symtab: ::aya_bpf::cty::c_uint,
-    pub strtab: *mut ::aya_bpf::cty::c_char,
-    pub typetab: *mut ::aya_bpf::cty::c_char,
-}
 #[repr(C)]
 #[derive(Copy, Clone)]
-pub struct module {
-    pub state: module_state::Type,
-    pub list: list_head,
-    pub name: [::aya_bpf::cty::c_char; 56usize],
-    pub build_id: [::aya_bpf::cty::c_uchar; 20usize],
-    pub mkobj: module_kobject,
-    pub modinfo_attrs: *mut module_attribute,
-    pub version: *const ::aya_bpf::cty::c_char,
-    pub srcversion: *const ::aya_bpf::cty::c_char,
-    pub holders_dir: *mut kobject,
-    pub syms: *const kernel_symbol,
-    pub crcs: *const s32,
-    pub num_syms: ::aya_bpf::cty::c_uint,
-    pub param_lock: mutex,
-    pub kp: *mut kernel_param,
-    pub num_kp: ::aya_bpf::cty::c_uint,
-    pub num_gpl_syms: ::aya_bpf::cty::c_uint,
-    pub gpl_syms: *const kernel_symbol,
-    pub gpl_crcs: *const s32,
-    pub using_gplonly_symbols: bool_,
-    pub sig_ok: bool_,
-    pub async_probe_requested: bool_,
-    pub num_exentries: ::aya_bpf::cty::c_uint,
-    pub extable: *mut exception_table_entry,
-    pub init: ::core::option::Option<unsafe extern "C" fn() -> ::aya_bpf::cty::c_int>,
-    pub _bitfield_align_1: [u8; 0],
-    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 40usize]>,
-    pub core_layout: module_layout,
-    pub init_layout: module_layout,
-    pub arch: mod_arch_specific,
-    pub taints: ::aya_bpf::cty::c_ulong,
-    pub num_bugs: ::aya_bpf::cty::c_uint,
-    pub bug_list: list_head,
-    pub bug_table: *mut bug_entry,
-    pub kallsyms: *mut mod_kallsyms,
-    pub core_kallsyms: mod_kallsyms,
-    pub sect_attrs: *mut module_sect_attrs,
-    pub notes_attrs: *mut module_notes_attrs,
-    pub args: *mut ::aya_bpf::cty::c_char,
-    pub percpu: *mut ::aya_bpf::cty::c_void,
-    pub percpu_size: ::aya_bpf::cty::c_uint,
-    pub noinstr_text_start: *mut ::aya_bpf::cty::c_void,
-    pub noinstr_text_size: ::aya_bpf::cty::c_uint,
-    pub num_tracepoints: ::aya_bpf::cty::c_uint,
-    pub tracepoints_ptrs: *mut tracepoint_ptr_t,
-    pub num_srcu_structs: ::aya_bpf::cty::c_uint,
-    pub srcu_struct_ptrs: *mut *mut srcu_struct,
-    pub num_bpf_raw_events: ::aya_bpf::cty::c_uint,
-    pub bpf_raw_events: *mut bpf_raw_event_map,
-    pub btf_data_size: ::aya_bpf::cty::c_uint,
-    pub btf_data: *mut ::aya_bpf::cty::c_void,
-    pub jump_entries: *mut jump_entry,
-    pub num_jump_entries: ::aya_bpf::cty::c_uint,
-    pub num_trace_bprintk_fmt: ::aya_bpf::cty::c_uint,
-    pub trace_bprintk_fmt_start: *mut *const ::aya_bpf::cty::c_char,
-    pub trace_events: *mut *mut trace_event_call,
-    pub num_trace_events: ::aya_bpf::cty::c_uint,
-    pub trace_evals: *mut *mut trace_eval_map,
-    pub num_trace_evals: ::aya_bpf::cty::c_uint,
-    pub num_ftrace_callsites: ::aya_bpf::cty::c_uint,
-    pub ftrace_callsites: *mut ::aya_bpf::cty::c_ulong,
-    pub kprobes_text_start: *mut ::aya_bpf::cty::c_void,
-    pub kprobes_text_size: ::aya_bpf::cty::c_uint,
-    pub kprobe_blacklist: *mut ::aya_bpf::cty::c_ulong,
-    pub num_kprobe_blacklist: ::aya_bpf::cty::c_uint,
-    pub num_static_call_sites: ::aya_bpf::cty::c_int,
-    pub static_call_sites: *mut static_call_site,
-    pub printk_index_size: ::aya_bpf::cty::c_uint,
-    pub printk_index_start: *mut *mut pi_entry,
-    pub source_list: list_head,
-    pub target_list: list_head,
-    pub exit: ::core::option::Option<unsafe extern "C" fn()>,
-    pub refcnt: atomic_t,
-    pub ei_funcs: *mut error_injection_entry,
-    pub num_ei_funcs: ::aya_bpf::cty::c_uint,
-    pub _bitfield_align_2: [u8; 0],
-    pub _bitfield_2: __BindgenBitfieldUnit<[u8; 24usize]>,
-}
-impl module {
-    #[inline]
-    pub fn new_bitfield_2() -> __BindgenBitfieldUnit<[u8; 24usize]> {
-        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 24usize]> = Default::default();
-        __bindgen_bitfield_unit
-    }
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
 pub struct address_space_operations {
     pub writepage: ::core::option::Option<
         unsafe extern "C" fn(
@@ -5123,7 +4492,7 @@ pub struct address_space_operations {
     pub swap_deactivate: ::core::option::Option<unsafe extern "C" fn(arg1: *mut file)>,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct inode_operations {
     pub lookup: ::core::option::Option<
         unsafe extern "C" fn(
@@ -5147,11 +4516,7 @@ pub struct inode_operations {
         ) -> ::aya_bpf::cty::c_int,
     >,
     pub get_acl: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut inode,
-            arg2: ::aya_bpf::cty::c_int,
-            arg3: bool_,
-        ) -> *mut posix_acl,
+        unsafe extern "C" fn(arg1: *mut inode, arg2: ::aya_bpf::cty::c_int) -> *mut posix_acl,
     >,
     pub readlink: ::core::option::Option<
         unsafe extern "C" fn(
@@ -5309,26 +4674,26 @@ pub struct file_lock_context {
     pub flc_lease: list_head,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct file_lock_operations {
     pub fl_copy_lock:
         ::core::option::Option<unsafe extern "C" fn(arg1: *mut file_lock, arg2: *mut file_lock)>,
     pub fl_release_private: ::core::option::Option<unsafe extern "C" fn(arg1: *mut file_lock)>,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct nlm_lockowner {
     _unused: [u8; 0],
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct nfs_lock_info {
     pub state: u32_,
     pub owner: *mut nlm_lockowner,
     pub list: list_head,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct nfs4_lock_info {
     pub owner: *mut nfs4_lock_state,
 }
@@ -5364,14 +4729,14 @@ pub union file_lock__bindgen_ty_1 {
     pub afs: file_lock__bindgen_ty_1__bindgen_ty_1,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct file_lock__bindgen_ty_1__bindgen_ty_1 {
     pub link: list_head,
     pub state: ::aya_bpf::cty::c_int,
     pub debug_id: ::aya_bpf::cty::c_uint,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct lock_manager_operations {
     pub lm_get_owner: ::core::option::Option<unsafe extern "C" fn(arg1: fl_owner_t) -> fl_owner_t>,
     pub lm_put_owner: ::core::option::Option<unsafe extern "C" fn(arg1: fl_owner_t)>,
@@ -5407,7 +4772,7 @@ pub struct fasync_struct {
     pub fa_rcu: callback_head,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct super_operations {
     pub alloc_inode:
         ::core::option::Option<unsafe extern "C" fn(arg1: *mut super_block) -> *mut inode>,
@@ -5486,6 +4851,13 @@ pub struct super_operations {
     >,
     pub get_dquots:
         ::core::option::Option<unsafe extern "C" fn(arg1: *mut inode) -> *mut *mut dquot>,
+    pub bdev_try_to_free_page: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut super_block,
+            arg2: *mut page,
+            arg3: gfp_t,
+        ) -> ::aya_bpf::cty::c_int,
+    >,
     pub nr_cached_objects: ::core::option::Option<
         unsafe extern "C" fn(
             arg1: *mut super_block,
@@ -5500,12 +4872,7 @@ pub struct super_operations {
     >,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct iomap {
-    _unused: [u8; 0],
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct export_operations {
     pub encode_fh: ::core::option::Option<
         unsafe extern "C" fn(
@@ -5571,7 +4938,7 @@ pub struct export_operations {
     pub flags: ::aya_bpf::cty::c_ulong,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct xattr_handler {
     pub name: *const ::aya_bpf::cty::c_char,
     pub prefix: *const ::aya_bpf::cty::c_char,
@@ -5601,7 +4968,7 @@ pub struct xattr_handler {
     >,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct fscrypt_operations {
     pub flags: ::aya_bpf::cty::c_uint,
     pub key_prefix: *const ::aya_bpf::cty::c_char,
@@ -5624,6 +4991,7 @@ pub struct fscrypt_operations {
         unsafe extern "C" fn(arg1: *mut super_block) -> *const fscrypt_policy,
     >,
     pub empty_dir: ::core::option::Option<unsafe extern "C" fn(arg1: *mut inode) -> bool_>,
+    pub max_namelen: ::aya_bpf::cty::c_uint,
     pub has_stable_inodes:
         ::core::option::Option<unsafe extern "C" fn(arg1: *mut super_block) -> bool_>,
     pub get_ino_and_lblk_bits: ::core::option::Option<
@@ -5641,7 +5009,7 @@ pub struct fscrypt_operations {
     >,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct fsverity_operations {
     pub begin_enable_verity:
         ::core::option::Option<unsafe extern "C" fn(arg1: *mut file) -> ::aya_bpf::cty::c_int>,
@@ -5687,7 +5055,7 @@ pub type filldir_t = ::core::option::Option<
     ) -> ::aya_bpf::cty::c_int,
 >;
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct dir_context {
     pub actor: filldir_t,
     pub pos: loff_t,
@@ -5701,7 +5069,7 @@ pub type fs_param_type = ::core::option::Option<
     ) -> ::aya_bpf::cty::c_int,
 >;
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct fs_parameter_spec {
     pub name: *const ::aya_bpf::cty::c_char,
     pub type_: fs_param_type,
@@ -5709,448 +5077,114 @@ pub struct fs_parameter_spec {
     pub flags: ::aya_bpf::cty::c_ushort,
     pub data: *const ::aya_bpf::cty::c_void,
 }
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct idr {
-    pub idr_rt: xarray,
-    pub idr_base: ::aya_bpf::cty::c_uint,
-    pub idr_next: ::aya_bpf::cty::c_uint,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct kernfs_elem_dir {
-    pub subdirs: ::aya_bpf::cty::c_ulong,
-    pub children: rb_root,
-    pub root: *mut kernfs_root,
-    pub rev: ::aya_bpf::cty::c_ulong,
-}
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct kernfs_root {
-    pub kn: *mut kernfs_node,
-    pub flags: ::aya_bpf::cty::c_uint,
-    pub ino_idr: idr,
-    pub last_id_lowbits: u32_,
-    pub id_highbits: u32_,
-    pub syscall_ops: *mut kernfs_syscall_ops,
-    pub supers: list_head,
-    pub deactivate_waitq: wait_queue_head_t,
-    pub kernfs_rwsem: rw_semaphore,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct kernfs_elem_symlink {
-    pub target_kn: *mut kernfs_node,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct kernfs_elem_attr {
-    pub ops: *const kernfs_ops,
-    pub open: *mut kernfs_open_node,
-    pub size: loff_t,
-    pub notify_next: *mut kernfs_node,
-}
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct kernfs_node {
-    pub count: atomic_t,
-    pub active: atomic_t,
-    pub parent: *mut kernfs_node,
-    pub name: *const ::aya_bpf::cty::c_char,
-    pub rb: rb_node,
-    pub ns: *const ::aya_bpf::cty::c_void,
-    pub hash: ::aya_bpf::cty::c_uint,
-    pub __bindgen_anon_1: kernfs_node__bindgen_ty_1,
-    pub priv_: *mut ::aya_bpf::cty::c_void,
-    pub id: u64_,
-    pub flags: ::aya_bpf::cty::c_ushort,
-    pub mode: umode_t,
-    pub iattr: *mut kernfs_iattrs,
-}
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub union kernfs_node__bindgen_ty_1 {
-    pub dir: kernfs_elem_dir,
-    pub symlink: kernfs_elem_symlink,
-    pub attr: kernfs_elem_attr,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct kernfs_ops {
-    pub open: ::core::option::Option<
-        unsafe extern "C" fn(arg1: *mut kernfs_open_file) -> ::aya_bpf::cty::c_int,
-    >,
-    pub release: ::core::option::Option<unsafe extern "C" fn(arg1: *mut kernfs_open_file)>,
-    pub seq_show: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut seq_file,
-            arg2: *mut ::aya_bpf::cty::c_void,
-        ) -> ::aya_bpf::cty::c_int,
-    >,
-    pub seq_start: ::core::option::Option<
-        unsafe extern "C" fn(arg1: *mut seq_file, arg2: *mut loff_t) -> *mut ::aya_bpf::cty::c_void,
-    >,
-    pub seq_next: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut seq_file,
-            arg2: *mut ::aya_bpf::cty::c_void,
-            arg3: *mut loff_t,
-        ) -> *mut ::aya_bpf::cty::c_void,
-    >,
-    pub seq_stop: ::core::option::Option<
-        unsafe extern "C" fn(arg1: *mut seq_file, arg2: *mut ::aya_bpf::cty::c_void),
-    >,
-    pub read: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut kernfs_open_file,
-            arg2: *mut ::aya_bpf::cty::c_char,
-            arg3: size_t,
-            arg4: loff_t,
-        ) -> ssize_t,
-    >,
-    pub atomic_write_len: size_t,
-    pub prealloc: bool_,
-    pub write: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut kernfs_open_file,
-            arg2: *mut ::aya_bpf::cty::c_char,
-            arg3: size_t,
-            arg4: loff_t,
-        ) -> ssize_t,
-    >,
-    pub poll: ::core::option::Option<
-        unsafe extern "C" fn(arg1: *mut kernfs_open_file, arg2: *mut poll_table_struct) -> __poll_t,
-    >,
-    pub mmap: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut kernfs_open_file,
-            arg2: *mut vm_area_struct,
-        ) -> ::aya_bpf::cty::c_int,
-    >,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct kernfs_syscall_ops {
-    pub show_options: ::core::option::Option<
-        unsafe extern "C" fn(arg1: *mut seq_file, arg2: *mut kernfs_root) -> ::aya_bpf::cty::c_int,
-    >,
-    pub mkdir: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut kernfs_node,
-            arg2: *const ::aya_bpf::cty::c_char,
-            arg3: umode_t,
-        ) -> ::aya_bpf::cty::c_int,
-    >,
-    pub rmdir: ::core::option::Option<
-        unsafe extern "C" fn(arg1: *mut kernfs_node) -> ::aya_bpf::cty::c_int,
-    >,
-    pub rename: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut kernfs_node,
-            arg2: *mut kernfs_node,
-            arg3: *const ::aya_bpf::cty::c_char,
-        ) -> ::aya_bpf::cty::c_int,
-    >,
-    pub show_path: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut seq_file,
-            arg2: *mut kernfs_node,
-            arg3: *mut kernfs_root,
-        ) -> ::aya_bpf::cty::c_int,
-    >,
-}
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct kernfs_open_file {
-    pub kn: *mut kernfs_node,
-    pub file: *mut file,
-    pub seq_file: *mut seq_file,
-    pub priv_: *mut ::aya_bpf::cty::c_void,
-    pub mutex: mutex,
-    pub prealloc_mutex: mutex,
-    pub event: ::aya_bpf::cty::c_int,
-    pub list: list_head,
-    pub prealloc_buf: *mut ::aya_bpf::cty::c_char,
-    pub atomic_write_len: size_t,
-    pub _bitfield_align_1: [u8; 0],
-    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 1usize]>,
-    pub vm_ops: *const vm_operations_struct,
-}
-impl kernfs_open_file {
-    #[inline]
-    pub fn mmapped(&self) -> bool_ {
-        unsafe { ::core::mem::transmute(self._bitfield_1.get(0usize, 1u8) as u8) }
-    }
-    #[inline]
-    pub fn set_mmapped(&mut self, val: bool_) {
-        unsafe {
-            let val: u8 = ::core::mem::transmute(val);
-            self._bitfield_1.set(0usize, 1u8, val as u64)
-        }
-    }
-    #[inline]
-    pub fn released(&self) -> bool_ {
-        unsafe { ::core::mem::transmute(self._bitfield_1.get(1usize, 1u8) as u8) }
-    }
-    #[inline]
-    pub fn set_released(&mut self, val: bool_) {
-        unsafe {
-            let val: u8 = ::core::mem::transmute(val);
-            self._bitfield_1.set(1usize, 1u8, val as u64)
-        }
-    }
-    #[inline]
-    pub fn new_bitfield_1(mmapped: bool_, released: bool_) -> __BindgenBitfieldUnit<[u8; 1usize]> {
-        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 1usize]> = Default::default();
-        __bindgen_bitfield_unit.set(0usize, 1u8, {
-            let mmapped: u8 = unsafe { ::core::mem::transmute(mmapped) };
-            mmapped as u64
-        });
-        __bindgen_bitfield_unit.set(1usize, 1u8, {
-            let released: u8 = unsafe { ::core::mem::transmute(released) };
-            released as u64
-        });
-        __bindgen_bitfield_unit
-    }
-}
-pub mod kobj_ns_type {
-    pub type Type = ::aya_bpf::cty::c_uint;
-    pub const KOBJ_NS_TYPE_NONE: Type = 0;
-    pub const KOBJ_NS_TYPE_NET: Type = 1;
-    pub const KOBJ_NS_TYPES: Type = 2;
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct kobj_ns_type_operations {
-    pub type_: kobj_ns_type::Type,
-    pub current_may_mount: ::core::option::Option<unsafe extern "C" fn() -> bool_>,
-    pub grab_current_ns:
-        ::core::option::Option<unsafe extern "C" fn() -> *mut ::aya_bpf::cty::c_void>,
-    pub netlink_ns: ::core::option::Option<
-        unsafe extern "C" fn(arg1: *mut sock) -> *const ::aya_bpf::cty::c_void,
-    >,
-    pub initial_ns: ::core::option::Option<unsafe extern "C" fn() -> *const ::aya_bpf::cty::c_void>,
-    pub drop_ns: ::core::option::Option<unsafe extern "C" fn(arg1: *mut ::aya_bpf::cty::c_void)>,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct attribute {
-    pub name: *const ::aya_bpf::cty::c_char,
-    pub mode: umode_t,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct bin_attribute {
-    pub attr: attribute,
-    pub size: size_t,
-    pub private: *mut ::aya_bpf::cty::c_void,
-    pub f_mapping: ::core::option::Option<unsafe extern "C" fn() -> *mut address_space>,
-    pub read: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut file,
-            arg2: *mut kobject,
-            arg3: *mut bin_attribute,
-            arg4: *mut ::aya_bpf::cty::c_char,
-            arg5: loff_t,
-            arg6: size_t,
-        ) -> ssize_t,
-    >,
-    pub write: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut file,
-            arg2: *mut kobject,
-            arg3: *mut bin_attribute,
-            arg4: *mut ::aya_bpf::cty::c_char,
-            arg5: loff_t,
-            arg6: size_t,
-        ) -> ssize_t,
-    >,
-    pub mmap: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut file,
-            arg2: *mut kobject,
-            arg3: *mut bin_attribute,
-            arg4: *mut vm_area_struct,
-        ) -> ::aya_bpf::cty::c_int,
-    >,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct sysfs_ops {
-    pub show: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut kobject,
-            arg2: *mut attribute,
-            arg3: *mut ::aya_bpf::cty::c_char,
-        ) -> ssize_t,
-    >,
-    pub store: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut kobject,
-            arg2: *mut attribute,
-            arg3: *const ::aya_bpf::cty::c_char,
-            arg4: size_t,
-        ) -> ssize_t,
-    >,
-}
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct kset {
-    pub list: list_head,
-    pub list_lock: spinlock_t,
-    pub kobj: kobject,
-    pub uevent_ops: *const kset_uevent_ops,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct kobj_type {
-    pub release: ::core::option::Option<unsafe extern "C" fn(arg1: *mut kobject)>,
-    pub sysfs_ops: *const sysfs_ops,
-    pub default_attrs: *mut *mut attribute,
-    pub default_groups: *mut *const attribute_group,
-    pub child_ns_type: ::core::option::Option<
-        unsafe extern "C" fn(arg1: *mut kobject) -> *const kobj_ns_type_operations,
-    >,
-    pub namespace: ::core::option::Option<
-        unsafe extern "C" fn(arg1: *mut kobject) -> *const ::aya_bpf::cty::c_void,
-    >,
-    pub get_ownership: ::core::option::Option<
-        unsafe extern "C" fn(arg1: *mut kobject, arg2: *mut kuid_t, arg3: *mut kgid_t),
-    >,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct kobj_uevent_env {
-    pub argv: [*mut ::aya_bpf::cty::c_char; 3usize],
-    pub envp: [*mut ::aya_bpf::cty::c_char; 64usize],
-    pub envp_idx: ::aya_bpf::cty::c_int,
-    pub buf: [::aya_bpf::cty::c_char; 2048usize],
-    pub buflen: ::aya_bpf::cty::c_int,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct kset_uevent_ops {
-    pub filter:
-        ::core::option::Option<unsafe extern "C" fn(arg1: *mut kobject) -> ::aya_bpf::cty::c_int>,
-    pub name: ::core::option::Option<
-        unsafe extern "C" fn(arg1: *mut kobject) -> *const ::aya_bpf::cty::c_char,
-    >,
-    pub uevent: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut kobject,
-            arg2: *mut kobj_uevent_env,
-        ) -> ::aya_bpf::cty::c_int,
-    >,
-}
-pub type Elf64_Addr = __u64;
-pub type Elf64_Half = __u16;
-pub type Elf64_Word = __u32;
-pub type Elf64_Xword = __u64;
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct elf64_sym {
-    pub st_name: Elf64_Word,
-    pub st_info: ::aya_bpf::cty::c_uchar,
-    pub st_other: ::aya_bpf::cty::c_uchar,
-    pub st_shndx: Elf64_Half,
-    pub st_value: Elf64_Addr,
-    pub st_size: Elf64_Xword,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct kernel_param_ops {
-    pub flags: ::aya_bpf::cty::c_uint,
-    pub set: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *const ::aya_bpf::cty::c_char,
-            arg2: *const kernel_param,
-        ) -> ::aya_bpf::cty::c_int,
-    >,
-    pub get: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut ::aya_bpf::cty::c_char,
-            arg2: *const kernel_param,
-        ) -> ::aya_bpf::cty::c_int,
-    >,
-    pub free: ::core::option::Option<unsafe extern "C" fn(arg1: *mut ::aya_bpf::cty::c_void)>,
-}
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct kernel_param {
-    pub name: *const ::aya_bpf::cty::c_char,
-    pub mod_: *mut module,
-    pub ops: *const kernel_param_ops,
-    pub perm: u16_,
-    pub level: s8,
-    pub flags: u8_,
-    pub __bindgen_anon_1: kernel_param__bindgen_ty_1,
-}
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub union kernel_param__bindgen_ty_1 {
-    pub arg: *mut ::aya_bpf::cty::c_void,
-    pub str_: *const kparam_string,
-    pub arr: *const kparam_array,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct kparam_string {
-    pub maxlen: ::aya_bpf::cty::c_uint,
-    pub string: *mut ::aya_bpf::cty::c_char,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct kparam_array {
-    pub max: ::aya_bpf::cty::c_uint,
-    pub elemsize: ::aya_bpf::cty::c_uint,
-    pub num: *mut ::aya_bpf::cty::c_uint,
-    pub ops: *const kernel_param_ops,
-    pub elem: *mut ::aya_bpf::cty::c_void,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct error_injection_entry {
-    pub addr: ::aya_bpf::cty::c_ulong,
-    pub etype: ::aya_bpf::cty::c_int,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct module_attribute {
-    pub attr: attribute,
-    pub show: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut module_attribute,
-            arg2: *mut module_kobject,
-            arg3: *mut ::aya_bpf::cty::c_char,
-        ) -> ssize_t,
-    >,
-    pub store: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut module_attribute,
-            arg2: *mut module_kobject,
-            arg3: *const ::aya_bpf::cty::c_char,
-            arg4: size_t,
-        ) -> ssize_t,
-    >,
-    pub setup: ::core::option::Option<
-        unsafe extern "C" fn(arg1: *mut module, arg2: *const ::aya_bpf::cty::c_char),
-    >,
-    pub test:
-        ::core::option::Option<unsafe extern "C" fn(arg1: *mut module) -> ::aya_bpf::cty::c_int>,
-    pub free: ::core::option::Option<unsafe extern "C" fn(arg1: *mut module)>,
-}
+pub type __s8 = ::aya_bpf::cty::c_schar;
+pub type s8 = __s8;
 pub type __le32 = __u32;
 pub type irq_hw_number_t = ::aya_bpf::cty::c_ulong;
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
+pub struct kernel_symbol {
+    pub value_offset: ::aya_bpf::cty::c_int,
+    pub name_offset: ::aya_bpf::cty::c_int,
+    pub namespace_offset: ::aya_bpf::cty::c_int,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct lockdep_map {}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct jump_entry {
+    pub code: s32,
+    pub target: s32,
+    pub key: ::aya_bpf::cty::c_long,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct static_key {
+    pub enabled: atomic_t,
+    pub __bindgen_anon_1: static_key__bindgen_ty_1,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub union static_key__bindgen_ty_1 {
+    pub type_: ::aya_bpf::cty::c_ulong,
+    pub entries: *mut jump_entry,
+    pub next: *mut static_key_mod,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct static_call_site {
+    pub addr: s32,
+    pub key: s32,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
 pub struct static_call_mod {
     pub next: *mut static_call_mod,
     pub mod_: *mut module,
     pub sites: *mut static_call_site,
 }
-pub type cpumask_var_t = [cpumask; 1usize];
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
+pub struct static_call_key {
+    pub func: *mut ::aya_bpf::cty::c_void,
+    pub __bindgen_anon_1: static_call_key__bindgen_ty_1,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub union static_call_key__bindgen_ty_1 {
+    pub type_: ::aya_bpf::cty::c_ulong,
+    pub mods: *mut static_call_mod,
+    pub sites: *mut static_call_site,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct bug_entry {
+    pub bug_addr_disp: ::aya_bpf::cty::c_int,
+    pub file_disp: ::aya_bpf::cty::c_int,
+    pub line: ::aya_bpf::cty::c_ushort,
+    pub flags: ::aya_bpf::cty::c_ushort,
+}
+pub type cpumask_var_t = *mut cpumask;
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct tracepoint_func {
+    pub func: *mut ::aya_bpf::cty::c_void,
+    pub data: *mut ::aya_bpf::cty::c_void,
+    pub prio: ::aya_bpf::cty::c_int,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct tracepoint {
+    pub name: *const ::aya_bpf::cty::c_char,
+    pub key: static_key,
+    pub static_call_key: *mut static_call_key,
+    pub static_call_tramp: *mut ::aya_bpf::cty::c_void,
+    pub iterator: *mut ::aya_bpf::cty::c_void,
+    pub regfunc: ::core::option::Option<unsafe extern "C" fn() -> ::aya_bpf::cty::c_int>,
+    pub unregfunc: ::core::option::Option<unsafe extern "C" fn()>,
+    pub funcs: *mut tracepoint_func,
+}
+pub type tracepoint_ptr_t = ::aya_bpf::cty::c_int;
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct bpf_raw_event_map {
+    pub tp: *mut tracepoint,
+    pub bpf_func: *mut ::aya_bpf::cty::c_void,
+    pub num_args: u32_,
+    pub writable_size: u32_,
+    pub _bitfield_align_1: [u8; 0],
+    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 8usize]>,
+}
+impl bpf_raw_event_map {
+    #[inline]
+    pub fn new_bitfield_1() -> __BindgenBitfieldUnit<[u8; 8usize]> {
+        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 8usize]> = Default::default();
+        __bindgen_bitfield_unit
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
 pub struct seq_operations {
     pub start: ::core::option::Option<
         unsafe extern "C" fn(arg1: *mut seq_file, arg2: *mut loff_t) -> *mut ::aya_bpf::cty::c_void,
@@ -6182,12 +5216,12 @@ pub mod perf_event_state {
     pub const PERF_EVENT_STATE_ACTIVE: Type = 1;
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct local_t {
     pub a: atomic_long_t,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct local64_t {
     pub a: local_t,
 }
@@ -6865,7 +5899,7 @@ impl perf_event_attr {
     }
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct hw_perf_event_extra {
     pub config: u64_,
     pub reg: ::aya_bpf::cty::c_uint,
@@ -6873,7 +5907,7 @@ pub struct hw_perf_event_extra {
     pub idx: ::aya_bpf::cty::c_int,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct arch_hw_breakpoint {
     pub address: ::aya_bpf::cty::c_ulong,
     pub mask: ::aya_bpf::cty::c_ulong,
@@ -6907,7 +5941,7 @@ pub union hw_perf_event__bindgen_ty_1 {
     pub __bindgen_anon_6: hw_perf_event__bindgen_ty_1__bindgen_ty_6,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct hw_perf_event__bindgen_ty_1__bindgen_ty_1 {
     pub config: u64_,
     pub last_tag: u64_,
@@ -6921,29 +5955,29 @@ pub struct hw_perf_event__bindgen_ty_1__bindgen_ty_1 {
     pub branch_reg: hw_perf_event_extra,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct hw_perf_event__bindgen_ty_1__bindgen_ty_2 {
     pub hrtimer: hrtimer,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct hw_perf_event__bindgen_ty_1__bindgen_ty_3 {
     pub tp_list: list_head,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct hw_perf_event__bindgen_ty_1__bindgen_ty_4 {
     pub pwr_acc: u64_,
     pub ptsc: u64_,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct hw_perf_event__bindgen_ty_1__bindgen_ty_5 {
     pub info: arch_hw_breakpoint,
     pub bp_list: list_head,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct hw_perf_event__bindgen_ty_1__bindgen_ty_6 {
     pub iommu_bank: u8_,
     pub iommu_cntr: u8_,
@@ -6958,13 +5992,13 @@ pub union hw_perf_event__bindgen_ty_2 {
     pub __bindgen_anon_2: hw_perf_event__bindgen_ty_2__bindgen_ty_2,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct hw_perf_event__bindgen_ty_2__bindgen_ty_1 {
     pub last_period: u64_,
     pub period_left: local64_t,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct hw_perf_event__bindgen_ty_2__bindgen_ty_2 {
     pub saved_metric: u64_,
     pub saved_slots: u64_,
@@ -6974,7 +6008,6 @@ pub struct hw_perf_event__bindgen_ty_2__bindgen_ty_2 {
 pub struct irq_work {
     pub node: __call_single_node,
     pub func: ::core::option::Option<unsafe extern "C" fn(arg1: *mut irq_work)>,
-    pub irqwait: rcuwait,
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
@@ -7083,7 +6116,6 @@ pub struct perf_event {
     pub overflow_handler_context: *mut ::aya_bpf::cty::c_void,
     pub orig_overflow_handler: perf_overflow_handler_t,
     pub prog: *mut bpf_prog,
-    pub bpf_cookie: u64_,
     pub tp_event: *mut trace_event_call,
     pub filter: *mut event_filter,
     pub ftrace_ops: ftrace_ops,
@@ -7092,7 +6124,7 @@ pub struct perf_event {
     pub sb_list: list_head,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct uid_gid_extent {
     pub first: u32_,
     pub lower_first: u32_,
@@ -7111,13 +6143,13 @@ pub union uid_gid_map__bindgen_ty_1 {
     pub __bindgen_anon_1: uid_gid_map__bindgen_ty_1__bindgen_ty_1,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct uid_gid_map__bindgen_ty_1__bindgen_ty_1 {
     pub forward: *mut uid_gid_extent,
     pub reverse: *mut uid_gid_extent,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct ns_common {
     pub stashed: atomic_long_t,
     pub ops: *const proc_ns_operations,
@@ -7143,7 +6175,7 @@ pub union ctl_table_header__bindgen_ty_1 {
     pub rcu: callback_head,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct ctl_table_header__bindgen_ty_1__bindgen_ty_1 {
     pub ctl_table: *mut ctl_table,
     pub used: ::aya_bpf::cty::c_int,
@@ -7185,14 +6217,23 @@ pub struct user_namespace {
     pub set: ctl_table_set,
     pub sysctls: *mut ctl_table_header,
     pub ucounts: *mut ucounts,
-    pub ucount_max: [::aya_bpf::cty::c_long; 16usize],
+    pub ucount_max: [::aya_bpf::cty::c_int; 12usize],
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct pollfd {
     pub fd: ::aya_bpf::cty::c_int,
     pub events: ::aya_bpf::cty::c_short,
     pub revents: ::aya_bpf::cty::c_short,
+}
+pub type smp_call_func_t =
+    ::core::option::Option<unsafe extern "C" fn(arg1: *mut ::aya_bpf::cty::c_void)>;
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct __call_single_data {
+    pub node: __call_single_node,
+    pub func: smp_call_func_t,
+    pub info: *mut ::aya_bpf::cty::c_void,
 }
 pub type wait_queue_func_t = ::core::option::Option<
     unsafe extern "C" fn(
@@ -7203,7 +6244,7 @@ pub type wait_queue_func_t = ::core::option::Option<
     ) -> ::aya_bpf::cty::c_int,
 >;
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct wait_queue_entry {
     pub flags: ::aya_bpf::cty::c_uint,
     pub private: *mut ::aya_bpf::cty::c_void,
@@ -7212,41 +6253,97 @@ pub struct wait_queue_entry {
 }
 pub type wait_queue_entry_t = wait_queue_entry;
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
+pub struct timer_list {
+    pub entry: hlist_node,
+    pub expires: ::aya_bpf::cty::c_ulong,
+    pub function: ::core::option::Option<unsafe extern "C" fn(arg1: *mut timer_list)>,
+    pub flags: u32_,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct delayed_work {
+    pub work: work_struct,
+    pub timer: timer_list,
+    pub wq: *mut workqueue_struct,
+    pub cpu: ::aya_bpf::cty::c_int,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
 pub struct rcu_work {
     pub work: work_struct,
     pub rcu: callback_head,
     pub wq: *mut workqueue_struct,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct ldt_struct {
-    pub entries: *mut desc_struct,
-    pub nr_entries: ::aya_bpf::cty::c_uint,
-    pub slot: ::aya_bpf::cty::c_int,
+#[derive(Copy, Clone)]
+pub struct rcu_segcblist {
+    pub head: *mut callback_head,
+    pub tails: [*mut *mut callback_head; 4usize],
+    pub gp_seq: [::aya_bpf::cty::c_ulong; 4usize],
+    pub len: ::aya_bpf::cty::c_long,
+    pub seglen: [::aya_bpf::cty::c_long; 4usize],
+    pub flags: u8_,
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
-pub struct folio {
-    pub __bindgen_anon_1: folio__bindgen_ty_1,
+pub struct srcu_data {
+    pub srcu_lock_count: [::aya_bpf::cty::c_ulong; 2usize],
+    pub srcu_unlock_count: [::aya_bpf::cty::c_ulong; 2usize],
+    pub _bitfield_align_1: [u8; 0],
+    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 32usize]>,
+    pub lock: spinlock_t,
+    pub srcu_cblist: rcu_segcblist,
+    pub srcu_gp_seq_needed: ::aya_bpf::cty::c_ulong,
+    pub srcu_gp_seq_needed_exp: ::aya_bpf::cty::c_ulong,
+    pub srcu_cblist_invoking: bool_,
+    pub delay_work: timer_list,
+    pub work: work_struct,
+    pub srcu_barrier_head: callback_head,
+    pub mynode: *mut srcu_node,
+    pub grpmask: ::aya_bpf::cty::c_ulong,
+    pub cpu: ::aya_bpf::cty::c_int,
+    pub ssp: *mut srcu_struct,
+    pub _bitfield_align_2: [u8; 0],
+    pub _bitfield_2: __BindgenBitfieldUnit<[u8; 48usize]>,
+}
+impl srcu_data {
+    #[inline]
+    pub fn new_bitfield_1() -> __BindgenBitfieldUnit<[u8; 32usize]> {
+        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 32usize]> = Default::default();
+        __bindgen_bitfield_unit
+    }
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
-pub union folio__bindgen_ty_1 {
-    pub __bindgen_anon_1: folio__bindgen_ty_1__bindgen_ty_1,
-    pub page: page,
+pub struct srcu_node {
+    pub lock: spinlock_t,
+    pub srcu_have_cbs: [::aya_bpf::cty::c_ulong; 4usize],
+    pub srcu_data_have_cbs: [::aya_bpf::cty::c_ulong; 4usize],
+    pub srcu_gp_seq_needed_exp: ::aya_bpf::cty::c_ulong,
+    pub srcu_parent: *mut srcu_node,
+    pub grplo: ::aya_bpf::cty::c_int,
+    pub grphi: ::aya_bpf::cty::c_int,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct folio__bindgen_ty_1__bindgen_ty_1 {
-    pub flags: ::aya_bpf::cty::c_ulong,
-    pub lru: list_head,
-    pub mapping: *mut address_space,
-    pub index: ::aya_bpf::cty::c_ulong,
-    pub private: *mut ::aya_bpf::cty::c_void,
-    pub _mapcount: atomic_t,
-    pub _refcount: atomic_t,
-    pub memcg_data: ::aya_bpf::cty::c_ulong,
+#[derive(Copy, Clone)]
+pub struct srcu_struct {
+    pub node: [srcu_node; 521usize],
+    pub level: [*mut srcu_node; 4usize],
+    pub srcu_cb_mutex: mutex,
+    pub lock: spinlock_t,
+    pub srcu_gp_mutex: mutex,
+    pub srcu_idx: ::aya_bpf::cty::c_uint,
+    pub srcu_gp_seq: ::aya_bpf::cty::c_ulong,
+    pub srcu_gp_seq_needed: ::aya_bpf::cty::c_ulong,
+    pub srcu_gp_seq_needed_exp: ::aya_bpf::cty::c_ulong,
+    pub srcu_last_gp_end: ::aya_bpf::cty::c_ulong,
+    pub sda: *mut srcu_data,
+    pub srcu_barrier_seq: ::aya_bpf::cty::c_ulong,
+    pub srcu_barrier_mutex: mutex,
+    pub srcu_barrier_completion: completion,
+    pub srcu_barrier_cpu_cnt: atomic_t,
+    pub work: delayed_work,
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
@@ -7264,18 +6361,23 @@ pub struct mempolicy {
     pub refcnt: atomic_t,
     pub mode: ::aya_bpf::cty::c_ushort,
     pub flags: ::aya_bpf::cty::c_ushort,
-    pub nodes: nodemask_t,
-    pub home_node: ::aya_bpf::cty::c_int,
-    pub w: mempolicy__bindgen_ty_1,
+    pub v: mempolicy__bindgen_ty_1,
+    pub w: mempolicy__bindgen_ty_2,
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub union mempolicy__bindgen_ty_1 {
+    pub preferred_node: ::aya_bpf::cty::c_short,
+    pub nodes: nodemask_t,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub union mempolicy__bindgen_ty_2 {
     pub cpuset_mems_allowed: nodemask_t,
     pub user_nodemask: nodemask_t,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct linux_binfmt {
     pub lh: list_head,
     pub module: *mut module,
@@ -7290,13 +6392,12 @@ pub struct linux_binfmt {
     pub min_coredump: ::aya_bpf::cty::c_ulong,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct free_area {
-    pub free_list: [list_head; 6usize],
+    pub free_list: [list_head; 5usize],
     pub nr_free: ::aya_bpf::cty::c_ulong,
 }
 #[repr(C)]
-#[derive(Debug)]
 pub struct zone_padding {
     pub x: __IncompleteArrayField<::aya_bpf::cty::c_char>,
 }
@@ -7320,28 +6421,25 @@ pub struct zone {
     pub lowmem_reserve: [::aya_bpf::cty::c_long; 5usize],
     pub node: ::aya_bpf::cty::c_int,
     pub zone_pgdat: *mut pglist_data,
-    pub per_cpu_pageset: *mut per_cpu_pages,
-    pub per_cpu_zonestats: *mut per_cpu_zonestat,
+    pub pageset: *mut per_cpu_pageset,
     pub pageset_high: ::aya_bpf::cty::c_int,
     pub pageset_batch: ::aya_bpf::cty::c_int,
     pub zone_start_pfn: ::aya_bpf::cty::c_ulong,
     pub managed_pages: atomic_long_t,
     pub spanned_pages: ::aya_bpf::cty::c_ulong,
     pub present_pages: ::aya_bpf::cty::c_ulong,
-    pub present_early_pages: ::aya_bpf::cty::c_ulong,
-    pub cma_pages: ::aya_bpf::cty::c_ulong,
     pub name: *const ::aya_bpf::cty::c_char,
     pub nr_isolate_pageblock: ::aya_bpf::cty::c_ulong,
     pub span_seqlock: seqlock_t,
     pub initialized: ::aya_bpf::cty::c_int,
     pub _bitfield_align_1: [u8; 0],
-    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 64usize]>,
+    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 24usize]>,
     pub _pad1_: zone_padding,
     pub free_area: [free_area; 11usize],
     pub flags: ::aya_bpf::cty::c_ulong,
     pub lock: spinlock_t,
     pub _bitfield_align_2: [u8; 0],
-    pub _bitfield_2: __BindgenBitfieldUnit<[u8; 64usize]>,
+    pub _bitfield_2: __BindgenBitfieldUnit<[u8; 48usize]>,
     pub _pad2_: zone_padding,
     pub percpu_drift_mark: ::aya_bpf::cty::c_ulong,
     pub compact_cached_free_pfn: ::aya_bpf::cty::c_ulong,
@@ -7357,11 +6455,16 @@ pub struct zone {
     pub _bitfield_3: __BindgenBitfieldUnit<[u8; 2usize]>,
     pub _pad3_: zone_padding,
     pub vm_stat: [atomic_long_t; 11usize],
-    pub vm_numa_event: [atomic_long_t; 6usize],
+    pub vm_numa_stat: [atomic_long_t; 6usize],
     pub _bitfield_align_4: [u8; 0],
     pub _bitfield_4: __BindgenBitfieldUnit<[u8; 56usize]>,
 }
 impl zone {
+    #[inline]
+    pub fn new_bitfield_1() -> __BindgenBitfieldUnit<[u8; 24usize]> {
+        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 24usize]> = Default::default();
+        __bindgen_bitfield_unit
+    }
     #[inline]
     pub fn new_bitfield_3() -> __BindgenBitfieldUnit<[u8; 2usize]> {
         let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 2usize]> = Default::default();
@@ -7369,15 +6472,15 @@ impl zone {
     }
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct zoneref {
     pub zone: *mut zone,
     pub zone_idx: ::aya_bpf::cty::c_int,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct zonelist {
-    pub _zonerefs: [zoneref; 161usize],
+    pub _zonerefs: [zoneref; 5121usize],
 }
 pub mod zone_type {
     pub type Type = ::aya_bpf::cty::c_uint;
@@ -7407,9 +6510,6 @@ pub struct pglist_data {
     pub node_id: ::aya_bpf::cty::c_int,
     pub kswapd_wait: wait_queue_head_t,
     pub pfmemalloc_wait: wait_queue_head_t,
-    pub reclaim_wait: [wait_queue_head_t; 4usize],
-    pub nr_writeback_throttled: atomic_t,
-    pub nr_reclaim_start: ::aya_bpf::cty::c_ulong,
     pub kswapd: *mut task_struct,
     pub kswapd_order: ::aya_bpf::cty::c_int,
     pub kswapd_highest_zoneidx: zone_type::Type,
@@ -7418,12 +6518,11 @@ pub struct pglist_data {
     pub kcompactd_highest_zoneidx: zone_type::Type,
     pub kcompactd_wait: wait_queue_head_t,
     pub kcompactd: *mut task_struct,
-    pub proactive_compact_trigger: bool_,
     pub totalreserve_pages: ::aya_bpf::cty::c_ulong,
     pub min_unmapped_pages: ::aya_bpf::cty::c_ulong,
     pub min_slab_pages: ::aya_bpf::cty::c_ulong,
     pub _bitfield_align_1: [u8; 0],
-    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 56usize]>,
+    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 48usize]>,
     pub _pad1_: zone_padding,
     pub deferred_split_queue: deferred_split,
     pub __lruvec: lruvec,
@@ -7432,9 +6531,7 @@ pub struct pglist_data {
     pub _bitfield_2: __BindgenBitfieldUnit<[u8; 8usize]>,
     pub _pad2_: zone_padding,
     pub per_cpu_nodestats: *mut per_cpu_nodestat,
-    pub vm_stat: [atomic_long_t; 40usize],
-    pub _bitfield_align_3: [u8; 0],
-    pub _bitfield_3: __BindgenBitfieldUnit<[u8; 56usize]>,
+    pub vm_stat: [atomic_long_t; 39usize],
 }
 impl pglist_data {
     #[inline]
@@ -7444,27 +6541,27 @@ impl pglist_data {
     }
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct per_cpu_pages {
     pub count: ::aya_bpf::cty::c_int,
     pub high: ::aya_bpf::cty::c_int,
     pub batch: ::aya_bpf::cty::c_int,
-    pub free_factor: ::aya_bpf::cty::c_short,
-    pub expire: ::aya_bpf::cty::c_short,
-    pub lists: [list_head; 15usize],
+    pub lists: [list_head; 3usize],
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct per_cpu_zonestat {
-    pub vm_stat_diff: [s8; 11usize],
+#[derive(Copy, Clone)]
+pub struct per_cpu_pageset {
+    pub pcp: per_cpu_pages,
+    pub expire: s8,
+    pub vm_numa_stat_diff: [u16_; 6usize],
     pub stat_threshold: s8,
-    pub vm_numa_event: [::aya_bpf::cty::c_ulong; 6usize],
+    pub vm_stat_diff: [s8; 11usize],
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct per_cpu_nodestat {
     pub stat_threshold: s8,
-    pub vm_node_stat_diff: [s8; 40usize],
+    pub vm_node_stat_diff: [s8; 39usize],
 }
 pub mod irq_domain_bus_token {
     pub type Type = ::aya_bpf::cty::c_uint;
@@ -7493,10 +6590,11 @@ pub struct irq_domain {
     pub gc: *mut irq_domain_chip_generic,
     pub parent: *mut irq_domain,
     pub hwirq_max: irq_hw_number_t,
+    pub revmap_direct_max_irq: ::aya_bpf::cty::c_uint,
     pub revmap_size: ::aya_bpf::cty::c_uint,
     pub revmap_tree: xarray,
-    pub revmap_mutex: mutex,
-    pub revmap: __IncompleteArrayField<*mut irq_data>,
+    pub revmap_tree_mutex: mutex,
+    pub linear_revmap: __IncompleteArrayField<::aya_bpf::cty::c_uint>,
 }
 pub type proc_handler = ::core::option::Option<
     unsafe extern "C" fn(
@@ -7508,7 +6606,7 @@ pub type proc_handler = ::core::option::Option<
     ) -> ::aya_bpf::cty::c_int,
 >;
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct ctl_table {
     pub procname: *const ::aya_bpf::cty::c_char,
     pub data: *mut ::aya_bpf::cty::c_void,
@@ -7527,7 +6625,7 @@ pub struct ctl_table_poll {
     pub wait: wait_queue_head_t,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct ctl_node {
     pub node: rb_node,
     pub header: *mut ctl_table_header,
@@ -7554,6 +6652,204 @@ pub struct ctl_table_root {
         ) -> ::aya_bpf::cty::c_int,
     >,
 }
+pub type Elf64_Addr = __u64;
+pub type Elf64_Half = __u16;
+pub type Elf64_Off = __u64;
+pub type Elf64_Word = __u32;
+pub type Elf64_Xword = __u64;
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct elf64_sym {
+    pub st_name: Elf64_Word,
+    pub st_info: ::aya_bpf::cty::c_uchar,
+    pub st_other: ::aya_bpf::cty::c_uchar,
+    pub st_shndx: Elf64_Half,
+    pub st_value: Elf64_Addr,
+    pub st_size: Elf64_Xword,
+}
+pub type Elf64_Sym = elf64_sym;
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct elf64_hdr {
+    pub e_ident: [::aya_bpf::cty::c_uchar; 16usize],
+    pub e_type: Elf64_Half,
+    pub e_machine: Elf64_Half,
+    pub e_version: Elf64_Word,
+    pub e_entry: Elf64_Addr,
+    pub e_phoff: Elf64_Off,
+    pub e_shoff: Elf64_Off,
+    pub e_flags: Elf64_Word,
+    pub e_ehsize: Elf64_Half,
+    pub e_phentsize: Elf64_Half,
+    pub e_phnum: Elf64_Half,
+    pub e_shentsize: Elf64_Half,
+    pub e_shnum: Elf64_Half,
+    pub e_shstrndx: Elf64_Half,
+}
+pub type Elf64_Ehdr = elf64_hdr;
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct elf64_shdr {
+    pub sh_name: Elf64_Word,
+    pub sh_type: Elf64_Word,
+    pub sh_flags: Elf64_Xword,
+    pub sh_addr: Elf64_Addr,
+    pub sh_offset: Elf64_Off,
+    pub sh_size: Elf64_Xword,
+    pub sh_link: Elf64_Word,
+    pub sh_info: Elf64_Word,
+    pub sh_addralign: Elf64_Xword,
+    pub sh_entsize: Elf64_Xword,
+}
+pub type Elf64_Shdr = elf64_shdr;
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct idr {
+    pub idr_rt: xarray,
+    pub idr_base: ::aya_bpf::cty::c_uint,
+    pub idr_next: ::aya_bpf::cty::c_uint,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct kernfs_elem_dir {
+    pub subdirs: ::aya_bpf::cty::c_ulong,
+    pub children: rb_root,
+    pub root: *mut kernfs_root,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct kernfs_root {
+    pub kn: *mut kernfs_node,
+    pub flags: ::aya_bpf::cty::c_uint,
+    pub ino_idr: idr,
+    pub last_id_lowbits: u32_,
+    pub id_highbits: u32_,
+    pub syscall_ops: *mut kernfs_syscall_ops,
+    pub supers: list_head,
+    pub deactivate_waitq: wait_queue_head_t,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct kernfs_elem_symlink {
+    pub target_kn: *mut kernfs_node,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct kernfs_elem_attr {
+    pub ops: *const kernfs_ops,
+    pub open: *mut kernfs_open_node,
+    pub size: loff_t,
+    pub notify_next: *mut kernfs_node,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct kernfs_node {
+    pub count: atomic_t,
+    pub active: atomic_t,
+    pub parent: *mut kernfs_node,
+    pub name: *const ::aya_bpf::cty::c_char,
+    pub rb: rb_node,
+    pub ns: *const ::aya_bpf::cty::c_void,
+    pub hash: ::aya_bpf::cty::c_uint,
+    pub __bindgen_anon_1: kernfs_node__bindgen_ty_1,
+    pub priv_: *mut ::aya_bpf::cty::c_void,
+    pub id: u64_,
+    pub flags: ::aya_bpf::cty::c_ushort,
+    pub mode: umode_t,
+    pub iattr: *mut kernfs_iattrs,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub union kernfs_node__bindgen_ty_1 {
+    pub dir: kernfs_elem_dir,
+    pub symlink: kernfs_elem_symlink,
+    pub attr: kernfs_elem_attr,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct kernfs_ops {
+    pub open: ::core::option::Option<
+        unsafe extern "C" fn(arg1: *mut kernfs_open_file) -> ::aya_bpf::cty::c_int,
+    >,
+    pub release: ::core::option::Option<unsafe extern "C" fn(arg1: *mut kernfs_open_file)>,
+    pub seq_show: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut seq_file,
+            arg2: *mut ::aya_bpf::cty::c_void,
+        ) -> ::aya_bpf::cty::c_int,
+    >,
+    pub seq_start: ::core::option::Option<
+        unsafe extern "C" fn(arg1: *mut seq_file, arg2: *mut loff_t) -> *mut ::aya_bpf::cty::c_void,
+    >,
+    pub seq_next: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut seq_file,
+            arg2: *mut ::aya_bpf::cty::c_void,
+            arg3: *mut loff_t,
+        ) -> *mut ::aya_bpf::cty::c_void,
+    >,
+    pub seq_stop: ::core::option::Option<
+        unsafe extern "C" fn(arg1: *mut seq_file, arg2: *mut ::aya_bpf::cty::c_void),
+    >,
+    pub read: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut kernfs_open_file,
+            arg2: *mut ::aya_bpf::cty::c_char,
+            arg3: size_t,
+            arg4: loff_t,
+        ) -> ssize_t,
+    >,
+    pub atomic_write_len: size_t,
+    pub prealloc: bool_,
+    pub write: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut kernfs_open_file,
+            arg2: *mut ::aya_bpf::cty::c_char,
+            arg3: size_t,
+            arg4: loff_t,
+        ) -> ssize_t,
+    >,
+    pub poll: ::core::option::Option<
+        unsafe extern "C" fn(arg1: *mut kernfs_open_file, arg2: *mut poll_table_struct) -> __poll_t,
+    >,
+    pub mmap: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut kernfs_open_file,
+            arg2: *mut vm_area_struct,
+        ) -> ::aya_bpf::cty::c_int,
+    >,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct kernfs_syscall_ops {
+    pub show_options: ::core::option::Option<
+        unsafe extern "C" fn(arg1: *mut seq_file, arg2: *mut kernfs_root) -> ::aya_bpf::cty::c_int,
+    >,
+    pub mkdir: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut kernfs_node,
+            arg2: *const ::aya_bpf::cty::c_char,
+            arg3: umode_t,
+        ) -> ::aya_bpf::cty::c_int,
+    >,
+    pub rmdir: ::core::option::Option<
+        unsafe extern "C" fn(arg1: *mut kernfs_node) -> ::aya_bpf::cty::c_int,
+    >,
+    pub rename: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut kernfs_node,
+            arg2: *mut kernfs_node,
+            arg3: *const ::aya_bpf::cty::c_char,
+        ) -> ::aya_bpf::cty::c_int,
+    >,
+    pub show_path: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut seq_file,
+            arg2: *mut kernfs_node,
+            arg3: *mut kernfs_root,
+        ) -> ::aya_bpf::cty::c_int,
+    >,
+}
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct seq_file {
@@ -7570,6 +6866,60 @@ pub struct seq_file {
     pub file: *const file,
     pub private: *mut ::aya_bpf::cty::c_void,
 }
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct kernfs_open_file {
+    pub kn: *mut kernfs_node,
+    pub file: *mut file,
+    pub seq_file: *mut seq_file,
+    pub priv_: *mut ::aya_bpf::cty::c_void,
+    pub mutex: mutex,
+    pub prealloc_mutex: mutex,
+    pub event: ::aya_bpf::cty::c_int,
+    pub list: list_head,
+    pub prealloc_buf: *mut ::aya_bpf::cty::c_char,
+    pub atomic_write_len: size_t,
+    pub _bitfield_align_1: [u8; 0],
+    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 1usize]>,
+    pub vm_ops: *const vm_operations_struct,
+}
+impl kernfs_open_file {
+    #[inline]
+    pub fn mmapped(&self) -> bool_ {
+        unsafe { ::core::mem::transmute(self._bitfield_1.get(0usize, 1u8) as u8) }
+    }
+    #[inline]
+    pub fn set_mmapped(&mut self, val: bool_) {
+        unsafe {
+            let val: u8 = ::core::mem::transmute(val);
+            self._bitfield_1.set(0usize, 1u8, val as u64)
+        }
+    }
+    #[inline]
+    pub fn released(&self) -> bool_ {
+        unsafe { ::core::mem::transmute(self._bitfield_1.get(1usize, 1u8) as u8) }
+    }
+    #[inline]
+    pub fn set_released(&mut self, val: bool_) {
+        unsafe {
+            let val: u8 = ::core::mem::transmute(val);
+            self._bitfield_1.set(1usize, 1u8, val as u64)
+        }
+    }
+    #[inline]
+    pub fn new_bitfield_1(mmapped: bool_, released: bool_) -> __BindgenBitfieldUnit<[u8; 1usize]> {
+        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 1usize]> = Default::default();
+        __bindgen_bitfield_unit.set(0usize, 1u8, {
+            let mmapped: u8 = unsafe { ::core::mem::transmute(mmapped) };
+            mmapped as u64
+        });
+        __bindgen_bitfield_unit.set(1usize, 1u8, {
+            let released: u8 = unsafe { ::core::mem::transmute(released) };
+            released as u64
+        });
+        __bindgen_bitfield_unit
+    }
+}
 pub type poll_queue_proc = ::core::option::Option<
     unsafe extern "C" fn(
         arg1: *mut file,
@@ -7578,13 +6928,498 @@ pub type poll_queue_proc = ::core::option::Option<
     ),
 >;
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct poll_table_struct {
     pub _qproc: poll_queue_proc,
     pub _key: __poll_t,
 }
+pub mod kobj_ns_type {
+    pub type Type = ::aya_bpf::cty::c_uint;
+    pub const KOBJ_NS_TYPE_NONE: Type = 0;
+    pub const KOBJ_NS_TYPE_NET: Type = 1;
+    pub const KOBJ_NS_TYPES: Type = 2;
+}
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
+pub struct kobj_ns_type_operations {
+    pub type_: kobj_ns_type::Type,
+    pub current_may_mount: ::core::option::Option<unsafe extern "C" fn() -> bool_>,
+    pub grab_current_ns:
+        ::core::option::Option<unsafe extern "C" fn() -> *mut ::aya_bpf::cty::c_void>,
+    pub netlink_ns: ::core::option::Option<
+        unsafe extern "C" fn(arg1: *mut sock) -> *const ::aya_bpf::cty::c_void,
+    >,
+    pub initial_ns: ::core::option::Option<unsafe extern "C" fn() -> *const ::aya_bpf::cty::c_void>,
+    pub drop_ns: ::core::option::Option<unsafe extern "C" fn(arg1: *mut ::aya_bpf::cty::c_void)>,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct attribute {
+    pub name: *const ::aya_bpf::cty::c_char,
+    pub mode: umode_t,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct attribute_group {
+    pub name: *const ::aya_bpf::cty::c_char,
+    pub is_visible: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut kobject,
+            arg2: *mut attribute,
+            arg3: ::aya_bpf::cty::c_int,
+        ) -> umode_t,
+    >,
+    pub is_bin_visible: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut kobject,
+            arg2: *mut bin_attribute,
+            arg3: ::aya_bpf::cty::c_int,
+        ) -> umode_t,
+    >,
+    pub attrs: *mut *mut attribute,
+    pub bin_attrs: *mut *mut bin_attribute,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct kref {
+    pub refcount: refcount_t,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct kobject {
+    pub name: *const ::aya_bpf::cty::c_char,
+    pub entry: list_head,
+    pub parent: *mut kobject,
+    pub kset: *mut kset,
+    pub ktype: *mut kobj_type,
+    pub sd: *mut kernfs_node,
+    pub kref: kref,
+    pub _bitfield_align_1: [u8; 0],
+    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 1usize]>,
+    pub __bindgen_padding_0: [u8; 3usize],
+}
+impl kobject {
+    #[inline]
+    pub fn state_initialized(&self) -> ::aya_bpf::cty::c_uint {
+        unsafe { ::core::mem::transmute(self._bitfield_1.get(0usize, 1u8) as u32) }
+    }
+    #[inline]
+    pub fn set_state_initialized(&mut self, val: ::aya_bpf::cty::c_uint) {
+        unsafe {
+            let val: u32 = ::core::mem::transmute(val);
+            self._bitfield_1.set(0usize, 1u8, val as u64)
+        }
+    }
+    #[inline]
+    pub fn state_in_sysfs(&self) -> ::aya_bpf::cty::c_uint {
+        unsafe { ::core::mem::transmute(self._bitfield_1.get(1usize, 1u8) as u32) }
+    }
+    #[inline]
+    pub fn set_state_in_sysfs(&mut self, val: ::aya_bpf::cty::c_uint) {
+        unsafe {
+            let val: u32 = ::core::mem::transmute(val);
+            self._bitfield_1.set(1usize, 1u8, val as u64)
+        }
+    }
+    #[inline]
+    pub fn state_add_uevent_sent(&self) -> ::aya_bpf::cty::c_uint {
+        unsafe { ::core::mem::transmute(self._bitfield_1.get(2usize, 1u8) as u32) }
+    }
+    #[inline]
+    pub fn set_state_add_uevent_sent(&mut self, val: ::aya_bpf::cty::c_uint) {
+        unsafe {
+            let val: u32 = ::core::mem::transmute(val);
+            self._bitfield_1.set(2usize, 1u8, val as u64)
+        }
+    }
+    #[inline]
+    pub fn state_remove_uevent_sent(&self) -> ::aya_bpf::cty::c_uint {
+        unsafe { ::core::mem::transmute(self._bitfield_1.get(3usize, 1u8) as u32) }
+    }
+    #[inline]
+    pub fn set_state_remove_uevent_sent(&mut self, val: ::aya_bpf::cty::c_uint) {
+        unsafe {
+            let val: u32 = ::core::mem::transmute(val);
+            self._bitfield_1.set(3usize, 1u8, val as u64)
+        }
+    }
+    #[inline]
+    pub fn uevent_suppress(&self) -> ::aya_bpf::cty::c_uint {
+        unsafe { ::core::mem::transmute(self._bitfield_1.get(4usize, 1u8) as u32) }
+    }
+    #[inline]
+    pub fn set_uevent_suppress(&mut self, val: ::aya_bpf::cty::c_uint) {
+        unsafe {
+            let val: u32 = ::core::mem::transmute(val);
+            self._bitfield_1.set(4usize, 1u8, val as u64)
+        }
+    }
+    #[inline]
+    pub fn new_bitfield_1(
+        state_initialized: ::aya_bpf::cty::c_uint,
+        state_in_sysfs: ::aya_bpf::cty::c_uint,
+        state_add_uevent_sent: ::aya_bpf::cty::c_uint,
+        state_remove_uevent_sent: ::aya_bpf::cty::c_uint,
+        uevent_suppress: ::aya_bpf::cty::c_uint,
+    ) -> __BindgenBitfieldUnit<[u8; 1usize]> {
+        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 1usize]> = Default::default();
+        __bindgen_bitfield_unit.set(0usize, 1u8, {
+            let state_initialized: u32 = unsafe { ::core::mem::transmute(state_initialized) };
+            state_initialized as u64
+        });
+        __bindgen_bitfield_unit.set(1usize, 1u8, {
+            let state_in_sysfs: u32 = unsafe { ::core::mem::transmute(state_in_sysfs) };
+            state_in_sysfs as u64
+        });
+        __bindgen_bitfield_unit.set(2usize, 1u8, {
+            let state_add_uevent_sent: u32 =
+                unsafe { ::core::mem::transmute(state_add_uevent_sent) };
+            state_add_uevent_sent as u64
+        });
+        __bindgen_bitfield_unit.set(3usize, 1u8, {
+            let state_remove_uevent_sent: u32 =
+                unsafe { ::core::mem::transmute(state_remove_uevent_sent) };
+            state_remove_uevent_sent as u64
+        });
+        __bindgen_bitfield_unit.set(4usize, 1u8, {
+            let uevent_suppress: u32 = unsafe { ::core::mem::transmute(uevent_suppress) };
+            uevent_suppress as u64
+        });
+        __bindgen_bitfield_unit
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct bin_attribute {
+    pub attr: attribute,
+    pub size: size_t,
+    pub private: *mut ::aya_bpf::cty::c_void,
+    pub mapping: *mut address_space,
+    pub read: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut file,
+            arg2: *mut kobject,
+            arg3: *mut bin_attribute,
+            arg4: *mut ::aya_bpf::cty::c_char,
+            arg5: loff_t,
+            arg6: size_t,
+        ) -> ssize_t,
+    >,
+    pub write: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut file,
+            arg2: *mut kobject,
+            arg3: *mut bin_attribute,
+            arg4: *mut ::aya_bpf::cty::c_char,
+            arg5: loff_t,
+            arg6: size_t,
+        ) -> ssize_t,
+    >,
+    pub mmap: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut file,
+            arg2: *mut kobject,
+            arg3: *mut bin_attribute,
+            arg4: *mut vm_area_struct,
+        ) -> ::aya_bpf::cty::c_int,
+    >,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct sysfs_ops {
+    pub show: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut kobject,
+            arg2: *mut attribute,
+            arg3: *mut ::aya_bpf::cty::c_char,
+        ) -> ssize_t,
+    >,
+    pub store: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut kobject,
+            arg2: *mut attribute,
+            arg3: *const ::aya_bpf::cty::c_char,
+            arg4: size_t,
+        ) -> ssize_t,
+    >,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct kset {
+    pub list: list_head,
+    pub list_lock: spinlock_t,
+    pub kobj: kobject,
+    pub uevent_ops: *const kset_uevent_ops,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct kobj_type {
+    pub release: ::core::option::Option<unsafe extern "C" fn(arg1: *mut kobject)>,
+    pub sysfs_ops: *const sysfs_ops,
+    pub default_attrs: *mut *mut attribute,
+    pub default_groups: *mut *const attribute_group,
+    pub child_ns_type: ::core::option::Option<
+        unsafe extern "C" fn(arg1: *mut kobject) -> *const kobj_ns_type_operations,
+    >,
+    pub namespace: ::core::option::Option<
+        unsafe extern "C" fn(arg1: *mut kobject) -> *const ::aya_bpf::cty::c_void,
+    >,
+    pub get_ownership: ::core::option::Option<
+        unsafe extern "C" fn(arg1: *mut kobject, arg2: *mut kuid_t, arg3: *mut kgid_t),
+    >,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct kobj_uevent_env {
+    pub argv: [*mut ::aya_bpf::cty::c_char; 3usize],
+    pub envp: [*mut ::aya_bpf::cty::c_char; 64usize],
+    pub envp_idx: ::aya_bpf::cty::c_int,
+    pub buf: [::aya_bpf::cty::c_char; 2048usize],
+    pub buflen: ::aya_bpf::cty::c_int,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct kset_uevent_ops {
+    pub filter: ::core::option::Option<
+        unsafe extern "C" fn(arg1: *mut kset, arg2: *mut kobject) -> ::aya_bpf::cty::c_int,
+    >,
+    pub name: ::core::option::Option<
+        unsafe extern "C" fn(arg1: *mut kset, arg2: *mut kobject) -> *const ::aya_bpf::cty::c_char,
+    >,
+    pub uevent: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut kset,
+            arg2: *mut kobject,
+            arg3: *mut kobj_uevent_env,
+        ) -> ::aya_bpf::cty::c_int,
+    >,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct kernel_param_ops {
+    pub flags: ::aya_bpf::cty::c_uint,
+    pub set: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *const ::aya_bpf::cty::c_char,
+            arg2: *const kernel_param,
+        ) -> ::aya_bpf::cty::c_int,
+    >,
+    pub get: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut ::aya_bpf::cty::c_char,
+            arg2: *const kernel_param,
+        ) -> ::aya_bpf::cty::c_int,
+    >,
+    pub free: ::core::option::Option<unsafe extern "C" fn(arg1: *mut ::aya_bpf::cty::c_void)>,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct kernel_param {
+    pub name: *const ::aya_bpf::cty::c_char,
+    pub mod_: *mut module,
+    pub ops: *const kernel_param_ops,
+    pub perm: u16_,
+    pub level: s8,
+    pub flags: u8_,
+    pub __bindgen_anon_1: kernel_param__bindgen_ty_1,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub union kernel_param__bindgen_ty_1 {
+    pub arg: *mut ::aya_bpf::cty::c_void,
+    pub str_: *const kparam_string,
+    pub arr: *const kparam_array,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct kparam_string {
+    pub maxlen: ::aya_bpf::cty::c_uint,
+    pub string: *mut ::aya_bpf::cty::c_char,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct kparam_array {
+    pub max: ::aya_bpf::cty::c_uint,
+    pub elemsize: ::aya_bpf::cty::c_uint,
+    pub num: *mut ::aya_bpf::cty::c_uint,
+    pub ops: *const kernel_param_ops,
+    pub elem: *mut ::aya_bpf::cty::c_void,
+}
+pub mod module_state {
+    pub type Type = ::aya_bpf::cty::c_uint;
+    pub const MODULE_STATE_LIVE: Type = 0;
+    pub const MODULE_STATE_COMING: Type = 1;
+    pub const MODULE_STATE_GOING: Type = 2;
+    pub const MODULE_STATE_UNFORMED: Type = 3;
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct module_kobject {
+    pub kobj: kobject,
+    pub mod_: *mut module,
+    pub drivers_dir: *mut kobject,
+    pub mp: *mut module_param_attrs,
+    pub kobj_completion: *mut completion,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct latch_tree_node {
+    pub node: [rb_node; 2usize],
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct mod_tree_node {
+    pub mod_: *mut module,
+    pub node: latch_tree_node,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct module_layout {
+    pub base: *mut ::aya_bpf::cty::c_void,
+    pub size: ::aya_bpf::cty::c_uint,
+    pub text_size: ::aya_bpf::cty::c_uint,
+    pub ro_size: ::aya_bpf::cty::c_uint,
+    pub ro_after_init_size: ::aya_bpf::cty::c_uint,
+    pub mtn: mod_tree_node,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct mod_arch_specific {}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct mod_kallsyms {
+    pub symtab: *mut Elf64_Sym,
+    pub num_symtab: ::aya_bpf::cty::c_uint,
+    pub strtab: *mut ::aya_bpf::cty::c_char,
+    pub typetab: *mut ::aya_bpf::cty::c_char,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct module {
+    pub state: module_state::Type,
+    pub list: list_head,
+    pub name: [::aya_bpf::cty::c_char; 56usize],
+    pub mkobj: module_kobject,
+    pub modinfo_attrs: *mut module_attribute,
+    pub version: *const ::aya_bpf::cty::c_char,
+    pub srcversion: *const ::aya_bpf::cty::c_char,
+    pub holders_dir: *mut kobject,
+    pub syms: *const kernel_symbol,
+    pub crcs: *const s32,
+    pub num_syms: ::aya_bpf::cty::c_uint,
+    pub param_lock: mutex,
+    pub kp: *mut kernel_param,
+    pub num_kp: ::aya_bpf::cty::c_uint,
+    pub num_gpl_syms: ::aya_bpf::cty::c_uint,
+    pub gpl_syms: *const kernel_symbol,
+    pub gpl_crcs: *const s32,
+    pub using_gplonly_symbols: bool_,
+    pub sig_ok: bool_,
+    pub async_probe_requested: bool_,
+    pub num_exentries: ::aya_bpf::cty::c_uint,
+    pub extable: *mut exception_table_entry,
+    pub init: ::core::option::Option<unsafe extern "C" fn() -> ::aya_bpf::cty::c_int>,
+    pub core_layout: module_layout,
+    pub init_layout: module_layout,
+    pub arch: mod_arch_specific,
+    pub taints: ::aya_bpf::cty::c_ulong,
+    pub num_bugs: ::aya_bpf::cty::c_uint,
+    pub bug_list: list_head,
+    pub bug_table: *mut bug_entry,
+    pub kallsyms: *mut mod_kallsyms,
+    pub core_kallsyms: mod_kallsyms,
+    pub sect_attrs: *mut module_sect_attrs,
+    pub notes_attrs: *mut module_notes_attrs,
+    pub args: *mut ::aya_bpf::cty::c_char,
+    pub percpu: *mut ::aya_bpf::cty::c_void,
+    pub percpu_size: ::aya_bpf::cty::c_uint,
+    pub noinstr_text_start: *mut ::aya_bpf::cty::c_void,
+    pub noinstr_text_size: ::aya_bpf::cty::c_uint,
+    pub num_tracepoints: ::aya_bpf::cty::c_uint,
+    pub tracepoints_ptrs: *mut tracepoint_ptr_t,
+    pub num_srcu_structs: ::aya_bpf::cty::c_uint,
+    pub srcu_struct_ptrs: *mut *mut srcu_struct,
+    pub num_bpf_raw_events: ::aya_bpf::cty::c_uint,
+    pub bpf_raw_events: *mut bpf_raw_event_map,
+    pub btf_data_size: ::aya_bpf::cty::c_uint,
+    pub btf_data: *mut ::aya_bpf::cty::c_void,
+    pub jump_entries: *mut jump_entry,
+    pub num_jump_entries: ::aya_bpf::cty::c_uint,
+    pub num_trace_bprintk_fmt: ::aya_bpf::cty::c_uint,
+    pub trace_bprintk_fmt_start: *mut *const ::aya_bpf::cty::c_char,
+    pub trace_events: *mut *mut trace_event_call,
+    pub num_trace_events: ::aya_bpf::cty::c_uint,
+    pub trace_evals: *mut *mut trace_eval_map,
+    pub num_trace_evals: ::aya_bpf::cty::c_uint,
+    pub num_ftrace_callsites: ::aya_bpf::cty::c_uint,
+    pub ftrace_callsites: *mut ::aya_bpf::cty::c_ulong,
+    pub kprobes_text_start: *mut ::aya_bpf::cty::c_void,
+    pub kprobes_text_size: ::aya_bpf::cty::c_uint,
+    pub kprobe_blacklist: *mut ::aya_bpf::cty::c_ulong,
+    pub num_kprobe_blacklist: ::aya_bpf::cty::c_uint,
+    pub num_static_call_sites: ::aya_bpf::cty::c_int,
+    pub static_call_sites: *mut static_call_site,
+    pub klp: bool_,
+    pub klp_alive: bool_,
+    pub klp_info: *mut klp_modinfo,
+    pub source_list: list_head,
+    pub target_list: list_head,
+    pub exit: ::core::option::Option<unsafe extern "C" fn()>,
+    pub refcnt: atomic_t,
+    pub ei_funcs: *mut error_injection_entry,
+    pub num_ei_funcs: ::aya_bpf::cty::c_uint,
+    pub _bitfield_align_1: [u8; 0],
+    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 48usize]>,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct error_injection_entry {
+    pub addr: ::aya_bpf::cty::c_ulong,
+    pub etype: ::aya_bpf::cty::c_int,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct module_attribute {
+    pub attr: attribute,
+    pub show: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut module_attribute,
+            arg2: *mut module_kobject,
+            arg3: *mut ::aya_bpf::cty::c_char,
+        ) -> ssize_t,
+    >,
+    pub store: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut module_attribute,
+            arg2: *mut module_kobject,
+            arg3: *const ::aya_bpf::cty::c_char,
+            arg4: size_t,
+        ) -> ssize_t,
+    >,
+    pub setup: ::core::option::Option<
+        unsafe extern "C" fn(arg1: *mut module, arg2: *const ::aya_bpf::cty::c_char),
+    >,
+    pub test:
+        ::core::option::Option<unsafe extern "C" fn(arg1: *mut module) -> ::aya_bpf::cty::c_int>,
+    pub free: ::core::option::Option<unsafe extern "C" fn(arg1: *mut module)>,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct klp_modinfo {
+    pub hdr: Elf64_Ehdr,
+    pub sechdrs: *mut Elf64_Shdr,
+    pub secstrings: *mut ::aya_bpf::cty::c_char,
+    pub symndx: ::aya_bpf::cty::c_uint,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct exception_table_entry {
+    pub insn: ::aya_bpf::cty::c_int,
+    pub fixup: ::aya_bpf::cty::c_int,
+    pub handler: ::aya_bpf::cty::c_int,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
 pub struct trace_event {
     pub node: hlist_node,
     pub list: list_head,
@@ -7600,7 +7435,7 @@ pub struct trace_event_call {
     pub event: trace_event,
     pub print_fmt: *mut ::aya_bpf::cty::c_char,
     pub filter: *mut event_filter,
-    pub __bindgen_anon_2: trace_event_call__bindgen_ty_2,
+    pub mod_: *mut ::aya_bpf::cty::c_void,
     pub data: *mut ::aya_bpf::cty::c_void,
     pub flags: ::aya_bpf::cty::c_int,
     pub perf_refcount: ::aya_bpf::cty::c_int,
@@ -7621,19 +7456,13 @@ pub union trace_event_call__bindgen_ty_1 {
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
-pub union trace_event_call__bindgen_ty_2 {
-    pub module: *mut ::aya_bpf::cty::c_void,
-    pub refcnt: atomic_t,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
 pub struct trace_eval_map {
     pub system: *const ::aya_bpf::cty::c_char,
     pub eval_string: *const ::aya_bpf::cty::c_char,
     pub eval_value: ::aya_bpf::cty::c_ulong,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct cgroup_subsys_state {
     pub cgroup: *mut cgroup,
     pub ss: *mut cgroup_subsys,
@@ -7650,13 +7479,13 @@ pub struct cgroup_subsys_state {
     pub parent: *mut cgroup_subsys_state,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct mem_cgroup_id {
     pub id: ::aya_bpf::cty::c_int,
     pub ref_: refcount_t,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct page_counter {
     pub usage: atomic_long_t,
     pub min: ::aya_bpf::cty::c_ulong,
@@ -7686,30 +7515,43 @@ pub struct vmpressure {
     pub work: work_struct,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct cgroup_file {
     pub kn: *mut kernfs_node,
     pub notified_at: ::aya_bpf::cty::c_ulong,
     pub notify_timer: timer_list,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct mem_cgroup_thresholds {
     pub primary: *mut mem_cgroup_threshold_ary,
     pub spare: *mut mem_cgroup_threshold_ary,
 }
 #[repr(C)]
-#[derive(Debug)]
 pub struct memcg_padding {
     pub x: __IncompleteArrayField<::aya_bpf::cty::c_char>,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct memcg_vmstats {
-    pub state: [::aya_bpf::cty::c_long; 44usize],
-    pub events: [::aya_bpf::cty::c_ulong; 105usize],
-    pub state_pending: [::aya_bpf::cty::c_long; 44usize],
-    pub events_pending: [::aya_bpf::cty::c_ulong; 105usize],
+    pub state: [::aya_bpf::cty::c_long; 42usize],
+    pub events: [::aya_bpf::cty::c_ulong; 98usize],
+    pub state_pending: [::aya_bpf::cty::c_long; 42usize],
+    pub events_pending: [::aya_bpf::cty::c_ulong; 98usize],
+}
+pub mod memcg_kmem_state {
+    pub type Type = ::aya_bpf::cty::c_uint;
+    pub const KMEM_NONE: Type = 0;
+    pub const KMEM_ALLOCATED: Type = 1;
+    pub const KMEM_ONLINE: Type = 2;
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct percpu_counter {
+    pub lock: raw_spinlock_t,
+    pub count: s64,
+    pub list: list_head,
+    pub counters: *mut s32,
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
@@ -7729,13 +7571,13 @@ pub struct wb_domain {
     pub dirty_limit: ::aya_bpf::cty::c_ulong,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct wb_completion {
     pub cnt: atomic_t,
     pub waitq: *mut wait_queue_head_t,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct memcg_cgwb_frn {
     pub bdi_id: u64_,
     pub memcg_id: ::aya_bpf::cty::c_int,
@@ -7772,16 +7614,17 @@ pub struct mem_cgroup {
     pub _bitfield_1: __BindgenBitfieldUnit<[u8; 48usize]>,
     pub _pad1_: memcg_padding,
     pub vmstats: memcg_vmstats,
-    pub memory_events: [atomic_long_t; 9usize],
-    pub memory_events_local: [atomic_long_t; 9usize],
+    pub memory_events: [atomic_long_t; 8usize],
+    pub memory_events_local: [atomic_long_t; 8usize],
     pub socket_pressure: ::aya_bpf::cty::c_ulong,
     pub tcpmem_active: bool_,
     pub tcpmem_pressure: ::aya_bpf::cty::c_int,
     pub kmemcg_id: ::aya_bpf::cty::c_int,
+    pub kmem_state: memcg_kmem_state::Type,
     pub objcg: *mut obj_cgroup,
     pub objcg_list: list_head,
     pub _bitfield_align_2: [u8; 0],
-    pub _bitfield_2: __BindgenBitfieldUnit<[u8; 48usize]>,
+    pub _bitfield_2: __BindgenBitfieldUnit<[u8; 16usize]>,
     pub _pad2_: memcg_padding,
     pub moving_account: atomic_t,
     pub move_lock_task: *mut task_struct,
@@ -7803,6 +7646,11 @@ pub union mem_cgroup__bindgen_ty_1 {
     pub memsw: page_counter,
 }
 impl mem_cgroup {
+    #[inline]
+    pub fn new_bitfield_2() -> __BindgenBitfieldUnit<[u8; 16usize]> {
+        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 16usize]> = Default::default();
+        __bindgen_bitfield_unit
+    }
     #[inline]
     pub fn new_bitfield_3() -> __BindgenBitfieldUnit<[u8; 8usize]> {
         let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 8usize]> = Default::default();
@@ -7826,23 +7674,14 @@ pub struct pid_namespace {
     pub ns: ns_common,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct ucounts {
-    pub node: hlist_node,
-    pub ns: *mut user_namespace,
-    pub uid: kuid_t,
-    pub count: atomic_t,
-    pub ucount: [atomic_long_t; 16usize],
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct task_cputime {
     pub stime: u64_,
     pub utime: u64_,
     pub sum_exec_runtime: ::aya_bpf::cty::c_ulonglong,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct nsproxy {
     pub count: atomic_t,
     pub uts_ns: *mut uts_namespace,
@@ -7855,25 +7694,22 @@ pub struct nsproxy {
     pub cgroup_ns: *mut cgroup_namespace,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct bio_list {
     pub head: *mut bio,
     pub tail: *mut bio,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct blk_plug {
-    pub mq_list: *mut request,
-    pub cached_rq: *mut request,
-    pub nr_ios: ::aya_bpf::cty::c_ushort,
+    pub mq_list: list_head,
+    pub cb_list: list_head,
     pub rq_count: ::aya_bpf::cty::c_ushort,
     pub multiple_queues: bool_,
-    pub has_elevator: bool_,
     pub nowait: bool_,
-    pub cb_list: list_head,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct reclaim_state {
     pub reclaimed_slab: ::aya_bpf::cty::c_ulong,
 }
@@ -7907,7 +7743,6 @@ pub struct bdi_writeback {
     pub b_more_io: list_head,
     pub b_dirty_time: list_head,
     pub list_lock: spinlock_t,
-    pub writeback_inodes: atomic_t,
     pub stat: [percpu_counter; 4usize],
     pub congested: ::aya_bpf::cty::c_ulong,
     pub bw_time_stamp: ::aya_bpf::cty::c_ulong,
@@ -7923,7 +7758,6 @@ pub struct bdi_writeback {
     pub work_lock: spinlock_t,
     pub work_list: list_head,
     pub dwork: delayed_work,
-    pub bw_dwork: delayed_work,
     pub dirty_sleep: ::aya_bpf::cty::c_ulong,
     pub bdi_node: list_head,
     pub refcnt: percpu_ref,
@@ -7932,8 +7766,6 @@ pub struct bdi_writeback {
     pub blkcg_css: *mut cgroup_subsys_state,
     pub memcg_node: list_head,
     pub blkcg_node: list_head,
-    pub b_attached: list_head,
-    pub offline_node: list_head,
     pub __bindgen_anon_1: bdi_writeback__bindgen_ty_1,
 }
 #[repr(C)]
@@ -7969,7 +7801,7 @@ pub struct backing_dev_info {
     pub debug_dir: *mut dentry,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct css_set {
     pub subsys: [*mut cgroup_subsys_state; 14usize],
     pub refcount: refcount_t,
@@ -7995,20 +7827,20 @@ pub struct css_set {
 }
 pub type compat_uptr_t = u32_;
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct compat_robust_list {
     pub next: compat_uptr_t,
 }
 pub type compat_long_t = s32;
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct compat_robust_list_head {
     pub list: compat_robust_list,
     pub futex_offset: compat_long_t,
     pub list_op_pending: compat_uptr_t,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct perf_event_groups {
     pub tree: rb_root,
     pub index: u64_,
@@ -8027,7 +7859,6 @@ pub struct perf_event_context {
     pub flexible_active: list_head,
     pub nr_events: ::aya_bpf::cty::c_int,
     pub nr_active: ::aya_bpf::cty::c_int,
-    pub nr_user: ::aya_bpf::cty::c_int,
     pub is_active: ::aya_bpf::cty::c_int,
     pub nr_stat: ::aya_bpf::cty::c_int,
     pub nr_freq: ::aya_bpf::cty::c_int,
@@ -8050,9 +7881,9 @@ pub struct perf_event_context {
 #[derive(Copy, Clone)]
 pub struct task_delay_info {
     pub lock: raw_spinlock_t,
+    pub flags: ::aya_bpf::cty::c_uint,
     pub blkio_start: u64_,
     pub blkio_delay: u64_,
-    pub swapin_start: u64_,
     pub swapin_delay: u64_,
     pub blkio_count: u32_,
     pub swapin_count: u32_,
@@ -8060,14 +7891,11 @@ pub struct task_delay_info {
     pub freepages_delay: u64_,
     pub thrashing_start: u64_,
     pub thrashing_delay: u64_,
-    pub compact_start: u64_,
-    pub compact_delay: u64_,
     pub freepages_count: u32_,
     pub thrashing_count: u32_,
-    pub compact_count: u32_,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct ftrace_ret_stack {
     pub ret: ::aya_bpf::cty::c_ulong,
     pub func: ::aya_bpf::cty::c_ulong,
@@ -8076,7 +7904,7 @@ pub struct ftrace_ret_stack {
     pub retp: *mut ::aya_bpf::cty::c_ulong,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct blk_integrity {
     pub profile: *const blk_integrity_profile,
     pub flags: ::aya_bpf::cty::c_uchar,
@@ -8086,11 +7914,19 @@ pub struct blk_integrity {
 }
 pub mod rpm_status {
     pub type Type = ::aya_bpf::cty::c_uint;
-    pub const RPM_INVALID: Type = 4294967295;
     pub const RPM_ACTIVE: Type = 0;
     pub const RPM_RESUMING: Type = 1;
     pub const RPM_SUSPENDED: Type = 2;
     pub const RPM_SUSPENDING: Type = 3;
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct blk_rq_stat {
+    pub mean: u64_,
+    pub min: u64_,
+    pub max: u64_,
+    pub nr_samples: u32_,
+    pub batch: u64_,
 }
 pub mod blk_bounce {
     pub type Type = ::aya_bpf::cty::c_uint;
@@ -8104,7 +7940,7 @@ pub mod blk_zoned_model {
     pub const BLK_ZONED_HM: Type = 2;
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct queue_limits {
     pub bounce: blk_bounce::Type,
     pub seg_boundary_mask: ::aya_bpf::cty::c_ulong,
@@ -8135,6 +7971,14 @@ pub struct queue_limits {
     pub raid_partial_stripes_expensive: ::aya_bpf::cty::c_uchar,
     pub zoned: blk_zoned_model::Type,
 }
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct bsg_class_device {
+    pub class_dev: *mut device,
+    pub minor: ::aya_bpf::cty::c_int,
+    pub queue: *mut request_queue,
+    pub ops: *const bsg_ops,
+}
 pub type mempool_alloc_t = ::core::option::Option<
     unsafe extern "C" fn(
         arg1: gfp_t,
@@ -8162,7 +8006,6 @@ pub type mempool_t = mempool_s;
 pub struct bio_set {
     pub bio_slab: *mut kmem_cache,
     pub front_pad: ::aya_bpf::cty::c_uint,
-    pub cache: *mut bio_alloc_cache,
     pub bio_pool: mempool_t,
     pub bvec_pool: mempool_t,
     pub bio_integrity_pool: mempool_t,
@@ -8172,9 +8015,9 @@ pub struct bio_set {
     pub rescue_list: bio_list,
     pub rescue_work: work_struct,
     pub rescue_workqueue: *mut workqueue_struct,
-    pub cpuhp_dead: hlist_node,
 }
 #[repr(C)]
+#[derive(Copy, Clone)]
 pub struct request_queue {
     pub last_merge: *mut request,
     pub elevator: *mut elevator_queue,
@@ -8186,12 +8029,12 @@ pub struct request_queue {
     pub queue_depth: ::aya_bpf::cty::c_uint,
     pub queue_hw_ctx: *mut *mut blk_mq_hw_ctx,
     pub nr_hw_queues: ::aya_bpf::cty::c_uint,
+    pub backing_dev_info: *mut backing_dev_info,
     pub queuedata: *mut ::aya_bpf::cty::c_void,
     pub queue_flags: ::aya_bpf::cty::c_ulong,
     pub pm_only: atomic_t,
     pub id: ::aya_bpf::cty::c_int,
     pub queue_lock: spinlock_t,
-    pub disk: *mut gendisk,
     pub kobj: kobject,
     pub mq_kobj: *mut kobject,
     pub integrity: blk_integrity,
@@ -8200,15 +8043,14 @@ pub struct request_queue {
     pub nr_requests: ::aya_bpf::cty::c_ulong,
     pub dma_pad_mask: ::aya_bpf::cty::c_uint,
     pub dma_alignment: ::aya_bpf::cty::c_uint,
-    pub crypto_profile: *mut blk_crypto_profile,
+    pub ksm: *mut blk_keyslot_manager,
     pub rq_timeout: ::aya_bpf::cty::c_uint,
     pub poll_nsec: ::aya_bpf::cty::c_int,
     pub poll_cb: *mut blk_stat_callback,
-    pub poll_stat: *mut blk_rq_stat,
+    pub poll_stat: [blk_rq_stat; 16usize],
     pub timeout: timer_list,
     pub timeout_work: work_struct,
-    pub nr_active_requests_shared_tags: atomic_t,
-    pub sched_shared_tags: *mut blk_mq_tags,
+    pub nr_active_requests_shared_sbitmap: atomic_t,
     pub icq_list: list_head,
     pub blkcg_pols: [::aya_bpf::cty::c_ulong; 1usize],
     pub root_blkg: *mut blkcg_gq,
@@ -8220,6 +8062,8 @@ pub struct request_queue {
     pub seq_zones_wlock: *mut ::aya_bpf::cty::c_ulong,
     pub max_open_zones: ::aya_bpf::cty::c_uint,
     pub max_active_zones: ::aya_bpf::cty::c_uint,
+    pub sg_timeout: ::aya_bpf::cty::c_uint,
+    pub sg_reserved_size: ::aya_bpf::cty::c_uint,
     pub node: ::aya_bpf::cty::c_int,
     pub debugfs_mutex: mutex,
     pub blk_trace: *mut blk_trace,
@@ -8232,11 +8076,11 @@ pub struct request_queue {
     pub unused_hctx_list: list_head,
     pub unused_hctx_lock: spinlock_t,
     pub mq_freeze_depth: ::aya_bpf::cty::c_int,
+    pub bsg_dev: bsg_class_device,
     pub td: *mut throtl_data,
     pub callback_head: callback_head,
     pub mq_freeze_wq: wait_queue_head_t,
     pub mq_freeze_lock: mutex,
-    pub quiesce_depth: ::aya_bpf::cty::c_int,
     pub tag_set: *mut blk_mq_tag_set,
     pub tag_set_list: list_head,
     pub bio_split: bio_set,
@@ -8244,12 +8088,11 @@ pub struct request_queue {
     pub sched_debugfs_dir: *mut dentry,
     pub rqos_debugfs_dir: *mut dentry,
     pub mq_sysfs_init_done: bool_,
+    pub cmd_size: size_t,
     pub write_hints: [u64_; 5usize],
-    pub ia_ranges: *mut blk_independent_access_ranges,
-    pub srcu: __IncompleteArrayField<srcu_struct>,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct cgroup_base_stat {
     pub cputime: task_cputime,
 }
@@ -8278,18 +8121,18 @@ pub struct psi_group {
     pub polling_until: u64_,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct cgroup_bpf {
-    pub effective: [*mut bpf_prog_array; 23usize],
-    pub progs: [list_head; 23usize],
-    pub flags: [u32_; 23usize],
+    pub effective: [*mut bpf_prog_array; 39usize],
+    pub progs: [list_head; 39usize],
+    pub flags: [u32_; 39usize],
     pub storages: list_head,
     pub inactive: *mut bpf_prog_array,
     pub refcnt: percpu_ref,
     pub release_work: work_struct,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct cgroup_freezer_state {
     pub freeze: bool_,
     pub e_freeze: ::aya_bpf::cty::c_int,
@@ -8338,7 +8181,16 @@ pub struct cgroup {
     pub ancestor_ids: __IncompleteArrayField<u64_>,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
+pub struct ucounts {
+    pub node: hlist_node,
+    pub ns: *mut user_namespace,
+    pub uid: kuid_t,
+    pub count: ::aya_bpf::cty::c_int,
+    pub ucount: [atomic_t; 12usize],
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
 pub struct taskstats {
     pub version: __u16,
     pub ac_exitcode: __u32,
@@ -8388,8 +8240,6 @@ pub struct taskstats {
     pub thrashing_count: __u64,
     pub thrashing_delay_total: __u64,
     pub ac_btime64: __u64,
-    pub compact_count: __u64,
-    pub compact_delay_total: __u64,
 }
 impl taskstats {
     #[inline]
@@ -8399,9 +8249,9 @@ impl taskstats {
     }
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct wait_page_queue {
-    pub folio: *mut folio,
+    pub page: *mut page,
     pub bit_nr: ::aya_bpf::cty::c_int,
     pub wait: wait_queue_entry_t,
 }
@@ -8411,7 +8261,7 @@ pub mod writeback_sync_modes {
     pub const WB_SYNC_ALL: Type = 1;
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct writeback_control {
     pub nr_to_write: ::aya_bpf::cty::c_long,
     pub pages_skipped: ::aya_bpf::cty::c_long,
@@ -8419,7 +8269,7 @@ pub struct writeback_control {
     pub range_end: loff_t,
     pub sync_mode: writeback_sync_modes::Type,
     pub _bitfield_align_1: [u8; 0],
-    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 2usize]>,
+    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 1usize]>,
     pub wb: *mut bdi_writeback,
     pub inode: *mut inode,
     pub wb_id: ::aya_bpf::cty::c_int,
@@ -8497,36 +8347,25 @@ impl writeback_control {
         }
     }
     #[inline]
-    pub fn unpinned_fscache_wb(&self) -> ::aya_bpf::cty::c_uint {
+    pub fn no_cgroup_owner(&self) -> ::aya_bpf::cty::c_uint {
         unsafe { ::core::mem::transmute(self._bitfield_1.get(6usize, 1u8) as u32) }
     }
     #[inline]
-    pub fn set_unpinned_fscache_wb(&mut self, val: ::aya_bpf::cty::c_uint) {
+    pub fn set_no_cgroup_owner(&mut self, val: ::aya_bpf::cty::c_uint) {
         unsafe {
             let val: u32 = ::core::mem::transmute(val);
             self._bitfield_1.set(6usize, 1u8, val as u64)
         }
     }
     #[inline]
-    pub fn no_cgroup_owner(&self) -> ::aya_bpf::cty::c_uint {
-        unsafe { ::core::mem::transmute(self._bitfield_1.get(7usize, 1u8) as u32) }
-    }
-    #[inline]
-    pub fn set_no_cgroup_owner(&mut self, val: ::aya_bpf::cty::c_uint) {
-        unsafe {
-            let val: u32 = ::core::mem::transmute(val);
-            self._bitfield_1.set(7usize, 1u8, val as u64)
-        }
-    }
-    #[inline]
     pub fn punt_to_cgroup(&self) -> ::aya_bpf::cty::c_uint {
-        unsafe { ::core::mem::transmute(self._bitfield_1.get(8usize, 1u8) as u32) }
+        unsafe { ::core::mem::transmute(self._bitfield_1.get(7usize, 1u8) as u32) }
     }
     #[inline]
     pub fn set_punt_to_cgroup(&mut self, val: ::aya_bpf::cty::c_uint) {
         unsafe {
             let val: u32 = ::core::mem::transmute(val);
-            self._bitfield_1.set(8usize, 1u8, val as u64)
+            self._bitfield_1.set(7usize, 1u8, val as u64)
         }
     }
     #[inline]
@@ -8537,11 +8376,10 @@ impl writeback_control {
         for_reclaim: ::aya_bpf::cty::c_uint,
         range_cyclic: ::aya_bpf::cty::c_uint,
         for_sync: ::aya_bpf::cty::c_uint,
-        unpinned_fscache_wb: ::aya_bpf::cty::c_uint,
         no_cgroup_owner: ::aya_bpf::cty::c_uint,
         punt_to_cgroup: ::aya_bpf::cty::c_uint,
-    ) -> __BindgenBitfieldUnit<[u8; 2usize]> {
-        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 2usize]> = Default::default();
+    ) -> __BindgenBitfieldUnit<[u8; 1usize]> {
+        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 1usize]> = Default::default();
         __bindgen_bitfield_unit.set(0usize, 1u8, {
             let for_kupdate: u32 = unsafe { ::core::mem::transmute(for_kupdate) };
             for_kupdate as u64
@@ -8567,14 +8405,10 @@ impl writeback_control {
             for_sync as u64
         });
         __bindgen_bitfield_unit.set(6usize, 1u8, {
-            let unpinned_fscache_wb: u32 = unsafe { ::core::mem::transmute(unpinned_fscache_wb) };
-            unpinned_fscache_wb as u64
-        });
-        __bindgen_bitfield_unit.set(7usize, 1u8, {
             let no_cgroup_owner: u32 = unsafe { ::core::mem::transmute(no_cgroup_owner) };
             no_cgroup_owner as u64
         });
-        __bindgen_bitfield_unit.set(8usize, 1u8, {
+        __bindgen_bitfield_unit.set(7usize, 1u8, {
             let punt_to_cgroup: u32 = unsafe { ::core::mem::transmute(punt_to_cgroup) };
             punt_to_cgroup as u64
         });
@@ -8582,7 +8416,7 @@ impl writeback_control {
     }
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct readahead_control {
     pub file: *mut file,
     pub mapping: *mut address_space,
@@ -8594,9 +8428,7 @@ pub struct readahead_control {
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct iov_iter {
-    pub iter_type: u8_,
-    pub nofault: bool_,
-    pub data_source: bool_,
+    pub type_: ::aya_bpf::cty::c_uint,
     pub iov_offset: size_t,
     pub count: size_t,
     pub __bindgen_anon_1: iov_iter__bindgen_ty_1,
@@ -8619,7 +8451,7 @@ pub union iov_iter__bindgen_ty_2 {
     pub xarray_start: loff_t,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct iov_iter__bindgen_ty_2__bindgen_ty_1 {
     pub head: ::aya_bpf::cty::c_uint,
     pub start_head: ::aya_bpf::cty::c_uint,
@@ -8679,7 +8511,6 @@ pub struct swap_cluster_list {
 }
 #[repr(C)]
 pub struct swap_info_struct {
-    pub users: percpu_ref,
     pub flags: ::aya_bpf::cty::c_ulong,
     pub prio: ::aya_bpf::cty::c_short,
     pub list: plist_node,
@@ -8700,7 +8531,6 @@ pub struct swap_info_struct {
     pub bdev: *mut block_device,
     pub swap_file: *mut file,
     pub old_block_size: ::aya_bpf::cty::c_uint,
-    pub comp: completion,
     pub frontswap_map: *mut ::aya_bpf::cty::c_ulong,
     pub frontswap_pages: atomic_t,
     pub lock: spinlock_t,
@@ -8710,7 +8540,7 @@ pub struct swap_info_struct {
     pub avail_lists: __IncompleteArrayField<plist_node>,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct cdev {
     pub kobj: kobject,
     pub owner: *mut module,
@@ -8727,7 +8557,7 @@ pub mod dl_dev_state {
     pub const DL_DEV_UNBINDING: Type = 3;
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct dev_links_info {
     pub suppliers: list_head,
     pub consumers: list_head,
@@ -8735,7 +8565,7 @@ pub struct dev_links_info {
     pub status: dl_dev_state::Type,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct pm_message {
     pub event: ::aya_bpf::cty::c_int,
 }
@@ -8773,7 +8603,6 @@ pub struct dev_pm_info {
     pub links_count: ::aya_bpf::cty::c_uint,
     pub request: rpm_request::Type,
     pub runtime_status: rpm_status::Type,
-    pub last_status: rpm_status::Type,
     pub runtime_error: ::aya_bpf::cty::c_int,
     pub autosuspend_delay: ::aya_bpf::cty::c_int,
     pub last_busy: u64_,
@@ -9238,21 +9067,8 @@ impl dev_pm_info {
     }
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct dev_msi_info {
-    pub domain: *mut irq_domain,
-    pub data: *mut msi_device_data,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct dev_archdata {}
-pub mod device_removable {
-    pub type Type = ::aya_bpf::cty::c_uint;
-    pub const DEVICE_REMOVABLE_NOT_SUPPORTED: Type = 0;
-    pub const DEVICE_REMOVABLE_UNKNOWN: Type = 1;
-    pub const DEVICE_FIXED: Type = 2;
-    pub const DEVICE_REMOVABLE: Type = 3;
-}
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct device {
@@ -9270,8 +9086,10 @@ pub struct device {
     pub power: dev_pm_info,
     pub pm_domain: *mut dev_pm_domain,
     pub em_pd: *mut em_perf_domain,
+    pub msi_domain: *mut irq_domain,
     pub pins: *mut dev_pin_info,
-    pub msi: dev_msi_info,
+    pub msi_lock: raw_spinlock_t,
+    pub msi_list: list_head,
     pub dma_ops: *const dma_map_ops,
     pub dma_mask: *mut u64_,
     pub coherent_dma_mask: u64_,
@@ -9279,8 +9097,6 @@ pub struct device {
     pub dma_range_map: *const bus_dma_region,
     pub dma_parms: *mut device_dma_parameters,
     pub dma_pools: list_head,
-    pub cma_area: *mut cma,
-    pub dma_io_tlb_mem: *mut io_tlb_mem,
     pub archdata: dev_archdata,
     pub of_node: *mut device_node,
     pub fwnode: *mut fwnode_handle,
@@ -9294,10 +9110,9 @@ pub struct device {
     pub release: ::core::option::Option<unsafe extern "C" fn(arg1: *mut device)>,
     pub iommu_group: *mut iommu_group,
     pub iommu: *mut dev_iommu,
-    pub removable: device_removable::Type,
     pub _bitfield_align_1: [u8; 0],
     pub _bitfield_1: __BindgenBitfieldUnit<[u8; 1usize]>,
-    pub __bindgen_padding_0: [u8; 3usize],
+    pub __bindgen_padding_0: [u8; 7usize],
 }
 impl device {
     #[inline]
@@ -9391,7 +9206,6 @@ impl device {
 #[derive(Copy, Clone)]
 pub struct block_device {
     pub bd_start_sect: sector_t,
-    pub bd_nr_sectors: sector_t,
     pub bd_stats: *mut disk_stats,
     pub bd_stamp: ::aya_bpf::cty::c_ulong,
     pub bd_read_only: bool_,
@@ -9399,30 +9213,26 @@ pub struct block_device {
     pub bd_openers: ::aya_bpf::cty::c_int,
     pub bd_inode: *mut inode,
     pub bd_super: *mut super_block,
+    pub bd_mutex: mutex,
     pub bd_claiming: *mut ::aya_bpf::cty::c_void,
     pub bd_device: device,
     pub bd_holder: *mut ::aya_bpf::cty::c_void,
     pub bd_holders: ::aya_bpf::cty::c_int,
     pub bd_write_holder: bool_,
+    pub bd_holder_disks: list_head,
     pub bd_holder_dir: *mut kobject,
     pub bd_partno: u8_,
+    pub bd_part_count: ::aya_bpf::cty::c_uint,
     pub bd_size_lock: spinlock_t,
     pub bd_disk: *mut gendisk,
-    pub bd_queue: *mut request_queue,
+    pub bd_bdi: *mut backing_dev_info,
     pub bd_fsfreeze_count: ::aya_bpf::cty::c_int,
     pub bd_fsfreeze_mutex: mutex,
     pub bd_fsfreeze_sb: *mut super_block,
     pub bd_meta_info: *mut partition_meta_info,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct io_comp_batch {
-    pub req_list: *mut request,
-    pub need_ts: bool_,
-    pub complete: ::core::option::Option<unsafe extern "C" fn(arg1: *mut io_comp_batch)>,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct p_log {
     pub prefix: *const ::aya_bpf::cty::c_char,
     pub log: *mut fc_log,
@@ -9556,7 +9366,6 @@ impl fs_context {
     }
 }
 #[repr(C)]
-#[derive(Debug)]
 pub struct filename {
     pub name: *const ::aya_bpf::cty::c_char,
     pub uptr: *const ::aya_bpf::cty::c_char,
@@ -9565,23 +9374,22 @@ pub struct filename {
     pub iname: __IncompleteArrayField<::aya_bpf::cty::c_char>,
 }
 pub type blk_status_t = u8_;
-#[repr(C, packed)]
-#[derive(Debug, Copy, Clone)]
+#[repr(C)]
+#[derive(Copy, Clone)]
 pub struct bvec_iter {
     pub bi_sector: sector_t,
     pub bi_size: ::aya_bpf::cty::c_uint,
     pub bi_idx: ::aya_bpf::cty::c_uint,
     pub bi_bvec_done: ::aya_bpf::cty::c_uint,
 }
-pub type blk_qc_t = ::aya_bpf::cty::c_uint;
 pub type bio_end_io_t = ::core::option::Option<unsafe extern "C" fn(arg1: *mut bio)>;
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct bio_issue {
     pub value: u64_,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct bio_vec {
     pub bv_page: *mut page,
     pub bv_len: ::aya_bpf::cty::c_uint,
@@ -9598,7 +9406,6 @@ pub struct bio {
     pub bi_status: blk_status_t,
     pub __bi_remaining: atomic_t,
     pub bi_iter: bvec_iter,
-    pub bi_cookie: blk_qc_t,
     pub bi_end_io: bio_end_io_t,
     pub bi_private: *mut ::aya_bpf::cty::c_void,
     pub bi_blkg: *mut blkcg_gq,
@@ -9619,7 +9426,7 @@ pub union bio__bindgen_ty_1 {
     pub bi_integrity: *mut bio_integrity_payload,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct linux_binprm {
     pub vma: *mut vm_area_struct,
     pub vma_pages: ::aya_bpf::cty::c_ulong,
@@ -9719,7 +9526,7 @@ impl linux_binprm {
     }
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct coredump_params {
     pub siginfo: *const kernel_siginfo_t,
     pub regs: *mut pt_regs,
@@ -9731,23 +9538,21 @@ pub struct coredump_params {
     pub to_skip: loff_t,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct em_perf_state {
     pub frequency: ::aya_bpf::cty::c_ulong,
     pub power: ::aya_bpf::cty::c_ulong,
     pub cost: ::aya_bpf::cty::c_ulong,
-    pub flags: ::aya_bpf::cty::c_ulong,
 }
 #[repr(C)]
-#[derive(Debug)]
 pub struct em_perf_domain {
     pub table: *mut em_perf_state,
     pub nr_perf_states: ::aya_bpf::cty::c_int,
-    pub flags: ::aya_bpf::cty::c_ulong,
+    pub milliwatts: ::aya_bpf::cty::c_int,
     pub cpus: __IncompleteArrayField<::aya_bpf::cty::c_ulong>,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct dev_pm_ops {
     pub prepare:
         ::core::option::Option<unsafe extern "C" fn(arg1: *mut device) -> ::aya_bpf::cty::c_int>,
@@ -9871,7 +9676,7 @@ impl wakeup_source {
     }
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct dev_pm_domain {
     pub ops: dev_pm_ops,
     pub start:
@@ -9883,7 +9688,7 @@ pub struct dev_pm_domain {
     pub dismiss: ::core::option::Option<unsafe extern "C" fn(arg1: *mut device)>,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct bus_type {
     pub name: *const ::aya_bpf::cty::c_char,
     pub dev_name: *const ::aya_bpf::cty::c_char,
@@ -9903,7 +9708,8 @@ pub struct bus_type {
     pub probe:
         ::core::option::Option<unsafe extern "C" fn(arg1: *mut device) -> ::aya_bpf::cty::c_int>,
     pub sync_state: ::core::option::Option<unsafe extern "C" fn(arg1: *mut device)>,
-    pub remove: ::core::option::Option<unsafe extern "C" fn(arg1: *mut device)>,
+    pub remove:
+        ::core::option::Option<unsafe extern "C" fn(arg1: *mut device) -> ::aya_bpf::cty::c_int>,
     pub shutdown: ::core::option::Option<unsafe extern "C" fn(arg1: *mut device)>,
     pub online:
         ::core::option::Option<unsafe extern "C" fn(arg1: *mut device) -> ::aya_bpf::cty::c_int>,
@@ -9931,7 +9737,7 @@ pub mod probe_type {
     pub const PROBE_FORCE_SYNCHRONOUS: Type = 2;
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct device_driver {
     pub name: *const ::aya_bpf::cty::c_char,
     pub bus: *mut bus_type,
@@ -9972,7 +9778,7 @@ pub mod iommu_dev_features {
     pub const IOMMU_DEV_FEAT_IOPF: Type = 2;
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct iommu_ops {
     pub capable: ::core::option::Option<unsafe extern "C" fn(arg1: iommu_cap::Type) -> bool_>,
     pub domain_alloc: ::core::option::Option<
@@ -9994,33 +9800,12 @@ pub struct iommu_ops {
             arg6: gfp_t,
         ) -> ::aya_bpf::cty::c_int,
     >,
-    pub map_pages: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut iommu_domain,
-            arg2: ::aya_bpf::cty::c_ulong,
-            arg3: phys_addr_t,
-            arg4: size_t,
-            arg5: size_t,
-            arg6: ::aya_bpf::cty::c_int,
-            arg7: gfp_t,
-            arg8: *mut size_t,
-        ) -> ::aya_bpf::cty::c_int,
-    >,
     pub unmap: ::core::option::Option<
         unsafe extern "C" fn(
             arg1: *mut iommu_domain,
             arg2: ::aya_bpf::cty::c_ulong,
             arg3: size_t,
             arg4: *mut iommu_iotlb_gather,
-        ) -> size_t,
-    >,
-    pub unmap_pages: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut iommu_domain,
-            arg2: ::aya_bpf::cty::c_ulong,
-            arg3: size_t,
-            arg4: size_t,
-            arg5: *mut iommu_iotlb_gather,
         ) -> size_t,
     >,
     pub flush_iotlb_all: ::core::option::Option<unsafe extern "C" fn(arg1: *mut iommu_domain)>,
@@ -10133,7 +9918,7 @@ pub struct iommu_ops {
     pub owner: *mut module,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct device_type {
     pub name: *const ::aya_bpf::cty::c_char,
     pub groups: *mut *const attribute_group,
@@ -10155,7 +9940,7 @@ pub struct device_type {
     pub pm: *const dev_pm_ops,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct class {
     pub name: *const ::aya_bpf::cty::c_char,
     pub owner: *mut module,
@@ -10186,7 +9971,7 @@ pub struct class {
     pub p: *mut subsys_private,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct of_device_id {
     pub name: [::aya_bpf::cty::c_char; 32usize],
     pub type_: [::aya_bpf::cty::c_char; 32usize],
@@ -10195,7 +9980,7 @@ pub struct of_device_id {
 }
 pub type kernel_ulong_t = ::aya_bpf::cty::c_ulong;
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct acpi_device_id {
     pub id: [__u8; 9usize],
     pub driver_data: kernel_ulong_t,
@@ -10203,7 +9988,7 @@ pub struct acpi_device_id {
     pub cls_msk: __u32,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct device_dma_parameters {
     pub max_segment_size: ::aya_bpf::cty::c_uint,
     pub min_align_mask: ::aya_bpf::cty::c_uint,
@@ -10217,7 +10002,7 @@ pub mod dma_data_direction {
     pub const DMA_NONE: Type = 3;
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct dma_map_ops {
     pub alloc: ::core::option::Option<
         unsafe extern "C" fn(
@@ -10396,7 +10181,7 @@ pub struct dma_map_ops {
         ::core::option::Option<unsafe extern "C" fn(arg1: *mut device) -> ::aya_bpf::cty::c_ulong>,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct bus_dma_region {
     pub cpu_start: phys_addr_t,
     pub dma_start: dma_addr_t,
@@ -10405,7 +10190,7 @@ pub struct bus_dma_region {
 }
 pub type phandle = u32_;
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct fwnode_handle {
     pub secondary: *mut fwnode_handle,
     pub ops: *const fwnode_operations,
@@ -10415,7 +10200,7 @@ pub struct fwnode_handle {
     pub flags: u8_,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct device_node {
     pub name: *const ::aya_bpf::cty::c_char,
     pub phandle: phandle,
@@ -10430,7 +10215,6 @@ pub struct device_node {
     pub data: *mut ::aya_bpf::cty::c_void,
 }
 #[repr(C)]
-#[derive(Debug)]
 pub struct ring_buffer_event {
     pub _bitfield_align_1: [u32; 0],
     pub _bitfield_1: __BindgenBitfieldUnit<[u8; 4usize]>,
@@ -10474,7 +10258,7 @@ impl ring_buffer_event {
     }
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct seq_buf {
     pub buffer: *mut ::aya_bpf::cty::c_char,
     pub size: size_t,
@@ -10482,7 +10266,7 @@ pub struct seq_buf {
     pub readpos: loff_t,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct trace_seq {
     pub buffer: [::aya_bpf::cty::c_char; 4096usize],
     pub seq: seq_buf,
@@ -10496,7 +10280,7 @@ pub union perf_mem_data_src {
 }
 #[repr(C)]
 #[repr(align(8))]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct perf_mem_data_src__bindgen_ty_1 {
     pub _bitfield_align_1: [u32; 0],
     pub _bitfield_1: __BindgenBitfieldUnit<[u8; 8usize]>,
@@ -10602,25 +10386,14 @@ impl perf_mem_data_src__bindgen_ty_1 {
         }
     }
     #[inline]
-    pub fn mem_hops(&self) -> __u64 {
-        unsafe { ::core::mem::transmute(self._bitfield_1.get(43usize, 3u8) as u64) }
-    }
-    #[inline]
-    pub fn set_mem_hops(&mut self, val: __u64) {
-        unsafe {
-            let val: u64 = ::core::mem::transmute(val);
-            self._bitfield_1.set(43usize, 3u8, val as u64)
-        }
-    }
-    #[inline]
     pub fn mem_rsvd(&self) -> __u64 {
-        unsafe { ::core::mem::transmute(self._bitfield_1.get(46usize, 18u8) as u64) }
+        unsafe { ::core::mem::transmute(self._bitfield_1.get(43usize, 21u8) as u64) }
     }
     #[inline]
     pub fn set_mem_rsvd(&mut self, val: __u64) {
         unsafe {
             let val: u64 = ::core::mem::transmute(val);
-            self._bitfield_1.set(46usize, 18u8, val as u64)
+            self._bitfield_1.set(43usize, 21u8, val as u64)
         }
     }
     #[inline]
@@ -10634,7 +10407,6 @@ impl perf_mem_data_src__bindgen_ty_1 {
         mem_remote: __u64,
         mem_snoopx: __u64,
         mem_blk: __u64,
-        mem_hops: __u64,
         mem_rsvd: __u64,
     ) -> __BindgenBitfieldUnit<[u8; 8usize]> {
         let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 8usize]> = Default::default();
@@ -10674,11 +10446,7 @@ impl perf_mem_data_src__bindgen_ty_1 {
             let mem_blk: u64 = unsafe { ::core::mem::transmute(mem_blk) };
             mem_blk as u64
         });
-        __bindgen_bitfield_unit.set(43usize, 3u8, {
-            let mem_hops: u64 = unsafe { ::core::mem::transmute(mem_hops) };
-            mem_hops as u64
-        });
-        __bindgen_bitfield_unit.set(46usize, 18u8, {
+        __bindgen_bitfield_unit.set(43usize, 21u8, {
             let mem_rsvd: u64 = unsafe { ::core::mem::transmute(mem_rsvd) };
             mem_rsvd as u64
         });
@@ -10686,7 +10454,7 @@ impl perf_mem_data_src__bindgen_ty_1 {
     }
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct perf_branch_entry {
     pub from: __u64,
     pub to: __u64,
@@ -10820,14 +10588,14 @@ pub union perf_sample_weight {
     pub __bindgen_anon_1: perf_sample_weight__bindgen_ty_1,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct perf_sample_weight__bindgen_ty_1 {
     pub var1_dw: __u32,
     pub var2_w: __u16,
     pub var3_w: __u16,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct new_utsname {
     pub sysname: [::aya_bpf::cty::c_char; 65usize],
     pub nodename: [::aya_bpf::cty::c_char; 65usize],
@@ -10837,7 +10605,7 @@ pub struct new_utsname {
     pub domainname: [::aya_bpf::cty::c_char; 65usize],
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct uts_namespace {
     pub name: new_utsname,
     pub user_ns: *mut user_namespace,
@@ -10845,7 +10613,7 @@ pub struct uts_namespace {
     pub ns: ns_common,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct cgroup_namespace {
     pub ns: ns_common,
     pub user_ns: *mut user_namespace,
@@ -10853,7 +10621,7 @@ pub struct cgroup_namespace {
     pub root_cset: *mut css_set,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct nsset {
     pub flags: ::aya_bpf::cty::c_uint,
     pub nsproxy: *mut nsproxy,
@@ -10861,7 +10629,7 @@ pub struct nsset {
     pub cred: *const cred,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct proc_ns_operations {
     pub name: *const ::aya_bpf::cty::c_char,
     pub real_ns_name: *const ::aya_bpf::cty::c_char,
@@ -10877,7 +10645,7 @@ pub struct proc_ns_operations {
         ::core::option::Option<unsafe extern "C" fn(arg1: *mut ns_common) -> *mut ns_common>,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct pmu {
     pub entry: list_head,
     pub module: *mut module,
@@ -10962,33 +10730,72 @@ pub struct pmu {
     >,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct ftrace_regs {
     pub regs: pt_regs,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct iovec {
     pub iov_base: *mut ::aya_bpf::cty::c_void,
     pub iov_len: __kernel_size_t,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct kvec {
     pub iov_base: *mut ::aya_bpf::cty::c_void,
     pub iov_len: size_t,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct perf_regs {
     pub abi: __u64,
     pub regs: *mut pt_regs,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct u64_stats_sync {}
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
+pub struct bpf_cgroup_storage_key {
+    pub cgroup_inode_id: __u64,
+    pub attach_type: __u32,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct bpf_prog_array_item {
+    pub prog: *mut bpf_prog,
+    pub cgroup_storage: [*mut bpf_cgroup_storage; 2usize],
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct bpf_cgroup_storage {
+    pub __bindgen_anon_1: bpf_cgroup_storage__bindgen_ty_1,
+    pub map: *mut bpf_cgroup_storage_map,
+    pub key: bpf_cgroup_storage_key,
+    pub list_map: list_head,
+    pub list_cg: list_head,
+    pub node: rb_node,
+    pub rcu: callback_head,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub union bpf_cgroup_storage__bindgen_ty_1 {
+    pub buf: *mut bpf_storage_buffer,
+    pub percpu_buf: *mut ::aya_bpf::cty::c_void,
+}
+#[repr(C)]
+pub struct bpf_prog_array {
+    pub rcu: callback_head,
+    pub items: __IncompleteArrayField<bpf_prog_array_item>,
+}
+#[repr(C)]
+pub struct bpf_storage_buffer {
+    pub rcu: callback_head,
+    pub data: __IncompleteArrayField<::aya_bpf::cty::c_char>,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
 pub struct psi_group_cpu {
     pub seq: seqcount_t,
     pub tasks: [::aya_bpf::cty::c_uint; 5usize],
@@ -11112,7 +10919,7 @@ impl cgroup_subsys {
     }
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct cgroup_rstat_cpu {
     pub bsync: u64_stats_sync,
     pub bstat: cgroup_base_stat,
@@ -11134,7 +10941,7 @@ pub struct cgroup_root {
     pub name: [::aya_bpf::cty::c_char; 64usize],
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct cftype {
     pub name: [::aya_bpf::cty::c_char; 64usize],
     pub private: ::aya_bpf::cty::c_ulong,
@@ -11200,7 +11007,6 @@ pub struct cftype {
     >,
 }
 #[repr(C)]
-#[derive(Debug)]
 pub struct perf_callchain_entry {
     pub nr: __u64,
     pub ip: __IncompleteArrayField<__u64>,
@@ -11234,7 +11040,6 @@ pub struct perf_raw_record {
     pub size: u32_,
 }
 #[repr(C)]
-#[derive(Debug)]
 pub struct perf_branch_stack {
     pub nr: __u64,
     pub hw_idx: __u64,
@@ -11278,7 +11083,7 @@ pub union perf_output_handle__bindgen_ty_1 {
     pub head: ::aya_bpf::cty::c_ulong,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct perf_addr_filter_range {
     pub start: ::aya_bpf::cty::c_ulong,
     pub size: ::aya_bpf::cty::c_ulong,
@@ -11313,25 +11118,25 @@ pub struct perf_sample_data {
     pub _bitfield_1: __BindgenBitfieldUnit<[u8; 56usize]>,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct perf_sample_data__bindgen_ty_1 {
     pub pid: u32_,
     pub tid: u32_,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct perf_sample_data__bindgen_ty_2 {
     pub cpu: u32_,
     pub reserved: u32_,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct perf_cgroup {
     pub css: cgroup_subsys_state,
     pub info: *mut perf_cgroup_info,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct perf_cgroup_info {
     pub time: u64_,
     pub timestamp: u64_,
@@ -11339,7 +11144,7 @@ pub struct perf_cgroup_info {
     pub active: ::aya_bpf::cty::c_int,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct trace_entry {
     pub type_: ::aya_bpf::cty::c_ushort,
     pub flags: ::aya_bpf::cty::c_uchar,
@@ -11389,7 +11194,7 @@ pub type trace_print_func = ::core::option::Option<
     ) -> print_line_t::Type,
 >;
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct trace_event_functions {
     pub trace: trace_print_func,
     pub raw: trace_print_func,
@@ -11422,7 +11227,7 @@ pub union trace_event_fields__bindgen_ty_1 {
     >,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct trace_event_fields__bindgen_ty_1__bindgen_ty_1 {
     pub name: *const ::aya_bpf::cty::c_char,
     pub size: ::aya_bpf::cty::c_int,
@@ -11431,7 +11236,7 @@ pub struct trace_event_fields__bindgen_ty_1__bindgen_ty_1 {
     pub filter_type: ::aya_bpf::cty::c_int,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct trace_event_class {
     pub system: *const ::aya_bpf::cty::c_char,
     pub probe: *mut ::aya_bpf::cty::c_void,
@@ -11452,12 +11257,7 @@ pub struct trace_event_class {
     >,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct trace_buffer {
-    _unused: [u8; 0],
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct trace_event_file {
     pub list: list_head,
     pub event_call: *mut trace_event_call,
@@ -11471,7 +11271,7 @@ pub struct trace_event_file {
     pub tm_ref: atomic_t,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct fwnode_operations {
     pub get: ::core::option::Option<
         unsafe extern "C" fn(arg1: *mut fwnode_handle) -> *mut fwnode_handle,
@@ -11562,21 +11362,21 @@ pub struct fwnode_operations {
     >,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct fwnode_endpoint {
     pub port: ::aya_bpf::cty::c_uint,
     pub id: ::aya_bpf::cty::c_uint,
     pub local_fwnode: *const fwnode_handle,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct fwnode_reference_args {
     pub fwnode: *mut fwnode_handle,
     pub nargs: ::aya_bpf::cty::c_uint,
     pub args: [u64_; 8usize],
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct property {
     pub name: *mut ::aya_bpf::cty::c_char,
     pub length: ::aya_bpf::cty::c_int,
@@ -11584,14 +11384,14 @@ pub struct property {
     pub next: *mut property,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct irq_fwspec {
     pub fwnode: *mut fwnode_handle,
     pub param_count: ::aya_bpf::cty::c_int,
     pub param: [u32_; 16usize],
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct irq_domain_ops {
     pub match_: ::core::option::Option<
         unsafe extern "C" fn(
@@ -11676,11 +11476,7 @@ pub struct gendisk {
     pub private_data: *mut ::aya_bpf::cty::c_void,
     pub flags: ::aya_bpf::cty::c_int,
     pub state: ::aya_bpf::cty::c_ulong,
-    pub open_mutex: mutex,
-    pub open_partitions: ::aya_bpf::cty::c_uint,
-    pub bdi: *mut backing_dev_info,
     pub slave_dir: *mut kobject,
-    pub slave_bdevs: list_head,
     pub random: *mut timer_rand_state,
     pub sync_io: atomic_t,
     pub ev: *mut disk_events,
@@ -11689,15 +11485,14 @@ pub struct gendisk {
     pub node_id: ::aya_bpf::cty::c_int,
     pub bb: *mut badblocks,
     pub lockdep_map: lockdep_map,
-    pub diskseq: u64_,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct partition_meta_info {
     pub uuid: [::aya_bpf::cty::c_char; 37usize],
     pub volname: [u8_; 64usize],
 }
-#[repr(C, packed)]
+#[repr(C)]
 pub struct bio_integrity_payload {
     pub bip_bio: *mut bio,
     pub bip_iter: bvec_iter,
@@ -11705,69 +11500,643 @@ pub struct bio_integrity_payload {
     pub bip_max_vcnt: ::aya_bpf::cty::c_ushort,
     pub bip_flags: ::aya_bpf::cty::c_ushort,
     pub bio_iter: bvec_iter,
-    pub _bitfield_align_1: [u8; 0],
-    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 2usize]>,
     pub bip_work: work_struct,
     pub bip_vec: *mut bio_vec,
     pub bip_inline_vecs: __IncompleteArrayField<bio_vec>,
 }
-impl bio_integrity_payload {
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct blkg_iostat {
+    pub bytes: [u64_; 3usize],
+    pub ios: [u64_; 3usize],
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct blkg_iostat_set {
+    pub sync: u64_stats_sync,
+    pub cur: blkg_iostat,
+    pub last: blkg_iostat,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct blkcg_gq {
+    pub q: *mut request_queue,
+    pub q_node: list_head,
+    pub blkcg_node: hlist_node,
+    pub blkcg: *mut blkcg,
+    pub parent: *mut blkcg_gq,
+    pub refcnt: percpu_ref,
+    pub online: bool_,
+    pub iostat_cpu: *mut blkg_iostat_set,
+    pub iostat: blkg_iostat_set,
+    pub pd: [*mut blkg_policy_data; 5usize],
+    pub async_bio_lock: spinlock_t,
+    pub async_bios: bio_list,
+    pub async_bio_work: work_struct,
+    pub use_delay: atomic_t,
+    pub delay_nsec: atomic64_t,
+    pub delay_start: atomic64_t,
+    pub last_delay: u64_,
+    pub last_use: ::aya_bpf::cty::c_int,
+    pub callback_head: callback_head,
+}
+pub type blk_qc_t = ::aya_bpf::cty::c_uint;
+pub type integrity_processing_fn =
+    ::core::option::Option<unsafe extern "C" fn(arg1: *mut blk_integrity_iter) -> blk_status_t>;
+pub type integrity_prepare_fn = ::core::option::Option<unsafe extern "C" fn(arg1: *mut request)>;
+pub type integrity_complete_fn =
+    ::core::option::Option<unsafe extern "C" fn(arg1: *mut request, arg2: ::aya_bpf::cty::c_uint)>;
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct blk_integrity_profile {
+    pub generate_fn: integrity_processing_fn,
+    pub verify_fn: integrity_processing_fn,
+    pub prepare_fn: integrity_prepare_fn,
+    pub complete_fn: integrity_complete_fn,
+    pub name: *const ::aya_bpf::cty::c_char,
+}
+pub type report_zones_cb = ::core::option::Option<
+    unsafe extern "C" fn(
+        arg1: *mut blk_zone,
+        arg2: ::aya_bpf::cty::c_uint,
+        arg3: *mut ::aya_bpf::cty::c_void,
+    ) -> ::aya_bpf::cty::c_int,
+>;
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct block_device_operations {
+    pub submit_bio: ::core::option::Option<unsafe extern "C" fn(arg1: *mut bio) -> blk_qc_t>,
+    pub open: ::core::option::Option<
+        unsafe extern "C" fn(arg1: *mut block_device, arg2: fmode_t) -> ::aya_bpf::cty::c_int,
+    >,
+    pub release: ::core::option::Option<unsafe extern "C" fn(arg1: *mut gendisk, arg2: fmode_t)>,
+    pub rw_page: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut block_device,
+            arg2: sector_t,
+            arg3: *mut page,
+            arg4: ::aya_bpf::cty::c_uint,
+        ) -> ::aya_bpf::cty::c_int,
+    >,
+    pub ioctl: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut block_device,
+            arg2: fmode_t,
+            arg3: ::aya_bpf::cty::c_uint,
+            arg4: ::aya_bpf::cty::c_ulong,
+        ) -> ::aya_bpf::cty::c_int,
+    >,
+    pub compat_ioctl: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut block_device,
+            arg2: fmode_t,
+            arg3: ::aya_bpf::cty::c_uint,
+            arg4: ::aya_bpf::cty::c_ulong,
+        ) -> ::aya_bpf::cty::c_int,
+    >,
+    pub check_events: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut gendisk,
+            arg2: ::aya_bpf::cty::c_uint,
+        ) -> ::aya_bpf::cty::c_uint,
+    >,
+    pub unlock_native_capacity: ::core::option::Option<unsafe extern "C" fn(arg1: *mut gendisk)>,
+    pub getgeo: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut block_device,
+            arg2: *mut hd_geometry,
+        ) -> ::aya_bpf::cty::c_int,
+    >,
+    pub set_read_only: ::core::option::Option<
+        unsafe extern "C" fn(arg1: *mut block_device, arg2: bool_) -> ::aya_bpf::cty::c_int,
+    >,
+    pub swap_slot_free_notify: ::core::option::Option<
+        unsafe extern "C" fn(arg1: *mut block_device, arg2: ::aya_bpf::cty::c_ulong),
+    >,
+    pub report_zones: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut gendisk,
+            arg2: sector_t,
+            arg3: ::aya_bpf::cty::c_uint,
+            arg4: report_zones_cb,
+            arg5: *mut ::aya_bpf::cty::c_void,
+        ) -> ::aya_bpf::cty::c_int,
+    >,
+    pub devnode: ::core::option::Option<
+        unsafe extern "C" fn(arg1: *mut gendisk, arg2: *mut umode_t) -> *mut ::aya_bpf::cty::c_char,
+    >,
+    pub owner: *mut module,
+    pub pr_ops: *const pr_ops,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct sg_io_v4 {
+    pub guard: __s32,
+    pub protocol: __u32,
+    pub subprotocol: __u32,
+    pub request_len: __u32,
+    pub request: __u64,
+    pub request_tag: __u64,
+    pub request_attr: __u32,
+    pub request_priority: __u32,
+    pub request_extra: __u32,
+    pub max_response_len: __u32,
+    pub response: __u64,
+    pub dout_iovec_count: __u32,
+    pub dout_xfer_len: __u32,
+    pub din_iovec_count: __u32,
+    pub din_xfer_len: __u32,
+    pub dout_xferp: __u64,
+    pub din_xferp: __u64,
+    pub timeout: __u32,
+    pub flags: __u32,
+    pub usr_ptr: __u64,
+    pub spare_in: __u32,
+    pub driver_status: __u32,
+    pub transport_status: __u32,
+    pub device_status: __u32,
+    pub retry_delay: __u32,
+    pub info: __u32,
+    pub duration: __u32,
+    pub response_len: __u32,
+    pub din_resid: __s32,
+    pub dout_resid: __s32,
+    pub generated_tag: __u64,
+    pub spare_out: __u32,
+    pub padding: __u32,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct bsg_ops {
+    pub check_proto:
+        ::core::option::Option<unsafe extern "C" fn(arg1: *mut sg_io_v4) -> ::aya_bpf::cty::c_int>,
+    pub fill_hdr: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut request,
+            arg2: *mut sg_io_v4,
+            arg3: fmode_t,
+        ) -> ::aya_bpf::cty::c_int,
+    >,
+    pub complete_rq: ::core::option::Option<
+        unsafe extern "C" fn(arg1: *mut request, arg2: *mut sg_io_v4) -> ::aya_bpf::cty::c_int,
+    >,
+    pub free_rq: ::core::option::Option<unsafe extern "C" fn(arg1: *mut request)>,
+}
+pub type req_flags_t = __u32;
+pub type rq_end_io_fn =
+    ::core::option::Option<unsafe extern "C" fn(arg1: *mut request, arg2: blk_status_t)>;
+pub mod mq_rq_state {
+    pub type Type = ::aya_bpf::cty::c_uint;
+    pub const MQ_RQ_IDLE: Type = 0;
+    pub const MQ_RQ_IN_FLIGHT: Type = 1;
+    pub const MQ_RQ_COMPLETE: Type = 2;
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct request {
+    pub q: *mut request_queue,
+    pub mq_ctx: *mut blk_mq_ctx,
+    pub mq_hctx: *mut blk_mq_hw_ctx,
+    pub cmd_flags: ::aya_bpf::cty::c_uint,
+    pub rq_flags: req_flags_t,
+    pub tag: ::aya_bpf::cty::c_int,
+    pub internal_tag: ::aya_bpf::cty::c_int,
+    pub __data_len: ::aya_bpf::cty::c_uint,
+    pub __sector: sector_t,
+    pub bio: *mut bio,
+    pub biotail: *mut bio,
+    pub queuelist: list_head,
+    pub __bindgen_anon_1: request__bindgen_ty_1,
+    pub __bindgen_anon_2: request__bindgen_ty_2,
+    pub __bindgen_anon_3: request__bindgen_ty_3,
+    pub rq_disk: *mut gendisk,
+    pub part: *mut block_device,
+    pub alloc_time_ns: u64_,
+    pub start_time_ns: u64_,
+    pub io_start_time_ns: u64_,
+    pub wbt_flags: ::aya_bpf::cty::c_ushort,
+    pub stats_sectors: ::aya_bpf::cty::c_ushort,
+    pub nr_phys_segments: ::aya_bpf::cty::c_ushort,
+    pub nr_integrity_segments: ::aya_bpf::cty::c_ushort,
+    pub crypt_ctx: *mut bio_crypt_ctx,
+    pub crypt_keyslot: *mut blk_ksm_keyslot,
+    pub write_hint: ::aya_bpf::cty::c_ushort,
+    pub ioprio: ::aya_bpf::cty::c_ushort,
+    pub state: mq_rq_state::Type,
+    pub ref_: refcount_t,
+    pub timeout: ::aya_bpf::cty::c_uint,
+    pub deadline: ::aya_bpf::cty::c_ulong,
+    pub __bindgen_anon_4: request__bindgen_ty_4,
+    pub end_io: rq_end_io_fn,
+    pub end_io_data: *mut ::aya_bpf::cty::c_void,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub union request__bindgen_ty_1 {
+    pub hash: hlist_node,
+    pub ipi_list: llist_node,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub union request__bindgen_ty_2 {
+    pub rb_node: rb_node,
+    pub special_vec: bio_vec,
+    pub completion_data: *mut ::aya_bpf::cty::c_void,
+    pub error_count: ::aya_bpf::cty::c_int,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub union request__bindgen_ty_3 {
+    pub elv: request__bindgen_ty_3__bindgen_ty_1,
+    pub flush: request__bindgen_ty_3__bindgen_ty_2,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct request__bindgen_ty_3__bindgen_ty_1 {
+    pub icq: *mut io_cq,
+    pub priv_: [*mut ::aya_bpf::cty::c_void; 2usize],
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct request__bindgen_ty_3__bindgen_ty_2 {
+    pub seq: ::aya_bpf::cty::c_uint,
+    pub list: list_head,
+    pub saved_end_io: rq_end_io_fn,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub union request__bindgen_ty_4 {
+    pub csd: __call_single_data,
+    pub fifo_time: u64_,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct blk_zone {
+    pub start: __u64,
+    pub len: __u64,
+    pub wp: __u64,
+    pub type_: __u8,
+    pub cond: __u8,
+    pub non_seq: __u8,
+    pub reset: __u8,
+    pub resv: [__u8; 4usize],
+    pub capacity: __u64,
+    pub reserved: [__u8; 24usize],
+}
+pub mod elv_merge {
+    pub type Type = ::aya_bpf::cty::c_uint;
+    pub const ELEVATOR_NO_MERGE: Type = 0;
+    pub const ELEVATOR_FRONT_MERGE: Type = 1;
+    pub const ELEVATOR_BACK_MERGE: Type = 2;
+    pub const ELEVATOR_DISCARD_MERGE: Type = 3;
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct elevator_mq_ops {
+    pub init_sched: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut request_queue,
+            arg2: *mut elevator_type,
+        ) -> ::aya_bpf::cty::c_int,
+    >,
+    pub exit_sched: ::core::option::Option<unsafe extern "C" fn(arg1: *mut elevator_queue)>,
+    pub init_hctx: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut blk_mq_hw_ctx,
+            arg2: ::aya_bpf::cty::c_uint,
+        ) -> ::aya_bpf::cty::c_int,
+    >,
+    pub exit_hctx: ::core::option::Option<
+        unsafe extern "C" fn(arg1: *mut blk_mq_hw_ctx, arg2: ::aya_bpf::cty::c_uint),
+    >,
+    pub depth_updated: ::core::option::Option<unsafe extern "C" fn(arg1: *mut blk_mq_hw_ctx)>,
+    pub allow_merge: ::core::option::Option<
+        unsafe extern "C" fn(arg1: *mut request_queue, arg2: *mut request, arg3: *mut bio) -> bool_,
+    >,
+    pub bio_merge: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut request_queue,
+            arg2: *mut bio,
+            arg3: ::aya_bpf::cty::c_uint,
+        ) -> bool_,
+    >,
+    pub request_merge: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut request_queue,
+            arg2: *mut *mut request,
+            arg3: *mut bio,
+        ) -> ::aya_bpf::cty::c_int,
+    >,
+    pub request_merged: ::core::option::Option<
+        unsafe extern "C" fn(arg1: *mut request_queue, arg2: *mut request, arg3: elv_merge::Type),
+    >,
+    pub requests_merged: ::core::option::Option<
+        unsafe extern "C" fn(arg1: *mut request_queue, arg2: *mut request, arg3: *mut request),
+    >,
+    pub limit_depth: ::core::option::Option<
+        unsafe extern "C" fn(arg1: ::aya_bpf::cty::c_uint, arg2: *mut blk_mq_alloc_data),
+    >,
+    pub prepare_request: ::core::option::Option<unsafe extern "C" fn(arg1: *mut request)>,
+    pub finish_request: ::core::option::Option<unsafe extern "C" fn(arg1: *mut request)>,
+    pub insert_requests: ::core::option::Option<
+        unsafe extern "C" fn(arg1: *mut blk_mq_hw_ctx, arg2: *mut list_head, arg3: bool_),
+    >,
+    pub dispatch_request:
+        ::core::option::Option<unsafe extern "C" fn(arg1: *mut blk_mq_hw_ctx) -> *mut request>,
+    pub has_work: ::core::option::Option<unsafe extern "C" fn(arg1: *mut blk_mq_hw_ctx) -> bool_>,
+    pub completed_request:
+        ::core::option::Option<unsafe extern "C" fn(arg1: *mut request, arg2: u64_)>,
+    pub requeue_request: ::core::option::Option<unsafe extern "C" fn(arg1: *mut request)>,
+    pub former_request: ::core::option::Option<
+        unsafe extern "C" fn(arg1: *mut request_queue, arg2: *mut request) -> *mut request,
+    >,
+    pub next_request: ::core::option::Option<
+        unsafe extern "C" fn(arg1: *mut request_queue, arg2: *mut request) -> *mut request,
+    >,
+    pub init_icq: ::core::option::Option<unsafe extern "C" fn(arg1: *mut io_cq)>,
+    pub exit_icq: ::core::option::Option<unsafe extern "C" fn(arg1: *mut io_cq)>,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct elevator_type {
+    pub icq_cache: *mut kmem_cache,
+    pub ops: elevator_mq_ops,
+    pub icq_size: size_t,
+    pub icq_align: size_t,
+    pub elevator_attrs: *mut elv_fs_entry,
+    pub elevator_name: *const ::aya_bpf::cty::c_char,
+    pub elevator_alias: *const ::aya_bpf::cty::c_char,
+    pub elevator_features: ::aya_bpf::cty::c_uint,
+    pub elevator_owner: *mut module,
+    pub queue_debugfs_attrs: *const blk_mq_debugfs_attr,
+    pub hctx_debugfs_attrs: *const blk_mq_debugfs_attr,
+    pub icq_cache_name: [::aya_bpf::cty::c_char; 22usize],
+    pub list: list_head,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct elevator_queue {
+    pub type_: *mut elevator_type,
+    pub elevator_data: *mut ::aya_bpf::cty::c_void,
+    pub kobj: kobject,
+    pub sysfs_lock: mutex,
+    pub _bitfield_align_1: [u8; 0],
+    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 1usize]>,
+    pub hash: [hlist_head; 64usize],
+}
+impl elevator_queue {
     #[inline]
-    pub fn new_bitfield_1() -> __BindgenBitfieldUnit<[u8; 2usize]> {
-        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 2usize]> = Default::default();
+    pub fn registered(&self) -> ::aya_bpf::cty::c_uint {
+        unsafe { ::core::mem::transmute(self._bitfield_1.get(0usize, 1u8) as u32) }
+    }
+    #[inline]
+    pub fn set_registered(&mut self, val: ::aya_bpf::cty::c_uint) {
+        unsafe {
+            let val: u32 = ::core::mem::transmute(val);
+            self._bitfield_1.set(0usize, 1u8, val as u64)
+        }
+    }
+    #[inline]
+    pub fn new_bitfield_1(
+        registered: ::aya_bpf::cty::c_uint,
+    ) -> __BindgenBitfieldUnit<[u8; 1usize]> {
+        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 1usize]> = Default::default();
+        __bindgen_bitfield_unit.set(0usize, 1u8, {
+            let registered: u32 = unsafe { ::core::mem::transmute(registered) };
+            registered as u64
+        });
         __bindgen_bitfield_unit
     }
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct blk_rq_stat {
-    pub mean: u64_,
-    pub min: u64_,
-    pub max: u64_,
-    pub nr_samples: u32_,
-    pub batch: u64_,
+#[derive(Copy, Clone)]
+pub struct elv_fs_entry {
+    pub attr: attribute,
+    pub show: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut elevator_queue,
+            arg2: *mut ::aya_bpf::cty::c_char,
+        ) -> ssize_t,
+    >,
+    pub store: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut elevator_queue,
+            arg2: *const ::aya_bpf::cty::c_char,
+            arg3: size_t,
+        ) -> ssize_t,
+    >,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
+pub struct blk_mq_debugfs_attr {
+    pub name: *const ::aya_bpf::cty::c_char,
+    pub mode: umode_t,
+    pub show: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut ::aya_bpf::cty::c_void,
+            arg2: *mut seq_file,
+        ) -> ::aya_bpf::cty::c_int,
+    >,
+    pub write: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut ::aya_bpf::cty::c_void,
+            arg2: *const ::aya_bpf::cty::c_char,
+            arg3: size_t,
+            arg4: *mut loff_t,
+        ) -> ssize_t,
+    >,
+    pub seq_ops: *const seq_operations,
+}
+pub mod blk_eh_timer_return {
+    pub type Type = ::aya_bpf::cty::c_uint;
+    pub const BLK_EH_DONE: Type = 0;
+    pub const BLK_EH_RESET_TIMER: Type = 1;
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct blk_mq_ops {
+    pub queue_rq: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut blk_mq_hw_ctx,
+            arg2: *const blk_mq_queue_data,
+        ) -> blk_status_t,
+    >,
+    pub commit_rqs: ::core::option::Option<unsafe extern "C" fn(arg1: *mut blk_mq_hw_ctx)>,
+    pub get_budget: ::core::option::Option<
+        unsafe extern "C" fn(arg1: *mut request_queue) -> ::aya_bpf::cty::c_int,
+    >,
+    pub put_budget: ::core::option::Option<
+        unsafe extern "C" fn(arg1: *mut request_queue, arg2: ::aya_bpf::cty::c_int),
+    >,
+    pub set_rq_budget_token: ::core::option::Option<
+        unsafe extern "C" fn(arg1: *mut request, arg2: ::aya_bpf::cty::c_int),
+    >,
+    pub get_rq_budget_token:
+        ::core::option::Option<unsafe extern "C" fn(arg1: *mut request) -> ::aya_bpf::cty::c_int>,
+    pub timeout: ::core::option::Option<
+        unsafe extern "C" fn(arg1: *mut request, arg2: bool_) -> blk_eh_timer_return::Type,
+    >,
+    pub poll: ::core::option::Option<
+        unsafe extern "C" fn(arg1: *mut blk_mq_hw_ctx) -> ::aya_bpf::cty::c_int,
+    >,
+    pub complete: ::core::option::Option<unsafe extern "C" fn(arg1: *mut request)>,
+    pub init_hctx: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut blk_mq_hw_ctx,
+            arg2: *mut ::aya_bpf::cty::c_void,
+            arg3: ::aya_bpf::cty::c_uint,
+        ) -> ::aya_bpf::cty::c_int,
+    >,
+    pub exit_hctx: ::core::option::Option<
+        unsafe extern "C" fn(arg1: *mut blk_mq_hw_ctx, arg2: ::aya_bpf::cty::c_uint),
+    >,
+    pub init_request: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut blk_mq_tag_set,
+            arg2: *mut request,
+            arg3: ::aya_bpf::cty::c_uint,
+            arg4: ::aya_bpf::cty::c_uint,
+        ) -> ::aya_bpf::cty::c_int,
+    >,
+    pub exit_request: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut blk_mq_tag_set,
+            arg2: *mut request,
+            arg3: ::aya_bpf::cty::c_uint,
+        ),
+    >,
+    pub initialize_rq_fn: ::core::option::Option<unsafe extern "C" fn(arg1: *mut request)>,
+    pub cleanup_rq: ::core::option::Option<unsafe extern "C" fn(arg1: *mut request)>,
+    pub busy: ::core::option::Option<unsafe extern "C" fn(arg1: *mut request_queue) -> bool_>,
+    pub map_queues: ::core::option::Option<
+        unsafe extern "C" fn(arg1: *mut blk_mq_tag_set) -> ::aya_bpf::cty::c_int,
+    >,
+    pub show_rq:
+        ::core::option::Option<unsafe extern "C" fn(arg1: *mut seq_file, arg2: *mut request)>,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct blk_integrity_iter {
+    pub prot_buf: *mut ::aya_bpf::cty::c_void,
+    pub data_buf: *mut ::aya_bpf::cty::c_void,
+    pub seed: sector_t,
+    pub data_size: ::aya_bpf::cty::c_uint,
+    pub interval: ::aya_bpf::cty::c_ushort,
+    pub disk_name: *const ::aya_bpf::cty::c_char,
+}
+pub mod pr_type {
+    pub type Type = ::aya_bpf::cty::c_uint;
+    pub const PR_WRITE_EXCLUSIVE: Type = 1;
+    pub const PR_EXCLUSIVE_ACCESS: Type = 2;
+    pub const PR_WRITE_EXCLUSIVE_REG_ONLY: Type = 3;
+    pub const PR_EXCLUSIVE_ACCESS_REG_ONLY: Type = 4;
+    pub const PR_WRITE_EXCLUSIVE_ALL_REGS: Type = 5;
+    pub const PR_EXCLUSIVE_ACCESS_ALL_REGS: Type = 6;
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct pr_ops {
+    pub pr_register: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut block_device,
+            arg2: u64_,
+            arg3: u64_,
+            arg4: u32_,
+        ) -> ::aya_bpf::cty::c_int,
+    >,
+    pub pr_reserve: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut block_device,
+            arg2: u64_,
+            arg3: pr_type::Type,
+            arg4: u32_,
+        ) -> ::aya_bpf::cty::c_int,
+    >,
+    pub pr_release: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut block_device,
+            arg2: u64_,
+            arg3: pr_type::Type,
+        ) -> ::aya_bpf::cty::c_int,
+    >,
+    pub pr_preempt: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut block_device,
+            arg2: u64_,
+            arg3: u64_,
+            arg4: pr_type::Type,
+            arg5: bool_,
+        ) -> ::aya_bpf::cty::c_int,
+    >,
+    pub pr_clear: ::core::option::Option<
+        unsafe extern "C" fn(arg1: *mut block_device, arg2: u64_) -> ::aya_bpf::cty::c_int,
+    >,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct blkcg {
+    pub css: cgroup_subsys_state,
+    pub lock: spinlock_t,
+    pub online_pin: refcount_t,
+    pub blkg_tree: xarray,
+    pub blkg_hint: *mut blkcg_gq,
+    pub blkg_list: hlist_head,
+    pub cpd: [*mut blkcg_policy_data; 5usize],
+    pub all_blkcgs_node: list_head,
+    pub cgwb_list: list_head,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct blkcg_policy_data {
+    pub blkcg: *mut blkcg,
+    pub plid: ::aya_bpf::cty::c_int,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct blkg_policy_data {
+    pub blkg: *mut blkcg_gq,
+    pub plid: ::aya_bpf::cty::c_int,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
 pub struct memcg_vmstats_percpu {
-    pub state: [::aya_bpf::cty::c_long; 44usize],
-    pub events: [::aya_bpf::cty::c_ulong; 105usize],
-    pub state_prev: [::aya_bpf::cty::c_long; 44usize],
-    pub events_prev: [::aya_bpf::cty::c_ulong; 105usize],
+    pub state: [::aya_bpf::cty::c_long; 42usize],
+    pub events: [::aya_bpf::cty::c_ulong; 98usize],
+    pub state_prev: [::aya_bpf::cty::c_long; 42usize],
+    pub events_prev: [::aya_bpf::cty::c_ulong; 98usize],
     pub nr_page_events: ::aya_bpf::cty::c_ulong,
     pub targets: [::aya_bpf::cty::c_ulong; 2usize],
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct mem_cgroup_reclaim_iter {
     pub position: *mut mem_cgroup,
     pub generation: ::aya_bpf::cty::c_uint,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
+pub struct lruvec_stat {
+    pub count: [::aya_bpf::cty::c_long; 39usize],
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct batched_lruvec_stat {
+    pub count: [s32; 39usize],
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
 pub struct shrinker_info {
     pub rcu: callback_head,
     pub nr_deferred: *mut atomic_long_t,
     pub map: *mut ::aya_bpf::cty::c_ulong,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct lruvec_stats_percpu {
-    pub state: [::aya_bpf::cty::c_long; 40usize],
-    pub state_prev: [::aya_bpf::cty::c_long; 40usize],
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct lruvec_stats {
-    pub state: [::aya_bpf::cty::c_long; 40usize],
-    pub state_pending: [::aya_bpf::cty::c_long; 40usize],
-}
-#[repr(C)]
 #[derive(Copy, Clone)]
 pub struct mem_cgroup_per_node {
     pub lruvec: lruvec,
-    pub lruvec_stats_percpu: *mut lruvec_stats_percpu,
-    pub lruvec_stats: lruvec_stats,
+    pub lruvec_stat_local: *mut lruvec_stat,
+    pub lruvec_stat_cpu: *mut batched_lruvec_stat,
+    pub lruvec_stat: [atomic_long_t; 39usize],
     pub lru_zone_size: [::aya_bpf::cty::c_ulong; 25usize],
     pub iter: mem_cgroup_reclaim_iter,
     pub shrinker_info: *mut shrinker_info,
@@ -11777,18 +12146,12 @@ pub struct mem_cgroup_per_node {
     pub memcg: *mut mem_cgroup,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct eventfd_ctx {
-    _unused: [u8; 0],
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct mem_cgroup_threshold {
     pub eventfd: *mut eventfd_ctx,
     pub threshold: ::aya_bpf::cty::c_ulong,
 }
 #[repr(C)]
-#[derive(Debug)]
 pub struct mem_cgroup_threshold_ary {
     pub current_threshold: ::aya_bpf::cty::c_int,
     pub size: ::aya_bpf::cty::c_uint,
@@ -11864,7 +12227,7 @@ impl fs_parameter {
     }
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct fc_log {
     pub usage: refcount_t,
     pub head: u8_,
@@ -11874,7 +12237,7 @@ pub struct fc_log {
     pub buffer: [*mut ::aya_bpf::cty::c_char; 8usize],
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct fs_context_operations {
     pub free: ::core::option::Option<unsafe extern "C" fn(arg1: *mut fs_context)>,
     pub dup: ::core::option::Option<
@@ -11913,257 +12276,6 @@ pub union fs_parse_result__bindgen_ty_1 {
     pub uint_32: ::aya_bpf::cty::c_uint,
     pub uint_64: u64_,
 }
-pub type integrity_processing_fn =
-    ::core::option::Option<unsafe extern "C" fn(arg1: *mut blk_integrity_iter) -> blk_status_t>;
-pub type integrity_prepare_fn = ::core::option::Option<unsafe extern "C" fn(arg1: *mut request)>;
-pub type integrity_complete_fn =
-    ::core::option::Option<unsafe extern "C" fn(arg1: *mut request, arg2: ::aya_bpf::cty::c_uint)>;
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct blk_integrity_profile {
-    pub generate_fn: integrity_processing_fn,
-    pub verify_fn: integrity_processing_fn,
-    pub prepare_fn: integrity_prepare_fn,
-    pub complete_fn: integrity_complete_fn,
-    pub name: *const ::aya_bpf::cty::c_char,
-}
-pub type report_zones_cb = ::core::option::Option<
-    unsafe extern "C" fn(
-        arg1: *mut blk_zone,
-        arg2: ::aya_bpf::cty::c_uint,
-        arg3: *mut ::aya_bpf::cty::c_void,
-    ) -> ::aya_bpf::cty::c_int,
->;
-pub mod blk_unique_id {
-    pub type Type = ::aya_bpf::cty::c_uint;
-    pub const BLK_UID_T10: Type = 1;
-    pub const BLK_UID_EUI64: Type = 2;
-    pub const BLK_UID_NAA: Type = 3;
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct block_device_operations {
-    pub submit_bio: ::core::option::Option<unsafe extern "C" fn(arg1: *mut bio)>,
-    pub open: ::core::option::Option<
-        unsafe extern "C" fn(arg1: *mut block_device, arg2: fmode_t) -> ::aya_bpf::cty::c_int,
-    >,
-    pub release: ::core::option::Option<unsafe extern "C" fn(arg1: *mut gendisk, arg2: fmode_t)>,
-    pub rw_page: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut block_device,
-            arg2: sector_t,
-            arg3: *mut page,
-            arg4: ::aya_bpf::cty::c_uint,
-        ) -> ::aya_bpf::cty::c_int,
-    >,
-    pub ioctl: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut block_device,
-            arg2: fmode_t,
-            arg3: ::aya_bpf::cty::c_uint,
-            arg4: ::aya_bpf::cty::c_ulong,
-        ) -> ::aya_bpf::cty::c_int,
-    >,
-    pub compat_ioctl: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut block_device,
-            arg2: fmode_t,
-            arg3: ::aya_bpf::cty::c_uint,
-            arg4: ::aya_bpf::cty::c_ulong,
-        ) -> ::aya_bpf::cty::c_int,
-    >,
-    pub check_events: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut gendisk,
-            arg2: ::aya_bpf::cty::c_uint,
-        ) -> ::aya_bpf::cty::c_uint,
-    >,
-    pub unlock_native_capacity: ::core::option::Option<unsafe extern "C" fn(arg1: *mut gendisk)>,
-    pub getgeo: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut block_device,
-            arg2: *mut hd_geometry,
-        ) -> ::aya_bpf::cty::c_int,
-    >,
-    pub set_read_only: ::core::option::Option<
-        unsafe extern "C" fn(arg1: *mut block_device, arg2: bool_) -> ::aya_bpf::cty::c_int,
-    >,
-    pub swap_slot_free_notify: ::core::option::Option<
-        unsafe extern "C" fn(arg1: *mut block_device, arg2: ::aya_bpf::cty::c_ulong),
-    >,
-    pub report_zones: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut gendisk,
-            arg2: sector_t,
-            arg3: ::aya_bpf::cty::c_uint,
-            arg4: report_zones_cb,
-            arg5: *mut ::aya_bpf::cty::c_void,
-        ) -> ::aya_bpf::cty::c_int,
-    >,
-    pub devnode: ::core::option::Option<
-        unsafe extern "C" fn(arg1: *mut gendisk, arg2: *mut umode_t) -> *mut ::aya_bpf::cty::c_char,
-    >,
-    pub get_unique_id: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut gendisk,
-            arg2: *mut u8_,
-            arg3: blk_unique_id::Type,
-        ) -> ::aya_bpf::cty::c_int,
-    >,
-    pub owner: *mut module,
-    pub pr_ops: *const pr_ops,
-    pub alternative_gpt_sector: ::core::option::Option<
-        unsafe extern "C" fn(arg1: *mut gendisk, arg2: *mut sector_t) -> ::aya_bpf::cty::c_int,
-    >,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct blk_zone {
-    pub start: __u64,
-    pub len: __u64,
-    pub wp: __u64,
-    pub type_: __u8,
-    pub cond: __u8,
-    pub non_seq: __u8,
-    pub reset: __u8,
-    pub resv: [__u8; 4usize],
-    pub capacity: __u64,
-    pub reserved: [__u8; 24usize],
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct blk_independent_access_range {
-    pub kobj: kobject,
-    pub queue: *mut request_queue,
-    pub sector: sector_t,
-    pub nr_sectors: sector_t,
-}
-#[repr(C)]
-#[derive(Debug)]
-pub struct blk_independent_access_ranges {
-    pub kobj: kobject,
-    pub sysfs_registered: bool_,
-    pub nr_ia_ranges: ::aya_bpf::cty::c_uint,
-    pub ia_range: __IncompleteArrayField<blk_independent_access_range>,
-}
-pub mod blk_eh_timer_return {
-    pub type Type = ::aya_bpf::cty::c_uint;
-    pub const BLK_EH_DONE: Type = 0;
-    pub const BLK_EH_RESET_TIMER: Type = 1;
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct blk_mq_ops {
-    pub queue_rq: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut blk_mq_hw_ctx,
-            arg2: *const blk_mq_queue_data,
-        ) -> blk_status_t,
-    >,
-    pub commit_rqs: ::core::option::Option<unsafe extern "C" fn(arg1: *mut blk_mq_hw_ctx)>,
-    pub queue_rqs: ::core::option::Option<unsafe extern "C" fn(arg1: *mut *mut request)>,
-    pub get_budget: ::core::option::Option<
-        unsafe extern "C" fn(arg1: *mut request_queue) -> ::aya_bpf::cty::c_int,
-    >,
-    pub put_budget: ::core::option::Option<
-        unsafe extern "C" fn(arg1: *mut request_queue, arg2: ::aya_bpf::cty::c_int),
-    >,
-    pub set_rq_budget_token: ::core::option::Option<
-        unsafe extern "C" fn(arg1: *mut request, arg2: ::aya_bpf::cty::c_int),
-    >,
-    pub get_rq_budget_token:
-        ::core::option::Option<unsafe extern "C" fn(arg1: *mut request) -> ::aya_bpf::cty::c_int>,
-    pub timeout: ::core::option::Option<
-        unsafe extern "C" fn(arg1: *mut request, arg2: bool_) -> blk_eh_timer_return::Type,
-    >,
-    pub poll: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut blk_mq_hw_ctx,
-            arg2: *mut io_comp_batch,
-        ) -> ::aya_bpf::cty::c_int,
-    >,
-    pub complete: ::core::option::Option<unsafe extern "C" fn(arg1: *mut request)>,
-    pub init_hctx: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut blk_mq_hw_ctx,
-            arg2: *mut ::aya_bpf::cty::c_void,
-            arg3: ::aya_bpf::cty::c_uint,
-        ) -> ::aya_bpf::cty::c_int,
-    >,
-    pub exit_hctx: ::core::option::Option<
-        unsafe extern "C" fn(arg1: *mut blk_mq_hw_ctx, arg2: ::aya_bpf::cty::c_uint),
-    >,
-    pub init_request: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut blk_mq_tag_set,
-            arg2: *mut request,
-            arg3: ::aya_bpf::cty::c_uint,
-            arg4: ::aya_bpf::cty::c_uint,
-        ) -> ::aya_bpf::cty::c_int,
-    >,
-    pub exit_request: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut blk_mq_tag_set,
-            arg2: *mut request,
-            arg3: ::aya_bpf::cty::c_uint,
-        ),
-    >,
-    pub cleanup_rq: ::core::option::Option<unsafe extern "C" fn(arg1: *mut request)>,
-    pub busy: ::core::option::Option<unsafe extern "C" fn(arg1: *mut request_queue) -> bool_>,
-    pub map_queues: ::core::option::Option<
-        unsafe extern "C" fn(arg1: *mut blk_mq_tag_set) -> ::aya_bpf::cty::c_int,
-    >,
-    pub show_rq:
-        ::core::option::Option<unsafe extern "C" fn(arg1: *mut seq_file, arg2: *mut request)>,
-}
-pub mod pr_type {
-    pub type Type = ::aya_bpf::cty::c_uint;
-    pub const PR_WRITE_EXCLUSIVE: Type = 1;
-    pub const PR_EXCLUSIVE_ACCESS: Type = 2;
-    pub const PR_WRITE_EXCLUSIVE_REG_ONLY: Type = 3;
-    pub const PR_EXCLUSIVE_ACCESS_REG_ONLY: Type = 4;
-    pub const PR_WRITE_EXCLUSIVE_ALL_REGS: Type = 5;
-    pub const PR_EXCLUSIVE_ACCESS_ALL_REGS: Type = 6;
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct pr_ops {
-    pub pr_register: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut block_device,
-            arg2: u64_,
-            arg3: u64_,
-            arg4: u32_,
-        ) -> ::aya_bpf::cty::c_int,
-    >,
-    pub pr_reserve: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut block_device,
-            arg2: u64_,
-            arg3: pr_type::Type,
-            arg4: u32_,
-        ) -> ::aya_bpf::cty::c_int,
-    >,
-    pub pr_release: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut block_device,
-            arg2: u64_,
-            arg3: pr_type::Type,
-        ) -> ::aya_bpf::cty::c_int,
-    >,
-    pub pr_preempt: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut block_device,
-            arg2: u64_,
-            arg3: u64_,
-            arg4: pr_type::Type,
-            arg5: bool_,
-        ) -> ::aya_bpf::cty::c_int,
-    >,
-    pub pr_clear: ::core::option::Option<
-        unsafe extern "C" fn(arg1: *mut block_device, arg2: u64_) -> ::aya_bpf::cty::c_int,
-    >,
-}
 pub type __le16 = __u16;
 pub type __be16 = __u16;
 pub type __be32 = __u32;
@@ -12178,7 +12290,7 @@ pub type notifier_fn_t = ::core::option::Option<
     ) -> ::aya_bpf::cty::c_int,
 >;
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct notifier_block {
     pub notifier_call: notifier_fn_t,
     pub next: *mut notifier_block,
@@ -12191,79 +12303,14 @@ pub struct blocking_notifier_head {
     pub head: *mut notifier_block,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct raw_notifier_head {
     pub head: *mut notifier_block,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct page_pool_params {
-    pub flags: ::aya_bpf::cty::c_uint,
-    pub order: ::aya_bpf::cty::c_uint,
-    pub pool_size: ::aya_bpf::cty::c_uint,
-    pub nid: ::aya_bpf::cty::c_int,
-    pub dev: *mut device,
-    pub dma_dir: dma_data_direction::Type,
-    pub max_len: ::aya_bpf::cty::c_uint,
-    pub offset: ::aya_bpf::cty::c_uint,
-    pub init_callback: ::core::option::Option<
-        unsafe extern "C" fn(arg1: *mut page, arg2: *mut ::aya_bpf::cty::c_void),
-    >,
-    pub init_arg: *mut ::aya_bpf::cty::c_void,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct pp_alloc_cache {
-    pub count: u32_,
-    pub cache: [*mut page; 128usize],
-}
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct ptr_ring {
-    pub producer: ::aya_bpf::cty::c_int,
-    pub producer_lock: spinlock_t,
-    pub _bitfield_align_1: [u8; 0],
-    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 56usize]>,
-    pub consumer_head: ::aya_bpf::cty::c_int,
-    pub consumer_tail: ::aya_bpf::cty::c_int,
-    pub consumer_lock: spinlock_t,
-    pub _bitfield_align_2: [u8; 0],
-    pub _bitfield_2: __BindgenBitfieldUnit<[u8; 56usize]>,
-    pub size: ::aya_bpf::cty::c_int,
-    pub batch: ::aya_bpf::cty::c_int,
-    pub queue: *mut *mut ::aya_bpf::cty::c_void,
-    pub _bitfield_align_3: [u8; 0],
-    pub _bitfield_3: __BindgenBitfieldUnit<[u8; 48usize]>,
-}
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct page_pool {
-    pub p: page_pool_params,
-    pub release_dw: delayed_work,
-    pub disconnect: ::core::option::Option<unsafe extern "C" fn(arg1: *mut ::aya_bpf::cty::c_void)>,
-    pub defer_start: ::aya_bpf::cty::c_ulong,
-    pub defer_warn: ::aya_bpf::cty::c_ulong,
-    pub pages_state_hold_cnt: u32_,
-    pub frag_offset: ::aya_bpf::cty::c_uint,
-    pub frag_page: *mut page,
-    pub frag_users: ::aya_bpf::cty::c_long,
-    pub xdp_mem_id: u32_,
-    pub _bitfield_align_1: [u8; 0],
-    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 64usize]>,
-    pub alloc: pp_alloc_cache,
-    pub _bitfield_align_2: [u8; 0],
-    pub _bitfield_2: __BindgenBitfieldUnit<[u8; 56usize]>,
-    pub ring: ptr_ring,
-    pub pages_state_release_cnt: atomic_t,
-    pub user_cnt: refcount_t,
-    pub destroy_cnt: u64_,
-    pub _bitfield_align_3: [u8; 0],
-    pub _bitfield_3: __BindgenBitfieldUnit<[u8; 48usize]>,
 }
 pub type __addrpair = __u64;
 pub type __portpair = __u32;
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct possible_net_t {
     pub net: *mut net,
 }
@@ -12280,7 +12327,7 @@ pub union in6_addr__bindgen_ty_1 {
     pub u6_addr32: [__be32; 4usize],
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct hlist_nulls_node {
     pub next: *mut hlist_nulls_node,
     pub pprev: *mut *mut hlist_nulls_node,
@@ -12318,7 +12365,7 @@ pub union sock_common__bindgen_ty_1 {
     pub __bindgen_anon_1: sock_common__bindgen_ty_1__bindgen_ty_1,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct sock_common__bindgen_ty_1__bindgen_ty_1 {
     pub skc_daddr: __be32,
     pub skc_rcv_saddr: __be32,
@@ -12336,7 +12383,7 @@ pub union sock_common__bindgen_ty_3 {
     pub __bindgen_anon_1: sock_common__bindgen_ty_3__bindgen_ty_1,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct sock_common__bindgen_ty_3__bindgen_ty_1 {
     pub skc_dport: __be16,
     pub skc_num: __u16,
@@ -12454,62 +12501,110 @@ pub struct socket_lock_t {
     pub wq: wait_queue_head_t,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct sk_buff_list {
-    pub next: *mut sk_buff,
-    pub prev: *mut sk_buff,
-}
-#[repr(C)]
 #[derive(Copy, Clone)]
 pub struct sk_buff_head {
-    pub __bindgen_anon_1: sk_buff_head__bindgen_ty_1,
+    pub next: *mut sk_buff,
+    pub prev: *mut sk_buff,
     pub qlen: __u32,
     pub lock: spinlock_t,
 }
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub union sk_buff_head__bindgen_ty_1 {
-    pub __bindgen_anon_1: sk_buff_head__bindgen_ty_1__bindgen_ty_1,
-    pub list: sk_buff_list,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct sk_buff_head__bindgen_ty_1__bindgen_ty_1 {
-    pub next: *mut sk_buff,
-    pub prev: *mut sk_buff,
-}
 pub type netdev_features_t = u64_;
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct sock_cgroup_data {
-    pub cgroup: *mut cgroup,
-    pub classid: u32_,
-    pub prioidx: u16_,
+    pub __bindgen_anon_1: sock_cgroup_data__bindgen_ty_1,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct netns_tracker {}
+#[derive(Copy, Clone)]
+pub union sock_cgroup_data__bindgen_ty_1 {
+    pub __bindgen_anon_1: sock_cgroup_data__bindgen_ty_1__bindgen_ty_1,
+    pub val: u64_,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct sock_cgroup_data__bindgen_ty_1__bindgen_ty_1 {
+    pub _bitfield_align_1: [u8; 0],
+    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 1usize]>,
+    pub padding: u8_,
+    pub prioidx: u16_,
+    pub classid: u32_,
+}
+impl sock_cgroup_data__bindgen_ty_1__bindgen_ty_1 {
+    #[inline]
+    pub fn is_data(&self) -> u8_ {
+        unsafe { ::core::mem::transmute(self._bitfield_1.get(0usize, 1u8) as u8) }
+    }
+    #[inline]
+    pub fn set_is_data(&mut self, val: u8_) {
+        unsafe {
+            let val: u8 = ::core::mem::transmute(val);
+            self._bitfield_1.set(0usize, 1u8, val as u64)
+        }
+    }
+    #[inline]
+    pub fn no_refcnt(&self) -> u8_ {
+        unsafe { ::core::mem::transmute(self._bitfield_1.get(1usize, 1u8) as u8) }
+    }
+    #[inline]
+    pub fn set_no_refcnt(&mut self, val: u8_) {
+        unsafe {
+            let val: u8 = ::core::mem::transmute(val);
+            self._bitfield_1.set(1usize, 1u8, val as u64)
+        }
+    }
+    #[inline]
+    pub fn unused(&self) -> u8_ {
+        unsafe { ::core::mem::transmute(self._bitfield_1.get(2usize, 6u8) as u8) }
+    }
+    #[inline]
+    pub fn set_unused(&mut self, val: u8_) {
+        unsafe {
+            let val: u8 = ::core::mem::transmute(val);
+            self._bitfield_1.set(2usize, 6u8, val as u64)
+        }
+    }
+    #[inline]
+    pub fn new_bitfield_1(
+        is_data: u8_,
+        no_refcnt: u8_,
+        unused: u8_,
+    ) -> __BindgenBitfieldUnit<[u8; 1usize]> {
+        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 1usize]> = Default::default();
+        __bindgen_bitfield_unit.set(0usize, 1u8, {
+            let is_data: u8 = unsafe { ::core::mem::transmute(is_data) };
+            is_data as u64
+        });
+        __bindgen_bitfield_unit.set(1usize, 1u8, {
+            let no_refcnt: u8 = unsafe { ::core::mem::transmute(no_refcnt) };
+            no_refcnt as u64
+        });
+        __bindgen_bitfield_unit.set(2usize, 6u8, {
+            let unused: u8 = unsafe { ::core::mem::transmute(unused) };
+            unused as u64
+        });
+        __bindgen_bitfield_unit
+    }
+}
 #[repr(C)]
 pub struct sock {
     pub __sk_common: sock_common,
-    pub sk_rx_dst: *mut dst_entry,
-    pub sk_rx_dst_ifindex: ::aya_bpf::cty::c_int,
-    pub sk_rx_dst_cookie: u32_,
     pub sk_lock: socket_lock_t,
     pub sk_drops: atomic_t,
     pub sk_rcvlowat: ::aya_bpf::cty::c_int,
     pub sk_error_queue: sk_buff_head,
+    pub sk_rx_skb_cache: *mut sk_buff,
     pub sk_receive_queue: sk_buff_head,
     pub sk_backlog: sock__bindgen_ty_1,
-    pub defer_list: llist_head,
     pub sk_forward_alloc: ::aya_bpf::cty::c_int,
-    pub sk_reserved_mem: u32_,
     pub sk_ll_usec: ::aya_bpf::cty::c_uint,
     pub sk_napi_id: ::aya_bpf::cty::c_uint,
     pub sk_rcvbuf: ::aya_bpf::cty::c_int,
     pub sk_filter: *mut sk_filter,
     pub __bindgen_anon_1: sock__bindgen_ty_2,
     pub sk_policy: [*mut xfrm_policy; 2usize],
+    pub sk_rx_dst: *mut dst_entry,
+    pub sk_rx_dst_ifindex: ::aya_bpf::cty::c_int,
+    pub sk_rx_dst_cookie: u32_,
     pub sk_dst_cache: *mut dst_entry,
     pub sk_omem_alloc: atomic_t,
     pub sk_sndbuf: ::aya_bpf::cty::c_int,
@@ -12517,6 +12612,7 @@ pub struct sock {
     pub sk_wmem_alloc: refcount_t,
     pub sk_tsq_flags: ::aya_bpf::cty::c_ulong,
     pub __bindgen_anon_2: sock__bindgen_ty_3,
+    pub sk_tx_skb_cache: *mut sk_buff,
     pub sk_write_queue: sk_buff_head,
     pub sk_peek_off: __s32,
     pub sk_write_pending: ::aya_bpf::cty::c_int,
@@ -12530,6 +12626,8 @@ pub struct sock {
     pub sk_max_pacing_rate: ::aya_bpf::cty::c_ulong,
     pub sk_frag: page_frag,
     pub sk_route_caps: netdev_features_t,
+    pub sk_route_nocaps: netdev_features_t,
+    pub sk_route_forced_caps: netdev_features_t,
     pub sk_gso_type: ::aya_bpf::cty::c_int,
     pub sk_gso_max_size: ::aya_bpf::cty::c_uint,
     pub sk_allocation: gfp_t,
@@ -12551,14 +12649,13 @@ pub struct sock {
     pub sk_prefer_busy_poll: u8_,
     pub sk_busy_poll_budget: u16_,
     pub sk_peer_lock: spinlock_t,
-    pub sk_bind_phc: ::aya_bpf::cty::c_int,
     pub sk_peer_pid: *mut pid,
     pub sk_peer_cred: *const cred,
     pub sk_rcvtimeo: ::aya_bpf::cty::c_long,
     pub sk_stamp: ktime_t,
     pub sk_tsflags: u16_,
     pub sk_shutdown: u8_,
-    pub sk_tskey: atomic_t,
+    pub sk_tskey: u32_,
     pub sk_zckey: atomic_t,
     pub sk_clockid: u8_,
     pub _bitfield_align_2: [u8; 0],
@@ -12586,10 +12683,9 @@ pub struct sock {
     pub sk_reuseport_cb: *mut sock_reuseport,
     pub sk_bpf_storage: *mut bpf_local_storage,
     pub sk_rcu: callback_head,
-    pub ns_tracker: netns_tracker,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct sock__bindgen_ty_1 {
     pub rmem_alloc: atomic_t,
     pub len: ::aya_bpf::cty::c_int,
@@ -12610,11 +12706,11 @@ pub union sock__bindgen_ty_3 {
 }
 impl sock {
     #[inline]
-    pub fn sk_gso_disabled(&self) -> u8_ {
+    pub fn sk_padding(&self) -> u8_ {
         unsafe { ::core::mem::transmute(self._bitfield_1.get(0usize, 1u8) as u8) }
     }
     #[inline]
-    pub fn set_sk_gso_disabled(&mut self, val: u8_) {
+    pub fn set_sk_padding(&mut self, val: u8_) {
         unsafe {
             let val: u8 = ::core::mem::transmute(val);
             self._bitfield_1.set(0usize, 1u8, val as u64)
@@ -12666,7 +12762,7 @@ impl sock {
     }
     #[inline]
     pub fn new_bitfield_1(
-        sk_gso_disabled: u8_,
+        sk_padding: u8_,
         sk_kern_sock: u8_,
         sk_no_check_tx: u8_,
         sk_no_check_rx: u8_,
@@ -12674,8 +12770,8 @@ impl sock {
     ) -> __BindgenBitfieldUnit<[u8; 1usize]> {
         let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 1usize]> = Default::default();
         __bindgen_bitfield_unit.set(0usize, 1u8, {
-            let sk_gso_disabled: u8 = unsafe { ::core::mem::transmute(sk_gso_disabled) };
-            sk_gso_disabled as u64
+            let sk_padding: u8 = unsafe { ::core::mem::transmute(sk_padding) };
+            sk_padding as u64
         });
         __bindgen_bitfield_unit.set(1usize, 1u8, {
             let sk_kern_sock: u8 = unsafe { ::core::mem::transmute(sk_kern_sock) };
@@ -12753,12 +12849,12 @@ impl sock {
     }
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct rhash_head {
     pub next: *mut rhash_head,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct rhashtable_compare_arg {
     pub ht: *mut rhashtable,
     pub key: *const ::aya_bpf::cty::c_void,
@@ -12776,7 +12872,7 @@ pub type rht_obj_cmpfn_t = ::core::option::Option<
     ) -> ::aya_bpf::cty::c_int,
 >;
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct rhashtable_params {
     pub nelem_hint: u16_,
     pub key_len: u16_,
@@ -12841,7 +12937,7 @@ pub struct pipe_inode_info {
 pub type __kernel_sa_family_t = ::aya_bpf::cty::c_ushort;
 pub type sa_family_t = __kernel_sa_family_t;
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct sockaddr {
     pub sa_family: sa_family_t,
     pub sa_data: [::aya_bpf::cty::c_char; 14usize],
@@ -12888,14 +12984,14 @@ impl msghdr {
     }
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct sync_serial_settings {
     pub clock_rate: ::aya_bpf::cty::c_uint,
     pub clock_type: ::aya_bpf::cty::c_uint,
     pub loopback: ::aya_bpf::cty::c_ushort,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct te1_settings {
     pub clock_rate: ::aya_bpf::cty::c_uint,
     pub clock_type: ::aya_bpf::cty::c_uint,
@@ -12903,13 +12999,13 @@ pub struct te1_settings {
     pub slot_map: ::aya_bpf::cty::c_uint,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct raw_hdlc_proto {
     pub encoding: ::aya_bpf::cty::c_ushort,
     pub parity: ::aya_bpf::cty::c_ushort,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct fr_proto {
     pub t391: ::aya_bpf::cty::c_uint,
     pub t392: ::aya_bpf::cty::c_uint,
@@ -12920,24 +13016,24 @@ pub struct fr_proto {
     pub dce: ::aya_bpf::cty::c_ushort,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct fr_proto_pvc {
     pub dlci: ::aya_bpf::cty::c_uint,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct fr_proto_pvc_info {
     pub dlci: ::aya_bpf::cty::c_uint,
     pub master: [::aya_bpf::cty::c_char; 16usize],
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct cisco_proto {
     pub interval: ::aya_bpf::cty::c_uint,
     pub timeout: ::aya_bpf::cty::c_uint,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct x25_hdlc_proto {
     pub dce: ::aya_bpf::cty::c_ushort,
     pub modulo: ::aya_bpf::cty::c_uint,
@@ -12947,7 +13043,7 @@ pub struct x25_hdlc_proto {
     pub n2: ::aya_bpf::cty::c_uint,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct ifmap {
     pub mem_start: ::aya_bpf::cty::c_ulong,
     pub mem_end: ::aya_bpf::cty::c_ulong,
@@ -13016,7 +13112,7 @@ pub type tcflag_t = ::aya_bpf::cty::c_uint;
 pub type cc_t = ::aya_bpf::cty::c_uchar;
 pub type speed_t = ::aya_bpf::cty::c_uint;
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct ktermios {
     pub c_iflag: tcflag_t,
     pub c_oflag: tcflag_t,
@@ -13028,7 +13124,7 @@ pub struct ktermios {
     pub c_ospeed: speed_t,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct winsize {
     pub ws_row: ::aya_bpf::cty::c_ushort,
     pub ws_col: ::aya_bpf::cty::c_ushort,
@@ -13036,6 +13132,7 @@ pub struct winsize {
     pub ws_ypixel: ::aya_bpf::cty::c_ushort,
 }
 #[repr(C)]
+#[derive(Copy, Clone)]
 pub struct tty_struct {
     pub magic: ::aya_bpf::cty::c_int,
     pub kref: kref,
@@ -13050,15 +13147,21 @@ pub struct tty_struct {
     pub throttle_mutex: mutex,
     pub termios_rwsem: rw_semaphore,
     pub winsize_mutex: mutex,
+    pub ctrl_lock: spinlock_t,
+    pub flow_lock: spinlock_t,
     pub termios: ktermios,
     pub termios_locked: ktermios,
     pub name: [::aya_bpf::cty::c_char; 64usize],
+    pub pgrp: *mut pid,
+    pub session: *mut pid,
     pub flags: ::aya_bpf::cty::c_ulong,
     pub count: ::aya_bpf::cty::c_int,
     pub winsize: winsize,
-    pub flow: tty_struct__bindgen_ty_1,
-    pub ctrl: tty_struct__bindgen_ty_2,
+    pub _bitfield_align_1: [u64; 0],
+    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 16usize]>,
     pub hw_stopped: ::aya_bpf::cty::c_int,
+    pub _bitfield_align_2: [u64; 0],
+    pub _bitfield_2: __BindgenBitfieldUnit<[u8; 15usize]>,
     pub receive_room: ::aya_bpf::cty::c_uint,
     pub flow_change: ::aya_bpf::cty::c_int,
     pub link: *mut tty_struct,
@@ -13076,21 +13179,115 @@ pub struct tty_struct {
     pub SAK_work: work_struct,
     pub port: *mut tty_port,
 }
-#[repr(C)]
-pub struct tty_struct__bindgen_ty_1 {
-    pub lock: spinlock_t,
-    pub stopped: bool_,
-    pub tco_stopped: bool_,
-    pub unused: __IncompleteArrayField<::aya_bpf::cty::c_ulong>,
-}
-#[repr(C)]
-pub struct tty_struct__bindgen_ty_2 {
-    pub lock: spinlock_t,
-    pub pgrp: *mut pid,
-    pub session: *mut pid,
-    pub pktstatus: ::aya_bpf::cty::c_uchar,
-    pub packet: bool_,
-    pub unused: __IncompleteArrayField<::aya_bpf::cty::c_ulong>,
+impl tty_struct {
+    #[inline]
+    pub fn stopped(&self) -> ::aya_bpf::cty::c_ulong {
+        unsafe { ::core::mem::transmute(self._bitfield_1.get(0usize, 1u8) as u64) }
+    }
+    #[inline]
+    pub fn set_stopped(&mut self, val: ::aya_bpf::cty::c_ulong) {
+        unsafe {
+            let val: u64 = ::core::mem::transmute(val);
+            self._bitfield_1.set(0usize, 1u8, val as u64)
+        }
+    }
+    #[inline]
+    pub fn flow_stopped(&self) -> ::aya_bpf::cty::c_ulong {
+        unsafe { ::core::mem::transmute(self._bitfield_1.get(1usize, 1u8) as u64) }
+    }
+    #[inline]
+    pub fn set_flow_stopped(&mut self, val: ::aya_bpf::cty::c_ulong) {
+        unsafe {
+            let val: u64 = ::core::mem::transmute(val);
+            self._bitfield_1.set(1usize, 1u8, val as u64)
+        }
+    }
+    #[inline]
+    pub fn unused(&self) -> ::aya_bpf::cty::c_ulong {
+        unsafe { ::core::mem::transmute(self._bitfield_1.get(64usize, 62u8) as u64) }
+    }
+    #[inline]
+    pub fn set_unused(&mut self, val: ::aya_bpf::cty::c_ulong) {
+        unsafe {
+            let val: u64 = ::core::mem::transmute(val);
+            self._bitfield_1.set(64usize, 62u8, val as u64)
+        }
+    }
+    #[inline]
+    pub fn new_bitfield_1(
+        stopped: ::aya_bpf::cty::c_ulong,
+        flow_stopped: ::aya_bpf::cty::c_ulong,
+        unused: ::aya_bpf::cty::c_ulong,
+    ) -> __BindgenBitfieldUnit<[u8; 16usize]> {
+        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 16usize]> = Default::default();
+        __bindgen_bitfield_unit.set(0usize, 1u8, {
+            let stopped: u64 = unsafe { ::core::mem::transmute(stopped) };
+            stopped as u64
+        });
+        __bindgen_bitfield_unit.set(1usize, 1u8, {
+            let flow_stopped: u64 = unsafe { ::core::mem::transmute(flow_stopped) };
+            flow_stopped as u64
+        });
+        __bindgen_bitfield_unit.set(64usize, 62u8, {
+            let unused: u64 = unsafe { ::core::mem::transmute(unused) };
+            unused as u64
+        });
+        __bindgen_bitfield_unit
+    }
+    #[inline]
+    pub fn ctrl_status(&self) -> ::aya_bpf::cty::c_ulong {
+        unsafe { ::core::mem::transmute(self._bitfield_2.get(0usize, 8u8) as u64) }
+    }
+    #[inline]
+    pub fn set_ctrl_status(&mut self, val: ::aya_bpf::cty::c_ulong) {
+        unsafe {
+            let val: u64 = ::core::mem::transmute(val);
+            self._bitfield_2.set(0usize, 8u8, val as u64)
+        }
+    }
+    #[inline]
+    pub fn packet(&self) -> ::aya_bpf::cty::c_ulong {
+        unsafe { ::core::mem::transmute(self._bitfield_2.get(8usize, 1u8) as u64) }
+    }
+    #[inline]
+    pub fn set_packet(&mut self, val: ::aya_bpf::cty::c_ulong) {
+        unsafe {
+            let val: u64 = ::core::mem::transmute(val);
+            self._bitfield_2.set(8usize, 1u8, val as u64)
+        }
+    }
+    #[inline]
+    pub fn unused_ctrl(&self) -> ::aya_bpf::cty::c_ulong {
+        unsafe { ::core::mem::transmute(self._bitfield_2.get(64usize, 55u8) as u64) }
+    }
+    #[inline]
+    pub fn set_unused_ctrl(&mut self, val: ::aya_bpf::cty::c_ulong) {
+        unsafe {
+            let val: u64 = ::core::mem::transmute(val);
+            self._bitfield_2.set(64usize, 55u8, val as u64)
+        }
+    }
+    #[inline]
+    pub fn new_bitfield_2(
+        ctrl_status: ::aya_bpf::cty::c_ulong,
+        packet: ::aya_bpf::cty::c_ulong,
+        unused_ctrl: ::aya_bpf::cty::c_ulong,
+    ) -> __BindgenBitfieldUnit<[u8; 15usize]> {
+        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 15usize]> = Default::default();
+        __bindgen_bitfield_unit.set(0usize, 8u8, {
+            let ctrl_status: u64 = unsafe { ::core::mem::transmute(ctrl_status) };
+            ctrl_status as u64
+        });
+        __bindgen_bitfield_unit.set(8usize, 1u8, {
+            let packet: u64 = unsafe { ::core::mem::transmute(packet) };
+            packet as u64
+        });
+        __bindgen_bitfield_unit.set(64usize, 55u8, {
+            let unused_ctrl: u64 = unsafe { ::core::mem::transmute(unused_ctrl) };
+            unused_ctrl as u64
+        });
+        __bindgen_bitfield_unit
+    }
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
@@ -13127,35 +13324,7 @@ pub struct posix_acl {
     pub a_entries: __IncompleteArrayField<posix_acl_entry>,
 }
 #[repr(C)]
-pub struct tty_buffer {
-    pub __bindgen_anon_1: tty_buffer__bindgen_ty_1,
-    pub used: ::aya_bpf::cty::c_int,
-    pub size: ::aya_bpf::cty::c_int,
-    pub commit: ::aya_bpf::cty::c_int,
-    pub read: ::aya_bpf::cty::c_int,
-    pub flags: ::aya_bpf::cty::c_int,
-    pub data: __IncompleteArrayField<::aya_bpf::cty::c_ulong>,
-}
-#[repr(C)]
 #[derive(Copy, Clone)]
-pub union tty_buffer__bindgen_ty_1 {
-    pub next: *mut tty_buffer,
-    pub free: llist_node,
-}
-#[repr(C)]
-pub struct tty_bufhead {
-    pub head: *mut tty_buffer,
-    pub work: work_struct,
-    pub lock: mutex,
-    pub priority: atomic_t,
-    pub sentinel: tty_buffer,
-    pub free: llist_head,
-    pub mem_used: atomic_t,
-    pub mem_limit: ::aya_bpf::cty::c_int,
-    pub tail: *mut tty_buffer,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
 pub struct tty_operations {
     pub lookup: ::core::option::Option<
         unsafe extern "C" fn(
@@ -13190,10 +13359,10 @@ pub struct tty_operations {
     >,
     pub flush_chars: ::core::option::Option<unsafe extern "C" fn(arg1: *mut tty_struct)>,
     pub write_room: ::core::option::Option<
-        unsafe extern "C" fn(arg1: *mut tty_struct) -> ::aya_bpf::cty::c_uint,
+        unsafe extern "C" fn(arg1: *mut tty_struct) -> ::aya_bpf::cty::c_int,
     >,
     pub chars_in_buffer: ::core::option::Option<
-        unsafe extern "C" fn(arg1: *mut tty_struct) -> ::aya_bpf::cty::c_uint,
+        unsafe extern "C" fn(arg1: *mut tty_struct) -> ::aya_bpf::cty::c_int,
     >,
     pub ioctl: ::core::option::Option<
         unsafe extern "C" fn(
@@ -13263,6 +13432,26 @@ pub struct tty_operations {
     >,
     pub show_fdinfo:
         ::core::option::Option<unsafe extern "C" fn(arg1: *mut tty_struct, arg2: *mut seq_file)>,
+    pub poll_init: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut tty_driver,
+            arg2: ::aya_bpf::cty::c_int,
+            arg3: *mut ::aya_bpf::cty::c_char,
+        ) -> ::aya_bpf::cty::c_int,
+    >,
+    pub poll_get_char: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut tty_driver,
+            arg2: ::aya_bpf::cty::c_int,
+        ) -> ::aya_bpf::cty::c_int,
+    >,
+    pub poll_put_char: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut tty_driver,
+            arg2: ::aya_bpf::cty::c_int,
+            arg3: ::aya_bpf::cty::c_char,
+        ),
+    >,
     pub proc_show: ::core::option::Option<
         unsafe extern "C" fn(
             arg1: *mut seq_file,
@@ -13271,7 +13460,7 @@ pub struct tty_operations {
     >,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct tty_driver {
     pub magic: ::aya_bpf::cty::c_int,
     pub kref: kref,
@@ -13295,6 +13484,34 @@ pub struct tty_driver {
     pub driver_state: *mut ::aya_bpf::cty::c_void,
     pub ops: *const tty_operations,
     pub tty_drivers: list_head,
+}
+#[repr(C)]
+pub struct tty_buffer {
+    pub __bindgen_anon_1: tty_buffer__bindgen_ty_1,
+    pub used: ::aya_bpf::cty::c_int,
+    pub size: ::aya_bpf::cty::c_int,
+    pub commit: ::aya_bpf::cty::c_int,
+    pub read: ::aya_bpf::cty::c_int,
+    pub flags: ::aya_bpf::cty::c_int,
+    pub data: __IncompleteArrayField<::aya_bpf::cty::c_ulong>,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub union tty_buffer__bindgen_ty_1 {
+    pub next: *mut tty_buffer,
+    pub free: llist_node,
+}
+#[repr(C)]
+pub struct tty_bufhead {
+    pub head: *mut tty_buffer,
+    pub work: work_struct,
+    pub lock: mutex,
+    pub priority: atomic_t,
+    pub sentinel: tty_buffer,
+    pub free: llist_head,
+    pub mem_used: atomic_t,
+    pub mem_limit: ::aya_bpf::cty::c_int,
+    pub tail: *mut tty_buffer,
 }
 #[repr(C)]
 pub struct tty_port {
@@ -13344,10 +13561,11 @@ impl tty_port {
     }
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct tty_ldisc_ops {
     pub name: *mut ::aya_bpf::cty::c_char,
     pub num: ::aya_bpf::cty::c_int,
+    pub flags: ::aya_bpf::cty::c_int,
     pub open: ::core::option::Option<
         unsafe extern "C" fn(arg1: *mut tty_struct) -> ::aya_bpf::cty::c_int,
     >,
@@ -13374,15 +13592,17 @@ pub struct tty_ldisc_ops {
     pub ioctl: ::core::option::Option<
         unsafe extern "C" fn(
             arg1: *mut tty_struct,
-            arg2: ::aya_bpf::cty::c_uint,
-            arg3: ::aya_bpf::cty::c_ulong,
+            arg2: *mut file,
+            arg3: ::aya_bpf::cty::c_uint,
+            arg4: ::aya_bpf::cty::c_ulong,
         ) -> ::aya_bpf::cty::c_int,
     >,
     pub compat_ioctl: ::core::option::Option<
         unsafe extern "C" fn(
             arg1: *mut tty_struct,
-            arg2: ::aya_bpf::cty::c_uint,
-            arg3: ::aya_bpf::cty::c_ulong,
+            arg2: *mut file,
+            arg3: ::aya_bpf::cty::c_uint,
+            arg4: ::aya_bpf::cty::c_ulong,
         ) -> ::aya_bpf::cty::c_int,
     >,
     pub set_termios:
@@ -13394,12 +13614,14 @@ pub struct tty_ldisc_ops {
             arg3: *mut poll_table_struct,
         ) -> __poll_t,
     >,
-    pub hangup: ::core::option::Option<unsafe extern "C" fn(arg1: *mut tty_struct)>,
+    pub hangup: ::core::option::Option<
+        unsafe extern "C" fn(arg1: *mut tty_struct) -> ::aya_bpf::cty::c_int,
+    >,
     pub receive_buf: ::core::option::Option<
         unsafe extern "C" fn(
             arg1: *mut tty_struct,
             arg2: *const ::aya_bpf::cty::c_uchar,
-            arg3: *const ::aya_bpf::cty::c_char,
+            arg3: *mut ::aya_bpf::cty::c_char,
             arg4: ::aya_bpf::cty::c_int,
         ),
     >,
@@ -13411,20 +13633,21 @@ pub struct tty_ldisc_ops {
         unsafe extern "C" fn(
             arg1: *mut tty_struct,
             arg2: *const ::aya_bpf::cty::c_uchar,
-            arg3: *const ::aya_bpf::cty::c_char,
+            arg3: *mut ::aya_bpf::cty::c_char,
             arg4: ::aya_bpf::cty::c_int,
         ) -> ::aya_bpf::cty::c_int,
     >,
     pub owner: *mut module,
+    pub refcount: ::aya_bpf::cty::c_int,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct tty_ldisc {
     pub ops: *mut tty_ldisc_ops,
     pub tty: *mut tty_struct,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct tty_port_operations {
     pub carrier_raised:
         ::core::option::Option<unsafe extern "C" fn(arg1: *mut tty_port) -> ::aya_bpf::cty::c_int>,
@@ -13438,7 +13661,7 @@ pub struct tty_port_operations {
     pub destruct: ::core::option::Option<unsafe extern "C" fn(arg1: *mut tty_port)>,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct tty_port_client_operations {
     pub receive_buf: ::core::option::Option<
         unsafe extern "C" fn(
@@ -13451,17 +13674,15 @@ pub struct tty_port_client_operations {
     pub write_wakeup: ::core::option::Option<unsafe extern "C" fn(arg1: *mut tty_port)>,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct ref_tracker_dir {}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct netns_core {
     pub sysctl_hdr: *mut ctl_table_header,
     pub sysctl_somaxconn: ::aya_bpf::cty::c_int,
+    pub sock_inuse: *mut ::aya_bpf::cty::c_int,
     pub prot_inuse: *mut prot_inuse,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct netns_mib {
     pub ip_statistics: *mut ipstats_mib,
     pub ipv6_statistics: *mut ipstats_mib,
@@ -13487,7 +13708,7 @@ pub struct netns_packet {
     pub sklist: hlist_head,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct netns_unix {
     pub sysctl_max_dgram_qlen: ::aya_bpf::cty::c_int,
     pub ctl: *mut ctl_table_header,
@@ -13502,7 +13723,7 @@ pub struct netns_nexthop {
     pub notifier_chain: blocking_notifier_head,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct inet_timewait_death_row {
     pub tw_count: atomic_t,
     pub tw_pad: [::aya_bpf::cty::c_char; 60usize],
@@ -13523,7 +13744,7 @@ pub struct ping_group_range {
     pub range: [kgid_t; 2usize],
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct siphash_key_t {
     pub key: [u64_; 2usize],
 }
@@ -13562,8 +13783,6 @@ pub struct netns_ipv4 {
     pub sysctl_icmp_errors_use_inbound_ifaddr: u8_,
     pub sysctl_icmp_ratelimit: ::aya_bpf::cty::c_int,
     pub sysctl_icmp_ratemask: ::aya_bpf::cty::c_int,
-    pub ip_rt_min_pmtu: u32_,
-    pub ip_rt_mtu_expires: ::aya_bpf::cty::c_int,
     pub ip_local_ports: local_ports,
     pub sysctl_tcp_ecn: u8_,
     pub sysctl_tcp_ecn_fallback: u8_,
@@ -13594,7 +13813,6 @@ pub struct netns_ipv4 {
     pub sysctl_tcp_syn_retries: u8_,
     pub sysctl_tcp_synack_retries: u8_,
     pub sysctl_tcp_syncookies: u8_,
-    pub sysctl_tcp_migrate_req: u8_,
     pub sysctl_tcp_reordering: ::aya_bpf::cty::c_int,
     pub sysctl_tcp_retries1: u8_,
     pub sysctl_tcp_retries2: u8_,
@@ -13642,6 +13860,7 @@ pub struct netns_ipv4 {
     pub sysctl_tcp_fastopen: ::aya_bpf::cty::c_int,
     pub tcp_congestion_control: *const tcp_congestion_ops,
     pub tcp_fastopen_ctx: *mut tcp_fastopen_context,
+    pub tcp_fastopen_ctx_lock: spinlock_t,
     pub sysctl_tcp_fastopen_blackhole_timeout: ::aya_bpf::cty::c_uint,
     pub tfo_active_disable_times: atomic_t,
     pub tfo_active_disable_stamp: ::aya_bpf::cty::c_ulong,
@@ -13659,7 +13878,6 @@ pub struct netns_ipv4 {
     pub sysctl_ip_prot_sock: ::aya_bpf::cty::c_int,
     pub mr_tables: list_head,
     pub mr_rules_ops: *mut fib_rules_ops,
-    pub sysctl_fib_multipath_hash_fields: u32_,
     pub sysctl_fib_multipath_use_neigh: u8_,
     pub sysctl_fib_multipath_hash_policy: u8_,
     pub notifier_ops: *mut fib_notifier_ops,
@@ -13669,14 +13887,7 @@ pub struct netns_ipv4 {
     pub rt_genid: atomic_t,
     pub ip_id_key: siphash_key_t,
     pub _bitfield_align_1: [u8; 0],
-    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 32usize]>,
-}
-impl netns_ipv4 {
-    #[inline]
-    pub fn new_bitfield_1() -> __BindgenBitfieldUnit<[u8; 32usize]> {
-        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 32usize]> = Default::default();
-        __bindgen_bitfield_unit
-    }
+    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 40usize]>,
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
@@ -13750,7 +13961,7 @@ impl dst_ops {
     }
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct netns_sysctl_ipv6 {
     pub hdr: *mut ctl_table_header,
     pub route_hdr: *mut ctl_table_header,
@@ -13765,9 +13976,8 @@ pub struct netns_sysctl_ipv6 {
     pub ip6_rt_gc_elasticity: ::aya_bpf::cty::c_int,
     pub ip6_rt_mtu_expires: ::aya_bpf::cty::c_int,
     pub ip6_rt_min_advmss: ::aya_bpf::cty::c_int,
-    pub multipath_hash_fields: u32_,
-    pub multipath_hash_policy: u8_,
     pub bindv6only: u8_,
+    pub multipath_hash_policy: u8_,
     pub flowlabel_consistency: u8_,
     pub auto_flowlabels: u8_,
     pub icmpv6_time: ::aya_bpf::cty::c_int,
@@ -13788,8 +13998,6 @@ pub struct netns_sysctl_ipv6 {
     pub max_dst_opts_len: ::aya_bpf::cty::c_int,
     pub max_hbh_opts_len: ::aya_bpf::cty::c_int,
     pub seg6_flowlabel: ::aya_bpf::cty::c_int,
-    pub ioam6_id: u32_,
-    pub ioam6_id_wide: u64_,
     pub skip_notify_on_dev_down: bool_,
     pub fib_notify_on_flag_change: u8_,
 }
@@ -13813,9 +14021,8 @@ pub struct netns_ipv6 {
     pub fib6_gc_lock: spinlock_t,
     pub ip6_rt_gc_expire: ::aya_bpf::cty::c_uint,
     pub ip6_rt_last_gc: ::aya_bpf::cty::c_ulong,
-    pub flowlabel_has_excl: ::aya_bpf::cty::c_uchar,
-    pub fib6_has_custom_rules: bool_,
     pub fib6_rules_require_fldissect: ::aya_bpf::cty::c_uint,
+    pub fib6_has_custom_rules: bool_,
     pub fib6_routes_require_src: ::aya_bpf::cty::c_uint,
     pub ip6_prohibit_entry: *mut rt6_info,
     pub ip6_blk_hole_entry: *mut rt6_info,
@@ -13835,7 +14042,8 @@ pub struct netns_ipv6 {
     pub ip6mr_notifier_ops: *mut fib_notifier_ops,
     pub ipmr_seq: ::aya_bpf::cty::c_uint,
     pub ip6addrlbl_table: netns_ipv6__bindgen_ty_1,
-    pub ioam6_data: *mut ioam6_pernet_data,
+    pub _bitfield_align_1: [u8; 0],
+    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 24usize]>,
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
@@ -13844,19 +14052,26 @@ pub struct netns_ipv6__bindgen_ty_1 {
     pub lock: spinlock_t,
     pub seq: u32_,
 }
+impl netns_ipv6 {
+    #[inline]
+    pub fn new_bitfield_1() -> __BindgenBitfieldUnit<[u8; 24usize]> {
+        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 24usize]> = Default::default();
+        __bindgen_bitfield_unit
+    }
+}
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct netns_sysctl_lowpan {
     pub frags_hdr: *mut ctl_table_header,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct netns_ieee802154_lowpan {
     pub sysctl: netns_sysctl_lowpan,
     pub fqdir: *mut fqdir,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct sctp_mib {
     _unused: [u8; 0],
 }
@@ -13888,7 +14103,6 @@ pub struct netns_sctp {
     pub valid_cookie_life: ::aya_bpf::cty::c_uint,
     pub sack_timeout: ::aya_bpf::cty::c_uint,
     pub hb_interval: ::aya_bpf::cty::c_uint,
-    pub probe_interval: ::aya_bpf::cty::c_uint,
     pub max_retrans_association: ::aya_bpf::cty::c_int,
     pub max_retrans_path: ::aya_bpf::cty::c_int,
     pub max_retrans_init: ::aya_bpf::cty::c_int,
@@ -13911,63 +14125,68 @@ pub struct netns_sctp {
     pub max_autoclose: ::aya_bpf::cty::c_ulong,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct netns_nf {
     pub proc_netfilter: *mut proc_dir_entry,
+    pub queue_handler: *const nf_queue_handler,
     pub nf_loggers: [*const nf_logger; 13usize],
     pub nf_log_dir_header: *mut ctl_table_header,
     pub hooks_ipv4: [*mut nf_hook_entries; 5usize],
     pub hooks_ipv6: [*mut nf_hook_entries; 5usize],
     pub hooks_arp: [*mut nf_hook_entries; 3usize],
     pub hooks_bridge: [*mut nf_hook_entries; 5usize],
+    pub hooks_decnet: [*mut nf_hook_entries; 7usize],
     pub defrag_ipv4_users: ::aya_bpf::cty::c_uint,
     pub defrag_ipv6_users: ::aya_bpf::cty::c_uint,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
+pub struct netns_xt {
+    pub notrack_deprecated_warning: bool_,
+    pub clusterip_deprecated_warning: bool_,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
 pub struct nf_generic_net {
     pub timeout: ::aya_bpf::cty::c_uint,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct nf_tcp_net {
     pub timeouts: [::aya_bpf::cty::c_uint; 14usize],
     pub tcp_loose: u8_,
     pub tcp_be_liberal: u8_,
     pub tcp_max_retrans: u8_,
-    pub tcp_ignore_invalid_rst: u8_,
-    pub offload_timeout: ::aya_bpf::cty::c_uint,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct nf_udp_net {
     pub timeouts: [::aya_bpf::cty::c_uint; 2usize],
-    pub offload_timeout: ::aya_bpf::cty::c_uint,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct nf_icmp_net {
     pub timeout: ::aya_bpf::cty::c_uint,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct nf_dccp_net {
     pub dccp_loose: u8_,
     pub dccp_timeout: [::aya_bpf::cty::c_uint; 10usize],
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct nf_sctp_net {
     pub timeouts: [::aya_bpf::cty::c_uint; 10usize],
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct nf_gre_net {
     pub keymap_list: list_head,
     pub timeouts: [::aya_bpf::cty::c_uint; 2usize],
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct nf_ip_net {
     pub generic: nf_generic_net,
     pub tcp: nf_tcp_net,
@@ -13979,7 +14198,7 @@ pub struct nf_ip_net {
     pub gre: nf_gre_net,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct netns_ct {
     pub ecache_dwork_pending: bool_,
     pub sysctl_log_invalid: u8_,
@@ -13991,23 +14210,24 @@ pub struct netns_ct {
     pub pcpu_lists: *mut ct_pcpu,
     pub stat: *mut ip_conntrack_stat,
     pub nf_conntrack_event_cb: *mut nf_ct_event_notifier,
+    pub nf_expect_event_cb: *mut nf_exp_event_notifier,
     pub nf_ct_proto: nf_ip_net,
     pub labels_used: ::aya_bpf::cty::c_uint,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct netns_nftables {
     pub gencursor: u8_,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct netns_bpf {
     pub run_array: [*mut bpf_prog_array; 2usize],
     pub progs: [*mut bpf_prog; 2usize],
     pub links: [list_head; 2usize],
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct xfrm_policy_hash {
     pub table: *mut hlist_head,
     pub hmask: ::aya_bpf::cty::c_uint,
@@ -14033,7 +14253,6 @@ pub struct netns_xfrm {
     pub state_bydst: *mut hlist_head,
     pub state_bysrc: *mut hlist_head,
     pub state_byspi: *mut hlist_head,
-    pub state_byseq: *mut hlist_head,
     pub state_hmask: ::aya_bpf::cty::c_uint,
     pub state_num: ::aya_bpf::cty::c_uint,
     pub state_hash_work: work_struct,
@@ -14052,10 +14271,9 @@ pub struct netns_xfrm {
     pub sysctl_aevent_rseqth: u32_,
     pub sysctl_larval_drop: ::aya_bpf::cty::c_int,
     pub sysctl_acq_expires: u32_,
-    pub policy_default: u8_,
     pub sysctl_hdr: *mut ctl_table_header,
     pub _bitfield_align_1: [u8; 0],
-    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 24usize]>,
+    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 40usize]>,
     pub xfrm4_dst_ops: dst_ops,
     pub xfrm6_dst_ops: dst_ops,
     pub xfrm_state_lock: spinlock_t,
@@ -14068,28 +14286,23 @@ pub struct netns_xfrm {
 }
 impl netns_xfrm {
     #[inline]
-    pub fn new_bitfield_1() -> __BindgenBitfieldUnit<[u8; 24usize]> {
-        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 24usize]> = Default::default();
-        __bindgen_bitfield_unit
-    }
-    #[inline]
     pub fn new_bitfield_2() -> __BindgenBitfieldUnit<[u8; 16usize]> {
         let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 16usize]> = Default::default();
         __bindgen_bitfield_unit
     }
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct netns_ipvs {
     _unused: [u8; 0],
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct mpls_route {
     _unused: [u8; 0],
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct netns_mpls {
     pub ip_ttl_propagate: ::aya_bpf::cty::c_int,
     pub default_ttl: ::aya_bpf::cty::c_int,
@@ -14098,17 +14311,17 @@ pub struct netns_mpls {
     pub ctl: *mut ctl_table_header,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct can_dev_rcv_lists {
     _unused: [u8; 0],
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct can_pkg_stats {
     _unused: [u8; 0],
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct can_rcv_lists_stats {
     _unused: [u8; 0],
 }
@@ -14139,12 +14352,12 @@ pub struct netns_xdp {
     pub list: hlist_head,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct smc_stats {
     _unused: [u8; 0],
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct smc_stats_rsn {
     _unused: [u8; 0],
 }
@@ -14173,7 +14386,6 @@ pub struct net {
     pub ucounts: *mut ucounts,
     pub netns_ids: idr,
     pub ns: ns_common,
-    pub refcnt_tracker: ref_tracker_dir,
     pub dev_base_head: list_head,
     pub proc_net: *mut proc_dir_entry,
     pub proc_net_stat: *mut proc_dir_entry,
@@ -14192,20 +14404,19 @@ pub struct net {
     pub packet: netns_packet,
     pub unx: netns_unix,
     pub nexthop: netns_nexthop,
-    pub _bitfield_align_1: [u8; 0],
-    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 8usize]>,
     pub ipv4: netns_ipv4,
     pub ipv6: netns_ipv6,
     pub ieee802154_lowpan: netns_ieee802154_lowpan,
     pub sctp: netns_sctp,
     pub nf: netns_nf,
+    pub xt: netns_xt,
     pub ct: netns_ct,
     pub nft: netns_nftables,
     pub wext_nlevents: sk_buff_head,
     pub gen: *mut net_generic,
     pub bpf: netns_bpf,
-    pub _bitfield_align_2: [u8; 0],
-    pub _bitfield_2: __BindgenBitfieldUnit<[u8; 32usize]>,
+    pub _bitfield_align_1: [u8; 0],
+    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 32usize]>,
     pub xfrm: netns_xfrm,
     pub net_cookie: u64_,
     pub ipvs: *mut netns_ipvs,
@@ -14215,39 +14426,1618 @@ pub struct net {
     pub crypto_nlsk: *mut sock,
     pub diag_nlsk: *mut sock,
     pub smc: netns_smc,
-    pub _bitfield_align_3: [u8; 0],
-    pub _bitfield_3: __BindgenBitfieldUnit<[u8; 8usize]>,
+    pub _bitfield_align_2: [u8; 0],
+    pub _bitfield_2: __BindgenBitfieldUnit<[u8; 8usize]>,
 }
 impl net {
     #[inline]
-    pub fn new_bitfield_1() -> __BindgenBitfieldUnit<[u8; 8usize]> {
-        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 8usize]> = Default::default();
-        __bindgen_bitfield_unit
-    }
-    #[inline]
-    pub fn new_bitfield_2() -> __BindgenBitfieldUnit<[u8; 32usize]> {
+    pub fn new_bitfield_1() -> __BindgenBitfieldUnit<[u8; 32usize]> {
         let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 32usize]> = Default::default();
         __bindgen_bitfield_unit
     }
     #[inline]
-    pub fn new_bitfield_3() -> __BindgenBitfieldUnit<[u8; 8usize]> {
+    pub fn new_bitfield_2() -> __BindgenBitfieldUnit<[u8; 8usize]> {
         let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 8usize]> = Default::default();
         __bindgen_bitfield_unit
     }
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct u64_stats_t {
     pub v: local64_t,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct scatterlist {
-    pub page_link: ::aya_bpf::cty::c_ulong,
-    pub offset: ::aya_bpf::cty::c_uint,
-    pub length: ::aya_bpf::cty::c_uint,
-    pub dma_address: dma_addr_t,
-    pub dma_length: ::aya_bpf::cty::c_uint,
+#[derive(Copy, Clone)]
+pub struct bpf_insn {
+    pub code: __u8,
+    pub _bitfield_align_1: [u8; 0],
+    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 1usize]>,
+    pub off: __s16,
+    pub imm: __s32,
+}
+impl bpf_insn {
+    #[inline]
+    pub fn dst_reg(&self) -> __u8 {
+        unsafe { ::core::mem::transmute(self._bitfield_1.get(0usize, 4u8) as u8) }
+    }
+    #[inline]
+    pub fn set_dst_reg(&mut self, val: __u8) {
+        unsafe {
+            let val: u8 = ::core::mem::transmute(val);
+            self._bitfield_1.set(0usize, 4u8, val as u64)
+        }
+    }
+    #[inline]
+    pub fn src_reg(&self) -> __u8 {
+        unsafe { ::core::mem::transmute(self._bitfield_1.get(4usize, 4u8) as u8) }
+    }
+    #[inline]
+    pub fn set_src_reg(&mut self, val: __u8) {
+        unsafe {
+            let val: u8 = ::core::mem::transmute(val);
+            self._bitfield_1.set(4usize, 4u8, val as u64)
+        }
+    }
+    #[inline]
+    pub fn new_bitfield_1(dst_reg: __u8, src_reg: __u8) -> __BindgenBitfieldUnit<[u8; 1usize]> {
+        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 1usize]> = Default::default();
+        __bindgen_bitfield_unit.set(0usize, 4u8, {
+            let dst_reg: u8 = unsafe { ::core::mem::transmute(dst_reg) };
+            dst_reg as u64
+        });
+        __bindgen_bitfield_unit.set(4usize, 4u8, {
+            let src_reg: u8 = unsafe { ::core::mem::transmute(src_reg) };
+            src_reg as u64
+        });
+        __bindgen_bitfield_unit
+    }
+}
+pub mod bpf_map_type {
+    pub type Type = ::aya_bpf::cty::c_uint;
+    pub const BPF_MAP_TYPE_UNSPEC: Type = 0;
+    pub const BPF_MAP_TYPE_HASH: Type = 1;
+    pub const BPF_MAP_TYPE_ARRAY: Type = 2;
+    pub const BPF_MAP_TYPE_PROG_ARRAY: Type = 3;
+    pub const BPF_MAP_TYPE_PERF_EVENT_ARRAY: Type = 4;
+    pub const BPF_MAP_TYPE_PERCPU_HASH: Type = 5;
+    pub const BPF_MAP_TYPE_PERCPU_ARRAY: Type = 6;
+    pub const BPF_MAP_TYPE_STACK_TRACE: Type = 7;
+    pub const BPF_MAP_TYPE_CGROUP_ARRAY: Type = 8;
+    pub const BPF_MAP_TYPE_LRU_HASH: Type = 9;
+    pub const BPF_MAP_TYPE_LRU_PERCPU_HASH: Type = 10;
+    pub const BPF_MAP_TYPE_LPM_TRIE: Type = 11;
+    pub const BPF_MAP_TYPE_ARRAY_OF_MAPS: Type = 12;
+    pub const BPF_MAP_TYPE_HASH_OF_MAPS: Type = 13;
+    pub const BPF_MAP_TYPE_DEVMAP: Type = 14;
+    pub const BPF_MAP_TYPE_SOCKMAP: Type = 15;
+    pub const BPF_MAP_TYPE_CPUMAP: Type = 16;
+    pub const BPF_MAP_TYPE_XSKMAP: Type = 17;
+    pub const BPF_MAP_TYPE_SOCKHASH: Type = 18;
+    pub const BPF_MAP_TYPE_CGROUP_STORAGE: Type = 19;
+    pub const BPF_MAP_TYPE_REUSEPORT_SOCKARRAY: Type = 20;
+    pub const BPF_MAP_TYPE_PERCPU_CGROUP_STORAGE: Type = 21;
+    pub const BPF_MAP_TYPE_QUEUE: Type = 22;
+    pub const BPF_MAP_TYPE_STACK: Type = 23;
+    pub const BPF_MAP_TYPE_SK_STORAGE: Type = 24;
+    pub const BPF_MAP_TYPE_DEVMAP_HASH: Type = 25;
+    pub const BPF_MAP_TYPE_STRUCT_OPS: Type = 26;
+    pub const BPF_MAP_TYPE_RINGBUF: Type = 27;
+    pub const BPF_MAP_TYPE_INODE_STORAGE: Type = 28;
+    pub const BPF_MAP_TYPE_TASK_STORAGE: Type = 29;
+}
+pub mod bpf_prog_type {
+    pub type Type = ::aya_bpf::cty::c_uint;
+    pub const BPF_PROG_TYPE_UNSPEC: Type = 0;
+    pub const BPF_PROG_TYPE_SOCKET_FILTER: Type = 1;
+    pub const BPF_PROG_TYPE_KPROBE: Type = 2;
+    pub const BPF_PROG_TYPE_SCHED_CLS: Type = 3;
+    pub const BPF_PROG_TYPE_SCHED_ACT: Type = 4;
+    pub const BPF_PROG_TYPE_TRACEPOINT: Type = 5;
+    pub const BPF_PROG_TYPE_XDP: Type = 6;
+    pub const BPF_PROG_TYPE_PERF_EVENT: Type = 7;
+    pub const BPF_PROG_TYPE_CGROUP_SKB: Type = 8;
+    pub const BPF_PROG_TYPE_CGROUP_SOCK: Type = 9;
+    pub const BPF_PROG_TYPE_LWT_IN: Type = 10;
+    pub const BPF_PROG_TYPE_LWT_OUT: Type = 11;
+    pub const BPF_PROG_TYPE_LWT_XMIT: Type = 12;
+    pub const BPF_PROG_TYPE_SOCK_OPS: Type = 13;
+    pub const BPF_PROG_TYPE_SK_SKB: Type = 14;
+    pub const BPF_PROG_TYPE_CGROUP_DEVICE: Type = 15;
+    pub const BPF_PROG_TYPE_SK_MSG: Type = 16;
+    pub const BPF_PROG_TYPE_RAW_TRACEPOINT: Type = 17;
+    pub const BPF_PROG_TYPE_CGROUP_SOCK_ADDR: Type = 18;
+    pub const BPF_PROG_TYPE_LWT_SEG6LOCAL: Type = 19;
+    pub const BPF_PROG_TYPE_LIRC_MODE2: Type = 20;
+    pub const BPF_PROG_TYPE_SK_REUSEPORT: Type = 21;
+    pub const BPF_PROG_TYPE_FLOW_DISSECTOR: Type = 22;
+    pub const BPF_PROG_TYPE_CGROUP_SYSCTL: Type = 23;
+    pub const BPF_PROG_TYPE_RAW_TRACEPOINT_WRITABLE: Type = 24;
+    pub const BPF_PROG_TYPE_CGROUP_SOCKOPT: Type = 25;
+    pub const BPF_PROG_TYPE_TRACING: Type = 26;
+    pub const BPF_PROG_TYPE_STRUCT_OPS: Type = 27;
+    pub const BPF_PROG_TYPE_EXT: Type = 28;
+    pub const BPF_PROG_TYPE_LSM: Type = 29;
+    pub const BPF_PROG_TYPE_SK_LOOKUP: Type = 30;
+}
+pub mod bpf_attach_type {
+    pub type Type = ::aya_bpf::cty::c_uint;
+    pub const BPF_CGROUP_INET_INGRESS: Type = 0;
+    pub const BPF_CGROUP_INET_EGRESS: Type = 1;
+    pub const BPF_CGROUP_INET_SOCK_CREATE: Type = 2;
+    pub const BPF_CGROUP_SOCK_OPS: Type = 3;
+    pub const BPF_SK_SKB_STREAM_PARSER: Type = 4;
+    pub const BPF_SK_SKB_STREAM_VERDICT: Type = 5;
+    pub const BPF_CGROUP_DEVICE: Type = 6;
+    pub const BPF_SK_MSG_VERDICT: Type = 7;
+    pub const BPF_CGROUP_INET4_BIND: Type = 8;
+    pub const BPF_CGROUP_INET6_BIND: Type = 9;
+    pub const BPF_CGROUP_INET4_CONNECT: Type = 10;
+    pub const BPF_CGROUP_INET6_CONNECT: Type = 11;
+    pub const BPF_CGROUP_INET4_POST_BIND: Type = 12;
+    pub const BPF_CGROUP_INET6_POST_BIND: Type = 13;
+    pub const BPF_CGROUP_UDP4_SENDMSG: Type = 14;
+    pub const BPF_CGROUP_UDP6_SENDMSG: Type = 15;
+    pub const BPF_LIRC_MODE2: Type = 16;
+    pub const BPF_FLOW_DISSECTOR: Type = 17;
+    pub const BPF_CGROUP_SYSCTL: Type = 18;
+    pub const BPF_CGROUP_UDP4_RECVMSG: Type = 19;
+    pub const BPF_CGROUP_UDP6_RECVMSG: Type = 20;
+    pub const BPF_CGROUP_GETSOCKOPT: Type = 21;
+    pub const BPF_CGROUP_SETSOCKOPT: Type = 22;
+    pub const BPF_TRACE_RAW_TP: Type = 23;
+    pub const BPF_TRACE_FENTRY: Type = 24;
+    pub const BPF_TRACE_FEXIT: Type = 25;
+    pub const BPF_MODIFY_RETURN: Type = 26;
+    pub const BPF_LSM_MAC: Type = 27;
+    pub const BPF_TRACE_ITER: Type = 28;
+    pub const BPF_CGROUP_INET4_GETPEERNAME: Type = 29;
+    pub const BPF_CGROUP_INET6_GETPEERNAME: Type = 30;
+    pub const BPF_CGROUP_INET4_GETSOCKNAME: Type = 31;
+    pub const BPF_CGROUP_INET6_GETSOCKNAME: Type = 32;
+    pub const BPF_XDP_DEVMAP: Type = 33;
+    pub const BPF_CGROUP_INET_SOCK_RELEASE: Type = 34;
+    pub const BPF_XDP_CPUMAP: Type = 35;
+    pub const BPF_SK_LOOKUP: Type = 36;
+    pub const BPF_XDP: Type = 37;
+    pub const BPF_SK_SKB_VERDICT: Type = 38;
+    pub const __MAX_BPF_ATTACH_TYPE: Type = 39;
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub union bpf_attr {
+    pub __bindgen_anon_1: bpf_attr__bindgen_ty_1,
+    pub __bindgen_anon_2: bpf_attr__bindgen_ty_2,
+    pub batch: bpf_attr__bindgen_ty_3,
+    pub __bindgen_anon_3: bpf_attr__bindgen_ty_4,
+    pub __bindgen_anon_4: bpf_attr__bindgen_ty_5,
+    pub __bindgen_anon_5: bpf_attr__bindgen_ty_6,
+    pub test: bpf_attr__bindgen_ty_7,
+    pub __bindgen_anon_6: bpf_attr__bindgen_ty_8,
+    pub info: bpf_attr__bindgen_ty_9,
+    pub query: bpf_attr__bindgen_ty_10,
+    pub raw_tracepoint: bpf_attr__bindgen_ty_11,
+    pub __bindgen_anon_7: bpf_attr__bindgen_ty_12,
+    pub task_fd_query: bpf_attr__bindgen_ty_13,
+    pub link_create: bpf_attr__bindgen_ty_14,
+    pub link_update: bpf_attr__bindgen_ty_15,
+    pub link_detach: bpf_attr__bindgen_ty_16,
+    pub enable_stats: bpf_attr__bindgen_ty_17,
+    pub iter_create: bpf_attr__bindgen_ty_18,
+    pub prog_bind_map: bpf_attr__bindgen_ty_19,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct bpf_attr__bindgen_ty_1 {
+    pub map_type: __u32,
+    pub key_size: __u32,
+    pub value_size: __u32,
+    pub max_entries: __u32,
+    pub map_flags: __u32,
+    pub inner_map_fd: __u32,
+    pub numa_node: __u32,
+    pub map_name: [::aya_bpf::cty::c_char; 16usize],
+    pub map_ifindex: __u32,
+    pub btf_fd: __u32,
+    pub btf_key_type_id: __u32,
+    pub btf_value_type_id: __u32,
+    pub btf_vmlinux_value_type_id: __u32,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct bpf_attr__bindgen_ty_2 {
+    pub map_fd: __u32,
+    pub key: __u64,
+    pub __bindgen_anon_1: bpf_attr__bindgen_ty_2__bindgen_ty_1,
+    pub flags: __u64,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub union bpf_attr__bindgen_ty_2__bindgen_ty_1 {
+    pub value: __u64,
+    pub next_key: __u64,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct bpf_attr__bindgen_ty_3 {
+    pub in_batch: __u64,
+    pub out_batch: __u64,
+    pub keys: __u64,
+    pub values: __u64,
+    pub count: __u32,
+    pub map_fd: __u32,
+    pub elem_flags: __u64,
+    pub flags: __u64,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct bpf_attr__bindgen_ty_4 {
+    pub prog_type: __u32,
+    pub insn_cnt: __u32,
+    pub insns: __u64,
+    pub license: __u64,
+    pub log_level: __u32,
+    pub log_size: __u32,
+    pub log_buf: __u64,
+    pub kern_version: __u32,
+    pub prog_flags: __u32,
+    pub prog_name: [::aya_bpf::cty::c_char; 16usize],
+    pub prog_ifindex: __u32,
+    pub expected_attach_type: __u32,
+    pub prog_btf_fd: __u32,
+    pub func_info_rec_size: __u32,
+    pub func_info: __u64,
+    pub func_info_cnt: __u32,
+    pub line_info_rec_size: __u32,
+    pub line_info: __u64,
+    pub line_info_cnt: __u32,
+    pub attach_btf_id: __u32,
+    pub __bindgen_anon_1: bpf_attr__bindgen_ty_4__bindgen_ty_1,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub union bpf_attr__bindgen_ty_4__bindgen_ty_1 {
+    pub attach_prog_fd: __u32,
+    pub attach_btf_obj_fd: __u32,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct bpf_attr__bindgen_ty_5 {
+    pub pathname: __u64,
+    pub bpf_fd: __u32,
+    pub file_flags: __u32,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct bpf_attr__bindgen_ty_6 {
+    pub target_fd: __u32,
+    pub attach_bpf_fd: __u32,
+    pub attach_type: __u32,
+    pub attach_flags: __u32,
+    pub replace_bpf_fd: __u32,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct bpf_attr__bindgen_ty_7 {
+    pub prog_fd: __u32,
+    pub retval: __u32,
+    pub data_size_in: __u32,
+    pub data_size_out: __u32,
+    pub data_in: __u64,
+    pub data_out: __u64,
+    pub repeat: __u32,
+    pub duration: __u32,
+    pub ctx_size_in: __u32,
+    pub ctx_size_out: __u32,
+    pub ctx_in: __u64,
+    pub ctx_out: __u64,
+    pub flags: __u32,
+    pub cpu: __u32,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct bpf_attr__bindgen_ty_8 {
+    pub __bindgen_anon_1: bpf_attr__bindgen_ty_8__bindgen_ty_1,
+    pub next_id: __u32,
+    pub open_flags: __u32,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub union bpf_attr__bindgen_ty_8__bindgen_ty_1 {
+    pub start_id: __u32,
+    pub prog_id: __u32,
+    pub map_id: __u32,
+    pub btf_id: __u32,
+    pub link_id: __u32,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct bpf_attr__bindgen_ty_9 {
+    pub bpf_fd: __u32,
+    pub info_len: __u32,
+    pub info: __u64,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct bpf_attr__bindgen_ty_10 {
+    pub target_fd: __u32,
+    pub attach_type: __u32,
+    pub query_flags: __u32,
+    pub attach_flags: __u32,
+    pub prog_ids: __u64,
+    pub prog_cnt: __u32,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct bpf_attr__bindgen_ty_11 {
+    pub name: __u64,
+    pub prog_fd: __u32,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct bpf_attr__bindgen_ty_12 {
+    pub btf: __u64,
+    pub btf_log_buf: __u64,
+    pub btf_size: __u32,
+    pub btf_log_size: __u32,
+    pub btf_log_level: __u32,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct bpf_attr__bindgen_ty_13 {
+    pub pid: __u32,
+    pub fd: __u32,
+    pub flags: __u32,
+    pub buf_len: __u32,
+    pub buf: __u64,
+    pub prog_id: __u32,
+    pub fd_type: __u32,
+    pub probe_offset: __u64,
+    pub probe_addr: __u64,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct bpf_attr__bindgen_ty_14 {
+    pub prog_fd: __u32,
+    pub __bindgen_anon_1: bpf_attr__bindgen_ty_14__bindgen_ty_1,
+    pub attach_type: __u32,
+    pub flags: __u32,
+    pub __bindgen_anon_2: bpf_attr__bindgen_ty_14__bindgen_ty_2,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub union bpf_attr__bindgen_ty_14__bindgen_ty_1 {
+    pub target_fd: __u32,
+    pub target_ifindex: __u32,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub union bpf_attr__bindgen_ty_14__bindgen_ty_2 {
+    pub target_btf_id: __u32,
+    pub __bindgen_anon_1: bpf_attr__bindgen_ty_14__bindgen_ty_2__bindgen_ty_1,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct bpf_attr__bindgen_ty_14__bindgen_ty_2__bindgen_ty_1 {
+    pub iter_info: __u64,
+    pub iter_info_len: __u32,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct bpf_attr__bindgen_ty_15 {
+    pub link_fd: __u32,
+    pub new_prog_fd: __u32,
+    pub flags: __u32,
+    pub old_prog_fd: __u32,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct bpf_attr__bindgen_ty_16 {
+    pub link_fd: __u32,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct bpf_attr__bindgen_ty_17 {
+    pub type_: __u32,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct bpf_attr__bindgen_ty_18 {
+    pub link_fd: __u32,
+    pub flags: __u32,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct bpf_attr__bindgen_ty_19 {
+    pub prog_fd: __u32,
+    pub map_fd: __u32,
+    pub flags: __u32,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct bpf_func_info {
+    pub insn_off: __u32,
+    pub type_id: __u32,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct bpf_line_info {
+    pub insn_off: __u32,
+    pub file_name_off: __u32,
+    pub line_off: __u32,
+    pub line_col: __u32,
+}
+pub type bpf_iter_init_seq_priv_t = ::core::option::Option<
+    unsafe extern "C" fn(
+        arg1: *mut ::aya_bpf::cty::c_void,
+        arg2: *mut bpf_iter_aux_info,
+    ) -> ::aya_bpf::cty::c_int,
+>;
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct bpf_iter_aux_info {
+    pub map: *mut bpf_map,
+}
+pub type bpf_iter_fini_seq_priv_t =
+    ::core::option::Option<unsafe extern "C" fn(arg1: *mut ::aya_bpf::cty::c_void)>;
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct bpf_iter_seq_info {
+    pub seq_ops: *const seq_operations,
+    pub init_seq_private: bpf_iter_init_seq_priv_t,
+    pub fini_seq_private: bpf_iter_fini_seq_priv_t,
+    pub seq_priv_size: u32_,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct bpf_map_ops {
+    pub map_alloc_check:
+        ::core::option::Option<unsafe extern "C" fn(arg1: *mut bpf_attr) -> ::aya_bpf::cty::c_int>,
+    pub map_alloc:
+        ::core::option::Option<unsafe extern "C" fn(arg1: *mut bpf_attr) -> *mut bpf_map>,
+    pub map_release:
+        ::core::option::Option<unsafe extern "C" fn(arg1: *mut bpf_map, arg2: *mut file)>,
+    pub map_free: ::core::option::Option<unsafe extern "C" fn(arg1: *mut bpf_map)>,
+    pub map_get_next_key: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut bpf_map,
+            arg2: *mut ::aya_bpf::cty::c_void,
+            arg3: *mut ::aya_bpf::cty::c_void,
+        ) -> ::aya_bpf::cty::c_int,
+    >,
+    pub map_release_uref: ::core::option::Option<unsafe extern "C" fn(arg1: *mut bpf_map)>,
+    pub map_lookup_elem_sys_only: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut bpf_map,
+            arg2: *mut ::aya_bpf::cty::c_void,
+        ) -> *mut ::aya_bpf::cty::c_void,
+    >,
+    pub map_lookup_batch: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut bpf_map,
+            arg2: *const bpf_attr,
+            arg3: *mut bpf_attr,
+        ) -> ::aya_bpf::cty::c_int,
+    >,
+    pub map_lookup_and_delete_batch: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut bpf_map,
+            arg2: *const bpf_attr,
+            arg3: *mut bpf_attr,
+        ) -> ::aya_bpf::cty::c_int,
+    >,
+    pub map_update_batch: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut bpf_map,
+            arg2: *const bpf_attr,
+            arg3: *mut bpf_attr,
+        ) -> ::aya_bpf::cty::c_int,
+    >,
+    pub map_delete_batch: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut bpf_map,
+            arg2: *const bpf_attr,
+            arg3: *mut bpf_attr,
+        ) -> ::aya_bpf::cty::c_int,
+    >,
+    pub map_lookup_elem: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut bpf_map,
+            arg2: *mut ::aya_bpf::cty::c_void,
+        ) -> *mut ::aya_bpf::cty::c_void,
+    >,
+    pub map_update_elem: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut bpf_map,
+            arg2: *mut ::aya_bpf::cty::c_void,
+            arg3: *mut ::aya_bpf::cty::c_void,
+            arg4: u64_,
+        ) -> ::aya_bpf::cty::c_int,
+    >,
+    pub map_delete_elem: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut bpf_map,
+            arg2: *mut ::aya_bpf::cty::c_void,
+        ) -> ::aya_bpf::cty::c_int,
+    >,
+    pub map_push_elem: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut bpf_map,
+            arg2: *mut ::aya_bpf::cty::c_void,
+            arg3: u64_,
+        ) -> ::aya_bpf::cty::c_int,
+    >,
+    pub map_pop_elem: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut bpf_map,
+            arg2: *mut ::aya_bpf::cty::c_void,
+        ) -> ::aya_bpf::cty::c_int,
+    >,
+    pub map_peek_elem: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut bpf_map,
+            arg2: *mut ::aya_bpf::cty::c_void,
+        ) -> ::aya_bpf::cty::c_int,
+    >,
+    pub map_fd_get_ptr: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut bpf_map,
+            arg2: *mut file,
+            arg3: ::aya_bpf::cty::c_int,
+        ) -> *mut ::aya_bpf::cty::c_void,
+    >,
+    pub map_fd_put_ptr:
+        ::core::option::Option<unsafe extern "C" fn(arg1: *mut ::aya_bpf::cty::c_void)>,
+    pub map_gen_lookup: ::core::option::Option<
+        unsafe extern "C" fn(arg1: *mut bpf_map, arg2: *mut bpf_insn) -> ::aya_bpf::cty::c_int,
+    >,
+    pub map_fd_sys_lookup_elem:
+        ::core::option::Option<unsafe extern "C" fn(arg1: *mut ::aya_bpf::cty::c_void) -> u32_>,
+    pub map_seq_show_elem: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut bpf_map,
+            arg2: *mut ::aya_bpf::cty::c_void,
+            arg3: *mut seq_file,
+        ),
+    >,
+    pub map_check_btf: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *const bpf_map,
+            arg2: *const btf,
+            arg3: *const btf_type,
+            arg4: *const btf_type,
+        ) -> ::aya_bpf::cty::c_int,
+    >,
+    pub map_poke_track: ::core::option::Option<
+        unsafe extern "C" fn(arg1: *mut bpf_map, arg2: *mut bpf_prog_aux) -> ::aya_bpf::cty::c_int,
+    >,
+    pub map_poke_untrack:
+        ::core::option::Option<unsafe extern "C" fn(arg1: *mut bpf_map, arg2: *mut bpf_prog_aux)>,
+    pub map_poke_run: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut bpf_map,
+            arg2: u32_,
+            arg3: *mut bpf_prog,
+            arg4: *mut bpf_prog,
+        ),
+    >,
+    pub map_direct_value_addr: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *const bpf_map,
+            arg2: *mut u64_,
+            arg3: u32_,
+        ) -> ::aya_bpf::cty::c_int,
+    >,
+    pub map_direct_value_meta: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *const bpf_map,
+            arg2: u64_,
+            arg3: *mut u32_,
+        ) -> ::aya_bpf::cty::c_int,
+    >,
+    pub map_mmap: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut bpf_map,
+            arg2: *mut vm_area_struct,
+        ) -> ::aya_bpf::cty::c_int,
+    >,
+    pub map_poll: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut bpf_map,
+            arg2: *mut file,
+            arg3: *mut poll_table_struct,
+        ) -> __poll_t,
+    >,
+    pub map_local_storage_charge: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut bpf_local_storage_map,
+            arg2: *mut ::aya_bpf::cty::c_void,
+            arg3: u32_,
+        ) -> ::aya_bpf::cty::c_int,
+    >,
+    pub map_local_storage_uncharge: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut bpf_local_storage_map,
+            arg2: *mut ::aya_bpf::cty::c_void,
+            arg3: u32_,
+        ),
+    >,
+    pub map_owner_storage_ptr: ::core::option::Option<
+        unsafe extern "C" fn(arg1: *mut ::aya_bpf::cty::c_void) -> *mut *mut bpf_local_storage,
+    >,
+    pub map_redirect: ::core::option::Option<
+        unsafe extern "C" fn(arg1: *mut bpf_map, arg2: u32_, arg3: u64_) -> ::aya_bpf::cty::c_int,
+    >,
+    pub map_meta_equal: ::core::option::Option<
+        unsafe extern "C" fn(arg1: *const bpf_map, arg2: *const bpf_map) -> bool_,
+    >,
+    pub map_set_for_each_callback_args: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut bpf_verifier_env,
+            arg2: *mut bpf_func_state,
+            arg3: *mut bpf_func_state,
+        ) -> ::aya_bpf::cty::c_int,
+    >,
+    pub map_for_each_callback: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut bpf_map,
+            arg2: *mut ::aya_bpf::cty::c_void,
+            arg3: *mut ::aya_bpf::cty::c_void,
+            arg4: u64_,
+        ) -> ::aya_bpf::cty::c_int,
+    >,
+    pub map_btf_name: *const ::aya_bpf::cty::c_char,
+    pub map_btf_id: *mut ::aya_bpf::cty::c_int,
+    pub iter_seq_info: *const bpf_iter_seq_info,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct bpf_map {
+    pub ops: *const bpf_map_ops,
+    pub inner_map_meta: *mut bpf_map,
+    pub security: *mut ::aya_bpf::cty::c_void,
+    pub map_type: bpf_map_type::Type,
+    pub key_size: u32_,
+    pub value_size: u32_,
+    pub max_entries: u32_,
+    pub map_flags: u32_,
+    pub spin_lock_off: ::aya_bpf::cty::c_int,
+    pub id: u32_,
+    pub numa_node: ::aya_bpf::cty::c_int,
+    pub btf_key_type_id: u32_,
+    pub btf_value_type_id: u32_,
+    pub btf: *mut btf,
+    pub memcg: *mut mem_cgroup,
+    pub name: [::aya_bpf::cty::c_char; 16usize],
+    pub btf_vmlinux_value_type_id: u32_,
+    pub bypass_spec_v1: bool_,
+    pub frozen: bool_,
+    pub _bitfield_align_1: [u8; 0],
+    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 32usize]>,
+    pub refcnt: atomic64_t,
+    pub usercnt: atomic64_t,
+    pub work: work_struct,
+    pub freeze_mutex: mutex,
+    pub writecnt: atomic64_t,
+    pub _bitfield_align_2: [u8; 0],
+    pub _bitfield_2: __BindgenBitfieldUnit<[u8; 40usize]>,
+}
+impl bpf_map {
+    #[inline]
+    pub fn new_bitfield_1() -> __BindgenBitfieldUnit<[u8; 32usize]> {
+        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 32usize]> = Default::default();
+        __bindgen_bitfield_unit
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct btf_header {
+    pub magic: __u16,
+    pub version: __u8,
+    pub flags: __u8,
+    pub hdr_len: __u32,
+    pub type_off: __u32,
+    pub type_len: __u32,
+    pub str_off: __u32,
+    pub str_len: __u32,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct btf {
+    pub data: *mut ::aya_bpf::cty::c_void,
+    pub types: *mut *mut btf_type,
+    pub resolved_ids: *mut u32_,
+    pub resolved_sizes: *mut u32_,
+    pub strings: *const ::aya_bpf::cty::c_char,
+    pub nohdr_data: *mut ::aya_bpf::cty::c_void,
+    pub hdr: btf_header,
+    pub nr_types: u32_,
+    pub types_size: u32_,
+    pub data_size: u32_,
+    pub refcnt: refcount_t,
+    pub id: u32_,
+    pub rcu: callback_head,
+    pub base_btf: *mut btf,
+    pub start_id: u32_,
+    pub start_str_off: u32_,
+    pub name: [::aya_bpf::cty::c_char; 56usize],
+    pub kernel_btf: bool_,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct btf_type {
+    pub name_off: __u32,
+    pub info: __u32,
+    pub __bindgen_anon_1: btf_type__bindgen_ty_1,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub union btf_type__bindgen_ty_1 {
+    pub size: __u32,
+    pub type_: __u32,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct bpf_ksym {
+    pub start: ::aya_bpf::cty::c_ulong,
+    pub end: ::aya_bpf::cty::c_ulong,
+    pub name: [::aya_bpf::cty::c_char; 128usize],
+    pub lnode: list_head,
+    pub tnode: latch_tree_node,
+    pub prog: bool_,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct bpf_prog_aux {
+    pub refcnt: atomic64_t,
+    pub used_map_cnt: u32_,
+    pub used_btf_cnt: u32_,
+    pub max_ctx_offset: u32_,
+    pub max_pkt_offset: u32_,
+    pub max_tp_access: u32_,
+    pub stack_depth: u32_,
+    pub id: u32_,
+    pub func_cnt: u32_,
+    pub func_idx: u32_,
+    pub attach_btf_id: u32_,
+    pub ctx_arg_info_size: u32_,
+    pub max_rdonly_access: u32_,
+    pub max_rdwr_access: u32_,
+    pub attach_btf: *mut btf,
+    pub ctx_arg_info: *const bpf_ctx_arg_aux,
+    pub dst_mutex: mutex,
+    pub dst_prog: *mut bpf_prog,
+    pub dst_trampoline: *mut bpf_trampoline,
+    pub saved_dst_prog_type: bpf_prog_type::Type,
+    pub saved_dst_attach_type: bpf_attach_type::Type,
+    pub verifier_zext: bool_,
+    pub offload_requested: bool_,
+    pub attach_btf_trace: bool_,
+    pub func_proto_unreliable: bool_,
+    pub sleepable: bool_,
+    pub tail_call_reachable: bool_,
+    pub tramp_hlist: hlist_node,
+    pub attach_func_proto: *const btf_type,
+    pub attach_func_name: *const ::aya_bpf::cty::c_char,
+    pub func: *mut *mut bpf_prog,
+    pub jit_data: *mut ::aya_bpf::cty::c_void,
+    pub poke_tab: *mut bpf_jit_poke_descriptor,
+    pub kfunc_tab: *mut bpf_kfunc_desc_tab,
+    pub size_poke_tab: u32_,
+    pub ksym: bpf_ksym,
+    pub ops: *const bpf_prog_ops,
+    pub used_maps: *mut *mut bpf_map,
+    pub used_maps_mutex: mutex,
+    pub used_btfs: *mut btf_mod_pair,
+    pub prog: *mut bpf_prog,
+    pub user: *mut user_struct,
+    pub load_time: u64_,
+    pub cgroup_storage: [*mut bpf_map; 2usize],
+    pub name: [::aya_bpf::cty::c_char; 16usize],
+    pub security: *mut ::aya_bpf::cty::c_void,
+    pub offload: *mut bpf_prog_offload,
+    pub btf: *mut btf,
+    pub func_info: *mut bpf_func_info,
+    pub func_info_aux: *mut bpf_func_info_aux,
+    pub linfo: *mut bpf_line_info,
+    pub jited_linfo: *mut *mut ::aya_bpf::cty::c_void,
+    pub func_info_cnt: u32_,
+    pub nr_linfo: u32_,
+    pub linfo_idx: u32_,
+    pub num_exentries: u32_,
+    pub extable: *mut exception_table_entry,
+    pub __bindgen_anon_1: bpf_prog_aux__bindgen_ty_1,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub union bpf_prog_aux__bindgen_ty_1 {
+    pub work: work_struct,
+    pub rcu: callback_head,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct sock_filter {
+    pub code: __u16,
+    pub jt: __u8,
+    pub jf: __u8,
+    pub k: __u32,
+}
+#[repr(C)]
+pub struct bpf_prog {
+    pub pages: u16_,
+    pub _bitfield_align_1: [u8; 0],
+    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 2usize]>,
+    pub type_: bpf_prog_type::Type,
+    pub expected_attach_type: bpf_attach_type::Type,
+    pub len: u32_,
+    pub jited_len: u32_,
+    pub tag: [u8_; 8usize],
+    pub stats: *mut bpf_prog_stats,
+    pub active: *mut ::aya_bpf::cty::c_int,
+    pub bpf_func: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *const ::aya_bpf::cty::c_void,
+            arg2: *const bpf_insn,
+        ) -> ::aya_bpf::cty::c_uint,
+    >,
+    pub aux: *mut bpf_prog_aux,
+    pub orig_prog: *mut sock_fprog_kern,
+    pub insns: __IncompleteArrayField<sock_filter>,
+    pub insnsi: __IncompleteArrayField<bpf_insn>,
+}
+impl bpf_prog {
+    #[inline]
+    pub fn jited(&self) -> u16_ {
+        unsafe { ::core::mem::transmute(self._bitfield_1.get(0usize, 1u8) as u16) }
+    }
+    #[inline]
+    pub fn set_jited(&mut self, val: u16_) {
+        unsafe {
+            let val: u16 = ::core::mem::transmute(val);
+            self._bitfield_1.set(0usize, 1u8, val as u64)
+        }
+    }
+    #[inline]
+    pub fn jit_requested(&self) -> u16_ {
+        unsafe { ::core::mem::transmute(self._bitfield_1.get(1usize, 1u8) as u16) }
+    }
+    #[inline]
+    pub fn set_jit_requested(&mut self, val: u16_) {
+        unsafe {
+            let val: u16 = ::core::mem::transmute(val);
+            self._bitfield_1.set(1usize, 1u8, val as u64)
+        }
+    }
+    #[inline]
+    pub fn gpl_compatible(&self) -> u16_ {
+        unsafe { ::core::mem::transmute(self._bitfield_1.get(2usize, 1u8) as u16) }
+    }
+    #[inline]
+    pub fn set_gpl_compatible(&mut self, val: u16_) {
+        unsafe {
+            let val: u16 = ::core::mem::transmute(val);
+            self._bitfield_1.set(2usize, 1u8, val as u64)
+        }
+    }
+    #[inline]
+    pub fn cb_access(&self) -> u16_ {
+        unsafe { ::core::mem::transmute(self._bitfield_1.get(3usize, 1u8) as u16) }
+    }
+    #[inline]
+    pub fn set_cb_access(&mut self, val: u16_) {
+        unsafe {
+            let val: u16 = ::core::mem::transmute(val);
+            self._bitfield_1.set(3usize, 1u8, val as u64)
+        }
+    }
+    #[inline]
+    pub fn dst_needed(&self) -> u16_ {
+        unsafe { ::core::mem::transmute(self._bitfield_1.get(4usize, 1u8) as u16) }
+    }
+    #[inline]
+    pub fn set_dst_needed(&mut self, val: u16_) {
+        unsafe {
+            let val: u16 = ::core::mem::transmute(val);
+            self._bitfield_1.set(4usize, 1u8, val as u64)
+        }
+    }
+    #[inline]
+    pub fn blinded(&self) -> u16_ {
+        unsafe { ::core::mem::transmute(self._bitfield_1.get(5usize, 1u8) as u16) }
+    }
+    #[inline]
+    pub fn set_blinded(&mut self, val: u16_) {
+        unsafe {
+            let val: u16 = ::core::mem::transmute(val);
+            self._bitfield_1.set(5usize, 1u8, val as u64)
+        }
+    }
+    #[inline]
+    pub fn is_func(&self) -> u16_ {
+        unsafe { ::core::mem::transmute(self._bitfield_1.get(6usize, 1u8) as u16) }
+    }
+    #[inline]
+    pub fn set_is_func(&mut self, val: u16_) {
+        unsafe {
+            let val: u16 = ::core::mem::transmute(val);
+            self._bitfield_1.set(6usize, 1u8, val as u64)
+        }
+    }
+    #[inline]
+    pub fn kprobe_override(&self) -> u16_ {
+        unsafe { ::core::mem::transmute(self._bitfield_1.get(7usize, 1u8) as u16) }
+    }
+    #[inline]
+    pub fn set_kprobe_override(&mut self, val: u16_) {
+        unsafe {
+            let val: u16 = ::core::mem::transmute(val);
+            self._bitfield_1.set(7usize, 1u8, val as u64)
+        }
+    }
+    #[inline]
+    pub fn has_callchain_buf(&self) -> u16_ {
+        unsafe { ::core::mem::transmute(self._bitfield_1.get(8usize, 1u8) as u16) }
+    }
+    #[inline]
+    pub fn set_has_callchain_buf(&mut self, val: u16_) {
+        unsafe {
+            let val: u16 = ::core::mem::transmute(val);
+            self._bitfield_1.set(8usize, 1u8, val as u64)
+        }
+    }
+    #[inline]
+    pub fn enforce_expected_attach_type(&self) -> u16_ {
+        unsafe { ::core::mem::transmute(self._bitfield_1.get(9usize, 1u8) as u16) }
+    }
+    #[inline]
+    pub fn set_enforce_expected_attach_type(&mut self, val: u16_) {
+        unsafe {
+            let val: u16 = ::core::mem::transmute(val);
+            self._bitfield_1.set(9usize, 1u8, val as u64)
+        }
+    }
+    #[inline]
+    pub fn call_get_stack(&self) -> u16_ {
+        unsafe { ::core::mem::transmute(self._bitfield_1.get(10usize, 1u8) as u16) }
+    }
+    #[inline]
+    pub fn set_call_get_stack(&mut self, val: u16_) {
+        unsafe {
+            let val: u16 = ::core::mem::transmute(val);
+            self._bitfield_1.set(10usize, 1u8, val as u64)
+        }
+    }
+    #[inline]
+    pub fn new_bitfield_1(
+        jited: u16_,
+        jit_requested: u16_,
+        gpl_compatible: u16_,
+        cb_access: u16_,
+        dst_needed: u16_,
+        blinded: u16_,
+        is_func: u16_,
+        kprobe_override: u16_,
+        has_callchain_buf: u16_,
+        enforce_expected_attach_type: u16_,
+        call_get_stack: u16_,
+    ) -> __BindgenBitfieldUnit<[u8; 2usize]> {
+        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 2usize]> = Default::default();
+        __bindgen_bitfield_unit.set(0usize, 1u8, {
+            let jited: u16 = unsafe { ::core::mem::transmute(jited) };
+            jited as u64
+        });
+        __bindgen_bitfield_unit.set(1usize, 1u8, {
+            let jit_requested: u16 = unsafe { ::core::mem::transmute(jit_requested) };
+            jit_requested as u64
+        });
+        __bindgen_bitfield_unit.set(2usize, 1u8, {
+            let gpl_compatible: u16 = unsafe { ::core::mem::transmute(gpl_compatible) };
+            gpl_compatible as u64
+        });
+        __bindgen_bitfield_unit.set(3usize, 1u8, {
+            let cb_access: u16 = unsafe { ::core::mem::transmute(cb_access) };
+            cb_access as u64
+        });
+        __bindgen_bitfield_unit.set(4usize, 1u8, {
+            let dst_needed: u16 = unsafe { ::core::mem::transmute(dst_needed) };
+            dst_needed as u64
+        });
+        __bindgen_bitfield_unit.set(5usize, 1u8, {
+            let blinded: u16 = unsafe { ::core::mem::transmute(blinded) };
+            blinded as u64
+        });
+        __bindgen_bitfield_unit.set(6usize, 1u8, {
+            let is_func: u16 = unsafe { ::core::mem::transmute(is_func) };
+            is_func as u64
+        });
+        __bindgen_bitfield_unit.set(7usize, 1u8, {
+            let kprobe_override: u16 = unsafe { ::core::mem::transmute(kprobe_override) };
+            kprobe_override as u64
+        });
+        __bindgen_bitfield_unit.set(8usize, 1u8, {
+            let has_callchain_buf: u16 = unsafe { ::core::mem::transmute(has_callchain_buf) };
+            has_callchain_buf as u64
+        });
+        __bindgen_bitfield_unit.set(9usize, 1u8, {
+            let enforce_expected_attach_type: u16 =
+                unsafe { ::core::mem::transmute(enforce_expected_attach_type) };
+            enforce_expected_attach_type as u64
+        });
+        __bindgen_bitfield_unit.set(10usize, 1u8, {
+            let call_get_stack: u16 = unsafe { ::core::mem::transmute(call_get_stack) };
+            call_get_stack as u64
+        });
+        __bindgen_bitfield_unit
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct bpf_map_dev_ops {
+    pub map_get_next_key: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut bpf_offloaded_map,
+            arg2: *mut ::aya_bpf::cty::c_void,
+            arg3: *mut ::aya_bpf::cty::c_void,
+        ) -> ::aya_bpf::cty::c_int,
+    >,
+    pub map_lookup_elem: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut bpf_offloaded_map,
+            arg2: *mut ::aya_bpf::cty::c_void,
+            arg3: *mut ::aya_bpf::cty::c_void,
+        ) -> ::aya_bpf::cty::c_int,
+    >,
+    pub map_update_elem: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut bpf_offloaded_map,
+            arg2: *mut ::aya_bpf::cty::c_void,
+            arg3: *mut ::aya_bpf::cty::c_void,
+            arg4: u64_,
+        ) -> ::aya_bpf::cty::c_int,
+    >,
+    pub map_delete_elem: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut bpf_offloaded_map,
+            arg2: *mut ::aya_bpf::cty::c_void,
+        ) -> ::aya_bpf::cty::c_int,
+    >,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct bpf_offloaded_map {
+    pub map: bpf_map,
+    pub netdev: *mut net_device,
+    pub dev_ops: *const bpf_map_dev_ops,
+    pub dev_priv: *mut ::aya_bpf::cty::c_void,
+    pub offloads: list_head,
+    pub _bitfield_align_1: [u8; 0],
+    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 24usize]>,
+}
+impl bpf_offloaded_map {
+    #[inline]
+    pub fn new_bitfield_1() -> __BindgenBitfieldUnit<[u8; 24usize]> {
+        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 24usize]> = Default::default();
+        __bindgen_bitfield_unit
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct net_device_stats {
+    pub rx_packets: ::aya_bpf::cty::c_ulong,
+    pub tx_packets: ::aya_bpf::cty::c_ulong,
+    pub rx_bytes: ::aya_bpf::cty::c_ulong,
+    pub tx_bytes: ::aya_bpf::cty::c_ulong,
+    pub rx_errors: ::aya_bpf::cty::c_ulong,
+    pub tx_errors: ::aya_bpf::cty::c_ulong,
+    pub rx_dropped: ::aya_bpf::cty::c_ulong,
+    pub tx_dropped: ::aya_bpf::cty::c_ulong,
+    pub multicast: ::aya_bpf::cty::c_ulong,
+    pub collisions: ::aya_bpf::cty::c_ulong,
+    pub rx_length_errors: ::aya_bpf::cty::c_ulong,
+    pub rx_over_errors: ::aya_bpf::cty::c_ulong,
+    pub rx_crc_errors: ::aya_bpf::cty::c_ulong,
+    pub rx_frame_errors: ::aya_bpf::cty::c_ulong,
+    pub rx_fifo_errors: ::aya_bpf::cty::c_ulong,
+    pub rx_missed_errors: ::aya_bpf::cty::c_ulong,
+    pub tx_aborted_errors: ::aya_bpf::cty::c_ulong,
+    pub tx_carrier_errors: ::aya_bpf::cty::c_ulong,
+    pub tx_fifo_errors: ::aya_bpf::cty::c_ulong,
+    pub tx_heartbeat_errors: ::aya_bpf::cty::c_ulong,
+    pub tx_window_errors: ::aya_bpf::cty::c_ulong,
+    pub rx_compressed: ::aya_bpf::cty::c_ulong,
+    pub tx_compressed: ::aya_bpf::cty::c_ulong,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct netdev_hw_addr_list {
+    pub list: list_head,
+    pub count: ::aya_bpf::cty::c_int,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct tipc_bearer {
+    _unused: [u8; 0],
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct dn_dev {
+    _unused: [u8; 0],
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct mpls_dev {
+    _unused: [u8; 0],
+}
+pub mod rx_handler_result {
+    pub type Type = ::aya_bpf::cty::c_uint;
+    pub const RX_HANDLER_CONSUMED: Type = 0;
+    pub const RX_HANDLER_ANOTHER: Type = 1;
+    pub const RX_HANDLER_EXACT: Type = 2;
+    pub const RX_HANDLER_PASS: Type = 3;
+}
+pub use self::rx_handler_result::Type as rx_handler_result_t;
+pub type rx_handler_func_t =
+    ::core::option::Option<unsafe extern "C" fn(arg1: *mut *mut sk_buff) -> rx_handler_result_t>;
+pub mod netdev_ml_priv_type {
+    pub type Type = ::aya_bpf::cty::c_uint;
+    pub const ML_PRIV_NONE: Type = 0;
+    pub const ML_PRIV_CAN: Type = 1;
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct pcpu_dstats {
+    _unused: [u8; 0],
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct garp_port {
+    _unused: [u8; 0],
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct mrp_port {
+    _unused: [u8; 0],
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct netdev_tc_txq {
+    pub count: u16_,
+    pub offset: u16_,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct macsec_ops {
+    _unused: [u8; 0],
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct udp_tunnel_nic {
+    _unused: [u8; 0],
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct bpf_xdp_entity {
+    pub prog: *mut bpf_prog,
+    pub link: *mut bpf_xdp_link,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct net_device {
+    pub name: [::aya_bpf::cty::c_char; 16usize],
+    pub name_node: *mut netdev_name_node,
+    pub ifalias: *mut dev_ifalias,
+    pub mem_end: ::aya_bpf::cty::c_ulong,
+    pub mem_start: ::aya_bpf::cty::c_ulong,
+    pub base_addr: ::aya_bpf::cty::c_ulong,
+    pub state: ::aya_bpf::cty::c_ulong,
+    pub dev_list: list_head,
+    pub napi_list: list_head,
+    pub unreg_list: list_head,
+    pub close_list: list_head,
+    pub ptype_all: list_head,
+    pub ptype_specific: list_head,
+    pub adj_list: net_device__bindgen_ty_1,
+    pub flags: ::aya_bpf::cty::c_uint,
+    pub priv_flags: ::aya_bpf::cty::c_uint,
+    pub netdev_ops: *const net_device_ops,
+    pub ifindex: ::aya_bpf::cty::c_int,
+    pub gflags: ::aya_bpf::cty::c_ushort,
+    pub hard_header_len: ::aya_bpf::cty::c_ushort,
+    pub mtu: ::aya_bpf::cty::c_uint,
+    pub needed_headroom: ::aya_bpf::cty::c_ushort,
+    pub needed_tailroom: ::aya_bpf::cty::c_ushort,
+    pub features: netdev_features_t,
+    pub hw_features: netdev_features_t,
+    pub wanted_features: netdev_features_t,
+    pub vlan_features: netdev_features_t,
+    pub hw_enc_features: netdev_features_t,
+    pub mpls_features: netdev_features_t,
+    pub gso_partial_features: netdev_features_t,
+    pub min_mtu: ::aya_bpf::cty::c_uint,
+    pub max_mtu: ::aya_bpf::cty::c_uint,
+    pub type_: ::aya_bpf::cty::c_ushort,
+    pub min_header_len: ::aya_bpf::cty::c_uchar,
+    pub name_assign_type: ::aya_bpf::cty::c_uchar,
+    pub group: ::aya_bpf::cty::c_int,
+    pub stats: net_device_stats,
+    pub rx_dropped: atomic_long_t,
+    pub tx_dropped: atomic_long_t,
+    pub rx_nohandler: atomic_long_t,
+    pub carrier_up_count: atomic_t,
+    pub carrier_down_count: atomic_t,
+    pub wireless_handlers: *const iw_handler_def,
+    pub wireless_data: *mut iw_public_data,
+    pub ethtool_ops: *const ethtool_ops,
+    pub l3mdev_ops: *const l3mdev_ops,
+    pub ndisc_ops: *const ndisc_ops,
+    pub xfrmdev_ops: *const xfrmdev_ops,
+    pub tlsdev_ops: *const tlsdev_ops,
+    pub header_ops: *const header_ops,
+    pub operstate: ::aya_bpf::cty::c_uchar,
+    pub link_mode: ::aya_bpf::cty::c_uchar,
+    pub if_port: ::aya_bpf::cty::c_uchar,
+    pub dma: ::aya_bpf::cty::c_uchar,
+    pub perm_addr: [::aya_bpf::cty::c_uchar; 32usize],
+    pub addr_assign_type: ::aya_bpf::cty::c_uchar,
+    pub addr_len: ::aya_bpf::cty::c_uchar,
+    pub upper_level: ::aya_bpf::cty::c_uchar,
+    pub lower_level: ::aya_bpf::cty::c_uchar,
+    pub neigh_priv_len: ::aya_bpf::cty::c_ushort,
+    pub dev_id: ::aya_bpf::cty::c_ushort,
+    pub dev_port: ::aya_bpf::cty::c_ushort,
+    pub padded: ::aya_bpf::cty::c_ushort,
+    pub addr_list_lock: spinlock_t,
+    pub irq: ::aya_bpf::cty::c_int,
+    pub uc: netdev_hw_addr_list,
+    pub mc: netdev_hw_addr_list,
+    pub dev_addrs: netdev_hw_addr_list,
+    pub queues_kset: *mut kset,
+    pub promiscuity: ::aya_bpf::cty::c_uint,
+    pub allmulti: ::aya_bpf::cty::c_uint,
+    pub uc_promisc: bool_,
+    pub vlan_info: *mut vlan_info,
+    pub dsa_ptr: *mut dsa_port,
+    pub tipc_ptr: *mut tipc_bearer,
+    pub atalk_ptr: *mut ::aya_bpf::cty::c_void,
+    pub ip_ptr: *mut in_device,
+    pub dn_ptr: *mut dn_dev,
+    pub ip6_ptr: *mut inet6_dev,
+    pub ax25_ptr: *mut ::aya_bpf::cty::c_void,
+    pub ieee80211_ptr: *mut wireless_dev,
+    pub ieee802154_ptr: *mut wpan_dev,
+    pub mpls_ptr: *mut mpls_dev,
+    pub dev_addr: *mut ::aya_bpf::cty::c_uchar,
+    pub _rx: *mut netdev_rx_queue,
+    pub num_rx_queues: ::aya_bpf::cty::c_uint,
+    pub real_num_rx_queues: ::aya_bpf::cty::c_uint,
+    pub xdp_prog: *mut bpf_prog,
+    pub gro_flush_timeout: ::aya_bpf::cty::c_ulong,
+    pub napi_defer_hard_irqs: ::aya_bpf::cty::c_int,
+    pub rx_handler: rx_handler_func_t,
+    pub rx_handler_data: *mut ::aya_bpf::cty::c_void,
+    pub miniq_ingress: *mut mini_Qdisc,
+    pub ingress_queue: *mut netdev_queue,
+    pub nf_hooks_ingress: *mut nf_hook_entries,
+    pub broadcast: [::aya_bpf::cty::c_uchar; 32usize],
+    pub rx_cpu_rmap: *mut cpu_rmap,
+    pub index_hlist: hlist_node,
+    pub _tx: *mut netdev_queue,
+    pub num_tx_queues: ::aya_bpf::cty::c_uint,
+    pub real_num_tx_queues: ::aya_bpf::cty::c_uint,
+    pub qdisc: *mut Qdisc,
+    pub tx_queue_len: ::aya_bpf::cty::c_uint,
+    pub tx_global_lock: spinlock_t,
+    pub xdp_bulkq: *mut xdp_dev_bulk_queue,
+    pub xps_maps: [*mut xps_dev_maps; 2usize],
+    pub miniq_egress: *mut mini_Qdisc,
+    pub qdisc_hash: [hlist_head; 16usize],
+    pub watchdog_timer: timer_list,
+    pub watchdog_timeo: ::aya_bpf::cty::c_int,
+    pub proto_down_reason: u32_,
+    pub todo_list: list_head,
+    pub pcpu_refcnt: *mut ::aya_bpf::cty::c_int,
+    pub link_watch_list: list_head,
+    pub _bitfield_align_1: [u8; 0],
+    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 1usize]>,
+    pub dismantle: bool_,
+    pub _bitfield_align_2: [u16; 0],
+    pub _bitfield_2: __BindgenBitfieldUnit<[u8; 2usize]>,
+    pub needs_free_netdev: bool_,
+    pub priv_destructor: ::core::option::Option<unsafe extern "C" fn(arg1: *mut net_device)>,
+    pub npinfo: *mut netpoll_info,
+    pub nd_net: possible_net_t,
+    pub ml_priv: *mut ::aya_bpf::cty::c_void,
+    pub ml_priv_type: netdev_ml_priv_type::Type,
+    pub __bindgen_anon_1: net_device__bindgen_ty_4,
+    pub garp_port: *mut garp_port,
+    pub mrp_port: *mut mrp_port,
+    pub dev: device,
+    pub sysfs_groups: [*const attribute_group; 4usize],
+    pub sysfs_rx_queue_group: *const attribute_group,
+    pub rtnl_link_ops: *const rtnl_link_ops,
+    pub gso_max_size: ::aya_bpf::cty::c_uint,
+    pub gso_max_segs: u16_,
+    pub dcbnl_ops: *const dcbnl_rtnl_ops,
+    pub num_tc: s16,
+    pub tc_to_txq: [netdev_tc_txq; 16usize],
+    pub prio_tc_map: [u8_; 16usize],
+    pub fcoe_ddp_xid: ::aya_bpf::cty::c_uint,
+    pub priomap: *mut netprio_map,
+    pub phydev: *mut phy_device,
+    pub sfp_bus: *mut sfp_bus,
+    pub qdisc_tx_busylock: *mut lock_class_key,
+    pub qdisc_running_key: *mut lock_class_key,
+    pub proto_down: bool_,
+    pub _bitfield_align_3: [u8; 0],
+    pub _bitfield_3: __BindgenBitfieldUnit<[u8; 1usize]>,
+    pub net_notifier_list: list_head,
+    pub macsec_ops: *const macsec_ops,
+    pub udp_tunnel_nic_info: *const udp_tunnel_nic_info,
+    pub udp_tunnel_nic: *mut udp_tunnel_nic,
+    pub xdp_state: [bpf_xdp_entity; 3usize],
+    pub _bitfield_align_4: [u8; 0],
+    pub _bitfield_4: __BindgenBitfieldUnit<[u8; 32usize]>,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct net_device__bindgen_ty_1 {
+    pub upper: list_head,
+    pub lower: list_head,
+}
+pub mod net_device__bindgen_ty_2 {
+    pub type Type = ::aya_bpf::cty::c_uint;
+    pub const NETREG_UNINITIALIZED: Type = 0;
+    pub const NETREG_REGISTERED: Type = 1;
+    pub const NETREG_UNREGISTERING: Type = 2;
+    pub const NETREG_UNREGISTERED: Type = 3;
+    pub const NETREG_RELEASED: Type = 4;
+    pub const NETREG_DUMMY: Type = 5;
+}
+pub mod net_device__bindgen_ty_3 {
+    pub type Type = ::aya_bpf::cty::c_uint;
+    pub const RTNL_LINK_INITIALIZED: Type = 0;
+    pub const RTNL_LINK_INITIALIZING: Type = 1;
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub union net_device__bindgen_ty_4 {
+    pub lstats: *mut pcpu_lstats,
+    pub tstats: *mut pcpu_sw_netstats,
+    pub dstats: *mut pcpu_dstats,
+}
+impl net_device {
+    #[inline]
+    pub fn reg_state(&self) -> net_device__bindgen_ty_2::Type {
+        unsafe { ::core::mem::transmute(self._bitfield_1.get(0usize, 8u8) as u32) }
+    }
+    #[inline]
+    pub fn set_reg_state(&mut self, val: net_device__bindgen_ty_2::Type) {
+        unsafe {
+            let val: u32 = ::core::mem::transmute(val);
+            self._bitfield_1.set(0usize, 8u8, val as u64)
+        }
+    }
+    #[inline]
+    pub fn new_bitfield_1(
+        reg_state: net_device__bindgen_ty_2::Type,
+    ) -> __BindgenBitfieldUnit<[u8; 1usize]> {
+        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 1usize]> = Default::default();
+        __bindgen_bitfield_unit.set(0usize, 8u8, {
+            let reg_state: u32 = unsafe { ::core::mem::transmute(reg_state) };
+            reg_state as u64
+        });
+        __bindgen_bitfield_unit
+    }
+    #[inline]
+    pub fn rtnl_link_state(&self) -> net_device__bindgen_ty_3::Type {
+        unsafe { ::core::mem::transmute(self._bitfield_2.get(0usize, 16u8) as u32) }
+    }
+    #[inline]
+    pub fn set_rtnl_link_state(&mut self, val: net_device__bindgen_ty_3::Type) {
+        unsafe {
+            let val: u32 = ::core::mem::transmute(val);
+            self._bitfield_2.set(0usize, 16u8, val as u64)
+        }
+    }
+    #[inline]
+    pub fn new_bitfield_2(
+        rtnl_link_state: net_device__bindgen_ty_3::Type,
+    ) -> __BindgenBitfieldUnit<[u8; 2usize]> {
+        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 2usize]> = Default::default();
+        __bindgen_bitfield_unit.set(0usize, 16u8, {
+            let rtnl_link_state: u32 = unsafe { ::core::mem::transmute(rtnl_link_state) };
+            rtnl_link_state as u64
+        });
+        __bindgen_bitfield_unit
+    }
+    #[inline]
+    pub fn wol_enabled(&self) -> ::aya_bpf::cty::c_uint {
+        unsafe { ::core::mem::transmute(self._bitfield_3.get(0usize, 1u8) as u32) }
+    }
+    #[inline]
+    pub fn set_wol_enabled(&mut self, val: ::aya_bpf::cty::c_uint) {
+        unsafe {
+            let val: u32 = ::core::mem::transmute(val);
+            self._bitfield_3.set(0usize, 1u8, val as u64)
+        }
+    }
+    #[inline]
+    pub fn threaded(&self) -> ::aya_bpf::cty::c_uint {
+        unsafe { ::core::mem::transmute(self._bitfield_3.get(1usize, 1u8) as u32) }
+    }
+    #[inline]
+    pub fn set_threaded(&mut self, val: ::aya_bpf::cty::c_uint) {
+        unsafe {
+            let val: u32 = ::core::mem::transmute(val);
+            self._bitfield_3.set(1usize, 1u8, val as u64)
+        }
+    }
+    #[inline]
+    pub fn new_bitfield_3(
+        wol_enabled: ::aya_bpf::cty::c_uint,
+        threaded: ::aya_bpf::cty::c_uint,
+    ) -> __BindgenBitfieldUnit<[u8; 1usize]> {
+        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 1usize]> = Default::default();
+        __bindgen_bitfield_unit.set(0usize, 1u8, {
+            let wol_enabled: u32 = unsafe { ::core::mem::transmute(wol_enabled) };
+            wol_enabled as u64
+        });
+        __bindgen_bitfield_unit.set(1usize, 1u8, {
+            let threaded: u32 = unsafe { ::core::mem::transmute(threaded) };
+            threaded as u64
+        });
+        __bindgen_bitfield_unit
+    }
+    #[inline]
+    pub fn new_bitfield_4() -> __BindgenBitfieldUnit<[u8; 32usize]> {
+        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 32usize]> = Default::default();
+        __bindgen_bitfield_unit
+    }
+}
+pub mod bpf_reg_type {
+    pub type Type = ::aya_bpf::cty::c_uint;
+    pub const NOT_INIT: Type = 0;
+    pub const SCALAR_VALUE: Type = 1;
+    pub const PTR_TO_CTX: Type = 2;
+    pub const CONST_PTR_TO_MAP: Type = 3;
+    pub const PTR_TO_MAP_VALUE: Type = 4;
+    pub const PTR_TO_MAP_VALUE_OR_NULL: Type = 5;
+    pub const PTR_TO_STACK: Type = 6;
+    pub const PTR_TO_PACKET_META: Type = 7;
+    pub const PTR_TO_PACKET: Type = 8;
+    pub const PTR_TO_PACKET_END: Type = 9;
+    pub const PTR_TO_FLOW_KEYS: Type = 10;
+    pub const PTR_TO_SOCKET: Type = 11;
+    pub const PTR_TO_SOCKET_OR_NULL: Type = 12;
+    pub const PTR_TO_SOCK_COMMON: Type = 13;
+    pub const PTR_TO_SOCK_COMMON_OR_NULL: Type = 14;
+    pub const PTR_TO_TCP_SOCK: Type = 15;
+    pub const PTR_TO_TCP_SOCK_OR_NULL: Type = 16;
+    pub const PTR_TO_TP_BUFFER: Type = 17;
+    pub const PTR_TO_XDP_SOCK: Type = 18;
+    pub const PTR_TO_BTF_ID: Type = 19;
+    pub const PTR_TO_BTF_ID_OR_NULL: Type = 20;
+    pub const PTR_TO_MEM: Type = 21;
+    pub const PTR_TO_MEM_OR_NULL: Type = 22;
+    pub const PTR_TO_RDONLY_BUF: Type = 23;
+    pub const PTR_TO_RDONLY_BUF_OR_NULL: Type = 24;
+    pub const PTR_TO_RDWR_BUF: Type = 25;
+    pub const PTR_TO_RDWR_BUF_OR_NULL: Type = 26;
+    pub const PTR_TO_PERCPU_BTF_ID: Type = 27;
+    pub const PTR_TO_FUNC: Type = 28;
+    pub const PTR_TO_MAP_KEY: Type = 29;
+    pub const __BPF_REG_TYPE_MAX: Type = 30;
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct bpf_prog_ops {
+    pub test_run: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut bpf_prog,
+            arg2: *const bpf_attr,
+            arg3: *mut bpf_attr,
+        ) -> ::aya_bpf::cty::c_int,
+    >,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct bpf_prog_offload {
+    pub prog: *mut bpf_prog,
+    pub netdev: *mut net_device,
+    pub offdev: *mut bpf_offload_dev,
+    pub dev_priv: *mut ::aya_bpf::cty::c_void,
+    pub offloads: list_head,
+    pub dev_state: bool_,
+    pub opt_failed: bool_,
+    pub jited_image: *mut ::aya_bpf::cty::c_void,
+    pub jited_len: u32_,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct btf_func_model {
+    pub ret_size: u8_,
+    pub nr_args: u8_,
+    pub arg_size: [u8_; 12usize],
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct bpf_tramp_image {
+    pub image: *mut ::aya_bpf::cty::c_void,
+    pub ksym: bpf_ksym,
+    pub pcref: percpu_ref,
+    pub ip_after_call: *mut ::aya_bpf::cty::c_void,
+    pub ip_epilogue: *mut ::aya_bpf::cty::c_void,
+    pub __bindgen_anon_1: bpf_tramp_image__bindgen_ty_1,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub union bpf_tramp_image__bindgen_ty_1 {
+    pub rcu: callback_head,
+    pub work: work_struct,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct bpf_trampoline {
+    pub hlist: hlist_node,
+    pub mutex: mutex,
+    pub refcnt: refcount_t,
+    pub key: u64_,
+    pub func: bpf_trampoline__bindgen_ty_1,
+    pub extension_prog: *mut bpf_prog,
+    pub progs_hlist: [hlist_head; 3usize],
+    pub progs_cnt: [::aya_bpf::cty::c_int; 3usize],
+    pub cur_image: *mut bpf_tramp_image,
+    pub selector: u64_,
+    pub mod_: *mut module,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct bpf_trampoline__bindgen_ty_1 {
+    pub model: btf_func_model,
+    pub addr: *mut ::aya_bpf::cty::c_void,
+    pub ftrace_managed: bool_,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct bpf_func_info_aux {
+    pub linkage: u16_,
+    pub unreliable: bool_,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct bpf_jit_poke_descriptor {
+    pub tailcall_target: *mut ::aya_bpf::cty::c_void,
+    pub tailcall_bypass: *mut ::aya_bpf::cty::c_void,
+    pub bypass_addr: *mut ::aya_bpf::cty::c_void,
+    pub aux: *mut ::aya_bpf::cty::c_void,
+    pub __bindgen_anon_1: bpf_jit_poke_descriptor__bindgen_ty_1,
+    pub tailcall_target_stable: bool_,
+    pub adj_off: u8_,
+    pub reason: u16_,
+    pub insn_idx: u32_,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub union bpf_jit_poke_descriptor__bindgen_ty_1 {
+    pub tail_call: bpf_jit_poke_descriptor__bindgen_ty_1__bindgen_ty_1,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct bpf_jit_poke_descriptor__bindgen_ty_1__bindgen_ty_1 {
+    pub map: *mut bpf_map,
+    pub key: u32_,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct bpf_ctx_arg_aux {
+    pub offset: u32_,
+    pub reg_type: bpf_reg_type::Type,
+    pub btf_id: u32_,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct btf_mod_pair {
+    pub btf: *mut btf,
+    pub module: *mut module,
 }
 pub type sk_buff_data_t = ::aya_bpf::cty::c_uint;
 #[repr(C)]
@@ -14267,7 +16057,32 @@ pub struct sk_buff {
     pub _bitfield_align_1: [u8; 0],
     pub _bitfield_1: __BindgenBitfieldUnit<[u8; 1usize]>,
     pub active_extensions: __u8,
+    pub headers_start: __IncompleteArrayField<__u32>,
+    pub __pkt_type_offset: __IncompleteArrayField<__u8>,
+    pub _bitfield_align_2: [u8; 0],
+    pub _bitfield_2: __BindgenBitfieldUnit<[u8; 2usize]>,
+    pub __pkt_vlan_present_offset: __IncompleteArrayField<__u8>,
+    pub _bitfield_align_3: [u8; 0],
+    pub _bitfield_3: __BindgenBitfieldUnit<[u8; 3usize]>,
+    pub tc_index: __u16,
     pub __bindgen_anon_5: sk_buff__bindgen_ty_5,
+    pub priority: __u32,
+    pub skb_iif: ::aya_bpf::cty::c_int,
+    pub hash: __u32,
+    pub vlan_proto: __be16,
+    pub vlan_tci: __u16,
+    pub __bindgen_anon_6: sk_buff__bindgen_ty_6,
+    pub secmark: __u32,
+    pub __bindgen_anon_7: sk_buff__bindgen_ty_7,
+    pub __bindgen_anon_8: sk_buff__bindgen_ty_8,
+    pub inner_transport_header: __u16,
+    pub inner_network_header: __u16,
+    pub inner_mac_header: __u16,
+    pub protocol: __be16,
+    pub transport_header: __u16,
+    pub network_header: __u16,
+    pub mac_header: __u16,
+    pub headers_end: __IncompleteArrayField<__u32>,
     pub tail: sk_buff_data_t,
     pub end: sk_buff_data_t,
     pub head: *mut ::aya_bpf::cty::c_uchar,
@@ -14282,7 +16097,6 @@ pub union sk_buff__bindgen_ty_1 {
     pub __bindgen_anon_1: sk_buff__bindgen_ty_1__bindgen_ty_1,
     pub rbnode: rb_node,
     pub list: list_head,
-    pub ll_node: llist_node,
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
@@ -14317,1150 +16131,40 @@ pub union sk_buff__bindgen_ty_4 {
     pub _sk_redir: ::aya_bpf::cty::c_ulong,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct sk_buff__bindgen_ty_4__bindgen_ty_1 {
     pub _skb_refdst: ::aya_bpf::cty::c_ulong,
     pub destructor: ::core::option::Option<unsafe extern "C" fn(arg1: *mut sk_buff)>,
 }
 #[repr(C)]
-pub struct sk_buff__bindgen_ty_5 {
-    pub __bindgen_anon_1: __BindgenUnionField<sk_buff__bindgen_ty_5__bindgen_ty_1>,
-    pub headers: __BindgenUnionField<sk_buff__bindgen_ty_5__bindgen_ty_2>,
-    pub bindgen_union_field: [u32; 14usize],
+#[derive(Copy, Clone)]
+pub union sk_buff__bindgen_ty_5 {
+    pub csum: __wsum,
+    pub __bindgen_anon_1: sk_buff__bindgen_ty_5__bindgen_ty_1,
 }
 #[repr(C)]
+#[derive(Copy, Clone)]
 pub struct sk_buff__bindgen_ty_5__bindgen_ty_1 {
-    pub __pkt_type_offset: __IncompleteArrayField<__u8>,
-    pub _bitfield_align_1: [u8; 0],
-    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 2usize]>,
-    pub __pkt_vlan_present_offset: __IncompleteArrayField<__u8>,
-    pub _bitfield_align_2: [u8; 0],
-    pub _bitfield_2: __BindgenBitfieldUnit<[u8; 3usize]>,
-    pub tc_index: __u16,
-    pub __bindgen_anon_1: sk_buff__bindgen_ty_5__bindgen_ty_1__bindgen_ty_1,
-    pub priority: __u32,
-    pub skb_iif: ::aya_bpf::cty::c_int,
-    pub hash: __u32,
-    pub vlan_proto: __be16,
-    pub vlan_tci: __u16,
-    pub __bindgen_anon_2: sk_buff__bindgen_ty_5__bindgen_ty_1__bindgen_ty_2,
-    pub secmark: __u32,
-    pub __bindgen_anon_3: sk_buff__bindgen_ty_5__bindgen_ty_1__bindgen_ty_3,
-    pub __bindgen_anon_4: sk_buff__bindgen_ty_5__bindgen_ty_1__bindgen_ty_4,
-    pub inner_transport_header: __u16,
-    pub inner_network_header: __u16,
-    pub inner_mac_header: __u16,
-    pub protocol: __be16,
-    pub transport_header: __u16,
-    pub network_header: __u16,
-    pub mac_header: __u16,
-}
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub union sk_buff__bindgen_ty_5__bindgen_ty_1__bindgen_ty_1 {
-    pub csum: __wsum,
-    pub __bindgen_anon_1: sk_buff__bindgen_ty_5__bindgen_ty_1__bindgen_ty_1__bindgen_ty_1,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct sk_buff__bindgen_ty_5__bindgen_ty_1__bindgen_ty_1__bindgen_ty_1 {
     pub csum_start: __u16,
     pub csum_offset: __u16,
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
-pub union sk_buff__bindgen_ty_5__bindgen_ty_1__bindgen_ty_2 {
+pub union sk_buff__bindgen_ty_6 {
     pub napi_id: ::aya_bpf::cty::c_uint,
     pub sender_cpu: ::aya_bpf::cty::c_uint,
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
-pub union sk_buff__bindgen_ty_5__bindgen_ty_1__bindgen_ty_3 {
+pub union sk_buff__bindgen_ty_7 {
     pub mark: __u32,
     pub reserved_tailroom: __u32,
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
-pub union sk_buff__bindgen_ty_5__bindgen_ty_1__bindgen_ty_4 {
+pub union sk_buff__bindgen_ty_8 {
     pub inner_protocol: __be16,
     pub inner_ipproto: __u8,
-}
-impl sk_buff__bindgen_ty_5__bindgen_ty_1 {
-    #[inline]
-    pub fn pkt_type(&self) -> __u8 {
-        unsafe { ::core::mem::transmute(self._bitfield_1.get(0usize, 3u8) as u8) }
-    }
-    #[inline]
-    pub fn set_pkt_type(&mut self, val: __u8) {
-        unsafe {
-            let val: u8 = ::core::mem::transmute(val);
-            self._bitfield_1.set(0usize, 3u8, val as u64)
-        }
-    }
-    #[inline]
-    pub fn ignore_df(&self) -> __u8 {
-        unsafe { ::core::mem::transmute(self._bitfield_1.get(3usize, 1u8) as u8) }
-    }
-    #[inline]
-    pub fn set_ignore_df(&mut self, val: __u8) {
-        unsafe {
-            let val: u8 = ::core::mem::transmute(val);
-            self._bitfield_1.set(3usize, 1u8, val as u64)
-        }
-    }
-    #[inline]
-    pub fn nf_trace(&self) -> __u8 {
-        unsafe { ::core::mem::transmute(self._bitfield_1.get(4usize, 1u8) as u8) }
-    }
-    #[inline]
-    pub fn set_nf_trace(&mut self, val: __u8) {
-        unsafe {
-            let val: u8 = ::core::mem::transmute(val);
-            self._bitfield_1.set(4usize, 1u8, val as u64)
-        }
-    }
-    #[inline]
-    pub fn ip_summed(&self) -> __u8 {
-        unsafe { ::core::mem::transmute(self._bitfield_1.get(5usize, 2u8) as u8) }
-    }
-    #[inline]
-    pub fn set_ip_summed(&mut self, val: __u8) {
-        unsafe {
-            let val: u8 = ::core::mem::transmute(val);
-            self._bitfield_1.set(5usize, 2u8, val as u64)
-        }
-    }
-    #[inline]
-    pub fn ooo_okay(&self) -> __u8 {
-        unsafe { ::core::mem::transmute(self._bitfield_1.get(7usize, 1u8) as u8) }
-    }
-    #[inline]
-    pub fn set_ooo_okay(&mut self, val: __u8) {
-        unsafe {
-            let val: u8 = ::core::mem::transmute(val);
-            self._bitfield_1.set(7usize, 1u8, val as u64)
-        }
-    }
-    #[inline]
-    pub fn l4_hash(&self) -> __u8 {
-        unsafe { ::core::mem::transmute(self._bitfield_1.get(8usize, 1u8) as u8) }
-    }
-    #[inline]
-    pub fn set_l4_hash(&mut self, val: __u8) {
-        unsafe {
-            let val: u8 = ::core::mem::transmute(val);
-            self._bitfield_1.set(8usize, 1u8, val as u64)
-        }
-    }
-    #[inline]
-    pub fn sw_hash(&self) -> __u8 {
-        unsafe { ::core::mem::transmute(self._bitfield_1.get(9usize, 1u8) as u8) }
-    }
-    #[inline]
-    pub fn set_sw_hash(&mut self, val: __u8) {
-        unsafe {
-            let val: u8 = ::core::mem::transmute(val);
-            self._bitfield_1.set(9usize, 1u8, val as u64)
-        }
-    }
-    #[inline]
-    pub fn wifi_acked_valid(&self) -> __u8 {
-        unsafe { ::core::mem::transmute(self._bitfield_1.get(10usize, 1u8) as u8) }
-    }
-    #[inline]
-    pub fn set_wifi_acked_valid(&mut self, val: __u8) {
-        unsafe {
-            let val: u8 = ::core::mem::transmute(val);
-            self._bitfield_1.set(10usize, 1u8, val as u64)
-        }
-    }
-    #[inline]
-    pub fn wifi_acked(&self) -> __u8 {
-        unsafe { ::core::mem::transmute(self._bitfield_1.get(11usize, 1u8) as u8) }
-    }
-    #[inline]
-    pub fn set_wifi_acked(&mut self, val: __u8) {
-        unsafe {
-            let val: u8 = ::core::mem::transmute(val);
-            self._bitfield_1.set(11usize, 1u8, val as u64)
-        }
-    }
-    #[inline]
-    pub fn no_fcs(&self) -> __u8 {
-        unsafe { ::core::mem::transmute(self._bitfield_1.get(12usize, 1u8) as u8) }
-    }
-    #[inline]
-    pub fn set_no_fcs(&mut self, val: __u8) {
-        unsafe {
-            let val: u8 = ::core::mem::transmute(val);
-            self._bitfield_1.set(12usize, 1u8, val as u64)
-        }
-    }
-    #[inline]
-    pub fn encapsulation(&self) -> __u8 {
-        unsafe { ::core::mem::transmute(self._bitfield_1.get(13usize, 1u8) as u8) }
-    }
-    #[inline]
-    pub fn set_encapsulation(&mut self, val: __u8) {
-        unsafe {
-            let val: u8 = ::core::mem::transmute(val);
-            self._bitfield_1.set(13usize, 1u8, val as u64)
-        }
-    }
-    #[inline]
-    pub fn encap_hdr_csum(&self) -> __u8 {
-        unsafe { ::core::mem::transmute(self._bitfield_1.get(14usize, 1u8) as u8) }
-    }
-    #[inline]
-    pub fn set_encap_hdr_csum(&mut self, val: __u8) {
-        unsafe {
-            let val: u8 = ::core::mem::transmute(val);
-            self._bitfield_1.set(14usize, 1u8, val as u64)
-        }
-    }
-    #[inline]
-    pub fn csum_valid(&self) -> __u8 {
-        unsafe { ::core::mem::transmute(self._bitfield_1.get(15usize, 1u8) as u8) }
-    }
-    #[inline]
-    pub fn set_csum_valid(&mut self, val: __u8) {
-        unsafe {
-            let val: u8 = ::core::mem::transmute(val);
-            self._bitfield_1.set(15usize, 1u8, val as u64)
-        }
-    }
-    #[inline]
-    pub fn new_bitfield_1(
-        pkt_type: __u8,
-        ignore_df: __u8,
-        nf_trace: __u8,
-        ip_summed: __u8,
-        ooo_okay: __u8,
-        l4_hash: __u8,
-        sw_hash: __u8,
-        wifi_acked_valid: __u8,
-        wifi_acked: __u8,
-        no_fcs: __u8,
-        encapsulation: __u8,
-        encap_hdr_csum: __u8,
-        csum_valid: __u8,
-    ) -> __BindgenBitfieldUnit<[u8; 2usize]> {
-        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 2usize]> = Default::default();
-        __bindgen_bitfield_unit.set(0usize, 3u8, {
-            let pkt_type: u8 = unsafe { ::core::mem::transmute(pkt_type) };
-            pkt_type as u64
-        });
-        __bindgen_bitfield_unit.set(3usize, 1u8, {
-            let ignore_df: u8 = unsafe { ::core::mem::transmute(ignore_df) };
-            ignore_df as u64
-        });
-        __bindgen_bitfield_unit.set(4usize, 1u8, {
-            let nf_trace: u8 = unsafe { ::core::mem::transmute(nf_trace) };
-            nf_trace as u64
-        });
-        __bindgen_bitfield_unit.set(5usize, 2u8, {
-            let ip_summed: u8 = unsafe { ::core::mem::transmute(ip_summed) };
-            ip_summed as u64
-        });
-        __bindgen_bitfield_unit.set(7usize, 1u8, {
-            let ooo_okay: u8 = unsafe { ::core::mem::transmute(ooo_okay) };
-            ooo_okay as u64
-        });
-        __bindgen_bitfield_unit.set(8usize, 1u8, {
-            let l4_hash: u8 = unsafe { ::core::mem::transmute(l4_hash) };
-            l4_hash as u64
-        });
-        __bindgen_bitfield_unit.set(9usize, 1u8, {
-            let sw_hash: u8 = unsafe { ::core::mem::transmute(sw_hash) };
-            sw_hash as u64
-        });
-        __bindgen_bitfield_unit.set(10usize, 1u8, {
-            let wifi_acked_valid: u8 = unsafe { ::core::mem::transmute(wifi_acked_valid) };
-            wifi_acked_valid as u64
-        });
-        __bindgen_bitfield_unit.set(11usize, 1u8, {
-            let wifi_acked: u8 = unsafe { ::core::mem::transmute(wifi_acked) };
-            wifi_acked as u64
-        });
-        __bindgen_bitfield_unit.set(12usize, 1u8, {
-            let no_fcs: u8 = unsafe { ::core::mem::transmute(no_fcs) };
-            no_fcs as u64
-        });
-        __bindgen_bitfield_unit.set(13usize, 1u8, {
-            let encapsulation: u8 = unsafe { ::core::mem::transmute(encapsulation) };
-            encapsulation as u64
-        });
-        __bindgen_bitfield_unit.set(14usize, 1u8, {
-            let encap_hdr_csum: u8 = unsafe { ::core::mem::transmute(encap_hdr_csum) };
-            encap_hdr_csum as u64
-        });
-        __bindgen_bitfield_unit.set(15usize, 1u8, {
-            let csum_valid: u8 = unsafe { ::core::mem::transmute(csum_valid) };
-            csum_valid as u64
-        });
-        __bindgen_bitfield_unit
-    }
-    #[inline]
-    pub fn vlan_present(&self) -> __u8 {
-        unsafe { ::core::mem::transmute(self._bitfield_2.get(0usize, 1u8) as u8) }
-    }
-    #[inline]
-    pub fn set_vlan_present(&mut self, val: __u8) {
-        unsafe {
-            let val: u8 = ::core::mem::transmute(val);
-            self._bitfield_2.set(0usize, 1u8, val as u64)
-        }
-    }
-    #[inline]
-    pub fn csum_complete_sw(&self) -> __u8 {
-        unsafe { ::core::mem::transmute(self._bitfield_2.get(1usize, 1u8) as u8) }
-    }
-    #[inline]
-    pub fn set_csum_complete_sw(&mut self, val: __u8) {
-        unsafe {
-            let val: u8 = ::core::mem::transmute(val);
-            self._bitfield_2.set(1usize, 1u8, val as u64)
-        }
-    }
-    #[inline]
-    pub fn csum_level(&self) -> __u8 {
-        unsafe { ::core::mem::transmute(self._bitfield_2.get(2usize, 2u8) as u8) }
-    }
-    #[inline]
-    pub fn set_csum_level(&mut self, val: __u8) {
-        unsafe {
-            let val: u8 = ::core::mem::transmute(val);
-            self._bitfield_2.set(2usize, 2u8, val as u64)
-        }
-    }
-    #[inline]
-    pub fn csum_not_inet(&self) -> __u8 {
-        unsafe { ::core::mem::transmute(self._bitfield_2.get(4usize, 1u8) as u8) }
-    }
-    #[inline]
-    pub fn set_csum_not_inet(&mut self, val: __u8) {
-        unsafe {
-            let val: u8 = ::core::mem::transmute(val);
-            self._bitfield_2.set(4usize, 1u8, val as u64)
-        }
-    }
-    #[inline]
-    pub fn dst_pending_confirm(&self) -> __u8 {
-        unsafe { ::core::mem::transmute(self._bitfield_2.get(5usize, 1u8) as u8) }
-    }
-    #[inline]
-    pub fn set_dst_pending_confirm(&mut self, val: __u8) {
-        unsafe {
-            let val: u8 = ::core::mem::transmute(val);
-            self._bitfield_2.set(5usize, 1u8, val as u64)
-        }
-    }
-    #[inline]
-    pub fn ndisc_nodetype(&self) -> __u8 {
-        unsafe { ::core::mem::transmute(self._bitfield_2.get(6usize, 2u8) as u8) }
-    }
-    #[inline]
-    pub fn set_ndisc_nodetype(&mut self, val: __u8) {
-        unsafe {
-            let val: u8 = ::core::mem::transmute(val);
-            self._bitfield_2.set(6usize, 2u8, val as u64)
-        }
-    }
-    #[inline]
-    pub fn ipvs_property(&self) -> __u8 {
-        unsafe { ::core::mem::transmute(self._bitfield_2.get(8usize, 1u8) as u8) }
-    }
-    #[inline]
-    pub fn set_ipvs_property(&mut self, val: __u8) {
-        unsafe {
-            let val: u8 = ::core::mem::transmute(val);
-            self._bitfield_2.set(8usize, 1u8, val as u64)
-        }
-    }
-    #[inline]
-    pub fn inner_protocol_type(&self) -> __u8 {
-        unsafe { ::core::mem::transmute(self._bitfield_2.get(9usize, 1u8) as u8) }
-    }
-    #[inline]
-    pub fn set_inner_protocol_type(&mut self, val: __u8) {
-        unsafe {
-            let val: u8 = ::core::mem::transmute(val);
-            self._bitfield_2.set(9usize, 1u8, val as u64)
-        }
-    }
-    #[inline]
-    pub fn remcsum_offload(&self) -> __u8 {
-        unsafe { ::core::mem::transmute(self._bitfield_2.get(10usize, 1u8) as u8) }
-    }
-    #[inline]
-    pub fn set_remcsum_offload(&mut self, val: __u8) {
-        unsafe {
-            let val: u8 = ::core::mem::transmute(val);
-            self._bitfield_2.set(10usize, 1u8, val as u64)
-        }
-    }
-    #[inline]
-    pub fn offload_fwd_mark(&self) -> __u8 {
-        unsafe { ::core::mem::transmute(self._bitfield_2.get(11usize, 1u8) as u8) }
-    }
-    #[inline]
-    pub fn set_offload_fwd_mark(&mut self, val: __u8) {
-        unsafe {
-            let val: u8 = ::core::mem::transmute(val);
-            self._bitfield_2.set(11usize, 1u8, val as u64)
-        }
-    }
-    #[inline]
-    pub fn offload_l3_fwd_mark(&self) -> __u8 {
-        unsafe { ::core::mem::transmute(self._bitfield_2.get(12usize, 1u8) as u8) }
-    }
-    #[inline]
-    pub fn set_offload_l3_fwd_mark(&mut self, val: __u8) {
-        unsafe {
-            let val: u8 = ::core::mem::transmute(val);
-            self._bitfield_2.set(12usize, 1u8, val as u64)
-        }
-    }
-    #[inline]
-    pub fn tc_skip_classify(&self) -> __u8 {
-        unsafe { ::core::mem::transmute(self._bitfield_2.get(13usize, 1u8) as u8) }
-    }
-    #[inline]
-    pub fn set_tc_skip_classify(&mut self, val: __u8) {
-        unsafe {
-            let val: u8 = ::core::mem::transmute(val);
-            self._bitfield_2.set(13usize, 1u8, val as u64)
-        }
-    }
-    #[inline]
-    pub fn tc_at_ingress(&self) -> __u8 {
-        unsafe { ::core::mem::transmute(self._bitfield_2.get(14usize, 1u8) as u8) }
-    }
-    #[inline]
-    pub fn set_tc_at_ingress(&mut self, val: __u8) {
-        unsafe {
-            let val: u8 = ::core::mem::transmute(val);
-            self._bitfield_2.set(14usize, 1u8, val as u64)
-        }
-    }
-    #[inline]
-    pub fn redirected(&self) -> __u8 {
-        unsafe { ::core::mem::transmute(self._bitfield_2.get(15usize, 1u8) as u8) }
-    }
-    #[inline]
-    pub fn set_redirected(&mut self, val: __u8) {
-        unsafe {
-            let val: u8 = ::core::mem::transmute(val);
-            self._bitfield_2.set(15usize, 1u8, val as u64)
-        }
-    }
-    #[inline]
-    pub fn from_ingress(&self) -> __u8 {
-        unsafe { ::core::mem::transmute(self._bitfield_2.get(16usize, 1u8) as u8) }
-    }
-    #[inline]
-    pub fn set_from_ingress(&mut self, val: __u8) {
-        unsafe {
-            let val: u8 = ::core::mem::transmute(val);
-            self._bitfield_2.set(16usize, 1u8, val as u64)
-        }
-    }
-    #[inline]
-    pub fn nf_skip_egress(&self) -> __u8 {
-        unsafe { ::core::mem::transmute(self._bitfield_2.get(17usize, 1u8) as u8) }
-    }
-    #[inline]
-    pub fn set_nf_skip_egress(&mut self, val: __u8) {
-        unsafe {
-            let val: u8 = ::core::mem::transmute(val);
-            self._bitfield_2.set(17usize, 1u8, val as u64)
-        }
-    }
-    #[inline]
-    pub fn decrypted(&self) -> __u8 {
-        unsafe { ::core::mem::transmute(self._bitfield_2.get(18usize, 1u8) as u8) }
-    }
-    #[inline]
-    pub fn set_decrypted(&mut self, val: __u8) {
-        unsafe {
-            let val: u8 = ::core::mem::transmute(val);
-            self._bitfield_2.set(18usize, 1u8, val as u64)
-        }
-    }
-    #[inline]
-    pub fn slow_gro(&self) -> __u8 {
-        unsafe { ::core::mem::transmute(self._bitfield_2.get(19usize, 1u8) as u8) }
-    }
-    #[inline]
-    pub fn set_slow_gro(&mut self, val: __u8) {
-        unsafe {
-            let val: u8 = ::core::mem::transmute(val);
-            self._bitfield_2.set(19usize, 1u8, val as u64)
-        }
-    }
-    #[inline]
-    pub fn new_bitfield_2(
-        vlan_present: __u8,
-        csum_complete_sw: __u8,
-        csum_level: __u8,
-        csum_not_inet: __u8,
-        dst_pending_confirm: __u8,
-        ndisc_nodetype: __u8,
-        ipvs_property: __u8,
-        inner_protocol_type: __u8,
-        remcsum_offload: __u8,
-        offload_fwd_mark: __u8,
-        offload_l3_fwd_mark: __u8,
-        tc_skip_classify: __u8,
-        tc_at_ingress: __u8,
-        redirected: __u8,
-        from_ingress: __u8,
-        nf_skip_egress: __u8,
-        decrypted: __u8,
-        slow_gro: __u8,
-    ) -> __BindgenBitfieldUnit<[u8; 3usize]> {
-        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 3usize]> = Default::default();
-        __bindgen_bitfield_unit.set(0usize, 1u8, {
-            let vlan_present: u8 = unsafe { ::core::mem::transmute(vlan_present) };
-            vlan_present as u64
-        });
-        __bindgen_bitfield_unit.set(1usize, 1u8, {
-            let csum_complete_sw: u8 = unsafe { ::core::mem::transmute(csum_complete_sw) };
-            csum_complete_sw as u64
-        });
-        __bindgen_bitfield_unit.set(2usize, 2u8, {
-            let csum_level: u8 = unsafe { ::core::mem::transmute(csum_level) };
-            csum_level as u64
-        });
-        __bindgen_bitfield_unit.set(4usize, 1u8, {
-            let csum_not_inet: u8 = unsafe { ::core::mem::transmute(csum_not_inet) };
-            csum_not_inet as u64
-        });
-        __bindgen_bitfield_unit.set(5usize, 1u8, {
-            let dst_pending_confirm: u8 = unsafe { ::core::mem::transmute(dst_pending_confirm) };
-            dst_pending_confirm as u64
-        });
-        __bindgen_bitfield_unit.set(6usize, 2u8, {
-            let ndisc_nodetype: u8 = unsafe { ::core::mem::transmute(ndisc_nodetype) };
-            ndisc_nodetype as u64
-        });
-        __bindgen_bitfield_unit.set(8usize, 1u8, {
-            let ipvs_property: u8 = unsafe { ::core::mem::transmute(ipvs_property) };
-            ipvs_property as u64
-        });
-        __bindgen_bitfield_unit.set(9usize, 1u8, {
-            let inner_protocol_type: u8 = unsafe { ::core::mem::transmute(inner_protocol_type) };
-            inner_protocol_type as u64
-        });
-        __bindgen_bitfield_unit.set(10usize, 1u8, {
-            let remcsum_offload: u8 = unsafe { ::core::mem::transmute(remcsum_offload) };
-            remcsum_offload as u64
-        });
-        __bindgen_bitfield_unit.set(11usize, 1u8, {
-            let offload_fwd_mark: u8 = unsafe { ::core::mem::transmute(offload_fwd_mark) };
-            offload_fwd_mark as u64
-        });
-        __bindgen_bitfield_unit.set(12usize, 1u8, {
-            let offload_l3_fwd_mark: u8 = unsafe { ::core::mem::transmute(offload_l3_fwd_mark) };
-            offload_l3_fwd_mark as u64
-        });
-        __bindgen_bitfield_unit.set(13usize, 1u8, {
-            let tc_skip_classify: u8 = unsafe { ::core::mem::transmute(tc_skip_classify) };
-            tc_skip_classify as u64
-        });
-        __bindgen_bitfield_unit.set(14usize, 1u8, {
-            let tc_at_ingress: u8 = unsafe { ::core::mem::transmute(tc_at_ingress) };
-            tc_at_ingress as u64
-        });
-        __bindgen_bitfield_unit.set(15usize, 1u8, {
-            let redirected: u8 = unsafe { ::core::mem::transmute(redirected) };
-            redirected as u64
-        });
-        __bindgen_bitfield_unit.set(16usize, 1u8, {
-            let from_ingress: u8 = unsafe { ::core::mem::transmute(from_ingress) };
-            from_ingress as u64
-        });
-        __bindgen_bitfield_unit.set(17usize, 1u8, {
-            let nf_skip_egress: u8 = unsafe { ::core::mem::transmute(nf_skip_egress) };
-            nf_skip_egress as u64
-        });
-        __bindgen_bitfield_unit.set(18usize, 1u8, {
-            let decrypted: u8 = unsafe { ::core::mem::transmute(decrypted) };
-            decrypted as u64
-        });
-        __bindgen_bitfield_unit.set(19usize, 1u8, {
-            let slow_gro: u8 = unsafe { ::core::mem::transmute(slow_gro) };
-            slow_gro as u64
-        });
-        __bindgen_bitfield_unit
-    }
-}
-#[repr(C)]
-pub struct sk_buff__bindgen_ty_5__bindgen_ty_2 {
-    pub __pkt_type_offset: __IncompleteArrayField<__u8>,
-    pub _bitfield_align_1: [u8; 0],
-    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 2usize]>,
-    pub __pkt_vlan_present_offset: __IncompleteArrayField<__u8>,
-    pub _bitfield_align_2: [u8; 0],
-    pub _bitfield_2: __BindgenBitfieldUnit<[u8; 3usize]>,
-    pub tc_index: __u16,
-    pub __bindgen_anon_1: sk_buff__bindgen_ty_5__bindgen_ty_2__bindgen_ty_1,
-    pub priority: __u32,
-    pub skb_iif: ::aya_bpf::cty::c_int,
-    pub hash: __u32,
-    pub vlan_proto: __be16,
-    pub vlan_tci: __u16,
-    pub __bindgen_anon_2: sk_buff__bindgen_ty_5__bindgen_ty_2__bindgen_ty_2,
-    pub secmark: __u32,
-    pub __bindgen_anon_3: sk_buff__bindgen_ty_5__bindgen_ty_2__bindgen_ty_3,
-    pub __bindgen_anon_4: sk_buff__bindgen_ty_5__bindgen_ty_2__bindgen_ty_4,
-    pub inner_transport_header: __u16,
-    pub inner_network_header: __u16,
-    pub inner_mac_header: __u16,
-    pub protocol: __be16,
-    pub transport_header: __u16,
-    pub network_header: __u16,
-    pub mac_header: __u16,
-}
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub union sk_buff__bindgen_ty_5__bindgen_ty_2__bindgen_ty_1 {
-    pub csum: __wsum,
-    pub __bindgen_anon_1: sk_buff__bindgen_ty_5__bindgen_ty_2__bindgen_ty_1__bindgen_ty_1,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct sk_buff__bindgen_ty_5__bindgen_ty_2__bindgen_ty_1__bindgen_ty_1 {
-    pub csum_start: __u16,
-    pub csum_offset: __u16,
-}
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub union sk_buff__bindgen_ty_5__bindgen_ty_2__bindgen_ty_2 {
-    pub napi_id: ::aya_bpf::cty::c_uint,
-    pub sender_cpu: ::aya_bpf::cty::c_uint,
-}
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub union sk_buff__bindgen_ty_5__bindgen_ty_2__bindgen_ty_3 {
-    pub mark: __u32,
-    pub reserved_tailroom: __u32,
-}
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub union sk_buff__bindgen_ty_5__bindgen_ty_2__bindgen_ty_4 {
-    pub inner_protocol: __be16,
-    pub inner_ipproto: __u8,
-}
-impl sk_buff__bindgen_ty_5__bindgen_ty_2 {
-    #[inline]
-    pub fn pkt_type(&self) -> __u8 {
-        unsafe { ::core::mem::transmute(self._bitfield_1.get(0usize, 3u8) as u8) }
-    }
-    #[inline]
-    pub fn set_pkt_type(&mut self, val: __u8) {
-        unsafe {
-            let val: u8 = ::core::mem::transmute(val);
-            self._bitfield_1.set(0usize, 3u8, val as u64)
-        }
-    }
-    #[inline]
-    pub fn ignore_df(&self) -> __u8 {
-        unsafe { ::core::mem::transmute(self._bitfield_1.get(3usize, 1u8) as u8) }
-    }
-    #[inline]
-    pub fn set_ignore_df(&mut self, val: __u8) {
-        unsafe {
-            let val: u8 = ::core::mem::transmute(val);
-            self._bitfield_1.set(3usize, 1u8, val as u64)
-        }
-    }
-    #[inline]
-    pub fn nf_trace(&self) -> __u8 {
-        unsafe { ::core::mem::transmute(self._bitfield_1.get(4usize, 1u8) as u8) }
-    }
-    #[inline]
-    pub fn set_nf_trace(&mut self, val: __u8) {
-        unsafe {
-            let val: u8 = ::core::mem::transmute(val);
-            self._bitfield_1.set(4usize, 1u8, val as u64)
-        }
-    }
-    #[inline]
-    pub fn ip_summed(&self) -> __u8 {
-        unsafe { ::core::mem::transmute(self._bitfield_1.get(5usize, 2u8) as u8) }
-    }
-    #[inline]
-    pub fn set_ip_summed(&mut self, val: __u8) {
-        unsafe {
-            let val: u8 = ::core::mem::transmute(val);
-            self._bitfield_1.set(5usize, 2u8, val as u64)
-        }
-    }
-    #[inline]
-    pub fn ooo_okay(&self) -> __u8 {
-        unsafe { ::core::mem::transmute(self._bitfield_1.get(7usize, 1u8) as u8) }
-    }
-    #[inline]
-    pub fn set_ooo_okay(&mut self, val: __u8) {
-        unsafe {
-            let val: u8 = ::core::mem::transmute(val);
-            self._bitfield_1.set(7usize, 1u8, val as u64)
-        }
-    }
-    #[inline]
-    pub fn l4_hash(&self) -> __u8 {
-        unsafe { ::core::mem::transmute(self._bitfield_1.get(8usize, 1u8) as u8) }
-    }
-    #[inline]
-    pub fn set_l4_hash(&mut self, val: __u8) {
-        unsafe {
-            let val: u8 = ::core::mem::transmute(val);
-            self._bitfield_1.set(8usize, 1u8, val as u64)
-        }
-    }
-    #[inline]
-    pub fn sw_hash(&self) -> __u8 {
-        unsafe { ::core::mem::transmute(self._bitfield_1.get(9usize, 1u8) as u8) }
-    }
-    #[inline]
-    pub fn set_sw_hash(&mut self, val: __u8) {
-        unsafe {
-            let val: u8 = ::core::mem::transmute(val);
-            self._bitfield_1.set(9usize, 1u8, val as u64)
-        }
-    }
-    #[inline]
-    pub fn wifi_acked_valid(&self) -> __u8 {
-        unsafe { ::core::mem::transmute(self._bitfield_1.get(10usize, 1u8) as u8) }
-    }
-    #[inline]
-    pub fn set_wifi_acked_valid(&mut self, val: __u8) {
-        unsafe {
-            let val: u8 = ::core::mem::transmute(val);
-            self._bitfield_1.set(10usize, 1u8, val as u64)
-        }
-    }
-    #[inline]
-    pub fn wifi_acked(&self) -> __u8 {
-        unsafe { ::core::mem::transmute(self._bitfield_1.get(11usize, 1u8) as u8) }
-    }
-    #[inline]
-    pub fn set_wifi_acked(&mut self, val: __u8) {
-        unsafe {
-            let val: u8 = ::core::mem::transmute(val);
-            self._bitfield_1.set(11usize, 1u8, val as u64)
-        }
-    }
-    #[inline]
-    pub fn no_fcs(&self) -> __u8 {
-        unsafe { ::core::mem::transmute(self._bitfield_1.get(12usize, 1u8) as u8) }
-    }
-    #[inline]
-    pub fn set_no_fcs(&mut self, val: __u8) {
-        unsafe {
-            let val: u8 = ::core::mem::transmute(val);
-            self._bitfield_1.set(12usize, 1u8, val as u64)
-        }
-    }
-    #[inline]
-    pub fn encapsulation(&self) -> __u8 {
-        unsafe { ::core::mem::transmute(self._bitfield_1.get(13usize, 1u8) as u8) }
-    }
-    #[inline]
-    pub fn set_encapsulation(&mut self, val: __u8) {
-        unsafe {
-            let val: u8 = ::core::mem::transmute(val);
-            self._bitfield_1.set(13usize, 1u8, val as u64)
-        }
-    }
-    #[inline]
-    pub fn encap_hdr_csum(&self) -> __u8 {
-        unsafe { ::core::mem::transmute(self._bitfield_1.get(14usize, 1u8) as u8) }
-    }
-    #[inline]
-    pub fn set_encap_hdr_csum(&mut self, val: __u8) {
-        unsafe {
-            let val: u8 = ::core::mem::transmute(val);
-            self._bitfield_1.set(14usize, 1u8, val as u64)
-        }
-    }
-    #[inline]
-    pub fn csum_valid(&self) -> __u8 {
-        unsafe { ::core::mem::transmute(self._bitfield_1.get(15usize, 1u8) as u8) }
-    }
-    #[inline]
-    pub fn set_csum_valid(&mut self, val: __u8) {
-        unsafe {
-            let val: u8 = ::core::mem::transmute(val);
-            self._bitfield_1.set(15usize, 1u8, val as u64)
-        }
-    }
-    #[inline]
-    pub fn new_bitfield_1(
-        pkt_type: __u8,
-        ignore_df: __u8,
-        nf_trace: __u8,
-        ip_summed: __u8,
-        ooo_okay: __u8,
-        l4_hash: __u8,
-        sw_hash: __u8,
-        wifi_acked_valid: __u8,
-        wifi_acked: __u8,
-        no_fcs: __u8,
-        encapsulation: __u8,
-        encap_hdr_csum: __u8,
-        csum_valid: __u8,
-    ) -> __BindgenBitfieldUnit<[u8; 2usize]> {
-        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 2usize]> = Default::default();
-        __bindgen_bitfield_unit.set(0usize, 3u8, {
-            let pkt_type: u8 = unsafe { ::core::mem::transmute(pkt_type) };
-            pkt_type as u64
-        });
-        __bindgen_bitfield_unit.set(3usize, 1u8, {
-            let ignore_df: u8 = unsafe { ::core::mem::transmute(ignore_df) };
-            ignore_df as u64
-        });
-        __bindgen_bitfield_unit.set(4usize, 1u8, {
-            let nf_trace: u8 = unsafe { ::core::mem::transmute(nf_trace) };
-            nf_trace as u64
-        });
-        __bindgen_bitfield_unit.set(5usize, 2u8, {
-            let ip_summed: u8 = unsafe { ::core::mem::transmute(ip_summed) };
-            ip_summed as u64
-        });
-        __bindgen_bitfield_unit.set(7usize, 1u8, {
-            let ooo_okay: u8 = unsafe { ::core::mem::transmute(ooo_okay) };
-            ooo_okay as u64
-        });
-        __bindgen_bitfield_unit.set(8usize, 1u8, {
-            let l4_hash: u8 = unsafe { ::core::mem::transmute(l4_hash) };
-            l4_hash as u64
-        });
-        __bindgen_bitfield_unit.set(9usize, 1u8, {
-            let sw_hash: u8 = unsafe { ::core::mem::transmute(sw_hash) };
-            sw_hash as u64
-        });
-        __bindgen_bitfield_unit.set(10usize, 1u8, {
-            let wifi_acked_valid: u8 = unsafe { ::core::mem::transmute(wifi_acked_valid) };
-            wifi_acked_valid as u64
-        });
-        __bindgen_bitfield_unit.set(11usize, 1u8, {
-            let wifi_acked: u8 = unsafe { ::core::mem::transmute(wifi_acked) };
-            wifi_acked as u64
-        });
-        __bindgen_bitfield_unit.set(12usize, 1u8, {
-            let no_fcs: u8 = unsafe { ::core::mem::transmute(no_fcs) };
-            no_fcs as u64
-        });
-        __bindgen_bitfield_unit.set(13usize, 1u8, {
-            let encapsulation: u8 = unsafe { ::core::mem::transmute(encapsulation) };
-            encapsulation as u64
-        });
-        __bindgen_bitfield_unit.set(14usize, 1u8, {
-            let encap_hdr_csum: u8 = unsafe { ::core::mem::transmute(encap_hdr_csum) };
-            encap_hdr_csum as u64
-        });
-        __bindgen_bitfield_unit.set(15usize, 1u8, {
-            let csum_valid: u8 = unsafe { ::core::mem::transmute(csum_valid) };
-            csum_valid as u64
-        });
-        __bindgen_bitfield_unit
-    }
-    #[inline]
-    pub fn vlan_present(&self) -> __u8 {
-        unsafe { ::core::mem::transmute(self._bitfield_2.get(0usize, 1u8) as u8) }
-    }
-    #[inline]
-    pub fn set_vlan_present(&mut self, val: __u8) {
-        unsafe {
-            let val: u8 = ::core::mem::transmute(val);
-            self._bitfield_2.set(0usize, 1u8, val as u64)
-        }
-    }
-    #[inline]
-    pub fn csum_complete_sw(&self) -> __u8 {
-        unsafe { ::core::mem::transmute(self._bitfield_2.get(1usize, 1u8) as u8) }
-    }
-    #[inline]
-    pub fn set_csum_complete_sw(&mut self, val: __u8) {
-        unsafe {
-            let val: u8 = ::core::mem::transmute(val);
-            self._bitfield_2.set(1usize, 1u8, val as u64)
-        }
-    }
-    #[inline]
-    pub fn csum_level(&self) -> __u8 {
-        unsafe { ::core::mem::transmute(self._bitfield_2.get(2usize, 2u8) as u8) }
-    }
-    #[inline]
-    pub fn set_csum_level(&mut self, val: __u8) {
-        unsafe {
-            let val: u8 = ::core::mem::transmute(val);
-            self._bitfield_2.set(2usize, 2u8, val as u64)
-        }
-    }
-    #[inline]
-    pub fn csum_not_inet(&self) -> __u8 {
-        unsafe { ::core::mem::transmute(self._bitfield_2.get(4usize, 1u8) as u8) }
-    }
-    #[inline]
-    pub fn set_csum_not_inet(&mut self, val: __u8) {
-        unsafe {
-            let val: u8 = ::core::mem::transmute(val);
-            self._bitfield_2.set(4usize, 1u8, val as u64)
-        }
-    }
-    #[inline]
-    pub fn dst_pending_confirm(&self) -> __u8 {
-        unsafe { ::core::mem::transmute(self._bitfield_2.get(5usize, 1u8) as u8) }
-    }
-    #[inline]
-    pub fn set_dst_pending_confirm(&mut self, val: __u8) {
-        unsafe {
-            let val: u8 = ::core::mem::transmute(val);
-            self._bitfield_2.set(5usize, 1u8, val as u64)
-        }
-    }
-    #[inline]
-    pub fn ndisc_nodetype(&self) -> __u8 {
-        unsafe { ::core::mem::transmute(self._bitfield_2.get(6usize, 2u8) as u8) }
-    }
-    #[inline]
-    pub fn set_ndisc_nodetype(&mut self, val: __u8) {
-        unsafe {
-            let val: u8 = ::core::mem::transmute(val);
-            self._bitfield_2.set(6usize, 2u8, val as u64)
-        }
-    }
-    #[inline]
-    pub fn ipvs_property(&self) -> __u8 {
-        unsafe { ::core::mem::transmute(self._bitfield_2.get(8usize, 1u8) as u8) }
-    }
-    #[inline]
-    pub fn set_ipvs_property(&mut self, val: __u8) {
-        unsafe {
-            let val: u8 = ::core::mem::transmute(val);
-            self._bitfield_2.set(8usize, 1u8, val as u64)
-        }
-    }
-    #[inline]
-    pub fn inner_protocol_type(&self) -> __u8 {
-        unsafe { ::core::mem::transmute(self._bitfield_2.get(9usize, 1u8) as u8) }
-    }
-    #[inline]
-    pub fn set_inner_protocol_type(&mut self, val: __u8) {
-        unsafe {
-            let val: u8 = ::core::mem::transmute(val);
-            self._bitfield_2.set(9usize, 1u8, val as u64)
-        }
-    }
-    #[inline]
-    pub fn remcsum_offload(&self) -> __u8 {
-        unsafe { ::core::mem::transmute(self._bitfield_2.get(10usize, 1u8) as u8) }
-    }
-    #[inline]
-    pub fn set_remcsum_offload(&mut self, val: __u8) {
-        unsafe {
-            let val: u8 = ::core::mem::transmute(val);
-            self._bitfield_2.set(10usize, 1u8, val as u64)
-        }
-    }
-    #[inline]
-    pub fn offload_fwd_mark(&self) -> __u8 {
-        unsafe { ::core::mem::transmute(self._bitfield_2.get(11usize, 1u8) as u8) }
-    }
-    #[inline]
-    pub fn set_offload_fwd_mark(&mut self, val: __u8) {
-        unsafe {
-            let val: u8 = ::core::mem::transmute(val);
-            self._bitfield_2.set(11usize, 1u8, val as u64)
-        }
-    }
-    #[inline]
-    pub fn offload_l3_fwd_mark(&self) -> __u8 {
-        unsafe { ::core::mem::transmute(self._bitfield_2.get(12usize, 1u8) as u8) }
-    }
-    #[inline]
-    pub fn set_offload_l3_fwd_mark(&mut self, val: __u8) {
-        unsafe {
-            let val: u8 = ::core::mem::transmute(val);
-            self._bitfield_2.set(12usize, 1u8, val as u64)
-        }
-    }
-    #[inline]
-    pub fn tc_skip_classify(&self) -> __u8 {
-        unsafe { ::core::mem::transmute(self._bitfield_2.get(13usize, 1u8) as u8) }
-    }
-    #[inline]
-    pub fn set_tc_skip_classify(&mut self, val: __u8) {
-        unsafe {
-            let val: u8 = ::core::mem::transmute(val);
-            self._bitfield_2.set(13usize, 1u8, val as u64)
-        }
-    }
-    #[inline]
-    pub fn tc_at_ingress(&self) -> __u8 {
-        unsafe { ::core::mem::transmute(self._bitfield_2.get(14usize, 1u8) as u8) }
-    }
-    #[inline]
-    pub fn set_tc_at_ingress(&mut self, val: __u8) {
-        unsafe {
-            let val: u8 = ::core::mem::transmute(val);
-            self._bitfield_2.set(14usize, 1u8, val as u64)
-        }
-    }
-    #[inline]
-    pub fn redirected(&self) -> __u8 {
-        unsafe { ::core::mem::transmute(self._bitfield_2.get(15usize, 1u8) as u8) }
-    }
-    #[inline]
-    pub fn set_redirected(&mut self, val: __u8) {
-        unsafe {
-            let val: u8 = ::core::mem::transmute(val);
-            self._bitfield_2.set(15usize, 1u8, val as u64)
-        }
-    }
-    #[inline]
-    pub fn from_ingress(&self) -> __u8 {
-        unsafe { ::core::mem::transmute(self._bitfield_2.get(16usize, 1u8) as u8) }
-    }
-    #[inline]
-    pub fn set_from_ingress(&mut self, val: __u8) {
-        unsafe {
-            let val: u8 = ::core::mem::transmute(val);
-            self._bitfield_2.set(16usize, 1u8, val as u64)
-        }
-    }
-    #[inline]
-    pub fn nf_skip_egress(&self) -> __u8 {
-        unsafe { ::core::mem::transmute(self._bitfield_2.get(17usize, 1u8) as u8) }
-    }
-    #[inline]
-    pub fn set_nf_skip_egress(&mut self, val: __u8) {
-        unsafe {
-            let val: u8 = ::core::mem::transmute(val);
-            self._bitfield_2.set(17usize, 1u8, val as u64)
-        }
-    }
-    #[inline]
-    pub fn decrypted(&self) -> __u8 {
-        unsafe { ::core::mem::transmute(self._bitfield_2.get(18usize, 1u8) as u8) }
-    }
-    #[inline]
-    pub fn set_decrypted(&mut self, val: __u8) {
-        unsafe {
-            let val: u8 = ::core::mem::transmute(val);
-            self._bitfield_2.set(18usize, 1u8, val as u64)
-        }
-    }
-    #[inline]
-    pub fn slow_gro(&self) -> __u8 {
-        unsafe { ::core::mem::transmute(self._bitfield_2.get(19usize, 1u8) as u8) }
-    }
-    #[inline]
-    pub fn set_slow_gro(&mut self, val: __u8) {
-        unsafe {
-            let val: u8 = ::core::mem::transmute(val);
-            self._bitfield_2.set(19usize, 1u8, val as u64)
-        }
-    }
-    #[inline]
-    pub fn new_bitfield_2(
-        vlan_present: __u8,
-        csum_complete_sw: __u8,
-        csum_level: __u8,
-        csum_not_inet: __u8,
-        dst_pending_confirm: __u8,
-        ndisc_nodetype: __u8,
-        ipvs_property: __u8,
-        inner_protocol_type: __u8,
-        remcsum_offload: __u8,
-        offload_fwd_mark: __u8,
-        offload_l3_fwd_mark: __u8,
-        tc_skip_classify: __u8,
-        tc_at_ingress: __u8,
-        redirected: __u8,
-        from_ingress: __u8,
-        nf_skip_egress: __u8,
-        decrypted: __u8,
-        slow_gro: __u8,
-    ) -> __BindgenBitfieldUnit<[u8; 3usize]> {
-        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 3usize]> = Default::default();
-        __bindgen_bitfield_unit.set(0usize, 1u8, {
-            let vlan_present: u8 = unsafe { ::core::mem::transmute(vlan_present) };
-            vlan_present as u64
-        });
-        __bindgen_bitfield_unit.set(1usize, 1u8, {
-            let csum_complete_sw: u8 = unsafe { ::core::mem::transmute(csum_complete_sw) };
-            csum_complete_sw as u64
-        });
-        __bindgen_bitfield_unit.set(2usize, 2u8, {
-            let csum_level: u8 = unsafe { ::core::mem::transmute(csum_level) };
-            csum_level as u64
-        });
-        __bindgen_bitfield_unit.set(4usize, 1u8, {
-            let csum_not_inet: u8 = unsafe { ::core::mem::transmute(csum_not_inet) };
-            csum_not_inet as u64
-        });
-        __bindgen_bitfield_unit.set(5usize, 1u8, {
-            let dst_pending_confirm: u8 = unsafe { ::core::mem::transmute(dst_pending_confirm) };
-            dst_pending_confirm as u64
-        });
-        __bindgen_bitfield_unit.set(6usize, 2u8, {
-            let ndisc_nodetype: u8 = unsafe { ::core::mem::transmute(ndisc_nodetype) };
-            ndisc_nodetype as u64
-        });
-        __bindgen_bitfield_unit.set(8usize, 1u8, {
-            let ipvs_property: u8 = unsafe { ::core::mem::transmute(ipvs_property) };
-            ipvs_property as u64
-        });
-        __bindgen_bitfield_unit.set(9usize, 1u8, {
-            let inner_protocol_type: u8 = unsafe { ::core::mem::transmute(inner_protocol_type) };
-            inner_protocol_type as u64
-        });
-        __bindgen_bitfield_unit.set(10usize, 1u8, {
-            let remcsum_offload: u8 = unsafe { ::core::mem::transmute(remcsum_offload) };
-            remcsum_offload as u64
-        });
-        __bindgen_bitfield_unit.set(11usize, 1u8, {
-            let offload_fwd_mark: u8 = unsafe { ::core::mem::transmute(offload_fwd_mark) };
-            offload_fwd_mark as u64
-        });
-        __bindgen_bitfield_unit.set(12usize, 1u8, {
-            let offload_l3_fwd_mark: u8 = unsafe { ::core::mem::transmute(offload_l3_fwd_mark) };
-            offload_l3_fwd_mark as u64
-        });
-        __bindgen_bitfield_unit.set(13usize, 1u8, {
-            let tc_skip_classify: u8 = unsafe { ::core::mem::transmute(tc_skip_classify) };
-            tc_skip_classify as u64
-        });
-        __bindgen_bitfield_unit.set(14usize, 1u8, {
-            let tc_at_ingress: u8 = unsafe { ::core::mem::transmute(tc_at_ingress) };
-            tc_at_ingress as u64
-        });
-        __bindgen_bitfield_unit.set(15usize, 1u8, {
-            let redirected: u8 = unsafe { ::core::mem::transmute(redirected) };
-            redirected as u64
-        });
-        __bindgen_bitfield_unit.set(16usize, 1u8, {
-            let from_ingress: u8 = unsafe { ::core::mem::transmute(from_ingress) };
-            from_ingress as u64
-        });
-        __bindgen_bitfield_unit.set(17usize, 1u8, {
-            let nf_skip_egress: u8 = unsafe { ::core::mem::transmute(nf_skip_egress) };
-            nf_skip_egress as u64
-        });
-        __bindgen_bitfield_unit.set(18usize, 1u8, {
-            let decrypted: u8 = unsafe { ::core::mem::transmute(decrypted) };
-            decrypted as u64
-        });
-        __bindgen_bitfield_unit.set(19usize, 1u8, {
-            let slow_gro: u8 = unsafe { ::core::mem::transmute(slow_gro) };
-            slow_gro as u64
-        });
-        __bindgen_bitfield_unit
-    }
 }
 impl sk_buff {
     #[inline]
@@ -15530,17 +16234,6 @@ impl sk_buff {
         }
     }
     #[inline]
-    pub fn pp_recycle(&self) -> __u8 {
-        unsafe { ::core::mem::transmute(self._bitfield_1.get(7usize, 1u8) as u8) }
-    }
-    #[inline]
-    pub fn set_pp_recycle(&mut self, val: __u8) {
-        unsafe {
-            let val: u8 = ::core::mem::transmute(val);
-            self._bitfield_1.set(7usize, 1u8, val as u64)
-        }
-    }
-    #[inline]
     pub fn new_bitfield_1(
         cloned: __u8,
         nohdr: __u8,
@@ -15548,7 +16241,6 @@ impl sk_buff {
         peeked: __u8,
         head_frag: __u8,
         pfmemalloc: __u8,
-        pp_recycle: __u8,
     ) -> __BindgenBitfieldUnit<[u8; 1usize]> {
         let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 1usize]> = Default::default();
         __bindgen_bitfield_unit.set(0usize, 1u8, {
@@ -15575,20 +16267,501 @@ impl sk_buff {
             let pfmemalloc: u8 = unsafe { ::core::mem::transmute(pfmemalloc) };
             pfmemalloc as u64
         });
+        __bindgen_bitfield_unit
+    }
+    #[inline]
+    pub fn pkt_type(&self) -> __u8 {
+        unsafe { ::core::mem::transmute(self._bitfield_2.get(0usize, 3u8) as u8) }
+    }
+    #[inline]
+    pub fn set_pkt_type(&mut self, val: __u8) {
+        unsafe {
+            let val: u8 = ::core::mem::transmute(val);
+            self._bitfield_2.set(0usize, 3u8, val as u64)
+        }
+    }
+    #[inline]
+    pub fn ignore_df(&self) -> __u8 {
+        unsafe { ::core::mem::transmute(self._bitfield_2.get(3usize, 1u8) as u8) }
+    }
+    #[inline]
+    pub fn set_ignore_df(&mut self, val: __u8) {
+        unsafe {
+            let val: u8 = ::core::mem::transmute(val);
+            self._bitfield_2.set(3usize, 1u8, val as u64)
+        }
+    }
+    #[inline]
+    pub fn nf_trace(&self) -> __u8 {
+        unsafe { ::core::mem::transmute(self._bitfield_2.get(4usize, 1u8) as u8) }
+    }
+    #[inline]
+    pub fn set_nf_trace(&mut self, val: __u8) {
+        unsafe {
+            let val: u8 = ::core::mem::transmute(val);
+            self._bitfield_2.set(4usize, 1u8, val as u64)
+        }
+    }
+    #[inline]
+    pub fn ip_summed(&self) -> __u8 {
+        unsafe { ::core::mem::transmute(self._bitfield_2.get(5usize, 2u8) as u8) }
+    }
+    #[inline]
+    pub fn set_ip_summed(&mut self, val: __u8) {
+        unsafe {
+            let val: u8 = ::core::mem::transmute(val);
+            self._bitfield_2.set(5usize, 2u8, val as u64)
+        }
+    }
+    #[inline]
+    pub fn ooo_okay(&self) -> __u8 {
+        unsafe { ::core::mem::transmute(self._bitfield_2.get(7usize, 1u8) as u8) }
+    }
+    #[inline]
+    pub fn set_ooo_okay(&mut self, val: __u8) {
+        unsafe {
+            let val: u8 = ::core::mem::transmute(val);
+            self._bitfield_2.set(7usize, 1u8, val as u64)
+        }
+    }
+    #[inline]
+    pub fn l4_hash(&self) -> __u8 {
+        unsafe { ::core::mem::transmute(self._bitfield_2.get(8usize, 1u8) as u8) }
+    }
+    #[inline]
+    pub fn set_l4_hash(&mut self, val: __u8) {
+        unsafe {
+            let val: u8 = ::core::mem::transmute(val);
+            self._bitfield_2.set(8usize, 1u8, val as u64)
+        }
+    }
+    #[inline]
+    pub fn sw_hash(&self) -> __u8 {
+        unsafe { ::core::mem::transmute(self._bitfield_2.get(9usize, 1u8) as u8) }
+    }
+    #[inline]
+    pub fn set_sw_hash(&mut self, val: __u8) {
+        unsafe {
+            let val: u8 = ::core::mem::transmute(val);
+            self._bitfield_2.set(9usize, 1u8, val as u64)
+        }
+    }
+    #[inline]
+    pub fn wifi_acked_valid(&self) -> __u8 {
+        unsafe { ::core::mem::transmute(self._bitfield_2.get(10usize, 1u8) as u8) }
+    }
+    #[inline]
+    pub fn set_wifi_acked_valid(&mut self, val: __u8) {
+        unsafe {
+            let val: u8 = ::core::mem::transmute(val);
+            self._bitfield_2.set(10usize, 1u8, val as u64)
+        }
+    }
+    #[inline]
+    pub fn wifi_acked(&self) -> __u8 {
+        unsafe { ::core::mem::transmute(self._bitfield_2.get(11usize, 1u8) as u8) }
+    }
+    #[inline]
+    pub fn set_wifi_acked(&mut self, val: __u8) {
+        unsafe {
+            let val: u8 = ::core::mem::transmute(val);
+            self._bitfield_2.set(11usize, 1u8, val as u64)
+        }
+    }
+    #[inline]
+    pub fn no_fcs(&self) -> __u8 {
+        unsafe { ::core::mem::transmute(self._bitfield_2.get(12usize, 1u8) as u8) }
+    }
+    #[inline]
+    pub fn set_no_fcs(&mut self, val: __u8) {
+        unsafe {
+            let val: u8 = ::core::mem::transmute(val);
+            self._bitfield_2.set(12usize, 1u8, val as u64)
+        }
+    }
+    #[inline]
+    pub fn encapsulation(&self) -> __u8 {
+        unsafe { ::core::mem::transmute(self._bitfield_2.get(13usize, 1u8) as u8) }
+    }
+    #[inline]
+    pub fn set_encapsulation(&mut self, val: __u8) {
+        unsafe {
+            let val: u8 = ::core::mem::transmute(val);
+            self._bitfield_2.set(13usize, 1u8, val as u64)
+        }
+    }
+    #[inline]
+    pub fn encap_hdr_csum(&self) -> __u8 {
+        unsafe { ::core::mem::transmute(self._bitfield_2.get(14usize, 1u8) as u8) }
+    }
+    #[inline]
+    pub fn set_encap_hdr_csum(&mut self, val: __u8) {
+        unsafe {
+            let val: u8 = ::core::mem::transmute(val);
+            self._bitfield_2.set(14usize, 1u8, val as u64)
+        }
+    }
+    #[inline]
+    pub fn csum_valid(&self) -> __u8 {
+        unsafe { ::core::mem::transmute(self._bitfield_2.get(15usize, 1u8) as u8) }
+    }
+    #[inline]
+    pub fn set_csum_valid(&mut self, val: __u8) {
+        unsafe {
+            let val: u8 = ::core::mem::transmute(val);
+            self._bitfield_2.set(15usize, 1u8, val as u64)
+        }
+    }
+    #[inline]
+    pub fn new_bitfield_2(
+        pkt_type: __u8,
+        ignore_df: __u8,
+        nf_trace: __u8,
+        ip_summed: __u8,
+        ooo_okay: __u8,
+        l4_hash: __u8,
+        sw_hash: __u8,
+        wifi_acked_valid: __u8,
+        wifi_acked: __u8,
+        no_fcs: __u8,
+        encapsulation: __u8,
+        encap_hdr_csum: __u8,
+        csum_valid: __u8,
+    ) -> __BindgenBitfieldUnit<[u8; 2usize]> {
+        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 2usize]> = Default::default();
+        __bindgen_bitfield_unit.set(0usize, 3u8, {
+            let pkt_type: u8 = unsafe { ::core::mem::transmute(pkt_type) };
+            pkt_type as u64
+        });
+        __bindgen_bitfield_unit.set(3usize, 1u8, {
+            let ignore_df: u8 = unsafe { ::core::mem::transmute(ignore_df) };
+            ignore_df as u64
+        });
+        __bindgen_bitfield_unit.set(4usize, 1u8, {
+            let nf_trace: u8 = unsafe { ::core::mem::transmute(nf_trace) };
+            nf_trace as u64
+        });
+        __bindgen_bitfield_unit.set(5usize, 2u8, {
+            let ip_summed: u8 = unsafe { ::core::mem::transmute(ip_summed) };
+            ip_summed as u64
+        });
         __bindgen_bitfield_unit.set(7usize, 1u8, {
-            let pp_recycle: u8 = unsafe { ::core::mem::transmute(pp_recycle) };
-            pp_recycle as u64
+            let ooo_okay: u8 = unsafe { ::core::mem::transmute(ooo_okay) };
+            ooo_okay as u64
+        });
+        __bindgen_bitfield_unit.set(8usize, 1u8, {
+            let l4_hash: u8 = unsafe { ::core::mem::transmute(l4_hash) };
+            l4_hash as u64
+        });
+        __bindgen_bitfield_unit.set(9usize, 1u8, {
+            let sw_hash: u8 = unsafe { ::core::mem::transmute(sw_hash) };
+            sw_hash as u64
+        });
+        __bindgen_bitfield_unit.set(10usize, 1u8, {
+            let wifi_acked_valid: u8 = unsafe { ::core::mem::transmute(wifi_acked_valid) };
+            wifi_acked_valid as u64
+        });
+        __bindgen_bitfield_unit.set(11usize, 1u8, {
+            let wifi_acked: u8 = unsafe { ::core::mem::transmute(wifi_acked) };
+            wifi_acked as u64
+        });
+        __bindgen_bitfield_unit.set(12usize, 1u8, {
+            let no_fcs: u8 = unsafe { ::core::mem::transmute(no_fcs) };
+            no_fcs as u64
+        });
+        __bindgen_bitfield_unit.set(13usize, 1u8, {
+            let encapsulation: u8 = unsafe { ::core::mem::transmute(encapsulation) };
+            encapsulation as u64
+        });
+        __bindgen_bitfield_unit.set(14usize, 1u8, {
+            let encap_hdr_csum: u8 = unsafe { ::core::mem::transmute(encap_hdr_csum) };
+            encap_hdr_csum as u64
+        });
+        __bindgen_bitfield_unit.set(15usize, 1u8, {
+            let csum_valid: u8 = unsafe { ::core::mem::transmute(csum_valid) };
+            csum_valid as u64
+        });
+        __bindgen_bitfield_unit
+    }
+    #[inline]
+    pub fn vlan_present(&self) -> __u8 {
+        unsafe { ::core::mem::transmute(self._bitfield_3.get(0usize, 1u8) as u8) }
+    }
+    #[inline]
+    pub fn set_vlan_present(&mut self, val: __u8) {
+        unsafe {
+            let val: u8 = ::core::mem::transmute(val);
+            self._bitfield_3.set(0usize, 1u8, val as u64)
+        }
+    }
+    #[inline]
+    pub fn csum_complete_sw(&self) -> __u8 {
+        unsafe { ::core::mem::transmute(self._bitfield_3.get(1usize, 1u8) as u8) }
+    }
+    #[inline]
+    pub fn set_csum_complete_sw(&mut self, val: __u8) {
+        unsafe {
+            let val: u8 = ::core::mem::transmute(val);
+            self._bitfield_3.set(1usize, 1u8, val as u64)
+        }
+    }
+    #[inline]
+    pub fn csum_level(&self) -> __u8 {
+        unsafe { ::core::mem::transmute(self._bitfield_3.get(2usize, 2u8) as u8) }
+    }
+    #[inline]
+    pub fn set_csum_level(&mut self, val: __u8) {
+        unsafe {
+            let val: u8 = ::core::mem::transmute(val);
+            self._bitfield_3.set(2usize, 2u8, val as u64)
+        }
+    }
+    #[inline]
+    pub fn csum_not_inet(&self) -> __u8 {
+        unsafe { ::core::mem::transmute(self._bitfield_3.get(4usize, 1u8) as u8) }
+    }
+    #[inline]
+    pub fn set_csum_not_inet(&mut self, val: __u8) {
+        unsafe {
+            let val: u8 = ::core::mem::transmute(val);
+            self._bitfield_3.set(4usize, 1u8, val as u64)
+        }
+    }
+    #[inline]
+    pub fn dst_pending_confirm(&self) -> __u8 {
+        unsafe { ::core::mem::transmute(self._bitfield_3.get(5usize, 1u8) as u8) }
+    }
+    #[inline]
+    pub fn set_dst_pending_confirm(&mut self, val: __u8) {
+        unsafe {
+            let val: u8 = ::core::mem::transmute(val);
+            self._bitfield_3.set(5usize, 1u8, val as u64)
+        }
+    }
+    #[inline]
+    pub fn ndisc_nodetype(&self) -> __u8 {
+        unsafe { ::core::mem::transmute(self._bitfield_3.get(6usize, 2u8) as u8) }
+    }
+    #[inline]
+    pub fn set_ndisc_nodetype(&mut self, val: __u8) {
+        unsafe {
+            let val: u8 = ::core::mem::transmute(val);
+            self._bitfield_3.set(6usize, 2u8, val as u64)
+        }
+    }
+    #[inline]
+    pub fn ipvs_property(&self) -> __u8 {
+        unsafe { ::core::mem::transmute(self._bitfield_3.get(8usize, 1u8) as u8) }
+    }
+    #[inline]
+    pub fn set_ipvs_property(&mut self, val: __u8) {
+        unsafe {
+            let val: u8 = ::core::mem::transmute(val);
+            self._bitfield_3.set(8usize, 1u8, val as u64)
+        }
+    }
+    #[inline]
+    pub fn inner_protocol_type(&self) -> __u8 {
+        unsafe { ::core::mem::transmute(self._bitfield_3.get(9usize, 1u8) as u8) }
+    }
+    #[inline]
+    pub fn set_inner_protocol_type(&mut self, val: __u8) {
+        unsafe {
+            let val: u8 = ::core::mem::transmute(val);
+            self._bitfield_3.set(9usize, 1u8, val as u64)
+        }
+    }
+    #[inline]
+    pub fn remcsum_offload(&self) -> __u8 {
+        unsafe { ::core::mem::transmute(self._bitfield_3.get(10usize, 1u8) as u8) }
+    }
+    #[inline]
+    pub fn set_remcsum_offload(&mut self, val: __u8) {
+        unsafe {
+            let val: u8 = ::core::mem::transmute(val);
+            self._bitfield_3.set(10usize, 1u8, val as u64)
+        }
+    }
+    #[inline]
+    pub fn offload_fwd_mark(&self) -> __u8 {
+        unsafe { ::core::mem::transmute(self._bitfield_3.get(11usize, 1u8) as u8) }
+    }
+    #[inline]
+    pub fn set_offload_fwd_mark(&mut self, val: __u8) {
+        unsafe {
+            let val: u8 = ::core::mem::transmute(val);
+            self._bitfield_3.set(11usize, 1u8, val as u64)
+        }
+    }
+    #[inline]
+    pub fn offload_l3_fwd_mark(&self) -> __u8 {
+        unsafe { ::core::mem::transmute(self._bitfield_3.get(12usize, 1u8) as u8) }
+    }
+    #[inline]
+    pub fn set_offload_l3_fwd_mark(&mut self, val: __u8) {
+        unsafe {
+            let val: u8 = ::core::mem::transmute(val);
+            self._bitfield_3.set(12usize, 1u8, val as u64)
+        }
+    }
+    #[inline]
+    pub fn tc_skip_classify(&self) -> __u8 {
+        unsafe { ::core::mem::transmute(self._bitfield_3.get(13usize, 1u8) as u8) }
+    }
+    #[inline]
+    pub fn set_tc_skip_classify(&mut self, val: __u8) {
+        unsafe {
+            let val: u8 = ::core::mem::transmute(val);
+            self._bitfield_3.set(13usize, 1u8, val as u64)
+        }
+    }
+    #[inline]
+    pub fn tc_at_ingress(&self) -> __u8 {
+        unsafe { ::core::mem::transmute(self._bitfield_3.get(14usize, 1u8) as u8) }
+    }
+    #[inline]
+    pub fn set_tc_at_ingress(&mut self, val: __u8) {
+        unsafe {
+            let val: u8 = ::core::mem::transmute(val);
+            self._bitfield_3.set(14usize, 1u8, val as u64)
+        }
+    }
+    #[inline]
+    pub fn redirected(&self) -> __u8 {
+        unsafe { ::core::mem::transmute(self._bitfield_3.get(15usize, 1u8) as u8) }
+    }
+    #[inline]
+    pub fn set_redirected(&mut self, val: __u8) {
+        unsafe {
+            let val: u8 = ::core::mem::transmute(val);
+            self._bitfield_3.set(15usize, 1u8, val as u64)
+        }
+    }
+    #[inline]
+    pub fn from_ingress(&self) -> __u8 {
+        unsafe { ::core::mem::transmute(self._bitfield_3.get(16usize, 1u8) as u8) }
+    }
+    #[inline]
+    pub fn set_from_ingress(&mut self, val: __u8) {
+        unsafe {
+            let val: u8 = ::core::mem::transmute(val);
+            self._bitfield_3.set(16usize, 1u8, val as u64)
+        }
+    }
+    #[inline]
+    pub fn decrypted(&self) -> __u8 {
+        unsafe { ::core::mem::transmute(self._bitfield_3.get(17usize, 1u8) as u8) }
+    }
+    #[inline]
+    pub fn set_decrypted(&mut self, val: __u8) {
+        unsafe {
+            let val: u8 = ::core::mem::transmute(val);
+            self._bitfield_3.set(17usize, 1u8, val as u64)
+        }
+    }
+    #[inline]
+    pub fn new_bitfield_3(
+        vlan_present: __u8,
+        csum_complete_sw: __u8,
+        csum_level: __u8,
+        csum_not_inet: __u8,
+        dst_pending_confirm: __u8,
+        ndisc_nodetype: __u8,
+        ipvs_property: __u8,
+        inner_protocol_type: __u8,
+        remcsum_offload: __u8,
+        offload_fwd_mark: __u8,
+        offload_l3_fwd_mark: __u8,
+        tc_skip_classify: __u8,
+        tc_at_ingress: __u8,
+        redirected: __u8,
+        from_ingress: __u8,
+        decrypted: __u8,
+    ) -> __BindgenBitfieldUnit<[u8; 3usize]> {
+        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 3usize]> = Default::default();
+        __bindgen_bitfield_unit.set(0usize, 1u8, {
+            let vlan_present: u8 = unsafe { ::core::mem::transmute(vlan_present) };
+            vlan_present as u64
+        });
+        __bindgen_bitfield_unit.set(1usize, 1u8, {
+            let csum_complete_sw: u8 = unsafe { ::core::mem::transmute(csum_complete_sw) };
+            csum_complete_sw as u64
+        });
+        __bindgen_bitfield_unit.set(2usize, 2u8, {
+            let csum_level: u8 = unsafe { ::core::mem::transmute(csum_level) };
+            csum_level as u64
+        });
+        __bindgen_bitfield_unit.set(4usize, 1u8, {
+            let csum_not_inet: u8 = unsafe { ::core::mem::transmute(csum_not_inet) };
+            csum_not_inet as u64
+        });
+        __bindgen_bitfield_unit.set(5usize, 1u8, {
+            let dst_pending_confirm: u8 = unsafe { ::core::mem::transmute(dst_pending_confirm) };
+            dst_pending_confirm as u64
+        });
+        __bindgen_bitfield_unit.set(6usize, 2u8, {
+            let ndisc_nodetype: u8 = unsafe { ::core::mem::transmute(ndisc_nodetype) };
+            ndisc_nodetype as u64
+        });
+        __bindgen_bitfield_unit.set(8usize, 1u8, {
+            let ipvs_property: u8 = unsafe { ::core::mem::transmute(ipvs_property) };
+            ipvs_property as u64
+        });
+        __bindgen_bitfield_unit.set(9usize, 1u8, {
+            let inner_protocol_type: u8 = unsafe { ::core::mem::transmute(inner_protocol_type) };
+            inner_protocol_type as u64
+        });
+        __bindgen_bitfield_unit.set(10usize, 1u8, {
+            let remcsum_offload: u8 = unsafe { ::core::mem::transmute(remcsum_offload) };
+            remcsum_offload as u64
+        });
+        __bindgen_bitfield_unit.set(11usize, 1u8, {
+            let offload_fwd_mark: u8 = unsafe { ::core::mem::transmute(offload_fwd_mark) };
+            offload_fwd_mark as u64
+        });
+        __bindgen_bitfield_unit.set(12usize, 1u8, {
+            let offload_l3_fwd_mark: u8 = unsafe { ::core::mem::transmute(offload_l3_fwd_mark) };
+            offload_l3_fwd_mark as u64
+        });
+        __bindgen_bitfield_unit.set(13usize, 1u8, {
+            let tc_skip_classify: u8 = unsafe { ::core::mem::transmute(tc_skip_classify) };
+            tc_skip_classify as u64
+        });
+        __bindgen_bitfield_unit.set(14usize, 1u8, {
+            let tc_at_ingress: u8 = unsafe { ::core::mem::transmute(tc_at_ingress) };
+            tc_at_ingress as u64
+        });
+        __bindgen_bitfield_unit.set(15usize, 1u8, {
+            let redirected: u8 = unsafe { ::core::mem::transmute(redirected) };
+            redirected as u64
+        });
+        __bindgen_bitfield_unit.set(16usize, 1u8, {
+            let from_ingress: u8 = unsafe { ::core::mem::transmute(from_ingress) };
+            from_ingress as u64
+        });
+        __bindgen_bitfield_unit.set(17usize, 1u8, {
+            let decrypted: u8 = unsafe { ::core::mem::transmute(decrypted) };
+            decrypted as u64
         });
         __bindgen_bitfield_unit
     }
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
+pub struct scatterlist {
+    pub page_link: ::aya_bpf::cty::c_ulong,
+    pub offset: ::aya_bpf::cty::c_uint,
+    pub length: ::aya_bpf::cty::c_uint,
+    pub dma_address: dma_addr_t,
+    pub dma_length: ::aya_bpf::cty::c_uint,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
 pub struct flowi_tunnel {
     pub tun_id: __be64,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct flowi_common {
     pub flowic_oif: ::aya_bpf::cty::c_int,
     pub flowic_iif: ::aya_bpf::cty::c_int,
@@ -15612,25 +16785,25 @@ pub union flowi_uli {
     pub mht: flowi_uli__bindgen_ty_4,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct flowi_uli__bindgen_ty_1 {
     pub dport: __be16,
     pub sport: __be16,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct flowi_uli__bindgen_ty_2 {
     pub type_: __u8,
     pub code: __u8,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct flowi_uli__bindgen_ty_3 {
     pub dport: __le16,
     pub sport: __le16,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct flowi_uli__bindgen_ty_4 {
     pub type_: __u8,
 }
@@ -15674,69 +16847,63 @@ pub union flowi__bindgen_ty_1 {
     pub dn: flowidn,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct prot_inuse {
-    pub all: ::aya_bpf::cty::c_int,
-    pub val: [::aya_bpf::cty::c_int; 64usize],
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct ipstats_mib {
     pub mibs: [u64_; 37usize],
     pub syncp: u64_stats_sync,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct icmp_mib {
     pub mibs: [::aya_bpf::cty::c_ulong; 28usize],
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct icmpmsg_mib {
     pub mibs: [atomic_long_t; 512usize],
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct icmpv6_mib {
     pub mibs: [::aya_bpf::cty::c_ulong; 6usize],
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct icmpv6_mib_device {
     pub mibs: [atomic_long_t; 6usize],
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct icmpv6msg_mib {
     pub mibs: [atomic_long_t; 512usize],
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct icmpv6msg_mib_device {
     pub mibs: [atomic_long_t; 512usize],
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct tcp_mib {
     pub mibs: [::aya_bpf::cty::c_ulong; 16usize],
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct udp_mib {
     pub mibs: [::aya_bpf::cty::c_ulong; 10usize],
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct linux_mib {
-    pub mibs: [::aya_bpf::cty::c_ulong; 126usize],
+    pub mibs: [::aya_bpf::cty::c_ulong; 124usize],
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct linux_xfrm_mib {
     pub mibs: [::aya_bpf::cty::c_ulong; 29usize],
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct linux_tls_mib {
     pub mibs: [::aya_bpf::cty::c_ulong; 11usize],
 }
@@ -15789,7 +16956,7 @@ pub struct inet_frags {
     pub completion: completion,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct frag_v4_compare_key {
     pub saddr: __be32,
     pub daddr: __be32,
@@ -15833,7 +17000,7 @@ pub union inet_frag_queue__bindgen_ty_1 {
     pub v6: frag_v6_compare_key,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct fib_rules_ops {
     pub family: ::aya_bpf::cty::c_int,
     pub list: list_head,
@@ -15892,6 +17059,7 @@ pub struct fib_rules_ops {
     pub nlmsg_payload: ::core::option::Option<unsafe extern "C" fn(arg1: *mut fib_rule) -> size_t>,
     pub flush_cache: ::core::option::Option<unsafe extern "C" fn(arg1: *mut fib_rules_ops)>,
     pub nlgroup: ::aya_bpf::cty::c_int,
+    pub policy: *const nla_policy,
     pub rules_list: list_head,
     pub owner: *mut module,
     pub fro_net: *mut net,
@@ -15907,7 +17075,7 @@ pub mod tcp_ca_event {
     pub const CA_EVENT_ECN_IS_CE: Type = 5;
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct tcp_congestion_ops {
     pub ssthresh: ::core::option::Option<unsafe extern "C" fn(arg1: *mut sock) -> u32_>,
     pub cong_avoid:
@@ -15942,7 +17110,7 @@ pub struct tcp_congestion_ops {
     pub _bitfield_1: __BindgenBitfieldUnit<[u8; 40usize]>,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct fib_notifier_ops {
     pub family: ::aya_bpf::cty::c_int,
     pub list: list_head,
@@ -15959,10 +17127,7 @@ pub struct fib_notifier_ops {
     pub rcu: callback_head,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct netdevice_tracker {}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct dst_entry {
     pub dev: *mut net_device,
     pub ops: *mut dst_ops,
@@ -15990,378 +17155,6 @@ pub struct dst_entry {
     pub error: ::aya_bpf::cty::c_short,
     pub __pad: ::aya_bpf::cty::c_short,
     pub tclassid: __u32,
-    pub dev_tracker: netdevice_tracker,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct net_device_stats {
-    pub rx_packets: ::aya_bpf::cty::c_ulong,
-    pub tx_packets: ::aya_bpf::cty::c_ulong,
-    pub rx_bytes: ::aya_bpf::cty::c_ulong,
-    pub tx_bytes: ::aya_bpf::cty::c_ulong,
-    pub rx_errors: ::aya_bpf::cty::c_ulong,
-    pub tx_errors: ::aya_bpf::cty::c_ulong,
-    pub rx_dropped: ::aya_bpf::cty::c_ulong,
-    pub tx_dropped: ::aya_bpf::cty::c_ulong,
-    pub multicast: ::aya_bpf::cty::c_ulong,
-    pub collisions: ::aya_bpf::cty::c_ulong,
-    pub rx_length_errors: ::aya_bpf::cty::c_ulong,
-    pub rx_over_errors: ::aya_bpf::cty::c_ulong,
-    pub rx_crc_errors: ::aya_bpf::cty::c_ulong,
-    pub rx_frame_errors: ::aya_bpf::cty::c_ulong,
-    pub rx_fifo_errors: ::aya_bpf::cty::c_ulong,
-    pub rx_missed_errors: ::aya_bpf::cty::c_ulong,
-    pub tx_aborted_errors: ::aya_bpf::cty::c_ulong,
-    pub tx_carrier_errors: ::aya_bpf::cty::c_ulong,
-    pub tx_fifo_errors: ::aya_bpf::cty::c_ulong,
-    pub tx_heartbeat_errors: ::aya_bpf::cty::c_ulong,
-    pub tx_window_errors: ::aya_bpf::cty::c_ulong,
-    pub rx_compressed: ::aya_bpf::cty::c_ulong,
-    pub tx_compressed: ::aya_bpf::cty::c_ulong,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct netdev_hw_addr_list {
-    pub list: list_head,
-    pub count: ::aya_bpf::cty::c_int,
-    pub tree: rb_root,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct tipc_bearer {
-    _unused: [u8; 0],
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct mpls_dev {
-    _unused: [u8; 0],
-}
-pub mod rx_handler_result {
-    pub type Type = ::aya_bpf::cty::c_uint;
-    pub const RX_HANDLER_CONSUMED: Type = 0;
-    pub const RX_HANDLER_ANOTHER: Type = 1;
-    pub const RX_HANDLER_EXACT: Type = 2;
-    pub const RX_HANDLER_PASS: Type = 3;
-}
-pub use self::rx_handler_result::Type as rx_handler_result_t;
-pub type rx_handler_func_t =
-    ::core::option::Option<unsafe extern "C" fn(arg1: *mut *mut sk_buff) -> rx_handler_result_t>;
-pub mod netdev_ml_priv_type {
-    pub type Type = ::aya_bpf::cty::c_uint;
-    pub const ML_PRIV_NONE: Type = 0;
-    pub const ML_PRIV_CAN: Type = 1;
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct pcpu_dstats {
-    _unused: [u8; 0],
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct garp_port {
-    _unused: [u8; 0],
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct mrp_port {
-    _unused: [u8; 0],
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct netdev_tc_txq {
-    pub count: u16_,
-    pub offset: u16_,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct macsec_ops {
-    _unused: [u8; 0],
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct udp_tunnel_nic {
-    _unused: [u8; 0],
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct bpf_xdp_entity {
-    pub prog: *mut bpf_prog,
-    pub link: *mut bpf_xdp_link,
-}
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct net_device {
-    pub name: [::aya_bpf::cty::c_char; 16usize],
-    pub name_node: *mut netdev_name_node,
-    pub ifalias: *mut dev_ifalias,
-    pub mem_end: ::aya_bpf::cty::c_ulong,
-    pub mem_start: ::aya_bpf::cty::c_ulong,
-    pub base_addr: ::aya_bpf::cty::c_ulong,
-    pub state: ::aya_bpf::cty::c_ulong,
-    pub dev_list: list_head,
-    pub napi_list: list_head,
-    pub unreg_list: list_head,
-    pub close_list: list_head,
-    pub ptype_all: list_head,
-    pub ptype_specific: list_head,
-    pub adj_list: net_device__bindgen_ty_1,
-    pub flags: ::aya_bpf::cty::c_uint,
-    pub priv_flags: ::aya_bpf::cty::c_ulonglong,
-    pub netdev_ops: *const net_device_ops,
-    pub ifindex: ::aya_bpf::cty::c_int,
-    pub gflags: ::aya_bpf::cty::c_ushort,
-    pub hard_header_len: ::aya_bpf::cty::c_ushort,
-    pub mtu: ::aya_bpf::cty::c_uint,
-    pub needed_headroom: ::aya_bpf::cty::c_ushort,
-    pub needed_tailroom: ::aya_bpf::cty::c_ushort,
-    pub features: netdev_features_t,
-    pub hw_features: netdev_features_t,
-    pub wanted_features: netdev_features_t,
-    pub vlan_features: netdev_features_t,
-    pub hw_enc_features: netdev_features_t,
-    pub mpls_features: netdev_features_t,
-    pub gso_partial_features: netdev_features_t,
-    pub min_mtu: ::aya_bpf::cty::c_uint,
-    pub max_mtu: ::aya_bpf::cty::c_uint,
-    pub type_: ::aya_bpf::cty::c_ushort,
-    pub min_header_len: ::aya_bpf::cty::c_uchar,
-    pub name_assign_type: ::aya_bpf::cty::c_uchar,
-    pub group: ::aya_bpf::cty::c_int,
-    pub stats: net_device_stats,
-    pub rx_dropped: atomic_long_t,
-    pub tx_dropped: atomic_long_t,
-    pub rx_nohandler: atomic_long_t,
-    pub carrier_up_count: atomic_t,
-    pub carrier_down_count: atomic_t,
-    pub wireless_handlers: *const iw_handler_def,
-    pub wireless_data: *mut iw_public_data,
-    pub ethtool_ops: *const ethtool_ops,
-    pub l3mdev_ops: *const l3mdev_ops,
-    pub ndisc_ops: *const ndisc_ops,
-    pub xfrmdev_ops: *const xfrmdev_ops,
-    pub tlsdev_ops: *const tlsdev_ops,
-    pub header_ops: *const header_ops,
-    pub operstate: ::aya_bpf::cty::c_uchar,
-    pub link_mode: ::aya_bpf::cty::c_uchar,
-    pub if_port: ::aya_bpf::cty::c_uchar,
-    pub dma: ::aya_bpf::cty::c_uchar,
-    pub perm_addr: [::aya_bpf::cty::c_uchar; 32usize],
-    pub addr_assign_type: ::aya_bpf::cty::c_uchar,
-    pub addr_len: ::aya_bpf::cty::c_uchar,
-    pub upper_level: ::aya_bpf::cty::c_uchar,
-    pub lower_level: ::aya_bpf::cty::c_uchar,
-    pub neigh_priv_len: ::aya_bpf::cty::c_ushort,
-    pub dev_id: ::aya_bpf::cty::c_ushort,
-    pub dev_port: ::aya_bpf::cty::c_ushort,
-    pub padded: ::aya_bpf::cty::c_ushort,
-    pub addr_list_lock: spinlock_t,
-    pub irq: ::aya_bpf::cty::c_int,
-    pub uc: netdev_hw_addr_list,
-    pub mc: netdev_hw_addr_list,
-    pub dev_addrs: netdev_hw_addr_list,
-    pub queues_kset: *mut kset,
-    pub promiscuity: ::aya_bpf::cty::c_uint,
-    pub allmulti: ::aya_bpf::cty::c_uint,
-    pub uc_promisc: bool_,
-    pub vlan_info: *mut vlan_info,
-    pub dsa_ptr: *mut dsa_port,
-    pub tipc_ptr: *mut tipc_bearer,
-    pub atalk_ptr: *mut ::aya_bpf::cty::c_void,
-    pub ip_ptr: *mut in_device,
-    pub ip6_ptr: *mut inet6_dev,
-    pub ax25_ptr: *mut ::aya_bpf::cty::c_void,
-    pub ieee80211_ptr: *mut wireless_dev,
-    pub ieee802154_ptr: *mut wpan_dev,
-    pub mpls_ptr: *mut mpls_dev,
-    pub dev_addr: *const ::aya_bpf::cty::c_uchar,
-    pub _rx: *mut netdev_rx_queue,
-    pub num_rx_queues: ::aya_bpf::cty::c_uint,
-    pub real_num_rx_queues: ::aya_bpf::cty::c_uint,
-    pub xdp_prog: *mut bpf_prog,
-    pub gro_flush_timeout: ::aya_bpf::cty::c_ulong,
-    pub napi_defer_hard_irqs: ::aya_bpf::cty::c_int,
-    pub gro_max_size: ::aya_bpf::cty::c_uint,
-    pub rx_handler: rx_handler_func_t,
-    pub rx_handler_data: *mut ::aya_bpf::cty::c_void,
-    pub miniq_ingress: *mut mini_Qdisc,
-    pub ingress_queue: *mut netdev_queue,
-    pub nf_hooks_ingress: *mut nf_hook_entries,
-    pub broadcast: [::aya_bpf::cty::c_uchar; 32usize],
-    pub rx_cpu_rmap: *mut cpu_rmap,
-    pub index_hlist: hlist_node,
-    pub _bitfield_align_1: [u8; 0],
-    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 40usize]>,
-    pub _tx: *mut netdev_queue,
-    pub num_tx_queues: ::aya_bpf::cty::c_uint,
-    pub real_num_tx_queues: ::aya_bpf::cty::c_uint,
-    pub qdisc: *mut Qdisc,
-    pub tx_queue_len: ::aya_bpf::cty::c_uint,
-    pub tx_global_lock: spinlock_t,
-    pub xdp_bulkq: *mut xdp_dev_bulk_queue,
-    pub xps_maps: [*mut xps_dev_maps; 2usize],
-    pub miniq_egress: *mut mini_Qdisc,
-    pub nf_hooks_egress: *mut nf_hook_entries,
-    pub qdisc_hash: [hlist_head; 16usize],
-    pub watchdog_timer: timer_list,
-    pub watchdog_timeo: ::aya_bpf::cty::c_int,
-    pub proto_down_reason: u32_,
-    pub todo_list: list_head,
-    pub pcpu_refcnt: *mut ::aya_bpf::cty::c_int,
-    pub refcnt_tracker: ref_tracker_dir,
-    pub link_watch_list: list_head,
-    pub _bitfield_align_2: [u8; 0],
-    pub _bitfield_2: __BindgenBitfieldUnit<[u8; 1usize]>,
-    pub dismantle: bool_,
-    pub _bitfield_align_3: [u16; 0],
-    pub _bitfield_3: __BindgenBitfieldUnit<[u8; 2usize]>,
-    pub needs_free_netdev: bool_,
-    pub priv_destructor: ::core::option::Option<unsafe extern "C" fn(arg1: *mut net_device)>,
-    pub npinfo: *mut netpoll_info,
-    pub nd_net: possible_net_t,
-    pub ml_priv: *mut ::aya_bpf::cty::c_void,
-    pub ml_priv_type: netdev_ml_priv_type::Type,
-    pub __bindgen_anon_1: net_device__bindgen_ty_4,
-    pub garp_port: *mut garp_port,
-    pub mrp_port: *mut mrp_port,
-    pub dev: device,
-    pub sysfs_groups: [*const attribute_group; 4usize],
-    pub sysfs_rx_queue_group: *const attribute_group,
-    pub rtnl_link_ops: *const rtnl_link_ops,
-    pub gso_max_size: ::aya_bpf::cty::c_uint,
-    pub gso_max_segs: u16_,
-    pub dcbnl_ops: *const dcbnl_rtnl_ops,
-    pub num_tc: s16,
-    pub tc_to_txq: [netdev_tc_txq; 16usize],
-    pub prio_tc_map: [u8_; 16usize],
-    pub fcoe_ddp_xid: ::aya_bpf::cty::c_uint,
-    pub priomap: *mut netprio_map,
-    pub phydev: *mut phy_device,
-    pub sfp_bus: *mut sfp_bus,
-    pub qdisc_tx_busylock: *mut lock_class_key,
-    pub proto_down: bool_,
-    pub _bitfield_align_4: [u8; 0],
-    pub _bitfield_4: __BindgenBitfieldUnit<[u8; 1usize]>,
-    pub net_notifier_list: list_head,
-    pub macsec_ops: *const macsec_ops,
-    pub udp_tunnel_nic_info: *const udp_tunnel_nic_info,
-    pub udp_tunnel_nic: *mut udp_tunnel_nic,
-    pub xdp_state: [bpf_xdp_entity; 3usize],
-    pub dev_addr_shadow: [u8_; 32usize],
-    pub linkwatch_dev_tracker: netdevice_tracker,
-    pub watchdog_dev_tracker: netdevice_tracker,
-    pub _bitfield_align_5: [u8; 0],
-    pub _bitfield_5: __BindgenBitfieldUnit<[u8; 56usize]>,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct net_device__bindgen_ty_1 {
-    pub upper: list_head,
-    pub lower: list_head,
-}
-pub mod net_device__bindgen_ty_2 {
-    pub type Type = ::aya_bpf::cty::c_uint;
-    pub const NETREG_UNINITIALIZED: Type = 0;
-    pub const NETREG_REGISTERED: Type = 1;
-    pub const NETREG_UNREGISTERING: Type = 2;
-    pub const NETREG_UNREGISTERED: Type = 3;
-    pub const NETREG_RELEASED: Type = 4;
-    pub const NETREG_DUMMY: Type = 5;
-}
-pub mod net_device__bindgen_ty_3 {
-    pub type Type = ::aya_bpf::cty::c_uint;
-    pub const RTNL_LINK_INITIALIZED: Type = 0;
-    pub const RTNL_LINK_INITIALIZING: Type = 1;
-}
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub union net_device__bindgen_ty_4 {
-    pub lstats: *mut pcpu_lstats,
-    pub tstats: *mut pcpu_sw_netstats,
-    pub dstats: *mut pcpu_dstats,
-}
-impl net_device {
-    #[inline]
-    pub fn reg_state(&self) -> net_device__bindgen_ty_2::Type {
-        unsafe { ::core::mem::transmute(self._bitfield_2.get(0usize, 8u8) as u32) }
-    }
-    #[inline]
-    pub fn set_reg_state(&mut self, val: net_device__bindgen_ty_2::Type) {
-        unsafe {
-            let val: u32 = ::core::mem::transmute(val);
-            self._bitfield_2.set(0usize, 8u8, val as u64)
-        }
-    }
-    #[inline]
-    pub fn new_bitfield_2(
-        reg_state: net_device__bindgen_ty_2::Type,
-    ) -> __BindgenBitfieldUnit<[u8; 1usize]> {
-        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 1usize]> = Default::default();
-        __bindgen_bitfield_unit.set(0usize, 8u8, {
-            let reg_state: u32 = unsafe { ::core::mem::transmute(reg_state) };
-            reg_state as u64
-        });
-        __bindgen_bitfield_unit
-    }
-    #[inline]
-    pub fn rtnl_link_state(&self) -> net_device__bindgen_ty_3::Type {
-        unsafe { ::core::mem::transmute(self._bitfield_3.get(0usize, 16u8) as u32) }
-    }
-    #[inline]
-    pub fn set_rtnl_link_state(&mut self, val: net_device__bindgen_ty_3::Type) {
-        unsafe {
-            let val: u32 = ::core::mem::transmute(val);
-            self._bitfield_3.set(0usize, 16u8, val as u64)
-        }
-    }
-    #[inline]
-    pub fn new_bitfield_3(
-        rtnl_link_state: net_device__bindgen_ty_3::Type,
-    ) -> __BindgenBitfieldUnit<[u8; 2usize]> {
-        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 2usize]> = Default::default();
-        __bindgen_bitfield_unit.set(0usize, 16u8, {
-            let rtnl_link_state: u32 = unsafe { ::core::mem::transmute(rtnl_link_state) };
-            rtnl_link_state as u64
-        });
-        __bindgen_bitfield_unit
-    }
-    #[inline]
-    pub fn wol_enabled(&self) -> ::aya_bpf::cty::c_uint {
-        unsafe { ::core::mem::transmute(self._bitfield_4.get(0usize, 1u8) as u32) }
-    }
-    #[inline]
-    pub fn set_wol_enabled(&mut self, val: ::aya_bpf::cty::c_uint) {
-        unsafe {
-            let val: u32 = ::core::mem::transmute(val);
-            self._bitfield_4.set(0usize, 1u8, val as u64)
-        }
-    }
-    #[inline]
-    pub fn threaded(&self) -> ::aya_bpf::cty::c_uint {
-        unsafe { ::core::mem::transmute(self._bitfield_4.get(1usize, 1u8) as u32) }
-    }
-    #[inline]
-    pub fn set_threaded(&mut self, val: ::aya_bpf::cty::c_uint) {
-        unsafe {
-            let val: u32 = ::core::mem::transmute(val);
-            self._bitfield_4.set(1usize, 1u8, val as u64)
-        }
-    }
-    #[inline]
-    pub fn new_bitfield_4(
-        wol_enabled: ::aya_bpf::cty::c_uint,
-        threaded: ::aya_bpf::cty::c_uint,
-    ) -> __BindgenBitfieldUnit<[u8; 1usize]> {
-        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 1usize]> = Default::default();
-        __bindgen_bitfield_unit.set(0usize, 1u8, {
-            let wol_enabled: u32 = unsafe { ::core::mem::transmute(wol_enabled) };
-            wol_enabled as u64
-        });
-        __bindgen_bitfield_unit.set(1usize, 1u8, {
-            let threaded: u32 = unsafe { ::core::mem::transmute(threaded) };
-            threaded as u64
-        });
-        __bindgen_bitfield_unit
-    }
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
@@ -16384,11 +17177,11 @@ pub struct neighbour {
     pub timer: timer_list,
     pub used: ::aya_bpf::cty::c_ulong,
     pub probes: atomic_t,
-    pub nud_state: u8_,
-    pub type_: u8_,
-    pub dead: u8_,
+    pub flags: __u8,
+    pub nud_state: __u8,
+    pub type_: __u8,
+    pub dead: __u8,
     pub protocol: u8_,
-    pub flags: u32_,
     pub ha_lock: seqlock_t,
     pub _bitfield_align_1: [u8; 0],
     pub _bitfield_1: __BindgenBitfieldUnit<[u8; 4usize]>,
@@ -16399,10 +17192,8 @@ pub struct neighbour {
     >,
     pub ops: *const neigh_ops,
     pub gc_list: list_head,
-    pub managed_list: list_head,
     pub rcu: callback_head,
     pub dev: *mut net_device,
-    pub dev_tracker: netdevice_tracker,
     pub primary_key: __IncompleteArrayField<u8_>,
 }
 impl neighbour {
@@ -16453,8 +17244,6 @@ pub struct ipv6_devconf {
     pub proxy_ndp: __s32,
     pub accept_source_route: __s32,
     pub accept_ra_from_local: __s32,
-    pub optimistic_dad: __s32,
-    pub use_optimistic: __s32,
     pub mc_forwarding: __s32,
     pub disable_ipv6: __s32,
     pub drop_unicast_in_l2_multicast: __s32,
@@ -16474,11 +17263,18 @@ pub struct ipv6_devconf {
     pub disable_policy: __s32,
     pub ndisc_tclass: __s32,
     pub rpl_seg_enabled: __s32,
-    pub ioam6_id: __u32,
-    pub ioam6_id_wide: __u32,
-    pub ioam6_enabled: __u8,
-    pub ndisc_evict_nocarrier: __u8,
     pub sysctl_header: *mut ctl_table_header,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct nf_queue_handler {
+    pub outfn: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut nf_queue_entry,
+            arg2: ::aya_bpf::cty::c_uint,
+        ) -> ::aya_bpf::cty::c_int,
+    >,
+    pub nf_hook_drop: ::core::option::Option<unsafe extern "C" fn(arg1: *mut net)>,
 }
 pub mod nf_log_type {
     pub type Type = ::aya_bpf::cty::c_uint;
@@ -16500,7 +17296,7 @@ pub type nf_logfn = ::core::option::Option<
     ),
 >;
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct nf_logger {
     pub name: *mut ::aya_bpf::cty::c_char,
     pub type_: nf_log_type::Type,
@@ -16508,12 +17304,12 @@ pub struct nf_logger {
     pub me: *mut module,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct hlist_nulls_head {
     pub first: *mut hlist_nulls_node,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct ip_conntrack_stat {
     pub found: ::aya_bpf::cty::c_uint,
     pub invalid: ::aya_bpf::cty::c_uint,
@@ -16527,27 +17323,6 @@ pub struct ip_conntrack_stat {
     pub expect_create: ::aya_bpf::cty::c_uint,
     pub expect_delete: ::aya_bpf::cty::c_uint,
     pub search_restart: ::aya_bpf::cty::c_uint,
-    pub chaintoolong: ::aya_bpf::cty::c_uint,
-}
-pub mod ip_conntrack_dir {
-    pub type Type = ::aya_bpf::cty::c_uint;
-    pub const IP_CT_DIR_ORIGINAL: Type = 0;
-    pub const IP_CT_DIR_REPLY: Type = 1;
-    pub const IP_CT_DIR_MAX: Type = 2;
-}
-pub mod sctp_conntrack {
-    pub type Type = ::aya_bpf::cty::c_uint;
-    pub const SCTP_CONNTRACK_NONE: Type = 0;
-    pub const SCTP_CONNTRACK_CLOSED: Type = 1;
-    pub const SCTP_CONNTRACK_COOKIE_WAIT: Type = 2;
-    pub const SCTP_CONNTRACK_COOKIE_ECHOED: Type = 3;
-    pub const SCTP_CONNTRACK_ESTABLISHED: Type = 4;
-    pub const SCTP_CONNTRACK_SHUTDOWN_SENT: Type = 5;
-    pub const SCTP_CONNTRACK_SHUTDOWN_RECD: Type = 6;
-    pub const SCTP_CONNTRACK_SHUTDOWN_ACK_SENT: Type = 7;
-    pub const SCTP_CONNTRACK_HEARTBEAT_SENT: Type = 8;
-    pub const SCTP_CONNTRACK_HEARTBEAT_ACKED: Type = 9;
-    pub const SCTP_CONNTRACK_MAX: Type = 10;
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
@@ -16646,7 +17421,7 @@ pub type sk_read_actor_t = ::core::option::Option<
     ) -> ::aya_bpf::cty::c_int,
 >;
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct proto_ops {
     pub family: ::aya_bpf::cty::c_int,
     pub owner: *mut module,
@@ -16819,7 +17594,7 @@ pub struct proto_ops {
     >,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct pipe_buffer {
     pub page: *mut page,
     pub offset: ::aya_bpf::cty::c_uint,
@@ -16829,7 +17604,7 @@ pub struct pipe_buffer {
     pub private: ::aya_bpf::cty::c_ulong,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct pipe_buf_operations {
     pub confirm: ::core::option::Option<
         unsafe extern "C" fn(
@@ -16848,7 +17623,6 @@ pub struct pipe_buf_operations {
     >,
 }
 #[repr(C)]
-#[derive(Debug)]
 pub struct skb_ext {
     pub refcnt: refcount_t,
     pub offset: [u8_; 4usize],
@@ -16865,7 +17639,7 @@ impl skb_ext {
     }
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct dql {
     pub num_queued: ::aya_bpf::cty::c_uint,
     pub adj_limit: ::aya_bpf::cty::c_uint,
@@ -16893,7 +17667,7 @@ impl dql {
     }
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct ieee_ets {
     pub willing: __u8,
     pub ets_cap: __u8,
@@ -16907,12 +17681,12 @@ pub struct ieee_ets {
     pub reco_prio_tc: [__u8; 8usize],
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct ieee_maxrate {
     pub tc_maxrate: [__u64; 8usize],
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct ieee_qcn {
     pub rpg_enable: [__u8; 8usize],
     pub rppp_max_rps: [__u32; 8usize],
@@ -16928,13 +17702,13 @@ pub struct ieee_qcn {
     pub cndd_state_machine: [__u32; 8usize],
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct ieee_qcn_stats {
     pub rppp_rp_centiseconds: [__u64; 8usize],
     pub rppp_created_rps: [__u32; 8usize],
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct ieee_pfc {
     pub pfc_cap: __u8,
     pub pfc_en: __u8,
@@ -16944,14 +17718,14 @@ pub struct ieee_pfc {
     pub indications: [__u64; 8usize],
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct dcbnl_buffer {
     pub prio2buffer: [__u8; 8usize],
     pub buffer_size: [__u32; 8usize],
     pub total_size: __u32,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct cee_pg {
     pub willing: __u8,
     pub error: __u8,
@@ -16961,7 +17735,7 @@ pub struct cee_pg {
     pub prio_pg: [__u8; 8usize],
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct cee_pfc {
     pub willing: __u8,
     pub error: __u8,
@@ -16969,20 +17743,20 @@ pub struct cee_pfc {
     pub tcs_supported: __u8,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct dcb_app {
     pub selector: __u8,
     pub priority: __u8,
     pub protocol: __u16,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct dcb_peer_app_info {
     pub willing: __u8,
     pub error: __u8,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct dcbnl_rtnl_ops {
     pub ieee_getets: ::core::option::Option<
         unsafe extern "C" fn(arg1: *mut net_device, arg2: *mut ieee_ets) -> ::aya_bpf::cty::c_int,
@@ -17188,20 +17962,19 @@ pub struct dcbnl_rtnl_ops {
     >,
 }
 #[repr(C)]
-#[derive(Debug)]
 pub struct netprio_map {
     pub rcu: callback_head,
     pub priomap_len: u32_,
     pub priomap: __IncompleteArrayField<u32_>,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct xdp_mem_info {
     pub type_: u32_,
     pub id: u32_,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct xdp_rxq_info {
     pub dev: *mut net_device,
     pub queue_index: u32_,
@@ -17212,23 +17985,7 @@ pub struct xdp_rxq_info {
     pub _bitfield_1: __BindgenBitfieldUnit<[u8; 40usize]>,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct xdp_txq_info {
-    pub dev: *mut net_device,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct xdp_buff {
-    pub data: *mut ::aya_bpf::cty::c_void,
-    pub data_end: *mut ::aya_bpf::cty::c_void,
-    pub data_meta: *mut ::aya_bpf::cty::c_void,
-    pub data_hard_start: *mut ::aya_bpf::cty::c_void,
-    pub rxq: *mut xdp_rxq_info,
-    pub txq: *mut xdp_txq_info,
-    pub frame_sz: u32_,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct xdp_frame {
     pub data: *mut ::aya_bpf::cty::c_void,
     pub len: u16_,
@@ -17276,7 +18033,7 @@ impl xdp_frame {
     }
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct nlmsghdr {
     pub nlmsg_len: __u32,
     pub nlmsg_type: __u16,
@@ -17285,13 +18042,13 @@ pub struct nlmsghdr {
     pub nlmsg_pid: __u32,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct nlattr {
     pub nla_len: __u16,
     pub nla_type: __u16,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct netlink_ext_ack {
     pub _msg: *const ::aya_bpf::cty::c_char,
     pub bad_attr: *const nlattr,
@@ -17326,7 +18083,7 @@ pub union nla_policy__bindgen_ty_1 {
     pub strict_start_type: u16_,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct nla_policy__bindgen_ty_1__bindgen_ty_1 {
     pub min: s16,
     pub max: s16,
@@ -17363,7 +18120,7 @@ pub union netlink_callback__bindgen_ty_1 {
     pub args: [::aya_bpf::cty::c_long; 6usize],
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct ndmsg {
     pub ndm_family: __u8,
     pub ndm_pad1: __u8,
@@ -17374,7 +18131,7 @@ pub struct ndmsg {
     pub ndm_type: __u8,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct rtnl_link_stats64 {
     pub rx_packets: __u64,
     pub tx_packets: __u64,
@@ -17402,13 +18159,13 @@ pub struct rtnl_link_stats64 {
     pub rx_nohandler: __u64,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct ifla_vf_guid {
     pub vf: __u32,
     pub guid: __u64,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct ifla_vf_stats {
     pub rx_packets: __u64,
     pub tx_packets: __u64,
@@ -17420,7 +18177,7 @@ pub struct ifla_vf_stats {
     pub tx_dropped: __u64,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct ifla_vf_info {
     pub vf: __u32,
     pub mac: [__u8; 32usize],
@@ -17434,6 +18191,30 @@ pub struct ifla_vf_info {
     pub trusted: __u32,
     pub vlan_proto: __be16,
 }
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct tc_stats {
+    pub bytes: __u64,
+    pub packets: __u32,
+    pub drops: __u32,
+    pub overlimits: __u32,
+    pub bps: __u32,
+    pub pps: __u32,
+    pub qlen: __u32,
+    pub backlog: __u32,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct tc_sizespec {
+    pub cell_log: ::aya_bpf::cty::c_uchar,
+    pub size_log: ::aya_bpf::cty::c_uchar,
+    pub cell_align: ::aya_bpf::cty::c_short,
+    pub overhead: ::aya_bpf::cty::c_int,
+    pub linklayer: ::aya_bpf::cty::c_uint,
+    pub mpu: ::aya_bpf::cty::c_uint,
+    pub mtu: ::aya_bpf::cty::c_uint,
+    pub tsize: ::aya_bpf::cty::c_uint,
+}
 pub mod netdev_tx {
     pub type Type = ::aya_bpf::cty::c_uint;
     pub const __NETDEV_TX_MIN: Type = 2147483648;
@@ -17442,7 +18223,7 @@ pub mod netdev_tx {
 }
 pub use self::netdev_tx::Type as netdev_tx_t;
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct header_ops {
     pub create: ::core::option::Option<
         unsafe extern "C" fn(
@@ -17487,13 +18268,12 @@ pub struct header_ops {
 #[derive(Copy, Clone)]
 pub struct netdev_queue {
     pub dev: *mut net_device,
-    pub dev_tracker: netdevice_tracker,
     pub qdisc: *mut Qdisc,
     pub qdisc_sleeping: *mut Qdisc,
     pub kobj: kobject,
     pub numa_node: ::aya_bpf::cty::c_int,
     pub tx_maxrate: ::aya_bpf::cty::c_ulong,
-    pub trans_timeout: atomic_long_t,
+    pub trans_timeout: ::aya_bpf::cty::c_ulong,
     pub sb_dev: *mut net_device,
     pub pool: *mut xsk_buff_pool,
     pub _xmit_lock: spinlock_t,
@@ -17505,48 +18285,115 @@ pub struct netdev_queue {
     pub dql: dql,
 }
 #[repr(C)]
-#[derive(Debug)]
+#[derive(Copy, Clone)]
+pub struct qdisc_skb_head {
+    pub head: *mut sk_buff,
+    pub tail: *mut sk_buff,
+    pub qlen: __u32,
+    pub lock: spinlock_t,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct gnet_stats_basic_packed {
+    pub bytes: __u64,
+    pub packets: __u64,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct gnet_stats_queue {
+    pub qlen: __u32,
+    pub backlog: __u32,
+    pub drops: __u32,
+    pub requeues: __u32,
+    pub overlimits: __u32,
+}
+#[repr(C)]
+pub struct Qdisc {
+    pub enqueue: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut sk_buff,
+            arg2: *mut Qdisc,
+            arg3: *mut *mut sk_buff,
+        ) -> ::aya_bpf::cty::c_int,
+    >,
+    pub dequeue: ::core::option::Option<unsafe extern "C" fn(arg1: *mut Qdisc) -> *mut sk_buff>,
+    pub flags: ::aya_bpf::cty::c_uint,
+    pub limit: u32_,
+    pub ops: *const Qdisc_ops,
+    pub stab: *mut qdisc_size_table,
+    pub hash: hlist_node,
+    pub handle: u32_,
+    pub parent: u32_,
+    pub dev_queue: *mut netdev_queue,
+    pub rate_est: *mut net_rate_estimator,
+    pub cpu_bstats: *mut gnet_stats_basic_cpu,
+    pub cpu_qstats: *mut gnet_stats_queue,
+    pub pad: ::aya_bpf::cty::c_int,
+    pub refcnt: refcount_t,
+    pub _bitfield_align_1: [u8; 0],
+    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 24usize]>,
+    pub gso_skb: sk_buff_head,
+    pub q: qdisc_skb_head,
+    pub bstats: gnet_stats_basic_packed,
+    pub running: seqcount_t,
+    pub qstats: gnet_stats_queue,
+    pub state: ::aya_bpf::cty::c_ulong,
+    pub next_sched: *mut Qdisc,
+    pub skb_bad_txq: sk_buff_head,
+    pub busylock: spinlock_t,
+    pub seqlock: spinlock_t,
+    pub empty: bool_,
+    pub rcu: callback_head,
+    pub _bitfield_align_2: [u8; 0],
+    pub _bitfield_2: __BindgenBitfieldUnit<[u8; 32usize]>,
+    pub privdata: __IncompleteArrayField<::aya_bpf::cty::c_long>,
+}
+impl Qdisc {
+    #[inline]
+    pub fn new_bitfield_1() -> __BindgenBitfieldUnit<[u8; 24usize]> {
+        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 24usize]> = Default::default();
+        __bindgen_bitfield_unit
+    }
+    #[inline]
+    pub fn new_bitfield_2() -> __BindgenBitfieldUnit<[u8; 32usize]> {
+        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 32usize]> = Default::default();
+        __bindgen_bitfield_unit
+    }
+}
+#[repr(C)]
 pub struct rps_map {
     pub len: ::aya_bpf::cty::c_uint,
     pub rcu: callback_head,
     pub cpus: __IncompleteArrayField<u16_>,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct rps_dev_flow {
     pub cpu: u16_,
     pub filter: u16_,
     pub last_qtail: ::aya_bpf::cty::c_uint,
 }
 #[repr(C)]
-#[derive(Debug)]
 pub struct rps_dev_flow_table {
     pub mask: ::aya_bpf::cty::c_uint,
     pub rcu: callback_head,
     pub flows: __IncompleteArrayField<rps_dev_flow>,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct netdev_rx_queue {
-    pub xdp_rxq: xdp_rxq_info,
     pub rps_map: *mut rps_map,
     pub rps_flow_table: *mut rps_dev_flow_table,
     pub kobj: kobject,
     pub dev: *mut net_device,
-    pub dev_tracker: netdevice_tracker,
-    pub pool: *mut xsk_buff_pool,
     pub _bitfield_align_1: [u8; 0],
-    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 32usize]>,
-}
-impl netdev_rx_queue {
-    #[inline]
-    pub fn new_bitfield_1() -> __BindgenBitfieldUnit<[u8; 32usize]> {
-        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 32usize]> = Default::default();
-        __bindgen_bitfield_unit
-    }
+    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 40usize]>,
+    pub xdp_rxq: xdp_rxq_info,
+    pub pool: *mut xsk_buff_pool,
+    pub _bitfield_align_2: [u8; 0],
+    pub _bitfield_2: __BindgenBitfieldUnit<[u8; 56usize]>,
 }
 #[repr(C)]
-#[derive(Debug)]
 pub struct xps_map {
     pub len: ::aya_bpf::cty::c_uint,
     pub alloc_len: ::aya_bpf::cty::c_uint,
@@ -17554,7 +18401,6 @@ pub struct xps_map {
     pub queues: __IncompleteArrayField<u16_>,
 }
 #[repr(C)]
-#[derive(Debug)]
 pub struct xps_dev_maps {
     pub rcu: callback_head,
     pub nr_ids: ::aya_bpf::cty::c_uint,
@@ -17562,7 +18408,7 @@ pub struct xps_dev_maps {
     pub attr_map: __IncompleteArrayField<*mut xps_map>,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct netdev_fcoe_hbainfo {
     pub manufacturer: [::aya_bpf::cty::c_char; 64usize],
     pub serial_number: [::aya_bpf::cty::c_char; 64usize],
@@ -17574,7 +18420,7 @@ pub struct netdev_fcoe_hbainfo {
     pub model_description: [::aya_bpf::cty::c_char; 256usize],
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct netdev_phys_item_id {
     pub id: [::aya_bpf::cty::c_uchar; 32usize],
     pub id_len: ::aya_bpf::cty::c_uchar,
@@ -17602,14 +18448,14 @@ pub union net_device_path__bindgen_ty_1 {
     pub dsa: net_device_path__bindgen_ty_1__bindgen_ty_3,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct net_device_path__bindgen_ty_1__bindgen_ty_1 {
     pub id: u16_,
     pub proto: __be16,
     pub h_dest: [u8_; 6usize],
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct net_device_path__bindgen_ty_1__bindgen_ty_2 {
     pub vlan_mode: net_device_path__bindgen_ty_1__bindgen_ty_2__bindgen_ty_1::Type,
     pub vlan_id: u16_,
@@ -17623,13 +18469,13 @@ pub mod net_device_path__bindgen_ty_1__bindgen_ty_2__bindgen_ty_1 {
     pub const DEV_PATH_BR_VLAN_UNTAG_HW: Type = 3;
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct net_device_path__bindgen_ty_1__bindgen_ty_3 {
     pub port: ::aya_bpf::cty::c_int,
     pub proto: u16_,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct net_device_path_ctx {
     pub dev: *const net_device,
     pub daddr: *const u8_,
@@ -17637,7 +18483,7 @@ pub struct net_device_path_ctx {
     pub vlan: [net_device_path_ctx__bindgen_ty_1; 2usize],
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct net_device_path_ctx__bindgen_ty_1 {
     pub id: u16_,
     pub proto: __be16,
@@ -17663,7 +18509,6 @@ pub mod tc_setup_type {
     pub const TC_SETUP_QDISC_TBF: Type = 16;
     pub const TC_SETUP_QDISC_FIFO: Type = 17;
     pub const TC_SETUP_QDISC_HTB: Type = 18;
-    pub const TC_SETUP_ACT: Type = 19;
 }
 pub mod bpf_netdev_command {
     pub type Type = ::aya_bpf::cty::c_uint;
@@ -17687,25 +18532,25 @@ pub union netdev_bpf__bindgen_ty_1 {
     pub xsk: netdev_bpf__bindgen_ty_1__bindgen_ty_3,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct netdev_bpf__bindgen_ty_1__bindgen_ty_1 {
     pub flags: u32_,
     pub prog: *mut bpf_prog,
     pub extack: *mut netlink_ext_ack,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct netdev_bpf__bindgen_ty_1__bindgen_ty_2 {
     pub offmap: *mut bpf_offloaded_map,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct netdev_bpf__bindgen_ty_1__bindgen_ty_3 {
     pub pool: *mut xsk_buff_pool,
     pub queue_id: u16_,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct xfrmdev_ops {
     pub xdo_dev_state_add: ::core::option::Option<
         unsafe extern "C" fn(arg1: *mut xfrm_state) -> ::aya_bpf::cty::c_int,
@@ -17719,13 +18564,12 @@ pub struct xfrmdev_ops {
         ::core::option::Option<unsafe extern "C" fn(arg1: *mut xfrm_state)>,
 }
 #[repr(C)]
-#[derive(Debug)]
 pub struct dev_ifalias {
     pub rcuhead: callback_head,
     pub ifalias: __IncompleteArrayField<::aya_bpf::cty::c_char>,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct netdev_name_node {
     pub hlist: hlist_node,
     pub list: list_head,
@@ -17733,7 +18577,7 @@ pub struct netdev_name_node {
     pub name: *const ::aya_bpf::cty::c_char,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct net_device_ops {
     pub ndo_init: ::core::option::Option<
         unsafe extern "C" fn(arg1: *mut net_device) -> ::aya_bpf::cty::c_int,
@@ -17780,34 +18624,6 @@ pub struct net_device_ops {
             arg1: *mut net_device,
             arg2: *mut ifreq,
             arg3: ::aya_bpf::cty::c_int,
-        ) -> ::aya_bpf::cty::c_int,
-    >,
-    pub ndo_eth_ioctl: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut net_device,
-            arg2: *mut ifreq,
-            arg3: ::aya_bpf::cty::c_int,
-        ) -> ::aya_bpf::cty::c_int,
-    >,
-    pub ndo_siocbond: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut net_device,
-            arg2: *mut ifreq,
-            arg3: ::aya_bpf::cty::c_int,
-        ) -> ::aya_bpf::cty::c_int,
-    >,
-    pub ndo_siocwandev: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut net_device,
-            arg2: *mut if_settings,
-        ) -> ::aya_bpf::cty::c_int,
-    >,
-    pub ndo_siocdevprivate: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut net_device,
-            arg2: *mut ifreq,
-            arg3: *mut ::aya_bpf::cty::c_void,
-            arg4: ::aya_bpf::cty::c_int,
         ) -> ::aya_bpf::cty::c_int,
     >,
     pub ndo_set_config: ::core::option::Option<
@@ -18156,6 +18972,9 @@ pub struct net_device_ops {
     pub ndo_get_iflink: ::core::option::Option<
         unsafe extern "C" fn(arg1: *const net_device) -> ::aya_bpf::cty::c_int,
     >,
+    pub ndo_change_proto_down: ::core::option::Option<
+        unsafe extern "C" fn(arg1: *mut net_device, arg2: bool_) -> ::aya_bpf::cty::c_int,
+    >,
     pub ndo_fill_metadata_dst: ::core::option::Option<
         unsafe extern "C" fn(arg1: *mut net_device, arg2: *mut sk_buff) -> ::aya_bpf::cty::c_int,
     >,
@@ -18172,9 +18991,6 @@ pub struct net_device_ops {
             arg3: *mut *mut xdp_frame,
             arg4: u32_,
         ) -> ::aya_bpf::cty::c_int,
-    >,
-    pub ndo_xdp_get_xmit_slave: ::core::option::Option<
-        unsafe extern "C" fn(arg1: *mut net_device, arg2: *mut xdp_buff) -> *mut net_device,
     >,
     pub ndo_xsk_wakeup: ::core::option::Option<
         unsafe extern "C" fn(
@@ -18202,11 +19018,10 @@ pub struct net_device_ops {
     >,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct neigh_parms {
     pub net: possible_net_t,
     pub dev: *mut net_device,
-    pub dev_tracker: netdevice_tracker,
     pub list: list_head,
     pub neigh_setup:
         ::core::option::Option<unsafe extern "C" fn(arg1: *mut neighbour) -> ::aya_bpf::cty::c_int>,
@@ -18220,14 +19035,14 @@ pub struct neigh_parms {
     pub data_state: [::aya_bpf::cty::c_ulong; 1usize],
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct pcpu_lstats {
     pub packets: u64_stats_t,
     pub bytes: u64_stats_t,
     pub syncp: u64_stats_sync,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct pcpu_sw_netstats {
     pub rx_packets: u64_,
     pub rx_bytes: u64_,
@@ -18244,7 +19059,7 @@ pub type iw_handler = ::core::option::Option<
     ) -> ::aya_bpf::cty::c_int,
 >;
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct iw_handler_def {
     pub standard: *const iw_handler,
     pub num_standard: __u16,
@@ -18263,12 +19078,11 @@ pub mod ethtool_phys_id_state {
     pub const ETHTOOL_ID_OFF: Type = 3;
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct ethtool_ops {
     pub _bitfield_align_1: [u8; 0],
     pub _bitfield_1: __BindgenBitfieldUnit<[u8; 1usize]>,
     pub supported_coalesce_params: u32_,
-    pub supported_ring_params: u32_,
     pub get_drvinfo: ::core::option::Option<
         unsafe extern "C" fn(arg1: *mut net_device, arg2: *mut ethtool_drvinfo),
     >,
@@ -18325,32 +19139,21 @@ pub struct ethtool_ops {
         unsafe extern "C" fn(
             arg1: *mut net_device,
             arg2: *mut ethtool_coalesce,
-            arg3: *mut kernel_ethtool_coalesce,
-            arg4: *mut netlink_ext_ack,
         ) -> ::aya_bpf::cty::c_int,
     >,
     pub set_coalesce: ::core::option::Option<
         unsafe extern "C" fn(
             arg1: *mut net_device,
             arg2: *mut ethtool_coalesce,
-            arg3: *mut kernel_ethtool_coalesce,
-            arg4: *mut netlink_ext_ack,
         ) -> ::aya_bpf::cty::c_int,
     >,
     pub get_ringparam: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut net_device,
-            arg2: *mut ethtool_ringparam,
-            arg3: *mut kernel_ethtool_ringparam,
-            arg4: *mut netlink_ext_ack,
-        ),
+        unsafe extern "C" fn(arg1: *mut net_device, arg2: *mut ethtool_ringparam),
     >,
     pub set_ringparam: ::core::option::Option<
         unsafe extern "C" fn(
             arg1: *mut net_device,
             arg2: *mut ethtool_ringparam,
-            arg3: *mut kernel_ethtool_ringparam,
-            arg4: *mut netlink_ext_ack,
         ) -> ::aya_bpf::cty::c_int,
     >,
     pub get_pause_stats: ::core::option::Option<
@@ -18609,20 +19412,6 @@ pub struct ethtool_ops {
             arg3: *mut *const ethtool_rmon_hist_range,
         ),
     >,
-    pub get_module_power_mode: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut net_device,
-            arg2: *mut ethtool_module_power_mode_params,
-            arg3: *mut netlink_ext_ack,
-        ) -> ::aya_bpf::cty::c_int,
-    >,
-    pub set_module_power_mode: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut net_device,
-            arg2: *const ethtool_module_power_mode_params,
-            arg3: *mut netlink_ext_ack,
-        ) -> ::aya_bpf::cty::c_int,
-    >,
 }
 impl ethtool_ops {
     #[inline]
@@ -18648,7 +19437,7 @@ impl ethtool_ops {
     }
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct l3mdev_ops {
     pub l3mdev_fib_table:
         ::core::option::Option<unsafe extern "C" fn(arg1: *const net_device) -> u32_>,
@@ -18668,7 +19457,7 @@ pub struct l3mdev_ops {
     >,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct ndisc_ops {
     pub is_useropt:
         ::core::option::Option<unsafe extern "C" fn(arg1: u8_) -> ::aya_bpf::cty::c_int>,
@@ -18728,7 +19517,7 @@ pub mod tls_offload_ctx_dir {
     pub const TLS_OFFLOAD_CTX_DIR_TX: Type = 1;
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct tlsdev_ops {
     pub tls_dev_add: ::core::option::Option<
         unsafe extern "C" fn(
@@ -18757,7 +19546,7 @@ pub struct tlsdev_ops {
     >,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct ipv6_devstat {
     pub proc_dir_entry: *mut proc_dir_entry,
     pub ipv6: *mut ipstats_mib,
@@ -18768,7 +19557,6 @@ pub struct ipv6_devstat {
 #[derive(Copy, Clone)]
 pub struct inet6_dev {
     pub dev: *mut net_device,
-    pub dev_tracker: netdevice_tracker,
     pub addr_list: list_head,
     pub mc_list: *mut ifmcaddr6,
     pub mc_tomb: *mut ifmcaddr6,
@@ -18806,23 +19594,22 @@ pub struct inet6_dev {
     pub rs_probes: __u8,
     pub tstamp: ::aya_bpf::cty::c_ulong,
     pub rcu: callback_head,
-    pub ra_mtu: ::aya_bpf::cty::c_uint,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
+pub struct mini_Qdisc {
+    pub filter_list: *mut tcf_proto,
+    pub block: *mut tcf_block,
+    pub cpu_bstats: *mut gnet_stats_basic_cpu,
+    pub cpu_qstats: *mut gnet_stats_queue,
+    pub rcu: callback_head,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
 pub struct rtnl_link_ops {
     pub list: list_head,
     pub kind: *const ::aya_bpf::cty::c_char,
     pub priv_size: size_t,
-    pub alloc: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut *mut nlattr,
-            arg2: *const ::aya_bpf::cty::c_char,
-            arg3: ::aya_bpf::cty::c_uchar,
-            arg4: ::aya_bpf::cty::c_uint,
-            arg5: ::aya_bpf::cty::c_uint,
-        ) -> *mut net_device,
-    >,
     pub setup: ::core::option::Option<unsafe extern "C" fn(arg1: *mut net_device)>,
     pub netns_refund: bool_,
     pub maxtype: ::aya_bpf::cty::c_uint,
@@ -18900,13 +19687,13 @@ pub struct rtnl_link_ops {
     >,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct udp_tunnel_nic_table_info {
     pub n_entries: ::aya_bpf::cty::c_uint,
     pub tunnel_types: ::aya_bpf::cty::c_uint,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct udp_tunnel_nic_info {
     pub set_port: ::core::option::Option<
         unsafe extern "C" fn(
@@ -18935,16 +19722,435 @@ pub struct udp_tunnel_nic_info {
     pub tables: [udp_tunnel_nic_table_info; 4usize],
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
+pub struct tcmsg {
+    pub tcm_family: ::aya_bpf::cty::c_uchar,
+    pub tcm__pad1: ::aya_bpf::cty::c_uchar,
+    pub tcm__pad2: ::aya_bpf::cty::c_ushort,
+    pub tcm_ifindex: ::aya_bpf::cty::c_int,
+    pub tcm_handle: __u32,
+    pub tcm_parent: __u32,
+    pub tcm_info: __u32,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct gnet_stats_basic_cpu {
+    pub bstats: gnet_stats_basic_packed,
+    pub syncp: u64_stats_sync,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct gnet_dump {
+    pub lock: *mut spinlock_t,
+    pub skb: *mut sk_buff,
+    pub tail: *mut nlattr,
+    pub compat_tc_stats: ::aya_bpf::cty::c_int,
+    pub compat_xstats: ::aya_bpf::cty::c_int,
+    pub padattr: ::aya_bpf::cty::c_int,
+    pub xstats: *mut ::aya_bpf::cty::c_void,
+    pub xstats_len: ::aya_bpf::cty::c_int,
+    pub tc_stats: tc_stats,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
 pub struct netlink_range_validation {
     pub min: u64_,
     pub max: u64_,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct netlink_range_validation_signed {
     pub min: s64,
     pub max: s64,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct flow_block {
+    pub cb_list: list_head,
+}
+pub type flow_setup_cb_t = ::core::option::Option<
+    unsafe extern "C" fn(
+        arg1: tc_setup_type::Type,
+        arg2: *mut ::aya_bpf::cty::c_void,
+        arg3: *mut ::aya_bpf::cty::c_void,
+    ) -> ::aya_bpf::cty::c_int,
+>;
+#[repr(C)]
+pub struct qdisc_size_table {
+    pub rcu: callback_head,
+    pub list: list_head,
+    pub szopts: tc_sizespec,
+    pub refcnt: ::aya_bpf::cty::c_int,
+    pub data: __IncompleteArrayField<u16_>,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct Qdisc_ops {
+    pub next: *mut Qdisc_ops,
+    pub cl_ops: *const Qdisc_class_ops,
+    pub id: [::aya_bpf::cty::c_char; 16usize],
+    pub priv_size: ::aya_bpf::cty::c_int,
+    pub static_flags: ::aya_bpf::cty::c_uint,
+    pub enqueue: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut sk_buff,
+            arg2: *mut Qdisc,
+            arg3: *mut *mut sk_buff,
+        ) -> ::aya_bpf::cty::c_int,
+    >,
+    pub dequeue: ::core::option::Option<unsafe extern "C" fn(arg1: *mut Qdisc) -> *mut sk_buff>,
+    pub peek: ::core::option::Option<unsafe extern "C" fn(arg1: *mut Qdisc) -> *mut sk_buff>,
+    pub init: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut Qdisc,
+            arg2: *mut nlattr,
+            arg3: *mut netlink_ext_ack,
+        ) -> ::aya_bpf::cty::c_int,
+    >,
+    pub reset: ::core::option::Option<unsafe extern "C" fn(arg1: *mut Qdisc)>,
+    pub destroy: ::core::option::Option<unsafe extern "C" fn(arg1: *mut Qdisc)>,
+    pub change: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut Qdisc,
+            arg2: *mut nlattr,
+            arg3: *mut netlink_ext_ack,
+        ) -> ::aya_bpf::cty::c_int,
+    >,
+    pub attach: ::core::option::Option<unsafe extern "C" fn(arg1: *mut Qdisc)>,
+    pub change_tx_queue_len: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut Qdisc,
+            arg2: ::aya_bpf::cty::c_uint,
+        ) -> ::aya_bpf::cty::c_int,
+    >,
+    pub change_real_num_tx: ::core::option::Option<
+        unsafe extern "C" fn(arg1: *mut Qdisc, arg2: ::aya_bpf::cty::c_uint),
+    >,
+    pub dump: ::core::option::Option<
+        unsafe extern "C" fn(arg1: *mut Qdisc, arg2: *mut sk_buff) -> ::aya_bpf::cty::c_int,
+    >,
+    pub dump_stats: ::core::option::Option<
+        unsafe extern "C" fn(arg1: *mut Qdisc, arg2: *mut gnet_dump) -> ::aya_bpf::cty::c_int,
+    >,
+    pub ingress_block_set:
+        ::core::option::Option<unsafe extern "C" fn(arg1: *mut Qdisc, arg2: u32_)>,
+    pub egress_block_set:
+        ::core::option::Option<unsafe extern "C" fn(arg1: *mut Qdisc, arg2: u32_)>,
+    pub ingress_block_get: ::core::option::Option<unsafe extern "C" fn(arg1: *mut Qdisc) -> u32_>,
+    pub egress_block_get: ::core::option::Option<unsafe extern "C" fn(arg1: *mut Qdisc) -> u32_>,
+    pub owner: *mut module,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct Qdisc_class_ops {
+    pub flags: ::aya_bpf::cty::c_uint,
+    pub select_queue: ::core::option::Option<
+        unsafe extern "C" fn(arg1: *mut Qdisc, arg2: *mut tcmsg) -> *mut netdev_queue,
+    >,
+    pub graft: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut Qdisc,
+            arg2: ::aya_bpf::cty::c_ulong,
+            arg3: *mut Qdisc,
+            arg4: *mut *mut Qdisc,
+            arg5: *mut netlink_ext_ack,
+        ) -> ::aya_bpf::cty::c_int,
+    >,
+    pub leaf: ::core::option::Option<
+        unsafe extern "C" fn(arg1: *mut Qdisc, arg2: ::aya_bpf::cty::c_ulong) -> *mut Qdisc,
+    >,
+    pub qlen_notify: ::core::option::Option<
+        unsafe extern "C" fn(arg1: *mut Qdisc, arg2: ::aya_bpf::cty::c_ulong),
+    >,
+    pub find: ::core::option::Option<
+        unsafe extern "C" fn(arg1: *mut Qdisc, arg2: u32_) -> ::aya_bpf::cty::c_ulong,
+    >,
+    pub change: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut Qdisc,
+            arg2: u32_,
+            arg3: u32_,
+            arg4: *mut *mut nlattr,
+            arg5: *mut ::aya_bpf::cty::c_ulong,
+            arg6: *mut netlink_ext_ack,
+        ) -> ::aya_bpf::cty::c_int,
+    >,
+    pub delete: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut Qdisc,
+            arg2: ::aya_bpf::cty::c_ulong,
+            arg3: *mut netlink_ext_ack,
+        ) -> ::aya_bpf::cty::c_int,
+    >,
+    pub walk:
+        ::core::option::Option<unsafe extern "C" fn(arg1: *mut Qdisc, arg2: *mut qdisc_walker)>,
+    pub tcf_block: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut Qdisc,
+            arg2: ::aya_bpf::cty::c_ulong,
+            arg3: *mut netlink_ext_ack,
+        ) -> *mut tcf_block,
+    >,
+    pub bind_tcf: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut Qdisc,
+            arg2: ::aya_bpf::cty::c_ulong,
+            arg3: u32_,
+        ) -> ::aya_bpf::cty::c_ulong,
+    >,
+    pub unbind_tcf: ::core::option::Option<
+        unsafe extern "C" fn(arg1: *mut Qdisc, arg2: ::aya_bpf::cty::c_ulong),
+    >,
+    pub dump: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut Qdisc,
+            arg2: ::aya_bpf::cty::c_ulong,
+            arg3: *mut sk_buff,
+            arg4: *mut tcmsg,
+        ) -> ::aya_bpf::cty::c_int,
+    >,
+    pub dump_stats: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut Qdisc,
+            arg2: ::aya_bpf::cty::c_ulong,
+            arg3: *mut gnet_dump,
+        ) -> ::aya_bpf::cty::c_int,
+    >,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct tcf_block {
+    pub lock: mutex,
+    pub chain_list: list_head,
+    pub index: u32_,
+    pub classid: u32_,
+    pub refcnt: refcount_t,
+    pub net: *mut net,
+    pub q: *mut Qdisc,
+    pub cb_lock: rw_semaphore,
+    pub flow_block: flow_block,
+    pub owner_list: list_head,
+    pub keep_dst: bool_,
+    pub offloadcnt: atomic_t,
+    pub nooffloaddevcnt: ::aya_bpf::cty::c_uint,
+    pub lockeddevcnt: ::aya_bpf::cty::c_uint,
+    pub chain0: tcf_block__bindgen_ty_1,
+    pub rcu: callback_head,
+    pub proto_destroy_ht: [hlist_head; 128usize],
+    pub proto_destroy_lock: mutex,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct tcf_block__bindgen_ty_1 {
+    pub chain: *mut tcf_chain,
+    pub filter_chain_list: list_head,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct tcf_proto {
+    pub next: *mut tcf_proto,
+    pub root: *mut ::aya_bpf::cty::c_void,
+    pub classify: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut sk_buff,
+            arg2: *const tcf_proto,
+            arg3: *mut tcf_result,
+        ) -> ::aya_bpf::cty::c_int,
+    >,
+    pub protocol: __be16,
+    pub prio: u32_,
+    pub data: *mut ::aya_bpf::cty::c_void,
+    pub ops: *const tcf_proto_ops,
+    pub chain: *mut tcf_chain,
+    pub lock: spinlock_t,
+    pub deleting: bool_,
+    pub refcnt: refcount_t,
+    pub rcu: callback_head,
+    pub destroy_ht_node: hlist_node,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct tcf_result {
+    pub __bindgen_anon_1: tcf_result__bindgen_ty_1,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub union tcf_result__bindgen_ty_1 {
+    pub __bindgen_anon_1: tcf_result__bindgen_ty_1__bindgen_ty_1,
+    pub goto_tp: *const tcf_proto,
+    pub __bindgen_anon_2: tcf_result__bindgen_ty_1__bindgen_ty_2,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct tcf_result__bindgen_ty_1__bindgen_ty_1 {
+    pub class: ::aya_bpf::cty::c_ulong,
+    pub classid: u32_,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct tcf_result__bindgen_ty_1__bindgen_ty_2 {
+    pub ingress: bool_,
+    pub qstats: *mut gnet_stats_queue,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct tcf_proto_ops {
+    pub head: list_head,
+    pub kind: [::aya_bpf::cty::c_char; 16usize],
+    pub classify: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut sk_buff,
+            arg2: *const tcf_proto,
+            arg3: *mut tcf_result,
+        ) -> ::aya_bpf::cty::c_int,
+    >,
+    pub init:
+        ::core::option::Option<unsafe extern "C" fn(arg1: *mut tcf_proto) -> ::aya_bpf::cty::c_int>,
+    pub destroy: ::core::option::Option<
+        unsafe extern "C" fn(arg1: *mut tcf_proto, arg2: bool_, arg3: *mut netlink_ext_ack),
+    >,
+    pub get: ::core::option::Option<
+        unsafe extern "C" fn(arg1: *mut tcf_proto, arg2: u32_) -> *mut ::aya_bpf::cty::c_void,
+    >,
+    pub put: ::core::option::Option<
+        unsafe extern "C" fn(arg1: *mut tcf_proto, arg2: *mut ::aya_bpf::cty::c_void),
+    >,
+    pub change: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut net,
+            arg2: *mut sk_buff,
+            arg3: *mut tcf_proto,
+            arg4: ::aya_bpf::cty::c_ulong,
+            arg5: u32_,
+            arg6: *mut *mut nlattr,
+            arg7: *mut *mut ::aya_bpf::cty::c_void,
+            arg8: bool_,
+            arg9: bool_,
+            arg10: *mut netlink_ext_ack,
+        ) -> ::aya_bpf::cty::c_int,
+    >,
+    pub delete: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut tcf_proto,
+            arg2: *mut ::aya_bpf::cty::c_void,
+            arg3: *mut bool_,
+            arg4: bool_,
+            arg5: *mut netlink_ext_ack,
+        ) -> ::aya_bpf::cty::c_int,
+    >,
+    pub delete_empty: ::core::option::Option<unsafe extern "C" fn(arg1: *mut tcf_proto) -> bool_>,
+    pub walk: ::core::option::Option<
+        unsafe extern "C" fn(arg1: *mut tcf_proto, arg2: *mut tcf_walker, arg3: bool_),
+    >,
+    pub reoffload: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut tcf_proto,
+            arg2: bool_,
+            arg3: flow_setup_cb_t,
+            arg4: *mut ::aya_bpf::cty::c_void,
+            arg5: *mut netlink_ext_ack,
+        ) -> ::aya_bpf::cty::c_int,
+    >,
+    pub hw_add: ::core::option::Option<
+        unsafe extern "C" fn(arg1: *mut tcf_proto, arg2: *mut ::aya_bpf::cty::c_void),
+    >,
+    pub hw_del: ::core::option::Option<
+        unsafe extern "C" fn(arg1: *mut tcf_proto, arg2: *mut ::aya_bpf::cty::c_void),
+    >,
+    pub bind_class: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut ::aya_bpf::cty::c_void,
+            arg2: u32_,
+            arg3: ::aya_bpf::cty::c_ulong,
+            arg4: *mut ::aya_bpf::cty::c_void,
+            arg5: ::aya_bpf::cty::c_ulong,
+        ),
+    >,
+    pub tmplt_create: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut net,
+            arg2: *mut tcf_chain,
+            arg3: *mut *mut nlattr,
+            arg4: *mut netlink_ext_ack,
+        ) -> *mut ::aya_bpf::cty::c_void,
+    >,
+    pub tmplt_destroy:
+        ::core::option::Option<unsafe extern "C" fn(arg1: *mut ::aya_bpf::cty::c_void)>,
+    pub dump: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut net,
+            arg2: *mut tcf_proto,
+            arg3: *mut ::aya_bpf::cty::c_void,
+            arg4: *mut sk_buff,
+            arg5: *mut tcmsg,
+            arg6: bool_,
+        ) -> ::aya_bpf::cty::c_int,
+    >,
+    pub terse_dump: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut net,
+            arg2: *mut tcf_proto,
+            arg3: *mut ::aya_bpf::cty::c_void,
+            arg4: *mut sk_buff,
+            arg5: *mut tcmsg,
+            arg6: bool_,
+        ) -> ::aya_bpf::cty::c_int,
+    >,
+    pub tmplt_dump: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut sk_buff,
+            arg2: *mut net,
+            arg3: *mut ::aya_bpf::cty::c_void,
+        ) -> ::aya_bpf::cty::c_int,
+    >,
+    pub owner: *mut module,
+    pub flags: ::aya_bpf::cty::c_int,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct tcf_chain {
+    pub filter_chain_lock: mutex,
+    pub filter_chain: *mut tcf_proto,
+    pub list: list_head,
+    pub block: *mut tcf_block,
+    pub index: u32_,
+    pub refcnt: ::aya_bpf::cty::c_uint,
+    pub action_refcnt: ::aya_bpf::cty::c_uint,
+    pub explicitly_created: bool_,
+    pub flushing: bool_,
+    pub tmplt_ops: *const tcf_proto_ops,
+    pub tmplt_priv: *mut ::aya_bpf::cty::c_void,
+    pub rcu: callback_head,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct sock_fprog_kern {
+    pub len: u16_,
+    pub filter: *mut sock_filter,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct bpf_prog_stats {
+    pub cnt: u64_,
+    pub nsecs: u64_,
+    pub misses: u64_,
+    pub syncp: u64_stats_sync,
+    pub _bitfield_align_1: [u8; 0],
+    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 8usize]>,
+}
+impl bpf_prog_stats {
+    #[inline]
+    pub fn new_bitfield_1() -> __BindgenBitfieldUnit<[u8; 8usize]> {
+        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 8usize]> = Default::default();
+        __bindgen_bitfield_unit
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct sk_filter {
+    pub refcnt: refcount_t,
+    pub rcu: callback_head,
+    pub prog: *mut bpf_prog,
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
@@ -18985,13 +20191,11 @@ pub struct neigh_table {
     pub gc_thresh3: ::aya_bpf::cty::c_int,
     pub last_flush: ::aya_bpf::cty::c_ulong,
     pub gc_work: delayed_work,
-    pub managed_work: delayed_work,
     pub proxy_timer: timer_list,
     pub proxy_queue: sk_buff_head,
     pub entries: atomic_t,
     pub gc_entries: atomic_t,
     pub gc_list: list_head,
-    pub managed_list: list_head,
     pub lock: rwlock_t,
     pub last_rand: ::aya_bpf::cty::c_ulong,
     pub stats: *mut neigh_statistics,
@@ -18999,7 +20203,7 @@ pub struct neigh_table {
     pub phash_buckets: *mut *mut pneigh_entry,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct neigh_statistics {
     pub allocs: ::aya_bpf::cty::c_ulong,
     pub destroys: ::aya_bpf::cty::c_ulong,
@@ -19015,7 +20219,7 @@ pub struct neigh_statistics {
     pub table_fulls: ::aya_bpf::cty::c_ulong,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct neigh_ops {
     pub family: ::aya_bpf::cty::c_int,
     pub solicit:
@@ -19030,18 +20234,16 @@ pub struct neigh_ops {
     >,
 }
 #[repr(C)]
-#[derive(Debug)]
 pub struct pneigh_entry {
     pub next: *mut pneigh_entry,
     pub net: possible_net_t,
     pub dev: *mut net_device,
-    pub dev_tracker: netdevice_tracker,
-    pub flags: u32_,
+    pub flags: u8_,
     pub protocol: u8_,
     pub key: __IncompleteArrayField<u8_>,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct neigh_hash_table {
     pub hash_buckets: *mut *mut neighbour,
     pub hash_shift: ::aya_bpf::cty::c_uint,
@@ -19049,7 +20251,7 @@ pub struct neigh_hash_table {
     pub rcu: callback_head,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct fib_rule_hdr {
     pub family: __u8,
     pub dst_len: __u8,
@@ -19062,19 +20264,19 @@ pub struct fib_rule_hdr {
     pub flags: __u32,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct fib_rule_port_range {
     pub start: __u16,
     pub end: __u16,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct fib_kuid_range {
     pub start: kuid_t,
     pub end: kuid_t,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct fib_rule {
     pub list: list_head,
     pub iifindex: ::aya_bpf::cty::c_int,
@@ -19103,7 +20305,7 @@ pub struct fib_rule {
     pub rcu: callback_head,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct fib_lookup_arg {
     pub lookup_ptr: *mut ::aya_bpf::cty::c_void,
     pub lookup_data: *const ::aya_bpf::cty::c_void,
@@ -19113,7 +20315,7 @@ pub struct fib_lookup_arg {
     pub flags: ::aya_bpf::cty::c_int,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct smc_hashinfo {
     _unused: [u8; 0],
 }
@@ -19243,7 +20445,6 @@ pub struct proto {
             arg2: ::aya_bpf::cty::c_ushort,
         ) -> ::aya_bpf::cty::c_int,
     >,
-    pub put_port: ::core::option::Option<unsafe extern "C" fn(arg1: *mut sock)>,
     pub psock_update_sk_prot: ::core::option::Option<
         unsafe extern "C" fn(
             arg1: *mut sock,
@@ -19252,12 +20453,11 @@ pub struct proto {
         ) -> ::aya_bpf::cty::c_int,
     >,
     pub inuse_idx: ::aya_bpf::cty::c_uint,
-    pub forward_alloc_get:
-        ::core::option::Option<unsafe extern "C" fn(arg1: *const sock) -> ::aya_bpf::cty::c_int>,
     pub stream_memory_free: ::core::option::Option<
         unsafe extern "C" fn(arg1: *const sock, arg2: ::aya_bpf::cty::c_int) -> bool_,
     >,
-    pub sock_is_readable: ::core::option::Option<unsafe extern "C" fn(arg1: *mut sock) -> bool_>,
+    pub stream_memory_read:
+        ::core::option::Option<unsafe extern "C" fn(arg1: *const sock) -> bool_>,
     pub enter_memory_pressure: ::core::option::Option<unsafe extern "C" fn(arg1: *mut sock)>,
     pub leave_memory_pressure: ::core::option::Option<unsafe extern "C" fn(arg1: *mut sock)>,
     pub memory_allocated: *mut atomic_long_t,
@@ -19295,7 +20495,7 @@ pub union proto__bindgen_ty_1 {
     pub smc_hash: *mut smc_hashinfo,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct request_sock_ops {
     pub family: ::aya_bpf::cty::c_int,
     pub obj_size: ::aya_bpf::cty::c_uint,
@@ -19313,7 +20513,7 @@ pub struct request_sock_ops {
     pub syn_ack_timeout: ::core::option::Option<unsafe extern "C" fn(arg1: *const request_sock)>,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct timewait_sock_ops {
     pub twsk_slab: *mut kmem_cache,
     pub twsk_slab_name: *mut ::aya_bpf::cty::c_char,
@@ -19381,7 +20581,6 @@ impl request_sock {
     }
 }
 #[repr(C)]
-#[derive(Debug)]
 pub struct saved_syn {
     pub mac_hdrlen: u32_,
     pub network_hdrlen: u32_,
@@ -19432,13 +20631,13 @@ pub struct ifacaddr6 {
     pub rcu: callback_head,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct nd_opt_hdr {
     pub nd_opt_type: __u8,
     pub nd_opt_len: __u8,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct ndisc_options {
     pub nd_opt_array: [*mut nd_opt_hdr; 15usize],
     pub nd_opts_ri: *mut nd_opt_hdr,
@@ -19517,7 +20716,7 @@ impl prefix_info {
     }
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct io_bitmap {
     pub sequence: u64_,
     pub refcnt: refcount_t,
@@ -19538,7 +20737,7 @@ pub type irq_handler_t = ::core::option::Option<
     ) -> irqreturn_t,
 >;
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct irqaction {
     pub handler: irq_handler_t,
     pub dev_id: *mut ::aya_bpf::cty::c_void,
@@ -19564,7 +20763,7 @@ impl irqaction {
     }
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct irq_affinity_notify {
     pub irq: ::aya_bpf::cty::c_uint,
     pub kref: kref,
@@ -19575,7 +20774,7 @@ pub struct irq_affinity_notify {
     pub release: ::core::option::Option<unsafe extern "C" fn(arg1: *mut kref)>,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct irq_affinity_desc {
     pub mask: cpumask,
     pub _bitfield_align_1: [u8; 0],
@@ -19613,100 +20812,9 @@ pub mod irqchip_irq_state {
     pub const IRQCHIP_STATE_MASKED: Type = 2;
     pub const IRQCHIP_STATE_LINE_LEVEL: Type = 3;
 }
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct device_attribute {
-    pub attr: attribute,
-    pub show: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut device,
-            arg2: *mut device_attribute,
-            arg3: *mut ::aya_bpf::cty::c_char,
-        ) -> ssize_t,
-    >,
-    pub store: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut device,
-            arg2: *mut device_attribute,
-            arg3: *const ::aya_bpf::cty::c_char,
-            arg4: size_t,
-        ) -> ssize_t,
-    >,
-}
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct msi_device_data {
-    pub properties: ::aya_bpf::cty::c_ulong,
-    pub platform_data: *mut platform_msi_priv_data,
-    pub mutex: mutex,
-    pub __store: xarray,
-    pub __iter_idx: ::aya_bpf::cty::c_ulong,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct blkg_iostat {
-    pub bytes: [u64_; 3usize],
-    pub ios: [u64_; 3usize],
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct blkg_iostat_set {
-    pub sync: u64_stats_sync,
-    pub cur: blkg_iostat,
-    pub last: blkg_iostat,
-}
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct blkcg_gq {
-    pub q: *mut request_queue,
-    pub q_node: list_head,
-    pub blkcg_node: hlist_node,
-    pub blkcg: *mut blkcg,
-    pub parent: *mut blkcg_gq,
-    pub refcnt: percpu_ref,
-    pub online: bool_,
-    pub iostat_cpu: *mut blkg_iostat_set,
-    pub iostat: blkg_iostat_set,
-    pub pd: [*mut blkg_policy_data; 6usize],
-    pub async_bio_lock: spinlock_t,
-    pub async_bios: bio_list,
-    pub async_bio_work: work_struct,
-    pub use_delay: atomic_t,
-    pub delay_nsec: atomic64_t,
-    pub delay_start: atomic64_t,
-    pub last_delay: u64_,
-    pub last_use: ::aya_bpf::cty::c_int,
-    pub callback_head: callback_head,
-}
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct blkcg {
-    pub css: cgroup_subsys_state,
-    pub lock: spinlock_t,
-    pub online_pin: refcount_t,
-    pub blkg_tree: xarray,
-    pub blkg_hint: *mut blkcg_gq,
-    pub blkg_list: hlist_head,
-    pub cpd: [*mut blkcg_policy_data; 6usize],
-    pub all_blkcgs_node: list_head,
-    pub fc_app_id: [::aya_bpf::cty::c_char; 129usize],
-    pub cgwb_list: list_head,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct blkcg_policy_data {
-    pub blkcg: *mut blkcg,
-    pub plid: ::aya_bpf::cty::c_int,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct blkg_policy_data {
-    pub blkg: *mut blkcg_gq,
-    pub plid: ::aya_bpf::cty::c_int,
-}
 pub type irq_flow_handler_t = ::core::option::Option<unsafe extern "C" fn(arg1: *mut irq_desc)>;
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct irq_common_data {
     pub state_use_accessors: ::aya_bpf::cty::c_uint,
     pub node: ::aya_bpf::cty::c_uint,
@@ -19716,7 +20824,7 @@ pub struct irq_common_data {
     pub effective_affinity: cpumask_var_t,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct irq_data {
     pub mask: u32_,
     pub irq: ::aya_bpf::cty::c_uint,
@@ -19766,14 +20874,7 @@ pub struct irq_desc {
     pub owner: *mut module,
     pub name: *const ::aya_bpf::cty::c_char,
     pub _bitfield_align_1: [u8; 0],
-    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 8usize]>,
-}
-impl irq_desc {
-    #[inline]
-    pub fn new_bitfield_1() -> __BindgenBitfieldUnit<[u8; 8usize]> {
-        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 8usize]> = Default::default();
-        __bindgen_bitfield_unit
-    }
+    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 40usize]>,
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
@@ -19788,7 +20889,7 @@ pub union x86_msi_addr_lo__bindgen_ty_1 {
 }
 #[repr(C)]
 #[repr(align(4))]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct x86_msi_addr_lo__bindgen_ty_1__bindgen_ty_1 {
     pub _bitfield_align_1: [u16; 0],
     pub _bitfield_1: __BindgenBitfieldUnit<[u8; 4usize]>,
@@ -19915,7 +21016,7 @@ impl x86_msi_addr_lo__bindgen_ty_1__bindgen_ty_1 {
 }
 #[repr(C)]
 #[repr(align(4))]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct x86_msi_addr_lo__bindgen_ty_1__bindgen_ty_2 {
     pub _bitfield_align_1: [u16; 0],
     pub _bitfield_1: __BindgenBitfieldUnit<[u8; 4usize]>,
@@ -20027,7 +21128,7 @@ impl x86_msi_addr_lo__bindgen_ty_1__bindgen_ty_2 {
 pub type arch_msi_msg_addr_lo_t = x86_msi_addr_lo;
 #[repr(C)]
 #[repr(align(4))]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct x86_msi_addr_hi {
     pub _bitfield_align_1: [u32; 0],
     pub _bitfield_1: __BindgenBitfieldUnit<[u8; 4usize]>,
@@ -20074,7 +21175,7 @@ impl x86_msi_addr_hi {
 }
 pub type arch_msi_msg_addr_hi_t = x86_msi_addr_hi;
 #[repr(C, packed)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct x86_msi_data {
     pub _bitfield_align_1: [u8; 0],
     pub _bitfield_1: __BindgenBitfieldUnit<[u8; 2usize]>,
@@ -20212,25 +21313,60 @@ pub union msi_msg__bindgen_ty_3 {
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
-pub struct pci_msi_desc {
-    pub __bindgen_anon_1: pci_msi_desc__bindgen_ty_1,
-    pub msi_attrib: pci_msi_desc__bindgen_ty_2,
-    pub __bindgen_anon_2: pci_msi_desc__bindgen_ty_3,
+pub struct platform_msi_desc {
+    pub msi_priv_data: *mut platform_msi_priv_data,
+    pub msi_index: u16_,
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
-pub union pci_msi_desc__bindgen_ty_1 {
-    pub msi_mask: u32_,
-    pub msix_ctrl: u32_,
+pub struct fsl_mc_msi_desc {
+    pub msi_index: u16_,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct pci_msi_desc__bindgen_ty_2 {
+#[derive(Copy, Clone)]
+pub struct ti_sci_inta_msi_desc {
+    pub dev_index: u16_,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct msi_desc {
+    pub list: list_head,
+    pub irq: ::aya_bpf::cty::c_uint,
+    pub nvec_used: ::aya_bpf::cty::c_uint,
+    pub dev: *mut device,
+    pub msg: msi_msg,
+    pub affinity: *mut irq_affinity_desc,
+    pub iommu_cookie: *const ::aya_bpf::cty::c_void,
+    pub write_msi_msg: ::core::option::Option<
+        unsafe extern "C" fn(arg1: *mut msi_desc, arg2: *mut ::aya_bpf::cty::c_void),
+    >,
+    pub write_msi_msg_data: *mut ::aya_bpf::cty::c_void,
+    pub __bindgen_anon_1: msi_desc__bindgen_ty_1,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub union msi_desc__bindgen_ty_1 {
+    pub __bindgen_anon_1: msi_desc__bindgen_ty_1__bindgen_ty_1,
+    pub platform: platform_msi_desc,
+    pub fsl_mc: fsl_mc_msi_desc,
+    pub inta: ti_sci_inta_msi_desc,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct msi_desc__bindgen_ty_1__bindgen_ty_1 {
+    pub masked: u32_,
+    pub msi_attrib: msi_desc__bindgen_ty_1__bindgen_ty_1__bindgen_ty_1,
+    pub __bindgen_anon_1: msi_desc__bindgen_ty_1__bindgen_ty_1__bindgen_ty_2,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct msi_desc__bindgen_ty_1__bindgen_ty_1__bindgen_ty_1 {
     pub _bitfield_align_1: [u8; 0],
     pub _bitfield_1: __BindgenBitfieldUnit<[u8; 2usize]>,
+    pub entry_nr: u16_,
     pub default_irq: ::aya_bpf::cty::c_uint,
 }
-impl pci_msi_desc__bindgen_ty_2 {
+impl msi_desc__bindgen_ty_1__bindgen_ty_1__bindgen_ty_1 {
     #[inline]
     pub fn is_msix(&self) -> u8_ {
         unsafe { ::core::mem::transmute(self._bitfield_1.get(0usize, 1u8) as u8) }
@@ -20265,11 +21401,11 @@ impl pci_msi_desc__bindgen_ty_2 {
         }
     }
     #[inline]
-    pub fn can_mask(&self) -> u8_ {
+    pub fn maskbit(&self) -> u8_ {
         unsafe { ::core::mem::transmute(self._bitfield_1.get(7usize, 1u8) as u8) }
     }
     #[inline]
-    pub fn set_can_mask(&mut self, val: u8_) {
+    pub fn set_maskbit(&mut self, val: u8_) {
         unsafe {
             let val: u8 = ::core::mem::transmute(val);
             self._bitfield_1.set(7usize, 1u8, val as u64)
@@ -20302,7 +21438,7 @@ impl pci_msi_desc__bindgen_ty_2 {
         is_msix: u8_,
         multiple: u8_,
         multi_cap: u8_,
-        can_mask: u8_,
+        maskbit: u8_,
         is_64: u8_,
         is_virtual: u8_,
     ) -> __BindgenBitfieldUnit<[u8; 2usize]> {
@@ -20320,8 +21456,8 @@ impl pci_msi_desc__bindgen_ty_2 {
             multi_cap as u64
         });
         __bindgen_bitfield_unit.set(7usize, 1u8, {
-            let can_mask: u8 = unsafe { ::core::mem::transmute(can_mask) };
-            can_mask as u64
+            let maskbit: u8 = unsafe { ::core::mem::transmute(maskbit) };
+            maskbit as u64
         });
         __bindgen_bitfield_unit.set(8usize, 1u8, {
             let is_64: u8 = unsafe { ::core::mem::transmute(is_64) };
@@ -20336,29 +21472,12 @@ impl pci_msi_desc__bindgen_ty_2 {
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
-pub union pci_msi_desc__bindgen_ty_3 {
+pub union msi_desc__bindgen_ty_1__bindgen_ty_1__bindgen_ty_2 {
     pub mask_pos: u8_,
     pub mask_base: *mut ::aya_bpf::cty::c_void,
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
-pub struct msi_desc {
-    pub irq: ::aya_bpf::cty::c_uint,
-    pub nvec_used: ::aya_bpf::cty::c_uint,
-    pub dev: *mut device,
-    pub msg: msi_msg,
-    pub affinity: *mut irq_affinity_desc,
-    pub iommu_cookie: *const ::aya_bpf::cty::c_void,
-    pub sysfs_attrs: *mut device_attribute,
-    pub write_msi_msg: ::core::option::Option<
-        unsafe extern "C" fn(arg1: *mut msi_desc, arg2: *mut ::aya_bpf::cty::c_void),
-    >,
-    pub write_msi_msg_data: *mut ::aya_bpf::cty::c_void,
-    pub msi_index: u16_,
-    pub pci: pci_msi_desc,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
 pub struct irq_chip {
     pub parent_device: *mut device,
     pub name: *const ::aya_bpf::cty::c_char,
@@ -20395,6 +21514,8 @@ pub struct irq_chip {
     >,
     pub irq_bus_lock: ::core::option::Option<unsafe extern "C" fn(arg1: *mut irq_data)>,
     pub irq_bus_sync_unlock: ::core::option::Option<unsafe extern "C" fn(arg1: *mut irq_data)>,
+    pub irq_cpu_online: ::core::option::Option<unsafe extern "C" fn(arg1: *mut irq_data)>,
+    pub irq_cpu_offline: ::core::option::Option<unsafe extern "C" fn(arg1: *mut irq_data)>,
     pub irq_suspend: ::core::option::Option<unsafe extern "C" fn(arg1: *mut irq_data)>,
     pub irq_resume: ::core::option::Option<unsafe extern "C" fn(arg1: *mut irq_data)>,
     pub irq_pm_shutdown: ::core::option::Option<unsafe extern "C" fn(arg1: *mut irq_data)>,
@@ -20439,7 +21560,7 @@ pub struct irq_chip {
     pub flags: ::aya_bpf::cty::c_ulong,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct irq_chip_regs {
     pub enable: ::aya_bpf::cty::c_ulong,
     pub disable: ::aya_bpf::cty::c_ulong,
@@ -20450,7 +21571,7 @@ pub struct irq_chip_regs {
     pub polarity: ::aya_bpf::cty::c_ulong,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct irq_chip_type {
     pub chip: irq_chip,
     pub regs: irq_chip_regs,
@@ -20493,7 +21614,6 @@ pub mod irq_gc_flags {
     pub const IRQ_GC_BE_IO: Type = 16;
 }
 #[repr(C)]
-#[derive(Debug)]
 pub struct irq_domain_chip_generic {
     pub irqs_per_chip: ::aya_bpf::cty::c_uint,
     pub num_chips: ::aya_bpf::cty::c_uint,
@@ -20503,7 +21623,7 @@ pub struct irq_domain_chip_generic {
     pub gc: __IncompleteArrayField<*mut irq_chip_generic>,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct vm_special_mapping {
     pub name: *const ::aya_bpf::cty::c_char,
     pub pages: *mut *mut page,
@@ -20522,13 +21642,13 @@ pub struct vm_special_mapping {
     >,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct timens_offsets {
     pub monotonic: timespec64,
     pub boottime: timespec64,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct time_namespace {
     pub user_ns: *mut user_namespace,
     pub ucounts: *mut ucounts,
@@ -20575,7 +21695,7 @@ pub union perf_event_mmap_page__bindgen_ty_1 {
 }
 #[repr(C)]
 #[repr(align(8))]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct perf_event_mmap_page__bindgen_ty_1__bindgen_ty_1 {
     pub _bitfield_align_1: [u64; 0],
     pub _bitfield_1: __BindgenBitfieldUnit<[u8; 8usize]>,
@@ -20701,10 +21821,15 @@ impl perf_event_mmap_page__bindgen_ty_1__bindgen_ty_1 {
         __bindgen_bitfield_unit
     }
 }
-pub type smp_call_func_t =
-    ::core::option::Option<unsafe extern "C" fn(arg1: *mut ::aya_bpf::cty::c_void)>;
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
+pub struct ldt_struct {
+    pub entries: *mut desc_struct,
+    pub nr_entries: ::aya_bpf::cty::c_uint,
+    pub slot: ::aya_bpf::cty::c_int,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
 pub struct plist_head {
     pub node_list: list_head,
 }
@@ -20715,7 +21840,7 @@ pub mod pm_qos_type {
     pub const PM_QOS_MIN: Type = 2;
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct pm_qos_constraints {
     pub list: plist_head,
     pub target_value: s32,
@@ -20733,7 +21858,7 @@ pub struct freq_constraints {
     pub max_freq_notifiers: blocking_notifier_head,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct pm_qos_flags {
     pub list: list_head,
     pub effective_flags: s32,
@@ -20750,7 +21875,7 @@ pub struct dev_pm_qos {
     pub flags_req: *mut dev_pm_qos_request,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct pm_qos_flags_request {
     pub node: list_head,
     pub flags: s32,
@@ -20761,7 +21886,7 @@ pub mod freq_qos_req_type {
     pub const FREQ_QOS_MAX: Type = 2;
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct freq_qos_request {
     pub type_: freq_qos_req_type::Type,
     pub pnode: plist_node,
@@ -20791,33 +21916,10 @@ pub union dev_pm_qos_request__bindgen_ty_1 {
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
-pub struct io_tlb_mem {
-    pub start: phys_addr_t,
-    pub end: phys_addr_t,
-    pub vaddr: *mut ::aya_bpf::cty::c_void,
-    pub nslabs: ::aya_bpf::cty::c_ulong,
-    pub used: ::aya_bpf::cty::c_ulong,
-    pub index: ::aya_bpf::cty::c_uint,
-    pub lock: spinlock_t,
-    pub debugfs: *mut dentry,
-    pub late_alloc: bool_,
-    pub force_bounce: bool_,
-    pub for_alloc: bool_,
-    pub slots: *mut io_tlb_slot,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
 pub struct sg_table {
     pub sgl: *mut scatterlist,
     pub nents: ::aya_bpf::cty::c_uint,
     pub orig_nents: ::aya_bpf::cty::c_uint,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct io_tlb_slot {
-    pub orig_addr: phys_addr_t,
-    pub alloc_size: size_t,
-    pub list: ::aya_bpf::cty::c_uint,
 }
 pub mod irq_alloc_type {
     pub type Type = ::aya_bpf::cty::c_uint;
@@ -20830,7 +21932,7 @@ pub mod irq_alloc_type {
     pub const X86_IRQ_ALLOC_TYPE_UV: Type = 7;
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct ioapic_alloc_info {
     pub pin: ::aya_bpf::cty::c_int,
     pub node: ::aya_bpf::cty::c_int,
@@ -20895,7 +21997,7 @@ impl ioapic_alloc_info {
     }
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct uv_alloc_info {
     pub limit: ::aya_bpf::cty::c_int,
     pub blade: ::aya_bpf::cty::c_int,
@@ -20921,14 +22023,15 @@ pub union irq_alloc_info__bindgen_ty_1 {
     pub uv: uv_alloc_info,
 }
 pub type msi_alloc_info_t = irq_alloc_info;
+pub type compat_size_t = u32_;
 pub type compat_int_t = s32;
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct __kernel_fsid_t {
     pub val: [::aya_bpf::cty::c_int; 2usize],
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct kstatfs {
     pub f_type: ::aya_bpf::cty::c_long,
     pub f_bsize: ::aya_bpf::cty::c_long,
@@ -20943,6 +22046,31 @@ pub struct kstatfs {
     pub f_flags: ::aya_bpf::cty::c_long,
     pub f_spare: [::aya_bpf::cty::c_long; 4usize],
 }
+pub mod ip_conntrack_dir {
+    pub type Type = ::aya_bpf::cty::c_uint;
+    pub const IP_CT_DIR_ORIGINAL: Type = 0;
+    pub const IP_CT_DIR_REPLY: Type = 1;
+    pub const IP_CT_DIR_MAX: Type = 2;
+}
+pub mod sctp_conntrack {
+    pub type Type = ::aya_bpf::cty::c_uint;
+    pub const SCTP_CONNTRACK_NONE: Type = 0;
+    pub const SCTP_CONNTRACK_CLOSED: Type = 1;
+    pub const SCTP_CONNTRACK_COOKIE_WAIT: Type = 2;
+    pub const SCTP_CONNTRACK_COOKIE_ECHOED: Type = 3;
+    pub const SCTP_CONNTRACK_ESTABLISHED: Type = 4;
+    pub const SCTP_CONNTRACK_SHUTDOWN_SENT: Type = 5;
+    pub const SCTP_CONNTRACK_SHUTDOWN_RECD: Type = 6;
+    pub const SCTP_CONNTRACK_SHUTDOWN_ACK_SENT: Type = 7;
+    pub const SCTP_CONNTRACK_HEARTBEAT_SENT: Type = 8;
+    pub const SCTP_CONNTRACK_HEARTBEAT_ACKED: Type = 9;
+    pub const SCTP_CONNTRACK_MAX: Type = 10;
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct iopf_device_param {
+    _unused: [u8; 0],
+}
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct dev_iommu {
@@ -20954,14 +22082,14 @@ pub struct dev_iommu {
     pub priv_: *mut ::aya_bpf::cty::c_void,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct of_phandle_args {
     pub np: *mut device_node,
     pub args_count: ::aya_bpf::cty::c_int,
     pub args: [u32; 16usize],
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct iommu_fault_unrecoverable {
     pub reason: __u32,
     pub flags: __u32,
@@ -20971,7 +22099,7 @@ pub struct iommu_fault_unrecoverable {
     pub fetch_addr: __u64,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct iommu_fault_page_request {
     pub flags: __u32,
     pub pasid: __u32,
@@ -20995,7 +22123,7 @@ pub union iommu_fault__bindgen_ty_1 {
     pub padding2: [__u8; 56usize],
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct iommu_page_response {
     pub argsz: __u32,
     pub version: __u32,
@@ -21005,7 +22133,7 @@ pub struct iommu_page_response {
     pub code: __u32,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct iommu_inv_addr_info {
     pub flags: __u32,
     pub archid: __u32,
@@ -21015,7 +22143,7 @@ pub struct iommu_inv_addr_info {
     pub nb_granules: __u64,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct iommu_inv_pasid_info {
     pub flags: __u32,
     pub archid: __u32,
@@ -21038,7 +22166,7 @@ pub union iommu_cache_invalidate_info__bindgen_ty_1 {
     pub addr_info: iommu_inv_addr_info,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct iommu_gpasid_bind_data_vtd {
     pub flags: __u64,
     pub pat: __u32,
@@ -21073,14 +22201,14 @@ pub type iommu_fault_handler_t = ::core::option::Option<
     ) -> ::aya_bpf::cty::c_int,
 >;
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct iommu_domain_geometry {
     pub aperture_start: dma_addr_t,
     pub aperture_end: dma_addr_t,
     pub force_aperture: bool_,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct iommu_domain {
     pub type_: ::aya_bpf::cty::c_uint,
     pub ops: *const iommu_ops,
@@ -21088,7 +22216,7 @@ pub struct iommu_domain {
     pub handler: iommu_fault_handler_t,
     pub handler_token: *mut ::aya_bpf::cty::c_void,
     pub geometry: iommu_domain_geometry,
-    pub iova_cookie: *mut iommu_dma_cookie,
+    pub iova_cookie: *mut ::aya_bpf::cty::c_void,
 }
 pub type iommu_dev_fault_handler_t = ::core::option::Option<
     unsafe extern "C" fn(
@@ -21105,7 +22233,7 @@ pub mod iommu_resv_type {
     pub const IOMMU_RESV_SW_MSI: Type = 4;
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct iommu_resv_region {
     pub list: list_head,
     pub start: phys_addr_t,
@@ -21114,16 +22242,15 @@ pub struct iommu_resv_region {
     pub type_: iommu_resv_type::Type,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct iommu_iotlb_gather {
     pub start: ::aya_bpf::cty::c_ulong,
     pub end: ::aya_bpf::cty::c_ulong,
     pub pgsize: size_t,
-    pub freelist: list_head,
-    pub queued: bool_,
+    pub freelist: *mut page,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct iommu_device {
     pub list: list_head,
     pub ops: *const iommu_ops,
@@ -21131,7 +22258,7 @@ pub struct iommu_device {
     pub dev: *mut device,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct iommu_sva {
     pub dev: *mut device,
 }
@@ -21150,7 +22277,6 @@ pub struct iommu_fault_param {
     pub lock: mutex,
 }
 #[repr(C)]
-#[derive(Debug)]
 pub struct iommu_fwspec {
     pub ops: *const iommu_ops,
     pub iommu_fwnode: *mut fwnode_handle,
@@ -21159,101 +22285,11 @@ pub struct iommu_fwspec {
     pub ids: __IncompleteArrayField<u32_>,
 }
 pub type cycles_t = ::aya_bpf::cty::c_ulonglong;
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct bpf_run_ctx {}
-pub mod bpf_arg_type {
-    pub type Type = ::aya_bpf::cty::c_uint;
-    pub const ARG_DONTCARE: Type = 0;
-    pub const ARG_CONST_MAP_PTR: Type = 1;
-    pub const ARG_PTR_TO_MAP_KEY: Type = 2;
-    pub const ARG_PTR_TO_MAP_VALUE: Type = 3;
-    pub const ARG_PTR_TO_UNINIT_MAP_VALUE: Type = 4;
-    pub const ARG_PTR_TO_MEM: Type = 5;
-    pub const ARG_PTR_TO_UNINIT_MEM: Type = 6;
-    pub const ARG_CONST_SIZE: Type = 7;
-    pub const ARG_CONST_SIZE_OR_ZERO: Type = 8;
-    pub const ARG_PTR_TO_CTX: Type = 9;
-    pub const ARG_ANYTHING: Type = 10;
-    pub const ARG_PTR_TO_SPIN_LOCK: Type = 11;
-    pub const ARG_PTR_TO_SOCK_COMMON: Type = 12;
-    pub const ARG_PTR_TO_INT: Type = 13;
-    pub const ARG_PTR_TO_LONG: Type = 14;
-    pub const ARG_PTR_TO_SOCKET: Type = 15;
-    pub const ARG_PTR_TO_BTF_ID: Type = 16;
-    pub const ARG_PTR_TO_ALLOC_MEM: Type = 17;
-    pub const ARG_CONST_ALLOC_SIZE_OR_ZERO: Type = 18;
-    pub const ARG_PTR_TO_BTF_ID_SOCK_COMMON: Type = 19;
-    pub const ARG_PTR_TO_PERCPU_BTF_ID: Type = 20;
-    pub const ARG_PTR_TO_FUNC: Type = 21;
-    pub const ARG_PTR_TO_STACK: Type = 22;
-    pub const ARG_PTR_TO_CONST_STR: Type = 23;
-    pub const ARG_PTR_TO_TIMER: Type = 24;
-    pub const __BPF_ARG_TYPE_MAX: Type = 25;
-    pub const ARG_PTR_TO_MAP_VALUE_OR_NULL: Type = 259;
-    pub const ARG_PTR_TO_MEM_OR_NULL: Type = 261;
-    pub const ARG_PTR_TO_CTX_OR_NULL: Type = 265;
-    pub const ARG_PTR_TO_SOCKET_OR_NULL: Type = 271;
-    pub const ARG_PTR_TO_ALLOC_MEM_OR_NULL: Type = 273;
-    pub const ARG_PTR_TO_STACK_OR_NULL: Type = 278;
-    pub const __BPF_ARG_TYPE_LIMIT: Type = 2047;
-}
-pub mod bpf_return_type {
-    pub type Type = ::aya_bpf::cty::c_uint;
-    pub const RET_INTEGER: Type = 0;
-    pub const RET_VOID: Type = 1;
-    pub const RET_PTR_TO_MAP_VALUE: Type = 2;
-    pub const RET_PTR_TO_SOCKET: Type = 3;
-    pub const RET_PTR_TO_TCP_SOCK: Type = 4;
-    pub const RET_PTR_TO_SOCK_COMMON: Type = 5;
-    pub const RET_PTR_TO_ALLOC_MEM: Type = 6;
-    pub const RET_PTR_TO_MEM_OR_BTF_ID: Type = 7;
-    pub const RET_PTR_TO_BTF_ID: Type = 8;
-    pub const __BPF_RET_TYPE_MAX: Type = 9;
-    pub const RET_PTR_TO_MAP_VALUE_OR_NULL: Type = 258;
-    pub const RET_PTR_TO_SOCKET_OR_NULL: Type = 259;
-    pub const RET_PTR_TO_TCP_SOCK_OR_NULL: Type = 260;
-    pub const RET_PTR_TO_SOCK_COMMON_OR_NULL: Type = 261;
-    pub const RET_PTR_TO_ALLOC_MEM_OR_NULL: Type = 1286;
-    pub const RET_PTR_TO_BTF_ID_OR_NULL: Type = 264;
-    pub const __BPF_RET_TYPE_LIMIT: Type = 2047;
-}
-pub mod bpf_reg_type {
-    pub type Type = ::aya_bpf::cty::c_uint;
-    pub const NOT_INIT: Type = 0;
-    pub const SCALAR_VALUE: Type = 1;
-    pub const PTR_TO_CTX: Type = 2;
-    pub const CONST_PTR_TO_MAP: Type = 3;
-    pub const PTR_TO_MAP_VALUE: Type = 4;
-    pub const PTR_TO_MAP_KEY: Type = 5;
-    pub const PTR_TO_STACK: Type = 6;
-    pub const PTR_TO_PACKET_META: Type = 7;
-    pub const PTR_TO_PACKET: Type = 8;
-    pub const PTR_TO_PACKET_END: Type = 9;
-    pub const PTR_TO_FLOW_KEYS: Type = 10;
-    pub const PTR_TO_SOCKET: Type = 11;
-    pub const PTR_TO_SOCK_COMMON: Type = 12;
-    pub const PTR_TO_TCP_SOCK: Type = 13;
-    pub const PTR_TO_TP_BUFFER: Type = 14;
-    pub const PTR_TO_XDP_SOCK: Type = 15;
-    pub const PTR_TO_BTF_ID: Type = 16;
-    pub const PTR_TO_MEM: Type = 17;
-    pub const PTR_TO_BUF: Type = 18;
-    pub const PTR_TO_PERCPU_BTF_ID: Type = 19;
-    pub const PTR_TO_FUNC: Type = 20;
-    pub const __BPF_REG_TYPE_MAX: Type = 21;
-    pub const PTR_TO_MAP_VALUE_OR_NULL: Type = 260;
-    pub const PTR_TO_SOCKET_OR_NULL: Type = 267;
-    pub const PTR_TO_SOCK_COMMON_OR_NULL: Type = 268;
-    pub const PTR_TO_TCP_SOCK_OR_NULL: Type = 269;
-    pub const PTR_TO_BTF_ID_OR_NULL: Type = 272;
-    pub const __BPF_REG_TYPE_LIMIT: Type = 2047;
-}
 pub type cpu_stop_fn_t = ::core::option::Option<
     unsafe extern "C" fn(arg1: *mut ::aya_bpf::cty::c_void) -> ::aya_bpf::cty::c_int,
 >;
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct proc_ops {
     pub proc_flags: ::aya_bpf::cty::c_uint,
     pub proc_open: ::core::option::Option<
@@ -21316,14 +22352,13 @@ pub struct proc_ops {
 }
 pub type compat_uint_t = u32_;
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct firmware {
     pub size: size_t,
     pub data: *const u8_,
     pub priv_: *mut ::aya_bpf::cty::c_void,
 }
 #[repr(C)]
-#[derive(Debug)]
 pub struct crypto_tfm {
     pub crt_flags: u32_,
     pub node: ::aya_bpf::cty::c_int,
@@ -21332,7 +22367,7 @@ pub struct crypto_tfm {
     pub __crt_ctx: __IncompleteArrayField<*mut ::aya_bpf::cty::c_void>,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct cipher_alg {
     pub cia_min_keysize: ::aya_bpf::cty::c_uint,
     pub cia_max_keysize: ::aya_bpf::cty::c_uint,
@@ -21351,7 +22386,7 @@ pub struct cipher_alg {
     >,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct compress_alg {
     pub coa_compress: ::core::option::Option<
         unsafe extern "C" fn(
@@ -21373,7 +22408,7 @@ pub struct compress_alg {
     >,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct crypto_istat_aead {
     pub encrypt_cnt: atomic64_t,
     pub encrypt_tlen: atomic64_t,
@@ -21382,7 +22417,7 @@ pub struct crypto_istat_aead {
     pub err_cnt: atomic64_t,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct crypto_istat_akcipher {
     pub encrypt_cnt: atomic64_t,
     pub encrypt_tlen: atomic64_t,
@@ -21393,7 +22428,7 @@ pub struct crypto_istat_akcipher {
     pub err_cnt: atomic64_t,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct crypto_istat_cipher {
     pub encrypt_cnt: atomic64_t,
     pub encrypt_tlen: atomic64_t,
@@ -21402,7 +22437,7 @@ pub struct crypto_istat_cipher {
     pub err_cnt: atomic64_t,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct crypto_istat_compress {
     pub compress_cnt: atomic64_t,
     pub compress_tlen: atomic64_t,
@@ -21411,14 +22446,14 @@ pub struct crypto_istat_compress {
     pub err_cnt: atomic64_t,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct crypto_istat_hash {
     pub hash_cnt: atomic64_t,
     pub hash_tlen: atomic64_t,
     pub err_cnt: atomic64_t,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct crypto_istat_kpp {
     pub setsecret_cnt: atomic64_t,
     pub generate_public_key_cnt: atomic64_t,
@@ -21426,7 +22461,7 @@ pub struct crypto_istat_kpp {
     pub err_cnt: atomic64_t,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct crypto_istat_rng {
     pub generate_cnt: atomic64_t,
     pub generate_tlen: atomic64_t,
@@ -21474,7 +22509,7 @@ pub union crypto_alg__bindgen_ty_2 {
     pub kpp: crypto_istat_kpp,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct crypto_type {
     pub ctxsize: ::core::option::Option<
         unsafe extern "C" fn(
@@ -21508,7 +22543,7 @@ pub struct crypto_type {
     pub tfmsize: ::aya_bpf::cty::c_uint,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct serial_icounter_struct {
     pub cts: ::aya_bpf::cty::c_int,
     pub dsr: ::aya_bpf::cty::c_int,
@@ -21524,7 +22559,7 @@ pub struct serial_icounter_struct {
     pub reserved: [::aya_bpf::cty::c_int; 9usize],
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct serial_struct {
     pub type_: ::aya_bpf::cty::c_int,
     pub line: ::aya_bpf::cty::c_int,
@@ -21547,14 +22582,6 @@ pub struct serial_struct {
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
-pub struct __call_single_data {
-    pub node: __call_single_node,
-    pub func: smp_call_func_t,
-    pub info: *mut ::aya_bpf::cty::c_void,
-}
-pub type call_single_data_t = __call_single_data;
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
 pub struct sched_domain_shared {
     pub ref_: atomic_t,
     pub nr_busy_cpus: atomic_t,
@@ -21577,7 +22604,7 @@ pub struct sched_domain {
     pub balance_interval: ::aya_bpf::cty::c_uint,
     pub nr_balance_failed: ::aya_bpf::cty::c_uint,
     pub max_newidle_lb_cost: u64_,
-    pub last_decay_max_lb_cost: ::aya_bpf::cty::c_ulong,
+    pub next_decay_max_lb_cost: ::aya_bpf::cty::c_ulong,
     pub avg_scan_cost: u64_,
     pub lb_count: [::aya_bpf::cty::c_uint; 3usize],
     pub lb_failed: [::aya_bpf::cty::c_uint; 3usize],
@@ -21632,26 +22659,26 @@ pub union arch_uprobe__bindgen_ty_2 {
     pub push: arch_uprobe__bindgen_ty_2__bindgen_ty_3,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct arch_uprobe__bindgen_ty_2__bindgen_ty_1 {
     pub offs: s32,
     pub ilen: u8_,
     pub opc1: u8_,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct arch_uprobe__bindgen_ty_2__bindgen_ty_2 {
     pub fixups: u8_,
     pub ilen: u8_,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct arch_uprobe__bindgen_ty_2__bindgen_ty_3 {
     pub reg_offset: u8_,
     pub ilen: u8_,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct uprobe_xol_ops {
     pub emulate: ::core::option::Option<
         unsafe extern "C" fn(arg1: *mut arch_uprobe, arg2: *mut pt_regs) -> bool_,
@@ -21665,1799 +22692,64 @@ pub struct uprobe_xol_ops {
     pub abort:
         ::core::option::Option<unsafe extern "C" fn(arg1: *mut arch_uprobe, arg2: *mut pt_regs)>,
 }
-pub type compat_size_t = u32_;
 #[repr(C)]
 #[derive(Copy, Clone)]
-pub struct bpf_prog_array_item {
-    pub prog: *mut bpf_prog,
-    pub __bindgen_anon_1: bpf_prog_array_item__bindgen_ty_1,
+pub struct pfn_t {
+    pub val: u64_,
 }
 #[repr(C)]
-#[derive(Copy, Clone)]
-pub union bpf_prog_array_item__bindgen_ty_1 {
-    pub cgroup_storage: [*mut bpf_cgroup_storage; 2usize],
-    pub bpf_cookie: u64_,
-}
-#[repr(C)]
-pub struct bpf_prog_array {
-    pub rcu: callback_head,
-    pub items: __IncompleteArrayField<bpf_prog_array_item>,
-}
-pub mod bpf_prog_type {
-    pub type Type = ::aya_bpf::cty::c_uint;
-    pub const BPF_PROG_TYPE_UNSPEC: Type = 0;
-    pub const BPF_PROG_TYPE_SOCKET_FILTER: Type = 1;
-    pub const BPF_PROG_TYPE_KPROBE: Type = 2;
-    pub const BPF_PROG_TYPE_SCHED_CLS: Type = 3;
-    pub const BPF_PROG_TYPE_SCHED_ACT: Type = 4;
-    pub const BPF_PROG_TYPE_TRACEPOINT: Type = 5;
-    pub const BPF_PROG_TYPE_XDP: Type = 6;
-    pub const BPF_PROG_TYPE_PERF_EVENT: Type = 7;
-    pub const BPF_PROG_TYPE_CGROUP_SKB: Type = 8;
-    pub const BPF_PROG_TYPE_CGROUP_SOCK: Type = 9;
-    pub const BPF_PROG_TYPE_LWT_IN: Type = 10;
-    pub const BPF_PROG_TYPE_LWT_OUT: Type = 11;
-    pub const BPF_PROG_TYPE_LWT_XMIT: Type = 12;
-    pub const BPF_PROG_TYPE_SOCK_OPS: Type = 13;
-    pub const BPF_PROG_TYPE_SK_SKB: Type = 14;
-    pub const BPF_PROG_TYPE_CGROUP_DEVICE: Type = 15;
-    pub const BPF_PROG_TYPE_SK_MSG: Type = 16;
-    pub const BPF_PROG_TYPE_RAW_TRACEPOINT: Type = 17;
-    pub const BPF_PROG_TYPE_CGROUP_SOCK_ADDR: Type = 18;
-    pub const BPF_PROG_TYPE_LWT_SEG6LOCAL: Type = 19;
-    pub const BPF_PROG_TYPE_LIRC_MODE2: Type = 20;
-    pub const BPF_PROG_TYPE_SK_REUSEPORT: Type = 21;
-    pub const BPF_PROG_TYPE_FLOW_DISSECTOR: Type = 22;
-    pub const BPF_PROG_TYPE_CGROUP_SYSCTL: Type = 23;
-    pub const BPF_PROG_TYPE_RAW_TRACEPOINT_WRITABLE: Type = 24;
-    pub const BPF_PROG_TYPE_CGROUP_SOCKOPT: Type = 25;
-    pub const BPF_PROG_TYPE_TRACING: Type = 26;
-    pub const BPF_PROG_TYPE_STRUCT_OPS: Type = 27;
-    pub const BPF_PROG_TYPE_EXT: Type = 28;
-    pub const BPF_PROG_TYPE_LSM: Type = 29;
-    pub const BPF_PROG_TYPE_SK_LOOKUP: Type = 30;
-    pub const BPF_PROG_TYPE_SYSCALL: Type = 31;
-}
-pub mod bpf_attach_type {
-    pub type Type = ::aya_bpf::cty::c_uint;
-    pub const BPF_CGROUP_INET_INGRESS: Type = 0;
-    pub const BPF_CGROUP_INET_EGRESS: Type = 1;
-    pub const BPF_CGROUP_INET_SOCK_CREATE: Type = 2;
-    pub const BPF_CGROUP_SOCK_OPS: Type = 3;
-    pub const BPF_SK_SKB_STREAM_PARSER: Type = 4;
-    pub const BPF_SK_SKB_STREAM_VERDICT: Type = 5;
-    pub const BPF_CGROUP_DEVICE: Type = 6;
-    pub const BPF_SK_MSG_VERDICT: Type = 7;
-    pub const BPF_CGROUP_INET4_BIND: Type = 8;
-    pub const BPF_CGROUP_INET6_BIND: Type = 9;
-    pub const BPF_CGROUP_INET4_CONNECT: Type = 10;
-    pub const BPF_CGROUP_INET6_CONNECT: Type = 11;
-    pub const BPF_CGROUP_INET4_POST_BIND: Type = 12;
-    pub const BPF_CGROUP_INET6_POST_BIND: Type = 13;
-    pub const BPF_CGROUP_UDP4_SENDMSG: Type = 14;
-    pub const BPF_CGROUP_UDP6_SENDMSG: Type = 15;
-    pub const BPF_LIRC_MODE2: Type = 16;
-    pub const BPF_FLOW_DISSECTOR: Type = 17;
-    pub const BPF_CGROUP_SYSCTL: Type = 18;
-    pub const BPF_CGROUP_UDP4_RECVMSG: Type = 19;
-    pub const BPF_CGROUP_UDP6_RECVMSG: Type = 20;
-    pub const BPF_CGROUP_GETSOCKOPT: Type = 21;
-    pub const BPF_CGROUP_SETSOCKOPT: Type = 22;
-    pub const BPF_TRACE_RAW_TP: Type = 23;
-    pub const BPF_TRACE_FENTRY: Type = 24;
-    pub const BPF_TRACE_FEXIT: Type = 25;
-    pub const BPF_MODIFY_RETURN: Type = 26;
-    pub const BPF_LSM_MAC: Type = 27;
-    pub const BPF_TRACE_ITER: Type = 28;
-    pub const BPF_CGROUP_INET4_GETPEERNAME: Type = 29;
-    pub const BPF_CGROUP_INET6_GETPEERNAME: Type = 30;
-    pub const BPF_CGROUP_INET4_GETSOCKNAME: Type = 31;
-    pub const BPF_CGROUP_INET6_GETSOCKNAME: Type = 32;
-    pub const BPF_XDP_DEVMAP: Type = 33;
-    pub const BPF_CGROUP_INET_SOCK_RELEASE: Type = 34;
-    pub const BPF_XDP_CPUMAP: Type = 35;
-    pub const BPF_SK_LOOKUP: Type = 36;
-    pub const BPF_XDP: Type = 37;
-    pub const BPF_SK_SKB_VERDICT: Type = 38;
-    pub const BPF_SK_REUSEPORT_SELECT: Type = 39;
-    pub const BPF_SK_REUSEPORT_SELECT_OR_MIGRATE: Type = 40;
-    pub const BPF_PERF_EVENT: Type = 41;
-    pub const __MAX_BPF_ATTACH_TYPE: Type = 42;
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct sock_filter {
-    pub code: __u16,
-    pub jt: __u8,
-    pub jf: __u8,
-    pub k: __u32,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct bpf_insn {
-    pub code: __u8,
-    pub _bitfield_align_1: [u8; 0],
-    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 1usize]>,
-    pub off: __s16,
-    pub imm: __s32,
-}
-impl bpf_insn {
-    #[inline]
-    pub fn dst_reg(&self) -> __u8 {
-        unsafe { ::core::mem::transmute(self._bitfield_1.get(0usize, 4u8) as u8) }
-    }
-    #[inline]
-    pub fn set_dst_reg(&mut self, val: __u8) {
-        unsafe {
-            let val: u8 = ::core::mem::transmute(val);
-            self._bitfield_1.set(0usize, 4u8, val as u64)
-        }
-    }
-    #[inline]
-    pub fn src_reg(&self) -> __u8 {
-        unsafe { ::core::mem::transmute(self._bitfield_1.get(4usize, 4u8) as u8) }
-    }
-    #[inline]
-    pub fn set_src_reg(&mut self, val: __u8) {
-        unsafe {
-            let val: u8 = ::core::mem::transmute(val);
-            self._bitfield_1.set(4usize, 4u8, val as u64)
-        }
-    }
-    #[inline]
-    pub fn new_bitfield_1(dst_reg: __u8, src_reg: __u8) -> __BindgenBitfieldUnit<[u8; 1usize]> {
-        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 1usize]> = Default::default();
-        __bindgen_bitfield_unit.set(0usize, 4u8, {
-            let dst_reg: u8 = unsafe { ::core::mem::transmute(dst_reg) };
-            dst_reg as u64
-        });
-        __bindgen_bitfield_unit.set(4usize, 4u8, {
-            let src_reg: u8 = unsafe { ::core::mem::transmute(src_reg) };
-            src_reg as u64
-        });
-        __bindgen_bitfield_unit
-    }
-}
-#[repr(C)]
-pub struct bpf_prog {
-    pub pages: u16_,
-    pub _bitfield_align_1: [u8; 0],
-    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 2usize]>,
-    pub type_: bpf_prog_type::Type,
-    pub expected_attach_type: bpf_attach_type::Type,
-    pub len: u32_,
-    pub jited_len: u32_,
-    pub tag: [u8_; 8usize],
-    pub stats: *mut bpf_prog_stats,
-    pub active: *mut ::aya_bpf::cty::c_int,
-    pub bpf_func: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *const ::aya_bpf::cty::c_void,
-            arg2: *const bpf_insn,
-        ) -> ::aya_bpf::cty::c_uint,
-    >,
-    pub aux: *mut bpf_prog_aux,
-    pub orig_prog: *mut sock_fprog_kern,
-    pub __bindgen_anon_1: bpf_prog__bindgen_ty_1,
-}
-#[repr(C)]
-pub struct bpf_prog__bindgen_ty_1 {
-    pub __bindgen_anon_1: __BindgenUnionField<bpf_prog__bindgen_ty_1__bindgen_ty_1>,
-    pub __bindgen_anon_2: __BindgenUnionField<bpf_prog__bindgen_ty_1__bindgen_ty_2>,
-    pub bindgen_union_field: [u32; 0usize],
-}
-#[repr(C)]
-#[derive(Debug)]
-pub struct bpf_prog__bindgen_ty_1__bindgen_ty_1 {
-    pub __empty_insns: bpf_prog__bindgen_ty_1__bindgen_ty_1__bindgen_ty_1,
-    pub insns: __IncompleteArrayField<sock_filter>,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct bpf_prog__bindgen_ty_1__bindgen_ty_1__bindgen_ty_1 {}
-#[repr(C)]
-#[derive(Debug)]
-pub struct bpf_prog__bindgen_ty_1__bindgen_ty_2 {
-    pub __empty_insnsi: bpf_prog__bindgen_ty_1__bindgen_ty_2__bindgen_ty_1,
-    pub insnsi: __IncompleteArrayField<bpf_insn>,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct bpf_prog__bindgen_ty_1__bindgen_ty_2__bindgen_ty_1 {}
-impl bpf_prog {
-    #[inline]
-    pub fn jited(&self) -> u16_ {
-        unsafe { ::core::mem::transmute(self._bitfield_1.get(0usize, 1u8) as u16) }
-    }
-    #[inline]
-    pub fn set_jited(&mut self, val: u16_) {
-        unsafe {
-            let val: u16 = ::core::mem::transmute(val);
-            self._bitfield_1.set(0usize, 1u8, val as u64)
-        }
-    }
-    #[inline]
-    pub fn jit_requested(&self) -> u16_ {
-        unsafe { ::core::mem::transmute(self._bitfield_1.get(1usize, 1u8) as u16) }
-    }
-    #[inline]
-    pub fn set_jit_requested(&mut self, val: u16_) {
-        unsafe {
-            let val: u16 = ::core::mem::transmute(val);
-            self._bitfield_1.set(1usize, 1u8, val as u64)
-        }
-    }
-    #[inline]
-    pub fn gpl_compatible(&self) -> u16_ {
-        unsafe { ::core::mem::transmute(self._bitfield_1.get(2usize, 1u8) as u16) }
-    }
-    #[inline]
-    pub fn set_gpl_compatible(&mut self, val: u16_) {
-        unsafe {
-            let val: u16 = ::core::mem::transmute(val);
-            self._bitfield_1.set(2usize, 1u8, val as u64)
-        }
-    }
-    #[inline]
-    pub fn cb_access(&self) -> u16_ {
-        unsafe { ::core::mem::transmute(self._bitfield_1.get(3usize, 1u8) as u16) }
-    }
-    #[inline]
-    pub fn set_cb_access(&mut self, val: u16_) {
-        unsafe {
-            let val: u16 = ::core::mem::transmute(val);
-            self._bitfield_1.set(3usize, 1u8, val as u64)
-        }
-    }
-    #[inline]
-    pub fn dst_needed(&self) -> u16_ {
-        unsafe { ::core::mem::transmute(self._bitfield_1.get(4usize, 1u8) as u16) }
-    }
-    #[inline]
-    pub fn set_dst_needed(&mut self, val: u16_) {
-        unsafe {
-            let val: u16 = ::core::mem::transmute(val);
-            self._bitfield_1.set(4usize, 1u8, val as u64)
-        }
-    }
-    #[inline]
-    pub fn blinded(&self) -> u16_ {
-        unsafe { ::core::mem::transmute(self._bitfield_1.get(5usize, 1u8) as u16) }
-    }
-    #[inline]
-    pub fn set_blinded(&mut self, val: u16_) {
-        unsafe {
-            let val: u16 = ::core::mem::transmute(val);
-            self._bitfield_1.set(5usize, 1u8, val as u64)
-        }
-    }
-    #[inline]
-    pub fn is_func(&self) -> u16_ {
-        unsafe { ::core::mem::transmute(self._bitfield_1.get(6usize, 1u8) as u16) }
-    }
-    #[inline]
-    pub fn set_is_func(&mut self, val: u16_) {
-        unsafe {
-            let val: u16 = ::core::mem::transmute(val);
-            self._bitfield_1.set(6usize, 1u8, val as u64)
-        }
-    }
-    #[inline]
-    pub fn kprobe_override(&self) -> u16_ {
-        unsafe { ::core::mem::transmute(self._bitfield_1.get(7usize, 1u8) as u16) }
-    }
-    #[inline]
-    pub fn set_kprobe_override(&mut self, val: u16_) {
-        unsafe {
-            let val: u16 = ::core::mem::transmute(val);
-            self._bitfield_1.set(7usize, 1u8, val as u64)
-        }
-    }
-    #[inline]
-    pub fn has_callchain_buf(&self) -> u16_ {
-        unsafe { ::core::mem::transmute(self._bitfield_1.get(8usize, 1u8) as u16) }
-    }
-    #[inline]
-    pub fn set_has_callchain_buf(&mut self, val: u16_) {
-        unsafe {
-            let val: u16 = ::core::mem::transmute(val);
-            self._bitfield_1.set(8usize, 1u8, val as u64)
-        }
-    }
-    #[inline]
-    pub fn enforce_expected_attach_type(&self) -> u16_ {
-        unsafe { ::core::mem::transmute(self._bitfield_1.get(9usize, 1u8) as u16) }
-    }
-    #[inline]
-    pub fn set_enforce_expected_attach_type(&mut self, val: u16_) {
-        unsafe {
-            let val: u16 = ::core::mem::transmute(val);
-            self._bitfield_1.set(9usize, 1u8, val as u64)
-        }
-    }
-    #[inline]
-    pub fn call_get_stack(&self) -> u16_ {
-        unsafe { ::core::mem::transmute(self._bitfield_1.get(10usize, 1u8) as u16) }
-    }
-    #[inline]
-    pub fn set_call_get_stack(&mut self, val: u16_) {
-        unsafe {
-            let val: u16 = ::core::mem::transmute(val);
-            self._bitfield_1.set(10usize, 1u8, val as u64)
-        }
-    }
-    #[inline]
-    pub fn call_get_func_ip(&self) -> u16_ {
-        unsafe { ::core::mem::transmute(self._bitfield_1.get(11usize, 1u8) as u16) }
-    }
-    #[inline]
-    pub fn set_call_get_func_ip(&mut self, val: u16_) {
-        unsafe {
-            let val: u16 = ::core::mem::transmute(val);
-            self._bitfield_1.set(11usize, 1u8, val as u64)
-        }
-    }
-    #[inline]
-    pub fn new_bitfield_1(
-        jited: u16_,
-        jit_requested: u16_,
-        gpl_compatible: u16_,
-        cb_access: u16_,
-        dst_needed: u16_,
-        blinded: u16_,
-        is_func: u16_,
-        kprobe_override: u16_,
-        has_callchain_buf: u16_,
-        enforce_expected_attach_type: u16_,
-        call_get_stack: u16_,
-        call_get_func_ip: u16_,
-    ) -> __BindgenBitfieldUnit<[u8; 2usize]> {
-        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 2usize]> = Default::default();
-        __bindgen_bitfield_unit.set(0usize, 1u8, {
-            let jited: u16 = unsafe { ::core::mem::transmute(jited) };
-            jited as u64
-        });
-        __bindgen_bitfield_unit.set(1usize, 1u8, {
-            let jit_requested: u16 = unsafe { ::core::mem::transmute(jit_requested) };
-            jit_requested as u64
-        });
-        __bindgen_bitfield_unit.set(2usize, 1u8, {
-            let gpl_compatible: u16 = unsafe { ::core::mem::transmute(gpl_compatible) };
-            gpl_compatible as u64
-        });
-        __bindgen_bitfield_unit.set(3usize, 1u8, {
-            let cb_access: u16 = unsafe { ::core::mem::transmute(cb_access) };
-            cb_access as u64
-        });
-        __bindgen_bitfield_unit.set(4usize, 1u8, {
-            let dst_needed: u16 = unsafe { ::core::mem::transmute(dst_needed) };
-            dst_needed as u64
-        });
-        __bindgen_bitfield_unit.set(5usize, 1u8, {
-            let blinded: u16 = unsafe { ::core::mem::transmute(blinded) };
-            blinded as u64
-        });
-        __bindgen_bitfield_unit.set(6usize, 1u8, {
-            let is_func: u16 = unsafe { ::core::mem::transmute(is_func) };
-            is_func as u64
-        });
-        __bindgen_bitfield_unit.set(7usize, 1u8, {
-            let kprobe_override: u16 = unsafe { ::core::mem::transmute(kprobe_override) };
-            kprobe_override as u64
-        });
-        __bindgen_bitfield_unit.set(8usize, 1u8, {
-            let has_callchain_buf: u16 = unsafe { ::core::mem::transmute(has_callchain_buf) };
-            has_callchain_buf as u64
-        });
-        __bindgen_bitfield_unit.set(9usize, 1u8, {
-            let enforce_expected_attach_type: u16 =
-                unsafe { ::core::mem::transmute(enforce_expected_attach_type) };
-            enforce_expected_attach_type as u64
-        });
-        __bindgen_bitfield_unit.set(10usize, 1u8, {
-            let call_get_stack: u16 = unsafe { ::core::mem::transmute(call_get_stack) };
-            call_get_stack as u64
-        });
-        __bindgen_bitfield_unit.set(11usize, 1u8, {
-            let call_get_func_ip: u16 = unsafe { ::core::mem::transmute(call_get_func_ip) };
-            call_get_func_ip as u64
-        });
-        __bindgen_bitfield_unit
-    }
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct tc_stats {
-    pub bytes: __u64,
-    pub packets: __u32,
-    pub drops: __u32,
-    pub overlimits: __u32,
-    pub bps: __u32,
-    pub pps: __u32,
-    pub qlen: __u32,
-    pub backlog: __u32,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct tc_sizespec {
-    pub cell_log: ::aya_bpf::cty::c_uchar,
-    pub size_log: ::aya_bpf::cty::c_uchar,
-    pub cell_align: ::aya_bpf::cty::c_short,
-    pub overhead: ::aya_bpf::cty::c_int,
-    pub linklayer: ::aya_bpf::cty::c_uint,
-    pub mpu: ::aya_bpf::cty::c_uint,
-    pub mtu: ::aya_bpf::cty::c_uint,
-    pub tsize: ::aya_bpf::cty::c_uint,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct net_rate_estimator {
-    _unused: [u8; 0],
+pub struct crypto_instance {
+    pub alg: crypto_alg,
+    pub tmpl: *mut crypto_template,
+    pub __bindgen_anon_1: crypto_instance__bindgen_ty_1,
+    pub __ctx: __IncompleteArrayField<*mut ::aya_bpf::cty::c_void>,
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
-pub struct qdisc_skb_head {
-    pub head: *mut sk_buff,
-    pub tail: *mut sk_buff,
-    pub qlen: __u32,
-    pub lock: spinlock_t,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct gnet_stats_basic_sync {
-    pub bytes: u64_stats_t,
-    pub packets: u64_stats_t,
-    pub syncp: u64_stats_sync,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct gnet_stats_queue {
-    pub qlen: __u32,
-    pub backlog: __u32,
-    pub drops: __u32,
-    pub requeues: __u32,
-    pub overlimits: __u32,
-}
-#[repr(C)]
-pub struct Qdisc {
-    pub enqueue: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut sk_buff,
-            arg2: *mut Qdisc,
-            arg3: *mut *mut sk_buff,
-        ) -> ::aya_bpf::cty::c_int,
-    >,
-    pub dequeue: ::core::option::Option<unsafe extern "C" fn(arg1: *mut Qdisc) -> *mut sk_buff>,
-    pub flags: ::aya_bpf::cty::c_uint,
-    pub limit: u32_,
-    pub ops: *const Qdisc_ops,
-    pub stab: *mut qdisc_size_table,
-    pub hash: hlist_node,
-    pub handle: u32_,
-    pub parent: u32_,
-    pub dev_queue: *mut netdev_queue,
-    pub rate_est: *mut net_rate_estimator,
-    pub cpu_bstats: *mut gnet_stats_basic_sync,
-    pub cpu_qstats: *mut gnet_stats_queue,
-    pub pad: ::aya_bpf::cty::c_int,
-    pub refcnt: refcount_t,
-    pub _bitfield_align_1: [u8; 0],
-    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 24usize]>,
-    pub gso_skb: sk_buff_head,
-    pub q: qdisc_skb_head,
-    pub bstats: gnet_stats_basic_sync,
-    pub qstats: gnet_stats_queue,
-    pub state: ::aya_bpf::cty::c_ulong,
-    pub state2: ::aya_bpf::cty::c_ulong,
-    pub next_sched: *mut Qdisc,
-    pub skb_bad_txq: sk_buff_head,
-    pub _bitfield_align_2: [u8; 0],
-    pub _bitfield_2: __BindgenBitfieldUnit<[u8; 56usize]>,
-    pub busylock: spinlock_t,
-    pub seqlock: spinlock_t,
-    pub rcu: callback_head,
-    pub dev_tracker: netdevice_tracker,
-    pub _bitfield_align_3: [u8; 0],
-    pub _bitfield_3: __BindgenBitfieldUnit<[u8; 40usize]>,
-    pub privdata: __IncompleteArrayField<::aya_bpf::cty::c_long>,
-}
-impl Qdisc {
-    #[inline]
-    pub fn new_bitfield_1() -> __BindgenBitfieldUnit<[u8; 24usize]> {
-        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 24usize]> = Default::default();
-        __bindgen_bitfield_unit
-    }
-}
-pub mod bpf_map_type {
-    pub type Type = ::aya_bpf::cty::c_uint;
-    pub const BPF_MAP_TYPE_UNSPEC: Type = 0;
-    pub const BPF_MAP_TYPE_HASH: Type = 1;
-    pub const BPF_MAP_TYPE_ARRAY: Type = 2;
-    pub const BPF_MAP_TYPE_PROG_ARRAY: Type = 3;
-    pub const BPF_MAP_TYPE_PERF_EVENT_ARRAY: Type = 4;
-    pub const BPF_MAP_TYPE_PERCPU_HASH: Type = 5;
-    pub const BPF_MAP_TYPE_PERCPU_ARRAY: Type = 6;
-    pub const BPF_MAP_TYPE_STACK_TRACE: Type = 7;
-    pub const BPF_MAP_TYPE_CGROUP_ARRAY: Type = 8;
-    pub const BPF_MAP_TYPE_LRU_HASH: Type = 9;
-    pub const BPF_MAP_TYPE_LRU_PERCPU_HASH: Type = 10;
-    pub const BPF_MAP_TYPE_LPM_TRIE: Type = 11;
-    pub const BPF_MAP_TYPE_ARRAY_OF_MAPS: Type = 12;
-    pub const BPF_MAP_TYPE_HASH_OF_MAPS: Type = 13;
-    pub const BPF_MAP_TYPE_DEVMAP: Type = 14;
-    pub const BPF_MAP_TYPE_SOCKMAP: Type = 15;
-    pub const BPF_MAP_TYPE_CPUMAP: Type = 16;
-    pub const BPF_MAP_TYPE_XSKMAP: Type = 17;
-    pub const BPF_MAP_TYPE_SOCKHASH: Type = 18;
-    pub const BPF_MAP_TYPE_CGROUP_STORAGE: Type = 19;
-    pub const BPF_MAP_TYPE_REUSEPORT_SOCKARRAY: Type = 20;
-    pub const BPF_MAP_TYPE_PERCPU_CGROUP_STORAGE: Type = 21;
-    pub const BPF_MAP_TYPE_QUEUE: Type = 22;
-    pub const BPF_MAP_TYPE_STACK: Type = 23;
-    pub const BPF_MAP_TYPE_SK_STORAGE: Type = 24;
-    pub const BPF_MAP_TYPE_DEVMAP_HASH: Type = 25;
-    pub const BPF_MAP_TYPE_STRUCT_OPS: Type = 26;
-    pub const BPF_MAP_TYPE_RINGBUF: Type = 27;
-    pub const BPF_MAP_TYPE_INODE_STORAGE: Type = 28;
-    pub const BPF_MAP_TYPE_TASK_STORAGE: Type = 29;
-    pub const BPF_MAP_TYPE_BLOOM_FILTER: Type = 30;
+pub union crypto_instance__bindgen_ty_1 {
+    pub list: hlist_node,
+    pub spawns: *mut crypto_spawn,
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
-pub struct bpf_map {
-    pub ops: *const bpf_map_ops,
-    pub inner_map_meta: *mut bpf_map,
-    pub security: *mut ::aya_bpf::cty::c_void,
-    pub map_type: bpf_map_type::Type,
-    pub key_size: u32_,
-    pub value_size: u32_,
-    pub max_entries: u32_,
-    pub map_extra: u64_,
-    pub map_flags: u32_,
-    pub spin_lock_off: ::aya_bpf::cty::c_int,
-    pub timer_off: ::aya_bpf::cty::c_int,
-    pub id: u32_,
-    pub numa_node: ::aya_bpf::cty::c_int,
-    pub btf_key_type_id: u32_,
-    pub btf_value_type_id: u32_,
-    pub btf_vmlinux_value_type_id: u32_,
-    pub btf: *mut btf,
-    pub memcg: *mut mem_cgroup,
-    pub name: [::aya_bpf::cty::c_char; 16usize],
-    pub bypass_spec_v1: bool_,
-    pub frozen: bool_,
-    pub _bitfield_align_1: [u8; 0],
-    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 16usize]>,
-    pub refcnt: atomic64_t,
-    pub usercnt: atomic64_t,
-    pub work: work_struct,
-    pub freeze_mutex: mutex,
-    pub writecnt: atomic64_t,
-    pub _bitfield_align_2: [u8; 0],
-    pub _bitfield_2: __BindgenBitfieldUnit<[u8; 40usize]>,
-}
-impl bpf_map {
-    #[inline]
-    pub fn new_bitfield_1() -> __BindgenBitfieldUnit<[u8; 16usize]> {
-        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 16usize]> = Default::default();
-        __bindgen_bitfield_unit
-    }
+pub struct crypto_spawn {
+    pub list: list_head,
+    pub alg: *mut crypto_alg,
+    pub __bindgen_anon_1: crypto_spawn__bindgen_ty_1,
+    pub frontend: *const crypto_type,
+    pub mask: u32_,
+    pub dead: bool_,
+    pub registered: bool_,
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
-pub struct bpf_offloaded_map {
-    pub map: bpf_map,
-    pub netdev: *mut net_device,
-    pub dev_ops: *const bpf_map_dev_ops,
-    pub dev_priv: *mut ::aya_bpf::cty::c_void,
-    pub offloads: list_head,
-    pub _bitfield_align_1: [u8; 0],
-    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 24usize]>,
-}
-impl bpf_offloaded_map {
-    #[inline]
-    pub fn new_bitfield_1() -> __BindgenBitfieldUnit<[u8; 24usize]> {
-        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 24usize]> = Default::default();
-        __bindgen_bitfield_unit
-    }
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct mini_Qdisc {
-    pub filter_list: *mut tcf_proto,
-    pub block: *mut tcf_block,
-    pub cpu_bstats: *mut gnet_stats_basic_sync,
-    pub cpu_qstats: *mut gnet_stats_queue,
-    pub rcu_state: ::aya_bpf::cty::c_ulong,
+pub union crypto_spawn__bindgen_ty_1 {
+    pub inst: *mut crypto_instance,
+    pub next: *mut crypto_spawn,
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
-pub union bpf_attr {
-    pub __bindgen_anon_1: bpf_attr__bindgen_ty_1,
-    pub __bindgen_anon_2: bpf_attr__bindgen_ty_2,
-    pub batch: bpf_attr__bindgen_ty_3,
-    pub __bindgen_anon_3: bpf_attr__bindgen_ty_4,
-    pub __bindgen_anon_4: bpf_attr__bindgen_ty_5,
-    pub __bindgen_anon_5: bpf_attr__bindgen_ty_6,
-    pub test: bpf_attr__bindgen_ty_7,
-    pub __bindgen_anon_6: bpf_attr__bindgen_ty_8,
-    pub info: bpf_attr__bindgen_ty_9,
-    pub query: bpf_attr__bindgen_ty_10,
-    pub raw_tracepoint: bpf_attr__bindgen_ty_11,
-    pub __bindgen_anon_7: bpf_attr__bindgen_ty_12,
-    pub task_fd_query: bpf_attr__bindgen_ty_13,
-    pub link_create: bpf_attr__bindgen_ty_14,
-    pub link_update: bpf_attr__bindgen_ty_15,
-    pub link_detach: bpf_attr__bindgen_ty_16,
-    pub enable_stats: bpf_attr__bindgen_ty_17,
-    pub iter_create: bpf_attr__bindgen_ty_18,
-    pub prog_bind_map: bpf_attr__bindgen_ty_19,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct bpf_attr__bindgen_ty_1 {
-    pub map_type: __u32,
-    pub key_size: __u32,
-    pub value_size: __u32,
-    pub max_entries: __u32,
-    pub map_flags: __u32,
-    pub inner_map_fd: __u32,
-    pub numa_node: __u32,
-    pub map_name: [::aya_bpf::cty::c_char; 16usize],
-    pub map_ifindex: __u32,
-    pub btf_fd: __u32,
-    pub btf_key_type_id: __u32,
-    pub btf_value_type_id: __u32,
-    pub btf_vmlinux_value_type_id: __u32,
-    pub map_extra: __u64,
-}
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct bpf_attr__bindgen_ty_2 {
-    pub map_fd: __u32,
-    pub key: __u64,
-    pub __bindgen_anon_1: bpf_attr__bindgen_ty_2__bindgen_ty_1,
-    pub flags: __u64,
-}
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub union bpf_attr__bindgen_ty_2__bindgen_ty_1 {
-    pub value: __u64,
-    pub next_key: __u64,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct bpf_attr__bindgen_ty_3 {
-    pub in_batch: __u64,
-    pub out_batch: __u64,
-    pub keys: __u64,
-    pub values: __u64,
-    pub count: __u32,
-    pub map_fd: __u32,
-    pub elem_flags: __u64,
-    pub flags: __u64,
-}
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct bpf_attr__bindgen_ty_4 {
-    pub prog_type: __u32,
-    pub insn_cnt: __u32,
-    pub insns: __u64,
-    pub license: __u64,
-    pub log_level: __u32,
-    pub log_size: __u32,
-    pub log_buf: __u64,
-    pub kern_version: __u32,
-    pub prog_flags: __u32,
-    pub prog_name: [::aya_bpf::cty::c_char; 16usize],
-    pub prog_ifindex: __u32,
-    pub expected_attach_type: __u32,
-    pub prog_btf_fd: __u32,
-    pub func_info_rec_size: __u32,
-    pub func_info: __u64,
-    pub func_info_cnt: __u32,
-    pub line_info_rec_size: __u32,
-    pub line_info: __u64,
-    pub line_info_cnt: __u32,
-    pub attach_btf_id: __u32,
-    pub __bindgen_anon_1: bpf_attr__bindgen_ty_4__bindgen_ty_1,
-    pub core_relo_cnt: __u32,
-    pub fd_array: __u64,
-    pub core_relos: __u64,
-    pub core_relo_rec_size: __u32,
-}
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub union bpf_attr__bindgen_ty_4__bindgen_ty_1 {
-    pub attach_prog_fd: __u32,
-    pub attach_btf_obj_fd: __u32,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct bpf_attr__bindgen_ty_5 {
-    pub pathname: __u64,
-    pub bpf_fd: __u32,
-    pub file_flags: __u32,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct bpf_attr__bindgen_ty_6 {
-    pub target_fd: __u32,
-    pub attach_bpf_fd: __u32,
-    pub attach_type: __u32,
-    pub attach_flags: __u32,
-    pub replace_bpf_fd: __u32,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct bpf_attr__bindgen_ty_7 {
-    pub prog_fd: __u32,
-    pub retval: __u32,
-    pub data_size_in: __u32,
-    pub data_size_out: __u32,
-    pub data_in: __u64,
-    pub data_out: __u64,
-    pub repeat: __u32,
-    pub duration: __u32,
-    pub ctx_size_in: __u32,
-    pub ctx_size_out: __u32,
-    pub ctx_in: __u64,
-    pub ctx_out: __u64,
-    pub flags: __u32,
-    pub cpu: __u32,
-}
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct bpf_attr__bindgen_ty_8 {
-    pub __bindgen_anon_1: bpf_attr__bindgen_ty_8__bindgen_ty_1,
-    pub next_id: __u32,
-    pub open_flags: __u32,
-}
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub union bpf_attr__bindgen_ty_8__bindgen_ty_1 {
-    pub start_id: __u32,
-    pub prog_id: __u32,
-    pub map_id: __u32,
-    pub btf_id: __u32,
-    pub link_id: __u32,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct bpf_attr__bindgen_ty_9 {
-    pub bpf_fd: __u32,
-    pub info_len: __u32,
-    pub info: __u64,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct bpf_attr__bindgen_ty_10 {
-    pub target_fd: __u32,
-    pub attach_type: __u32,
-    pub query_flags: __u32,
-    pub attach_flags: __u32,
-    pub prog_ids: __u64,
-    pub prog_cnt: __u32,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct bpf_attr__bindgen_ty_11 {
-    pub name: __u64,
-    pub prog_fd: __u32,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct bpf_attr__bindgen_ty_12 {
-    pub btf: __u64,
-    pub btf_log_buf: __u64,
-    pub btf_size: __u32,
-    pub btf_log_size: __u32,
-    pub btf_log_level: __u32,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct bpf_attr__bindgen_ty_13 {
-    pub pid: __u32,
-    pub fd: __u32,
-    pub flags: __u32,
-    pub buf_len: __u32,
-    pub buf: __u64,
-    pub prog_id: __u32,
-    pub fd_type: __u32,
-    pub probe_offset: __u64,
-    pub probe_addr: __u64,
-}
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct bpf_attr__bindgen_ty_14 {
-    pub prog_fd: __u32,
-    pub __bindgen_anon_1: bpf_attr__bindgen_ty_14__bindgen_ty_1,
-    pub attach_type: __u32,
-    pub flags: __u32,
-    pub __bindgen_anon_2: bpf_attr__bindgen_ty_14__bindgen_ty_2,
-}
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub union bpf_attr__bindgen_ty_14__bindgen_ty_1 {
-    pub target_fd: __u32,
-    pub target_ifindex: __u32,
-}
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub union bpf_attr__bindgen_ty_14__bindgen_ty_2 {
-    pub target_btf_id: __u32,
-    pub __bindgen_anon_1: bpf_attr__bindgen_ty_14__bindgen_ty_2__bindgen_ty_1,
-    pub perf_event: bpf_attr__bindgen_ty_14__bindgen_ty_2__bindgen_ty_2,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct bpf_attr__bindgen_ty_14__bindgen_ty_2__bindgen_ty_1 {
-    pub iter_info: __u64,
-    pub iter_info_len: __u32,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct bpf_attr__bindgen_ty_14__bindgen_ty_2__bindgen_ty_2 {
-    pub bpf_cookie: __u64,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct bpf_attr__bindgen_ty_15 {
-    pub link_fd: __u32,
-    pub new_prog_fd: __u32,
-    pub flags: __u32,
-    pub old_prog_fd: __u32,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct bpf_attr__bindgen_ty_16 {
-    pub link_fd: __u32,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct bpf_attr__bindgen_ty_17 {
-    pub type_: __u32,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct bpf_attr__bindgen_ty_18 {
-    pub link_fd: __u32,
-    pub flags: __u32,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct bpf_attr__bindgen_ty_19 {
-    pub prog_fd: __u32,
-    pub map_fd: __u32,
-    pub flags: __u32,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct bpf_func_info {
-    pub insn_off: __u32,
-    pub type_id: __u32,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct bpf_line_info {
-    pub insn_off: __u32,
-    pub file_name_off: __u32,
-    pub line_off: __u32,
-    pub line_col: __u32,
-}
-pub type bpf_callback_t = ::core::option::Option<
-    unsafe extern "C" fn(arg1: u64_, arg2: u64_, arg3: u64_, arg4: u64_, arg5: u64_) -> u64_,
->;
-pub type bpf_iter_init_seq_priv_t = ::core::option::Option<
-    unsafe extern "C" fn(
-        arg1: *mut ::aya_bpf::cty::c_void,
-        arg2: *mut bpf_iter_aux_info,
-    ) -> ::aya_bpf::cty::c_int,
->;
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct bpf_iter_aux_info {
-    pub map: *mut bpf_map,
-}
-pub type bpf_iter_fini_seq_priv_t =
-    ::core::option::Option<unsafe extern "C" fn(arg1: *mut ::aya_bpf::cty::c_void)>;
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct bpf_iter_seq_info {
-    pub seq_ops: *const seq_operations,
-    pub init_seq_private: bpf_iter_init_seq_priv_t,
-    pub fini_seq_private: bpf_iter_fini_seq_priv_t,
-    pub seq_priv_size: u32_,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct bpf_map_ops {
-    pub map_alloc_check:
-        ::core::option::Option<unsafe extern "C" fn(arg1: *mut bpf_attr) -> ::aya_bpf::cty::c_int>,
-    pub map_alloc:
-        ::core::option::Option<unsafe extern "C" fn(arg1: *mut bpf_attr) -> *mut bpf_map>,
-    pub map_release:
-        ::core::option::Option<unsafe extern "C" fn(arg1: *mut bpf_map, arg2: *mut file)>,
-    pub map_free: ::core::option::Option<unsafe extern "C" fn(arg1: *mut bpf_map)>,
-    pub map_get_next_key: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut bpf_map,
-            arg2: *mut ::aya_bpf::cty::c_void,
-            arg3: *mut ::aya_bpf::cty::c_void,
-        ) -> ::aya_bpf::cty::c_int,
-    >,
-    pub map_release_uref: ::core::option::Option<unsafe extern "C" fn(arg1: *mut bpf_map)>,
-    pub map_lookup_elem_sys_only: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut bpf_map,
-            arg2: *mut ::aya_bpf::cty::c_void,
-        ) -> *mut ::aya_bpf::cty::c_void,
-    >,
-    pub map_lookup_batch: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut bpf_map,
-            arg2: *const bpf_attr,
-            arg3: *mut bpf_attr,
-        ) -> ::aya_bpf::cty::c_int,
-    >,
-    pub map_lookup_and_delete_elem: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut bpf_map,
-            arg2: *mut ::aya_bpf::cty::c_void,
-            arg3: *mut ::aya_bpf::cty::c_void,
-            arg4: u64_,
-        ) -> ::aya_bpf::cty::c_int,
-    >,
-    pub map_lookup_and_delete_batch: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut bpf_map,
-            arg2: *const bpf_attr,
-            arg3: *mut bpf_attr,
-        ) -> ::aya_bpf::cty::c_int,
-    >,
-    pub map_update_batch: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut bpf_map,
-            arg2: *const bpf_attr,
-            arg3: *mut bpf_attr,
-        ) -> ::aya_bpf::cty::c_int,
-    >,
-    pub map_delete_batch: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut bpf_map,
-            arg2: *const bpf_attr,
-            arg3: *mut bpf_attr,
-        ) -> ::aya_bpf::cty::c_int,
-    >,
-    pub map_lookup_elem: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut bpf_map,
-            arg2: *mut ::aya_bpf::cty::c_void,
-        ) -> *mut ::aya_bpf::cty::c_void,
-    >,
-    pub map_update_elem: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut bpf_map,
-            arg2: *mut ::aya_bpf::cty::c_void,
-            arg3: *mut ::aya_bpf::cty::c_void,
-            arg4: u64_,
-        ) -> ::aya_bpf::cty::c_int,
-    >,
-    pub map_delete_elem: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut bpf_map,
-            arg2: *mut ::aya_bpf::cty::c_void,
-        ) -> ::aya_bpf::cty::c_int,
-    >,
-    pub map_push_elem: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut bpf_map,
-            arg2: *mut ::aya_bpf::cty::c_void,
-            arg3: u64_,
-        ) -> ::aya_bpf::cty::c_int,
-    >,
-    pub map_pop_elem: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut bpf_map,
-            arg2: *mut ::aya_bpf::cty::c_void,
-        ) -> ::aya_bpf::cty::c_int,
-    >,
-    pub map_peek_elem: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut bpf_map,
-            arg2: *mut ::aya_bpf::cty::c_void,
-        ) -> ::aya_bpf::cty::c_int,
-    >,
-    pub map_fd_get_ptr: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut bpf_map,
-            arg2: *mut file,
-            arg3: ::aya_bpf::cty::c_int,
-        ) -> *mut ::aya_bpf::cty::c_void,
-    >,
-    pub map_fd_put_ptr:
-        ::core::option::Option<unsafe extern "C" fn(arg1: *mut ::aya_bpf::cty::c_void)>,
-    pub map_gen_lookup: ::core::option::Option<
-        unsafe extern "C" fn(arg1: *mut bpf_map, arg2: *mut bpf_insn) -> ::aya_bpf::cty::c_int,
-    >,
-    pub map_fd_sys_lookup_elem:
-        ::core::option::Option<unsafe extern "C" fn(arg1: *mut ::aya_bpf::cty::c_void) -> u32_>,
-    pub map_seq_show_elem: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut bpf_map,
-            arg2: *mut ::aya_bpf::cty::c_void,
-            arg3: *mut seq_file,
-        ),
-    >,
-    pub map_check_btf: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *const bpf_map,
-            arg2: *const btf,
-            arg3: *const btf_type,
-            arg4: *const btf_type,
-        ) -> ::aya_bpf::cty::c_int,
-    >,
-    pub map_poke_track: ::core::option::Option<
-        unsafe extern "C" fn(arg1: *mut bpf_map, arg2: *mut bpf_prog_aux) -> ::aya_bpf::cty::c_int,
-    >,
-    pub map_poke_untrack:
-        ::core::option::Option<unsafe extern "C" fn(arg1: *mut bpf_map, arg2: *mut bpf_prog_aux)>,
-    pub map_poke_run: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut bpf_map,
-            arg2: u32_,
-            arg3: *mut bpf_prog,
-            arg4: *mut bpf_prog,
-        ),
-    >,
-    pub map_direct_value_addr: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *const bpf_map,
-            arg2: *mut u64_,
-            arg3: u32_,
-        ) -> ::aya_bpf::cty::c_int,
-    >,
-    pub map_direct_value_meta: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *const bpf_map,
-            arg2: u64_,
-            arg3: *mut u32_,
-        ) -> ::aya_bpf::cty::c_int,
-    >,
-    pub map_mmap: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut bpf_map,
-            arg2: *mut vm_area_struct,
-        ) -> ::aya_bpf::cty::c_int,
-    >,
-    pub map_poll: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut bpf_map,
-            arg2: *mut file,
-            arg3: *mut poll_table_struct,
-        ) -> __poll_t,
-    >,
-    pub map_local_storage_charge: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut bpf_local_storage_map,
-            arg2: *mut ::aya_bpf::cty::c_void,
-            arg3: u32_,
-        ) -> ::aya_bpf::cty::c_int,
-    >,
-    pub map_local_storage_uncharge: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut bpf_local_storage_map,
-            arg2: *mut ::aya_bpf::cty::c_void,
-            arg3: u32_,
-        ),
-    >,
-    pub map_owner_storage_ptr: ::core::option::Option<
-        unsafe extern "C" fn(arg1: *mut ::aya_bpf::cty::c_void) -> *mut *mut bpf_local_storage,
-    >,
-    pub map_redirect: ::core::option::Option<
-        unsafe extern "C" fn(arg1: *mut bpf_map, arg2: u32_, arg3: u64_) -> ::aya_bpf::cty::c_int,
-    >,
-    pub map_meta_equal: ::core::option::Option<
-        unsafe extern "C" fn(arg1: *const bpf_map, arg2: *const bpf_map) -> bool_,
-    >,
-    pub map_set_for_each_callback_args: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut bpf_verifier_env,
-            arg2: *mut bpf_func_state,
-            arg3: *mut bpf_func_state,
-        ) -> ::aya_bpf::cty::c_int,
-    >,
-    pub map_for_each_callback: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut bpf_map,
-            arg2: bpf_callback_t,
-            arg3: *mut ::aya_bpf::cty::c_void,
-            arg4: u64_,
-        ) -> ::aya_bpf::cty::c_int,
-    >,
-    pub map_btf_name: *const ::aya_bpf::cty::c_char,
-    pub map_btf_id: *mut ::aya_bpf::cty::c_int,
-    pub iter_seq_info: *const bpf_iter_seq_info,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct btf_header {
-    pub magic: __u16,
-    pub version: __u8,
-    pub flags: __u8,
-    pub hdr_len: __u32,
-    pub type_off: __u32,
-    pub type_len: __u32,
-    pub str_off: __u32,
-    pub str_len: __u32,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct btf {
-    pub data: *mut ::aya_bpf::cty::c_void,
-    pub types: *mut *mut btf_type,
-    pub resolved_ids: *mut u32_,
-    pub resolved_sizes: *mut u32_,
-    pub strings: *const ::aya_bpf::cty::c_char,
-    pub nohdr_data: *mut ::aya_bpf::cty::c_void,
-    pub hdr: btf_header,
-    pub nr_types: u32_,
-    pub types_size: u32_,
-    pub data_size: u32_,
-    pub refcnt: refcount_t,
-    pub id: u32_,
-    pub rcu: callback_head,
-    pub base_btf: *mut btf,
-    pub start_id: u32_,
-    pub start_str_off: u32_,
-    pub name: [::aya_bpf::cty::c_char; 56usize],
-    pub kernel_btf: bool_,
-}
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct btf_type {
-    pub name_off: __u32,
-    pub info: __u32,
-    pub __bindgen_anon_1: btf_type__bindgen_ty_1,
-}
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub union btf_type__bindgen_ty_1 {
-    pub size: __u32,
-    pub type_: __u32,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct bpf_ksym {
-    pub start: ::aya_bpf::cty::c_ulong,
-    pub end: ::aya_bpf::cty::c_ulong,
-    pub name: [::aya_bpf::cty::c_char; 128usize],
-    pub lnode: list_head,
-    pub tnode: latch_tree_node,
-    pub prog: bool_,
-}
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct bpf_prog_aux {
-    pub refcnt: atomic64_t,
-    pub used_map_cnt: u32_,
-    pub used_btf_cnt: u32_,
-    pub max_ctx_offset: u32_,
-    pub max_pkt_offset: u32_,
-    pub max_tp_access: u32_,
-    pub stack_depth: u32_,
-    pub id: u32_,
-    pub func_cnt: u32_,
-    pub func_idx: u32_,
-    pub attach_btf_id: u32_,
-    pub ctx_arg_info_size: u32_,
-    pub max_rdonly_access: u32_,
-    pub max_rdwr_access: u32_,
-    pub attach_btf: *mut btf,
-    pub ctx_arg_info: *const bpf_ctx_arg_aux,
-    pub dst_mutex: mutex,
-    pub dst_prog: *mut bpf_prog,
-    pub dst_trampoline: *mut bpf_trampoline,
-    pub saved_dst_prog_type: bpf_prog_type::Type,
-    pub saved_dst_attach_type: bpf_attach_type::Type,
-    pub verifier_zext: bool_,
-    pub offload_requested: bool_,
-    pub attach_btf_trace: bool_,
-    pub func_proto_unreliable: bool_,
-    pub sleepable: bool_,
-    pub tail_call_reachable: bool_,
-    pub tramp_hlist: hlist_node,
-    pub attach_func_proto: *const btf_type,
-    pub attach_func_name: *const ::aya_bpf::cty::c_char,
-    pub func: *mut *mut bpf_prog,
-    pub jit_data: *mut ::aya_bpf::cty::c_void,
-    pub poke_tab: *mut bpf_jit_poke_descriptor,
-    pub kfunc_tab: *mut bpf_kfunc_desc_tab,
-    pub kfunc_btf_tab: *mut bpf_kfunc_btf_tab,
-    pub size_poke_tab: u32_,
-    pub ksym: bpf_ksym,
-    pub ops: *const bpf_prog_ops,
-    pub used_maps: *mut *mut bpf_map,
-    pub used_maps_mutex: mutex,
-    pub used_btfs: *mut btf_mod_pair,
-    pub prog: *mut bpf_prog,
-    pub user: *mut user_struct,
-    pub load_time: u64_,
-    pub verified_insns: u32_,
-    pub cgroup_storage: [*mut bpf_map; 2usize],
-    pub name: [::aya_bpf::cty::c_char; 16usize],
-    pub security: *mut ::aya_bpf::cty::c_void,
-    pub offload: *mut bpf_prog_offload,
-    pub btf: *mut btf,
-    pub func_info: *mut bpf_func_info,
-    pub func_info_aux: *mut bpf_func_info_aux,
-    pub linfo: *mut bpf_line_info,
-    pub jited_linfo: *mut *mut ::aya_bpf::cty::c_void,
-    pub func_info_cnt: u32_,
-    pub nr_linfo: u32_,
-    pub linfo_idx: u32_,
-    pub num_exentries: u32_,
-    pub extable: *mut exception_table_entry,
-    pub __bindgen_anon_1: bpf_prog_aux__bindgen_ty_1,
-}
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub union bpf_prog_aux__bindgen_ty_1 {
-    pub work: work_struct,
-    pub rcu: callback_head,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct bpf_map_dev_ops {
-    pub map_get_next_key: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut bpf_offloaded_map,
-            arg2: *mut ::aya_bpf::cty::c_void,
-            arg3: *mut ::aya_bpf::cty::c_void,
-        ) -> ::aya_bpf::cty::c_int,
-    >,
-    pub map_lookup_elem: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut bpf_offloaded_map,
-            arg2: *mut ::aya_bpf::cty::c_void,
-            arg3: *mut ::aya_bpf::cty::c_void,
-        ) -> ::aya_bpf::cty::c_int,
-    >,
-    pub map_update_elem: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut bpf_offloaded_map,
-            arg2: *mut ::aya_bpf::cty::c_void,
-            arg3: *mut ::aya_bpf::cty::c_void,
-            arg4: u64_,
-        ) -> ::aya_bpf::cty::c_int,
-    >,
-    pub map_delete_elem: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut bpf_offloaded_map,
-            arg2: *mut ::aya_bpf::cty::c_void,
-        ) -> ::aya_bpf::cty::c_int,
-    >,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct bpf_prog_ops {
-    pub test_run: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut bpf_prog,
-            arg2: *const bpf_attr,
-            arg3: *mut bpf_attr,
-        ) -> ::aya_bpf::cty::c_int,
-    >,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct bpf_prog_offload {
-    pub prog: *mut bpf_prog,
-    pub netdev: *mut net_device,
-    pub offdev: *mut bpf_offload_dev,
-    pub dev_priv: *mut ::aya_bpf::cty::c_void,
-    pub offloads: list_head,
-    pub dev_state: bool_,
-    pub opt_failed: bool_,
-    pub jited_image: *mut ::aya_bpf::cty::c_void,
-    pub jited_len: u32_,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct btf_func_model {
-    pub ret_size: u8_,
-    pub nr_args: u8_,
-    pub arg_size: [u8_; 12usize],
-}
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct bpf_tramp_image {
-    pub image: *mut ::aya_bpf::cty::c_void,
-    pub ksym: bpf_ksym,
-    pub pcref: percpu_ref,
-    pub ip_after_call: *mut ::aya_bpf::cty::c_void,
-    pub ip_epilogue: *mut ::aya_bpf::cty::c_void,
-    pub __bindgen_anon_1: bpf_tramp_image__bindgen_ty_1,
-}
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub union bpf_tramp_image__bindgen_ty_1 {
-    pub rcu: callback_head,
-    pub work: work_struct,
-}
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct bpf_trampoline {
-    pub hlist: hlist_node,
-    pub mutex: mutex,
-    pub refcnt: refcount_t,
-    pub key: u64_,
-    pub func: bpf_trampoline__bindgen_ty_1,
-    pub extension_prog: *mut bpf_prog,
-    pub progs_hlist: [hlist_head; 3usize],
-    pub progs_cnt: [::aya_bpf::cty::c_int; 3usize],
-    pub cur_image: *mut bpf_tramp_image,
-    pub selector: u64_,
-    pub mod_: *mut module,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct bpf_trampoline__bindgen_ty_1 {
-    pub model: btf_func_model,
-    pub addr: *mut ::aya_bpf::cty::c_void,
-    pub ftrace_managed: bool_,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct bpf_func_info_aux {
-    pub linkage: u16_,
-    pub unreliable: bool_,
-}
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct bpf_jit_poke_descriptor {
-    pub tailcall_target: *mut ::aya_bpf::cty::c_void,
-    pub tailcall_bypass: *mut ::aya_bpf::cty::c_void,
-    pub bypass_addr: *mut ::aya_bpf::cty::c_void,
-    pub aux: *mut ::aya_bpf::cty::c_void,
-    pub __bindgen_anon_1: bpf_jit_poke_descriptor__bindgen_ty_1,
-    pub tailcall_target_stable: bool_,
-    pub adj_off: u8_,
-    pub reason: u16_,
-    pub insn_idx: u32_,
-}
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub union bpf_jit_poke_descriptor__bindgen_ty_1 {
-    pub tail_call: bpf_jit_poke_descriptor__bindgen_ty_1__bindgen_ty_1,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct bpf_jit_poke_descriptor__bindgen_ty_1__bindgen_ty_1 {
-    pub map: *mut bpf_map,
-    pub key: u32_,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct bpf_ctx_arg_aux {
-    pub offset: u32_,
-    pub reg_type: bpf_reg_type::Type,
-    pub btf_id: u32_,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct btf_mod_pair {
-    pub btf: *mut btf,
+pub struct crypto_template {
+    pub list: list_head,
+    pub instances: hlist_head,
     pub module: *mut module,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct tcmsg {
-    pub tcm_family: ::aya_bpf::cty::c_uchar,
-    pub tcm__pad1: ::aya_bpf::cty::c_uchar,
-    pub tcm__pad2: ::aya_bpf::cty::c_ushort,
-    pub tcm_ifindex: ::aya_bpf::cty::c_int,
-    pub tcm_handle: __u32,
-    pub tcm_parent: __u32,
-    pub tcm_info: __u32,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct gnet_dump {
-    pub lock: *mut spinlock_t,
-    pub skb: *mut sk_buff,
-    pub tail: *mut nlattr,
-    pub compat_tc_stats: ::aya_bpf::cty::c_int,
-    pub compat_xstats: ::aya_bpf::cty::c_int,
-    pub padattr: ::aya_bpf::cty::c_int,
-    pub xstats: *mut ::aya_bpf::cty::c_void,
-    pub xstats_len: ::aya_bpf::cty::c_int,
-    pub tc_stats: tc_stats,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct flow_block {
-    pub cb_list: list_head,
-}
-pub type flow_setup_cb_t = ::core::option::Option<
-    unsafe extern "C" fn(
-        arg1: tc_setup_type::Type,
-        arg2: *mut ::aya_bpf::cty::c_void,
-        arg3: *mut ::aya_bpf::cty::c_void,
-    ) -> ::aya_bpf::cty::c_int,
->;
-#[repr(C)]
-#[derive(Debug)]
-pub struct qdisc_size_table {
-    pub rcu: callback_head,
-    pub list: list_head,
-    pub szopts: tc_sizespec,
-    pub refcnt: ::aya_bpf::cty::c_int,
-    pub data: __IncompleteArrayField<u16_>,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct Qdisc_ops {
-    pub next: *mut Qdisc_ops,
-    pub cl_ops: *const Qdisc_class_ops,
-    pub id: [::aya_bpf::cty::c_char; 16usize],
-    pub priv_size: ::aya_bpf::cty::c_int,
-    pub static_flags: ::aya_bpf::cty::c_uint,
-    pub enqueue: ::core::option::Option<
+    pub create: ::core::option::Option<
         unsafe extern "C" fn(
-            arg1: *mut sk_buff,
-            arg2: *mut Qdisc,
-            arg3: *mut *mut sk_buff,
+            arg1: *mut crypto_template,
+            arg2: *mut *mut rtattr,
         ) -> ::aya_bpf::cty::c_int,
     >,
-    pub dequeue: ::core::option::Option<unsafe extern "C" fn(arg1: *mut Qdisc) -> *mut sk_buff>,
-    pub peek: ::core::option::Option<unsafe extern "C" fn(arg1: *mut Qdisc) -> *mut sk_buff>,
-    pub init: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut Qdisc,
-            arg2: *mut nlattr,
-            arg3: *mut netlink_ext_ack,
-        ) -> ::aya_bpf::cty::c_int,
-    >,
-    pub reset: ::core::option::Option<unsafe extern "C" fn(arg1: *mut Qdisc)>,
-    pub destroy: ::core::option::Option<unsafe extern "C" fn(arg1: *mut Qdisc)>,
-    pub change: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut Qdisc,
-            arg2: *mut nlattr,
-            arg3: *mut netlink_ext_ack,
-        ) -> ::aya_bpf::cty::c_int,
-    >,
-    pub attach: ::core::option::Option<unsafe extern "C" fn(arg1: *mut Qdisc)>,
-    pub change_tx_queue_len: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut Qdisc,
-            arg2: ::aya_bpf::cty::c_uint,
-        ) -> ::aya_bpf::cty::c_int,
-    >,
-    pub change_real_num_tx: ::core::option::Option<
-        unsafe extern "C" fn(arg1: *mut Qdisc, arg2: ::aya_bpf::cty::c_uint),
-    >,
-    pub dump: ::core::option::Option<
-        unsafe extern "C" fn(arg1: *mut Qdisc, arg2: *mut sk_buff) -> ::aya_bpf::cty::c_int,
-    >,
-    pub dump_stats: ::core::option::Option<
-        unsafe extern "C" fn(arg1: *mut Qdisc, arg2: *mut gnet_dump) -> ::aya_bpf::cty::c_int,
-    >,
-    pub ingress_block_set:
-        ::core::option::Option<unsafe extern "C" fn(arg1: *mut Qdisc, arg2: u32_)>,
-    pub egress_block_set:
-        ::core::option::Option<unsafe extern "C" fn(arg1: *mut Qdisc, arg2: u32_)>,
-    pub ingress_block_get: ::core::option::Option<unsafe extern "C" fn(arg1: *mut Qdisc) -> u32_>,
-    pub egress_block_get: ::core::option::Option<unsafe extern "C" fn(arg1: *mut Qdisc) -> u32_>,
-    pub owner: *mut module,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct Qdisc_class_ops {
-    pub flags: ::aya_bpf::cty::c_uint,
-    pub select_queue: ::core::option::Option<
-        unsafe extern "C" fn(arg1: *mut Qdisc, arg2: *mut tcmsg) -> *mut netdev_queue,
-    >,
-    pub graft: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut Qdisc,
-            arg2: ::aya_bpf::cty::c_ulong,
-            arg3: *mut Qdisc,
-            arg4: *mut *mut Qdisc,
-            arg5: *mut netlink_ext_ack,
-        ) -> ::aya_bpf::cty::c_int,
-    >,
-    pub leaf: ::core::option::Option<
-        unsafe extern "C" fn(arg1: *mut Qdisc, arg2: ::aya_bpf::cty::c_ulong) -> *mut Qdisc,
-    >,
-    pub qlen_notify: ::core::option::Option<
-        unsafe extern "C" fn(arg1: *mut Qdisc, arg2: ::aya_bpf::cty::c_ulong),
-    >,
-    pub find: ::core::option::Option<
-        unsafe extern "C" fn(arg1: *mut Qdisc, arg2: u32_) -> ::aya_bpf::cty::c_ulong,
-    >,
-    pub change: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut Qdisc,
-            arg2: u32_,
-            arg3: u32_,
-            arg4: *mut *mut nlattr,
-            arg5: *mut ::aya_bpf::cty::c_ulong,
-            arg6: *mut netlink_ext_ack,
-        ) -> ::aya_bpf::cty::c_int,
-    >,
-    pub delete: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut Qdisc,
-            arg2: ::aya_bpf::cty::c_ulong,
-            arg3: *mut netlink_ext_ack,
-        ) -> ::aya_bpf::cty::c_int,
-    >,
-    pub walk:
-        ::core::option::Option<unsafe extern "C" fn(arg1: *mut Qdisc, arg2: *mut qdisc_walker)>,
-    pub tcf_block: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut Qdisc,
-            arg2: ::aya_bpf::cty::c_ulong,
-            arg3: *mut netlink_ext_ack,
-        ) -> *mut tcf_block,
-    >,
-    pub bind_tcf: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut Qdisc,
-            arg2: ::aya_bpf::cty::c_ulong,
-            arg3: u32_,
-        ) -> ::aya_bpf::cty::c_ulong,
-    >,
-    pub unbind_tcf: ::core::option::Option<
-        unsafe extern "C" fn(arg1: *mut Qdisc, arg2: ::aya_bpf::cty::c_ulong),
-    >,
-    pub dump: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut Qdisc,
-            arg2: ::aya_bpf::cty::c_ulong,
-            arg3: *mut sk_buff,
-            arg4: *mut tcmsg,
-        ) -> ::aya_bpf::cty::c_int,
-    >,
-    pub dump_stats: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut Qdisc,
-            arg2: ::aya_bpf::cty::c_ulong,
-            arg3: *mut gnet_dump,
-        ) -> ::aya_bpf::cty::c_int,
-    >,
+    pub name: [::aya_bpf::cty::c_char; 128usize],
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
-pub struct tcf_block {
-    pub lock: mutex,
-    pub chain_list: list_head,
-    pub index: u32_,
-    pub classid: u32_,
-    pub refcnt: refcount_t,
-    pub net: *mut net,
-    pub q: *mut Qdisc,
-    pub cb_lock: rw_semaphore,
-    pub flow_block: flow_block,
-    pub owner_list: list_head,
-    pub keep_dst: bool_,
-    pub offloadcnt: atomic_t,
-    pub nooffloaddevcnt: ::aya_bpf::cty::c_uint,
-    pub lockeddevcnt: ::aya_bpf::cty::c_uint,
-    pub chain0: tcf_block__bindgen_ty_1,
-    pub rcu: callback_head,
-    pub proto_destroy_ht: [hlist_head; 128usize],
-    pub proto_destroy_lock: mutex,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct tcf_block__bindgen_ty_1 {
-    pub chain: *mut tcf_chain,
-    pub filter_chain_list: list_head,
+pub struct semaphore {
+    pub lock: raw_spinlock_t,
+    pub count: ::aya_bpf::cty::c_uint,
+    pub wait_list: list_head,
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
-pub struct tcf_proto {
-    pub next: *mut tcf_proto,
-    pub root: *mut ::aya_bpf::cty::c_void,
-    pub classify: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut sk_buff,
-            arg2: *const tcf_proto,
-            arg3: *mut tcf_result,
-        ) -> ::aya_bpf::cty::c_int,
-    >,
-    pub protocol: __be16,
-    pub prio: u32_,
-    pub data: *mut ::aya_bpf::cty::c_void,
-    pub ops: *const tcf_proto_ops,
-    pub chain: *mut tcf_chain,
-    pub lock: spinlock_t,
-    pub deleting: bool_,
-    pub refcnt: refcount_t,
-    pub rcu: callback_head,
-    pub destroy_ht_node: hlist_node,
-}
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct tcf_result {
-    pub __bindgen_anon_1: tcf_result__bindgen_ty_1,
-}
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub union tcf_result__bindgen_ty_1 {
-    pub __bindgen_anon_1: tcf_result__bindgen_ty_1__bindgen_ty_1,
-    pub goto_tp: *const tcf_proto,
-    pub __bindgen_anon_2: tcf_result__bindgen_ty_1__bindgen_ty_2,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct tcf_result__bindgen_ty_1__bindgen_ty_1 {
-    pub class: ::aya_bpf::cty::c_ulong,
-    pub classid: u32_,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct tcf_result__bindgen_ty_1__bindgen_ty_2 {
-    pub ingress: bool_,
-    pub qstats: *mut gnet_stats_queue,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct tcf_proto_ops {
-    pub head: list_head,
-    pub kind: [::aya_bpf::cty::c_char; 16usize],
-    pub classify: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut sk_buff,
-            arg2: *const tcf_proto,
-            arg3: *mut tcf_result,
-        ) -> ::aya_bpf::cty::c_int,
-    >,
-    pub init:
-        ::core::option::Option<unsafe extern "C" fn(arg1: *mut tcf_proto) -> ::aya_bpf::cty::c_int>,
-    pub destroy: ::core::option::Option<
-        unsafe extern "C" fn(arg1: *mut tcf_proto, arg2: bool_, arg3: *mut netlink_ext_ack),
-    >,
-    pub get: ::core::option::Option<
-        unsafe extern "C" fn(arg1: *mut tcf_proto, arg2: u32_) -> *mut ::aya_bpf::cty::c_void,
-    >,
-    pub put: ::core::option::Option<
-        unsafe extern "C" fn(arg1: *mut tcf_proto, arg2: *mut ::aya_bpf::cty::c_void),
-    >,
-    pub change: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut net,
-            arg2: *mut sk_buff,
-            arg3: *mut tcf_proto,
-            arg4: ::aya_bpf::cty::c_ulong,
-            arg5: u32_,
-            arg6: *mut *mut nlattr,
-            arg7: *mut *mut ::aya_bpf::cty::c_void,
-            arg8: u32_,
-            arg9: *mut netlink_ext_ack,
-        ) -> ::aya_bpf::cty::c_int,
-    >,
-    pub delete: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut tcf_proto,
-            arg2: *mut ::aya_bpf::cty::c_void,
-            arg3: *mut bool_,
-            arg4: bool_,
-            arg5: *mut netlink_ext_ack,
-        ) -> ::aya_bpf::cty::c_int,
-    >,
-    pub delete_empty: ::core::option::Option<unsafe extern "C" fn(arg1: *mut tcf_proto) -> bool_>,
-    pub walk: ::core::option::Option<
-        unsafe extern "C" fn(arg1: *mut tcf_proto, arg2: *mut tcf_walker, arg3: bool_),
-    >,
-    pub reoffload: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut tcf_proto,
-            arg2: bool_,
-            arg3: flow_setup_cb_t,
-            arg4: *mut ::aya_bpf::cty::c_void,
-            arg5: *mut netlink_ext_ack,
-        ) -> ::aya_bpf::cty::c_int,
-    >,
-    pub hw_add: ::core::option::Option<
-        unsafe extern "C" fn(arg1: *mut tcf_proto, arg2: *mut ::aya_bpf::cty::c_void),
-    >,
-    pub hw_del: ::core::option::Option<
-        unsafe extern "C" fn(arg1: *mut tcf_proto, arg2: *mut ::aya_bpf::cty::c_void),
-    >,
-    pub bind_class: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut ::aya_bpf::cty::c_void,
-            arg2: u32_,
-            arg3: ::aya_bpf::cty::c_ulong,
-            arg4: *mut ::aya_bpf::cty::c_void,
-            arg5: ::aya_bpf::cty::c_ulong,
-        ),
-    >,
-    pub tmplt_create: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut net,
-            arg2: *mut tcf_chain,
-            arg3: *mut *mut nlattr,
-            arg4: *mut netlink_ext_ack,
-        ) -> *mut ::aya_bpf::cty::c_void,
-    >,
-    pub tmplt_destroy:
-        ::core::option::Option<unsafe extern "C" fn(arg1: *mut ::aya_bpf::cty::c_void)>,
-    pub dump: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut net,
-            arg2: *mut tcf_proto,
-            arg3: *mut ::aya_bpf::cty::c_void,
-            arg4: *mut sk_buff,
-            arg5: *mut tcmsg,
-            arg6: bool_,
-        ) -> ::aya_bpf::cty::c_int,
-    >,
-    pub terse_dump: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut net,
-            arg2: *mut tcf_proto,
-            arg3: *mut ::aya_bpf::cty::c_void,
-            arg4: *mut sk_buff,
-            arg5: *mut tcmsg,
-            arg6: bool_,
-        ) -> ::aya_bpf::cty::c_int,
-    >,
-    pub tmplt_dump: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut sk_buff,
-            arg2: *mut net,
-            arg3: *mut ::aya_bpf::cty::c_void,
-        ) -> ::aya_bpf::cty::c_int,
-    >,
-    pub owner: *mut module,
-    pub flags: ::aya_bpf::cty::c_int,
-}
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct tcf_chain {
-    pub filter_chain_lock: mutex,
-    pub filter_chain: *mut tcf_proto,
-    pub list: list_head,
-    pub block: *mut tcf_block,
-    pub index: u32_,
-    pub refcnt: ::aya_bpf::cty::c_uint,
-    pub action_refcnt: ::aya_bpf::cty::c_uint,
-    pub explicitly_created: bool_,
-    pub flushing: bool_,
-    pub tmplt_ops: *const tcf_proto_ops,
-    pub tmplt_priv: *mut ::aya_bpf::cty::c_void,
-    pub rcu: callback_head,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct sock_fprog_kern {
-    pub len: u16_,
-    pub filter: *mut sock_filter,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct bpf_prog_stats {
-    pub cnt: u64_stats_t,
-    pub nsecs: u64_stats_t,
-    pub misses: u64_stats_t,
-    pub syncp: u64_stats_sync,
-    pub _bitfield_align_1: [u8; 0],
-    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 8usize]>,
-}
-impl bpf_prog_stats {
-    #[inline]
-    pub fn new_bitfield_1() -> __BindgenBitfieldUnit<[u8; 8usize]> {
-        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 8usize]> = Default::default();
-        __bindgen_bitfield_unit
-    }
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
 pub struct fdtable {
     pub max_fds: ::aya_bpf::cty::c_uint,
     pub fd: *mut *mut file,
@@ -23498,23 +22790,16 @@ impl files_struct {
     }
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct robust_list {
     pub next: *mut robust_list,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct robust_list_head {
     pub list: robust_list,
     pub futex_offset: ::aya_bpf::cty::c_long,
     pub list_op_pending: *mut robust_list,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct sk_filter {
-    pub refcnt: refcount_t,
-    pub rcu: callback_head,
-    pub prog: *mut bpf_prog,
 }
 #[repr(C)]
 pub struct workqueue_struct {
@@ -23545,7 +22830,7 @@ pub struct workqueue_struct {
     pub _bitfield_2: __BindgenBitfieldUnit<[u8; 48usize]>,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct workqueue_attrs {
     pub nice: ::aya_bpf::cty::c_int,
     pub cpumask: cpumask_var_t,
@@ -23563,7 +22848,6 @@ pub struct worker {
     pub current_work: *mut work_struct,
     pub current_func: work_func_t,
     pub current_pwq: *mut pool_workqueue,
-    pub current_color: ::aya_bpf::cty::c_uint,
     pub scheduled: list_head,
     pub task: *mut task_struct,
     pub pool: *mut worker_pool,
@@ -23583,23 +22867,23 @@ pub union worker__bindgen_ty_1 {
     pub hentry: hlist_node,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct pool_workqueue {
     pub pool: *mut worker_pool,
     pub wq: *mut workqueue_struct,
     pub work_color: ::aya_bpf::cty::c_int,
     pub flush_color: ::aya_bpf::cty::c_int,
     pub refcnt: ::aya_bpf::cty::c_int,
-    pub nr_in_flight: [::aya_bpf::cty::c_int; 16usize],
+    pub nr_in_flight: [::aya_bpf::cty::c_int; 15usize],
     pub nr_active: ::aya_bpf::cty::c_int,
     pub max_active: ::aya_bpf::cty::c_int,
-    pub inactive_works: list_head,
+    pub delayed_works: list_head,
     pub pwqs_node: list_head,
     pub mayday_node: list_head,
     pub unbound_release_work: work_struct,
     pub rcu: callback_head,
     pub _bitfield_align_1: [u8; 0],
-    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 56usize]>,
+    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 64usize]>,
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
@@ -23610,7 +22894,6 @@ pub struct worker_pool {
     pub id: ::aya_bpf::cty::c_int,
     pub flags: ::aya_bpf::cty::c_uint,
     pub watchdog_ts: ::aya_bpf::cty::c_ulong,
-    pub nr_running: atomic_t,
     pub worklist: list_head,
     pub nr_workers: ::aya_bpf::cty::c_int,
     pub nr_idle: ::aya_bpf::cty::c_int,
@@ -23625,7 +22908,19 @@ pub struct worker_pool {
     pub attrs: *mut workqueue_attrs,
     pub hash_node: hlist_node,
     pub refcnt: ::aya_bpf::cty::c_int,
+    pub _bitfield_align_1: [u8; 0],
+    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 32usize]>,
+    pub nr_running: atomic_t,
     pub rcu: callback_head,
+    pub _bitfield_align_2: [u8; 0],
+    pub _bitfield_2: __BindgenBitfieldUnit<[u8; 40usize]>,
+}
+impl worker_pool {
+    #[inline]
+    pub fn new_bitfield_1() -> __BindgenBitfieldUnit<[u8; 32usize]> {
+        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 32usize]> = Default::default();
+        __bindgen_bitfield_unit
+    }
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
@@ -23640,17 +22935,14 @@ pub struct wq_device {
     pub wq: *mut workqueue_struct,
     pub dev: device,
 }
+pub type task_work_func_t = ::core::option::Option<unsafe extern "C" fn(arg1: *mut callback_head)>;
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct local_lock_t {}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct param_attribute {
     pub mattr: module_attribute,
     pub param: *const kernel_param,
 }
 #[repr(C)]
-#[derive(Debug)]
 pub struct module_param_attrs {
     pub num: ::aya_bpf::cty::c_uint,
     pub grp: attribute_group,
@@ -23698,8 +22990,14 @@ pub struct ipc_namespace {
     pub ns: ns_common,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
+pub struct lsmblob {
+    pub secid: [u32_; 4usize],
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
 pub struct pin_cookie {}
+pub type call_single_data_t = __call_single_data;
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct dl_bw {
@@ -23716,13 +23014,13 @@ pub struct cpudl {
     pub elements: *mut cpudl_item,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct cpupri_vec {
     pub count: atomic_t,
     pub mask: cpumask_var_t,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct cpupri {
     pub pri_to_cpu: [cpupri_vec; 101usize],
     pub cpu_to_pri: *mut ::aya_bpf::cty::c_int,
@@ -23759,12 +23057,9 @@ pub struct cfs_rq {
     pub load: load_weight,
     pub nr_running: ::aya_bpf::cty::c_uint,
     pub h_nr_running: ::aya_bpf::cty::c_uint,
-    pub idle_nr_running: ::aya_bpf::cty::c_uint,
     pub idle_h_nr_running: ::aya_bpf::cty::c_uint,
     pub exec_clock: u64_,
     pub min_vruntime: u64_,
-    pub forceidle_seq: ::aya_bpf::cty::c_uint,
-    pub min_vruntime_fi: u64_,
     pub tasks_timeline: rb_root_cached,
     pub curr: *mut sched_entity,
     pub next: *mut sched_entity,
@@ -23772,7 +23067,7 @@ pub struct cfs_rq {
     pub skip: *mut sched_entity,
     pub nr_spread_over: ::aya_bpf::cty::c_uint,
     pub _bitfield_align_1: [u8; 0],
-    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 16usize]>,
+    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 32usize]>,
     pub avg: sched_avg,
     pub removed: cfs_rq__bindgen_ty_1,
     pub tg_load_avg_contrib: ::aya_bpf::cty::c_ulong,
@@ -23785,7 +23080,6 @@ pub struct cfs_rq {
     pub on_list: ::aya_bpf::cty::c_int,
     pub leaf_cfs_rq_list: list_head,
     pub tg: *mut task_group,
-    pub idle: ::aya_bpf::cty::c_int,
     pub runtime_enabled: ::aya_bpf::cty::c_int,
     pub runtime_remaining: s64,
     pub throttled_clock: u64_,
@@ -23817,8 +23111,8 @@ impl cfs_rq__bindgen_ty_1 {
 }
 impl cfs_rq {
     #[inline]
-    pub fn new_bitfield_1() -> __BindgenBitfieldUnit<[u8; 16usize]> {
-        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 16usize]> = Default::default();
+    pub fn new_bitfield_1() -> __BindgenBitfieldUnit<[u8; 32usize]> {
+        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 32usize]> = Default::default();
         __bindgen_bitfield_unit
     }
 }
@@ -23829,8 +23123,6 @@ pub struct cfs_bandwidth {
     pub period: ktime_t,
     pub quota: u64_,
     pub runtime: u64_,
-    pub burst: u64_,
-    pub runtime_snap: u64_,
     pub hierarchical_quota: s64,
     pub idle: u8_,
     pub period_active: u8_,
@@ -23840,9 +23132,7 @@ pub struct cfs_bandwidth {
     pub throttled_cfs_rq: list_head,
     pub nr_periods: ::aya_bpf::cty::c_int,
     pub nr_throttled: ::aya_bpf::cty::c_int,
-    pub nr_burst: ::aya_bpf::cty::c_int,
     pub throttled_time: u64_,
-    pub burst_time: u64_,
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
@@ -23851,7 +23141,6 @@ pub struct task_group {
     pub se: *mut *mut sched_entity,
     pub cfs_rq: *mut *mut cfs_rq,
     pub shares: ::aya_bpf::cty::c_ulong,
-    pub idle: ::aya_bpf::cty::c_int,
     pub _bitfield_align_1: [u8; 0],
     pub _bitfield_1: __BindgenBitfieldUnit<[u8; 32usize]>,
     pub load_avg: atomic_long_t,
@@ -23865,8 +23154,6 @@ pub struct task_group {
     pub uclamp_pct: [::aya_bpf::cty::c_uint; 2usize],
     pub uclamp_req: [uclamp_se; 2usize],
     pub uclamp: [uclamp_se; 2usize],
-    pub _bitfield_align_2: [u8; 0],
-    pub _bitfield_2: __BindgenBitfieldUnit<[u8; 32usize]>,
 }
 impl task_group {
     #[inline]
@@ -23874,25 +23161,17 @@ impl task_group {
         let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 32usize]> = Default::default();
         __bindgen_bitfield_unit
     }
-    #[inline]
-    pub fn new_bitfield_2() -> __BindgenBitfieldUnit<[u8; 32usize]> {
-        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 32usize]> = Default::default();
-        __bindgen_bitfield_unit
-    }
 }
 #[repr(C)]
-#[derive(Debug)]
 pub struct sched_group {
     pub next: *mut sched_group,
     pub ref_: atomic_t,
     pub group_weight: ::aya_bpf::cty::c_uint,
     pub sgc: *mut sched_group_capacity,
     pub asym_prefer_cpu: ::aya_bpf::cty::c_int,
-    pub flags: ::aya_bpf::cty::c_int,
     pub cpumask: __IncompleteArrayField<::aya_bpf::cty::c_ulong>,
 }
 #[repr(C)]
-#[derive(Debug)]
 pub struct sched_group_capacity {
     pub ref_: atomic_t,
     pub capacity: ::aya_bpf::cty::c_ulong,
@@ -23914,7 +23193,7 @@ pub struct autogroup {
 }
 #[repr(C)]
 #[repr(align(8))]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct uclamp_bucket {
     pub _bitfield_align_1: [u64; 0],
     pub _bitfield_1: __BindgenBitfieldUnit<[u8; 8usize]>,
@@ -23960,13 +23239,13 @@ impl uclamp_bucket {
     }
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct uclamp_rq {
     pub value: ::aya_bpf::cty::c_uint,
     pub bucket: [uclamp_bucket; 5usize],
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct rt_prio_array {
     pub bitmap: [::aya_bpf::cty::c_ulong; 2usize],
     pub queue: [list_head; 100usize],
@@ -23978,8 +23257,8 @@ pub struct rt_rq {
     pub rt_nr_running: ::aya_bpf::cty::c_uint,
     pub rr_nr_running: ::aya_bpf::cty::c_uint,
     pub highest_prio: rt_rq__bindgen_ty_1,
-    pub rt_nr_migratory: ::aya_bpf::cty::c_uint,
-    pub rt_nr_total: ::aya_bpf::cty::c_uint,
+    pub rt_nr_migratory: ::aya_bpf::cty::c_ulong,
+    pub rt_nr_total: ::aya_bpf::cty::c_ulong,
     pub overloaded: ::aya_bpf::cty::c_int,
     pub pushable_tasks: plist_head,
     pub rt_queued: ::aya_bpf::cty::c_int,
@@ -23989,18 +23268,18 @@ pub struct rt_rq {
     pub rt_runtime_lock: raw_spinlock_t,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct rt_rq__bindgen_ty_1 {
     pub curr: ::aya_bpf::cty::c_int,
     pub next: ::aya_bpf::cty::c_int,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct dl_rq {
     pub root: rb_root_cached,
-    pub dl_nr_running: ::aya_bpf::cty::c_uint,
+    pub dl_nr_running: ::aya_bpf::cty::c_ulong,
     pub earliest_dl: dl_rq__bindgen_ty_1,
-    pub dl_nr_migratory: ::aya_bpf::cty::c_uint,
+    pub dl_nr_migratory: ::aya_bpf::cty::c_ulong,
     pub overloaded: ::aya_bpf::cty::c_int,
     pub pushable_dl_tasks_root: rb_root_cached,
     pub running_bw: u64_,
@@ -24009,13 +23288,13 @@ pub struct dl_rq {
     pub bw_ratio: u64_,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct dl_rq__bindgen_ty_1 {
     pub curr: u64_,
     pub next: u64_,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct cpu_stop_work {
     pub list: list_head,
     pub fn_: cpu_stop_fn_t,
@@ -24026,7 +23305,7 @@ pub struct cpu_stop_work {
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct rq {
-    pub __lock: raw_spinlock_t,
+    pub lock: raw_spinlock_t,
     pub nr_running: ::aya_bpf::cty::c_uint,
     pub nr_numa_running: ::aya_bpf::cty::c_uint,
     pub nr_preferred_running: ::aya_bpf::cty::c_uint,
@@ -24051,7 +23330,7 @@ pub struct rq {
     pub dl: dl_rq,
     pub leaf_cfs_rq_list: list_head,
     pub tmp_alone_branch: *mut list_head,
-    pub nr_uninterruptible: ::aya_bpf::cty::c_uint,
+    pub nr_uninterruptible: ::aya_bpf::cty::c_ulong,
     pub curr: *mut task_struct,
     pub idle: *mut task_struct,
     pub stop: *mut task_struct,
@@ -24060,7 +23339,7 @@ pub struct rq {
     pub clock_update_flags: ::aya_bpf::cty::c_uint,
     pub clock: u64_,
     pub _bitfield_align_4: [u8; 0],
-    pub _bitfield_4: __BindgenBitfieldUnit<[u8; 40usize]>,
+    pub _bitfield_4: __BindgenBitfieldUnit<[u8; 24usize]>,
     pub clock_task: u64_,
     pub clock_pelt: u64_,
     pub lost_idle_time: ::aya_bpf::cty::c_ulong,
@@ -24086,16 +23365,11 @@ pub struct rq {
     pub _bitfield_5: __BindgenBitfieldUnit<[u8; 8usize]>,
     pub avg_rt: sched_avg,
     pub avg_dl: sched_avg,
-    pub avg_irq: sched_avg,
     pub idle_stamp: u64_,
     pub avg_idle: u64_,
-    pub wake_stamp: ::aya_bpf::cty::c_ulong,
-    pub wake_avg_idle: u64_,
     pub max_idle_balance_cost: u64_,
     pub hotplug_wait: rcuwait,
-    pub prev_irq_time: u64_,
     pub prev_steal_time: u64_,
-    pub prev_steal_time_rq: u64_,
     pub calc_load_update: ::aya_bpf::cty::c_ulong,
     pub calc_load_active: ::aya_bpf::cty::c_long,
     pub _bitfield_align_6: [u8; 0],
@@ -24114,20 +23388,8 @@ pub struct rq {
     pub nr_pinned: ::aya_bpf::cty::c_uint,
     pub push_busy: ::aya_bpf::cty::c_uint,
     pub push_work: cpu_stop_work,
-    pub core: *mut rq,
-    pub core_pick: *mut task_struct,
-    pub core_enabled: ::aya_bpf::cty::c_uint,
-    pub core_sched_seq: ::aya_bpf::cty::c_uint,
-    pub core_tree: rb_root,
-    pub core_task_seq: ::aya_bpf::cty::c_uint,
-    pub core_pick_seq: ::aya_bpf::cty::c_uint,
-    pub core_cookie: ::aya_bpf::cty::c_ulong,
-    pub core_forceidle_count: ::aya_bpf::cty::c_uint,
-    pub core_forceidle_seq: ::aya_bpf::cty::c_uint,
-    pub core_forceidle_occupation: ::aya_bpf::cty::c_uint,
-    pub core_forceidle_start: u64_,
     pub _bitfield_align_7: [u8; 0],
-    pub _bitfield_7: __BindgenBitfieldUnit<[u8; 48usize]>,
+    pub _bitfield_7: __BindgenBitfieldUnit<[u8; 24usize]>,
 }
 impl rq {
     #[inline]
@@ -24146,6 +23408,11 @@ impl rq {
         __bindgen_bitfield_unit
     }
     #[inline]
+    pub fn new_bitfield_4() -> __BindgenBitfieldUnit<[u8; 24usize]> {
+        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 24usize]> = Default::default();
+        __bindgen_bitfield_unit
+    }
+    #[inline]
     pub fn new_bitfield_5() -> __BindgenBitfieldUnit<[u8; 8usize]> {
         let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 8usize]> = Default::default();
         __bindgen_bitfield_unit
@@ -24155,9 +23422,14 @@ impl rq {
         let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 8usize]> = Default::default();
         __bindgen_bitfield_unit
     }
+    #[inline]
+    pub fn new_bitfield_7() -> __BindgenBitfieldUnit<[u8; 24usize]> {
+        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 24usize]> = Default::default();
+        __bindgen_bitfield_unit
+    }
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct cpuidle_state_usage {
     pub disable: ::aya_bpf::cty::c_ulonglong,
     pub usage: ::aya_bpf::cty::c_ulonglong,
@@ -24169,7 +23441,7 @@ pub struct cpuidle_state_usage {
     pub s2idle_time: ::aya_bpf::cty::c_ulonglong,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct cpuidle_state {
     pub name: [::aya_bpf::cty::c_char; 16usize],
     pub desc: [::aya_bpf::cty::c_char; 32usize],
@@ -24201,12 +23473,12 @@ pub struct cpuidle_state {
     >,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct cpuidle_driver_kobj {
     _unused: [u8; 0],
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct cpuidle_device {
     pub _bitfield_align_1: [u8; 0],
     pub _bitfield_1: __BindgenBitfieldUnit<[u8; 1usize]>,
@@ -24279,7 +23551,7 @@ impl cpuidle_device {
     }
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct cpuidle_driver {
     pub name: *const ::aya_bpf::cty::c_char,
     pub owner: *mut module,
@@ -24314,21 +23586,21 @@ impl cpuidle_driver {
     }
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct cpudl_item {
     pub dl: u64_,
     pub cpu: ::aya_bpf::cty::c_int,
     pub idx: ::aya_bpf::cty::c_int,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct perf_domain {
     pub em_pd: *mut em_perf_domain,
     pub next: *mut perf_domain,
     pub rcu: callback_head,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct rq_flags {
     pub flags: ::aya_bpf::cty::c_ulong,
     pub cookie: pin_cookie,
@@ -24344,128 +23616,25 @@ pub struct numa_group {
     pub rcu: callback_head,
     pub total_faults: ::aya_bpf::cty::c_ulong,
     pub max_faults_cpu: ::aya_bpf::cty::c_ulong,
+    pub faults_cpu: *mut ::aya_bpf::cty::c_ulong,
     pub faults: __IncompleteArrayField<::aya_bpf::cty::c_ulong>,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct ww_acquire_ctx {
-    pub task: *mut task_struct,
-    pub stamp: ::aya_bpf::cty::c_ulong,
-    pub acquired: ::aya_bpf::cty::c_uint,
-    pub wounded: ::aya_bpf::cty::c_ushort,
-    pub is_wait_die: ::aya_bpf::cty::c_ushort,
-}
-#[repr(C)]
 #[derive(Copy, Clone)]
-pub struct semaphore {
-    pub lock: raw_spinlock_t,
-    pub count: ::aya_bpf::cty::c_uint,
-    pub wait_list: list_head,
-}
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct rt_mutex_base {
-    pub wait_lock: raw_spinlock_t,
-    pub waiters: rb_root_cached,
-    pub owner: *mut task_struct,
-}
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct rt_mutex {
-    pub rtmutex: rt_mutex_base,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
 pub struct rt_mutex_waiter {
     pub tree_entry: rb_node,
     pub pi_tree_entry: rb_node,
     pub task: *mut task_struct,
-    pub lock: *mut rt_mutex_base,
-    pub wake_state: ::aya_bpf::cty::c_uint,
+    pub lock: *mut rt_mutex,
     pub prio: ::aya_bpf::cty::c_int,
     pub deadline: u64_,
-    pub ww_ctx: *mut ww_acquire_ctx,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct rcu_exp_work {
-    pub rew_s: ::aya_bpf::cty::c_ulong,
-    pub rew_work: work_struct,
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
-pub struct rcu_node {
-    pub lock: raw_spinlock_t,
-    pub gp_seq: ::aya_bpf::cty::c_ulong,
-    pub gp_seq_needed: ::aya_bpf::cty::c_ulong,
-    pub completedqs: ::aya_bpf::cty::c_ulong,
-    pub qsmask: ::aya_bpf::cty::c_ulong,
-    pub rcu_gp_init_mask: ::aya_bpf::cty::c_ulong,
-    pub qsmaskinit: ::aya_bpf::cty::c_ulong,
-    pub qsmaskinitnext: ::aya_bpf::cty::c_ulong,
-    pub ofl_seq: ::aya_bpf::cty::c_ulong,
-    pub expmask: ::aya_bpf::cty::c_ulong,
-    pub expmaskinit: ::aya_bpf::cty::c_ulong,
-    pub expmaskinitnext: ::aya_bpf::cty::c_ulong,
-    pub cbovldmask: ::aya_bpf::cty::c_ulong,
-    pub ffmask: ::aya_bpf::cty::c_ulong,
-    pub grpmask: ::aya_bpf::cty::c_ulong,
-    pub grplo: ::aya_bpf::cty::c_int,
-    pub grphi: ::aya_bpf::cty::c_int,
-    pub grpnum: u8_,
-    pub level: u8_,
-    pub wait_blkd_tasks: bool_,
-    pub parent: *mut rcu_node,
-    pub blkd_tasks: list_head,
-    pub gp_tasks: *mut list_head,
-    pub exp_tasks: *mut list_head,
-    pub boost_tasks: *mut list_head,
-    pub boost_mtx: rt_mutex,
-    pub boost_time: ::aya_bpf::cty::c_ulong,
-    pub boost_kthread_task: *mut task_struct,
-    pub boost_kthread_status: ::aya_bpf::cty::c_uint,
-    pub n_boosts: ::aya_bpf::cty::c_ulong,
-    pub _bitfield_align_1: [u8; 0],
-    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 8usize]>,
-    pub fqslock: raw_spinlock_t,
-    pub _bitfield_align_2: [u8; 0],
-    pub _bitfield_2: __BindgenBitfieldUnit<[u8; 64usize]>,
-    pub exp_lock: spinlock_t,
-    pub exp_seq_rq: ::aya_bpf::cty::c_ulong,
-    pub exp_wq: [wait_queue_head_t; 4usize],
-    pub rew: rcu_exp_work,
-    pub exp_need_flush: bool_,
-    pub _bitfield_align_3: [u8; 0],
-    pub _bitfield_3: __BindgenBitfieldUnit<[u8; 40usize]>,
-}
-impl rcu_node {
-    #[inline]
-    pub fn new_bitfield_1() -> __BindgenBitfieldUnit<[u8; 8usize]> {
-        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 8usize]> = Default::default();
-        __bindgen_bitfield_unit
-    }
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct debugfs_u32_array {
-    pub array: *mut u32_,
-    pub n_elements: u32_,
-}
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct cma {
-    pub base_pfn: ::aya_bpf::cty::c_ulong,
-    pub count: ::aya_bpf::cty::c_ulong,
-    pub bitmap: *mut ::aya_bpf::cty::c_ulong,
-    pub order_per_bit: ::aya_bpf::cty::c_uint,
-    pub lock: spinlock_t,
-    pub mem_head: hlist_head,
-    pub mem_head_lock: spinlock_t,
-    pub dfs_bitmap: debugfs_u32_array,
-    pub name: [::aya_bpf::cty::c_char; 64usize],
-    pub nr_pages_succeeded: atomic64_t,
-    pub nr_pages_failed: atomic64_t,
-    pub cma_kobj: *mut cma_kobject,
+pub struct rt_mutex {
+    pub wait_lock: raw_spinlock_t,
+    pub waiters: rb_root_cached,
+    pub owner: *mut task_struct,
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
@@ -24475,7 +23644,7 @@ pub union futex_key {
     pub both: futex_key__bindgen_ty_3,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct futex_key__bindgen_ty_1 {
     pub i_seq: u64_,
     pub pgoff: ::aya_bpf::cty::c_ulong,
@@ -24495,7 +23664,7 @@ pub union futex_key__bindgen_ty_2__bindgen_ty_1 {
     pub __tmp: u64_,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct futex_key__bindgen_ty_3 {
     pub ptr: u64_,
     pub word: ::aya_bpf::cty::c_ulong,
@@ -24505,26 +23674,24 @@ pub struct futex_key__bindgen_ty_3 {
 #[derive(Copy, Clone)]
 pub struct futex_pi_state {
     pub list: list_head,
-    pub pi_mutex: rt_mutex_base,
+    pub pi_mutex: rt_mutex,
     pub owner: *mut task_struct,
     pub refcount: refcount_t,
     pub key: futex_key,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct module_sect_attr {
     pub battr: bin_attribute,
     pub address: ::aya_bpf::cty::c_ulong,
 }
 #[repr(C)]
-#[derive(Debug)]
 pub struct module_sect_attrs {
     pub grp: attribute_group,
     pub nsections: ::aya_bpf::cty::c_uint,
     pub attrs: __IncompleteArrayField<module_sect_attr>,
 }
 #[repr(C)]
-#[derive(Debug)]
 pub struct module_notes_attrs {
     pub dir: *mut kobject,
     pub notes: ::aya_bpf::cty::c_uint,
@@ -24539,8 +23706,117 @@ pub struct fs_pin {
     pub m_list: hlist_node,
     pub kill: ::core::option::Option<unsafe extern "C" fn(arg1: *mut fs_pin)>,
 }
+pub mod bpf_link_type {
+    pub type Type = ::aya_bpf::cty::c_uint;
+    pub const BPF_LINK_TYPE_UNSPEC: Type = 0;
+    pub const BPF_LINK_TYPE_RAW_TRACEPOINT: Type = 1;
+    pub const BPF_LINK_TYPE_TRACING: Type = 2;
+    pub const BPF_LINK_TYPE_CGROUP: Type = 3;
+    pub const BPF_LINK_TYPE_ITER: Type = 4;
+    pub const BPF_LINK_TYPE_NETNS: Type = 5;
+    pub const BPF_LINK_TYPE_XDP: Type = 6;
+    pub const MAX_BPF_LINK_TYPE: Type = 7;
+}
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
+pub struct bpf_link_info {
+    pub type_: __u32,
+    pub id: __u32,
+    pub prog_id: __u32,
+    pub __bindgen_anon_1: bpf_link_info__bindgen_ty_1,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub union bpf_link_info__bindgen_ty_1 {
+    pub raw_tracepoint: bpf_link_info__bindgen_ty_1__bindgen_ty_1,
+    pub tracing: bpf_link_info__bindgen_ty_1__bindgen_ty_2,
+    pub cgroup: bpf_link_info__bindgen_ty_1__bindgen_ty_3,
+    pub iter: bpf_link_info__bindgen_ty_1__bindgen_ty_4,
+    pub netns: bpf_link_info__bindgen_ty_1__bindgen_ty_5,
+    pub xdp: bpf_link_info__bindgen_ty_1__bindgen_ty_6,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct bpf_link_info__bindgen_ty_1__bindgen_ty_1 {
+    pub tp_name: __u64,
+    pub tp_name_len: __u32,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct bpf_link_info__bindgen_ty_1__bindgen_ty_2 {
+    pub attach_type: __u32,
+    pub target_obj_id: __u32,
+    pub target_btf_id: __u32,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct bpf_link_info__bindgen_ty_1__bindgen_ty_3 {
+    pub cgroup_id: __u64,
+    pub attach_type: __u32,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct bpf_link_info__bindgen_ty_1__bindgen_ty_4 {
+    pub target_name: __u64,
+    pub target_name_len: __u32,
+    pub __bindgen_anon_1: bpf_link_info__bindgen_ty_1__bindgen_ty_4__bindgen_ty_1,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub union bpf_link_info__bindgen_ty_1__bindgen_ty_4__bindgen_ty_1 {
+    pub map: bpf_link_info__bindgen_ty_1__bindgen_ty_4__bindgen_ty_1__bindgen_ty_1,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct bpf_link_info__bindgen_ty_1__bindgen_ty_4__bindgen_ty_1__bindgen_ty_1 {
+    pub map_id: __u32,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct bpf_link_info__bindgen_ty_1__bindgen_ty_5 {
+    pub netns_ino: __u32,
+    pub attach_type: __u32,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct bpf_link_info__bindgen_ty_1__bindgen_ty_6 {
+    pub ifindex: __u32,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct bpf_link {
+    pub refcnt: atomic64_t,
+    pub id: u32_,
+    pub type_: bpf_link_type::Type,
+    pub ops: *const bpf_link_ops,
+    pub prog: *mut bpf_prog,
+    pub work: work_struct,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct bpf_link_ops {
+    pub release: ::core::option::Option<unsafe extern "C" fn(arg1: *mut bpf_link)>,
+    pub dealloc: ::core::option::Option<unsafe extern "C" fn(arg1: *mut bpf_link)>,
+    pub detach:
+        ::core::option::Option<unsafe extern "C" fn(arg1: *mut bpf_link) -> ::aya_bpf::cty::c_int>,
+    pub update_prog: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut bpf_link,
+            arg2: *mut bpf_prog,
+            arg3: *mut bpf_prog,
+        ) -> ::aya_bpf::cty::c_int,
+    >,
+    pub show_fdinfo:
+        ::core::option::Option<unsafe extern "C" fn(arg1: *const bpf_link, arg2: *mut seq_file)>,
+    pub fill_link_info: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *const bpf_link,
+            arg2: *mut bpf_link_info,
+        ) -> ::aya_bpf::cty::c_int,
+    >,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
 pub struct cgroup_taskset {
     pub src_csets: list_head,
     pub dst_csets: list_head,
@@ -24551,36 +23827,7 @@ pub struct cgroup_taskset {
     pub cur_task: *mut task_struct,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct bpf_cgroup_storage_key {
-    pub cgroup_inode_id: __u64,
-    pub attach_type: __u32,
-}
-#[repr(C)]
 #[derive(Copy, Clone)]
-pub struct bpf_cgroup_storage {
-    pub __bindgen_anon_1: bpf_cgroup_storage__bindgen_ty_1,
-    pub map: *mut bpf_cgroup_storage_map,
-    pub key: bpf_cgroup_storage_key,
-    pub list_map: list_head,
-    pub list_cg: list_head,
-    pub node: rb_node,
-    pub rcu: callback_head,
-}
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub union bpf_cgroup_storage__bindgen_ty_1 {
-    pub buf: *mut bpf_storage_buffer,
-    pub percpu_buf: *mut ::aya_bpf::cty::c_void,
-}
-#[repr(C)]
-#[derive(Debug)]
-pub struct bpf_storage_buffer {
-    pub rcu: callback_head,
-    pub data: __IncompleteArrayField<::aya_bpf::cty::c_char>,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
 pub struct kernel_pkey_query {
     pub supported_ops: __u32,
     pub key_size: __u32,
@@ -24649,7 +23896,7 @@ pub struct key_preparsed_payload {
     pub expiry: time64_t,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct key_match_data {
     pub cmp: ::core::option::Option<
         unsafe extern "C" fn(arg1: *const key, arg2: *const key_match_data) -> bool_,
@@ -24669,9 +23916,9 @@ pub type __kernel_mqd_t = ::aya_bpf::cty::c_int;
 pub type mqd_t = __kernel_mqd_t;
 pub mod audit_state {
     pub type Type = ::aya_bpf::cty::c_uint;
-    pub const AUDIT_STATE_DISABLED: Type = 0;
-    pub const AUDIT_STATE_BUILD: Type = 1;
-    pub const AUDIT_STATE_RECORD: Type = 2;
+    pub const AUDIT_DISABLED: Type = 0;
+    pub const AUDIT_BUILD_CONTEXT: Type = 1;
+    pub const AUDIT_RECORD_CONTEXT: Type = 2;
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
@@ -24701,14 +23948,14 @@ pub struct audit_names {
     pub uid: kuid_t,
     pub gid: kgid_t,
     pub rdev: dev_t,
-    pub osid: u32_,
+    pub oblob: lsmblob,
     pub fcap: audit_cap_data,
     pub fcap_ver: ::aya_bpf::cty::c_uint,
     pub type_: ::aya_bpf::cty::c_uchar,
     pub should_free: bool_,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct mq_attr {
     pub mq_flags: __kernel_long_t,
     pub mq_maxmsg: __kernel_long_t,
@@ -24717,14 +23964,7 @@ pub struct mq_attr {
     pub __reserved: [__kernel_long_t; 4usize],
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct open_how {
-    pub flags: __u64,
-    pub mode: __u64,
-    pub resolve: __u64,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct audit_proctitle {
     pub len: ::aya_bpf::cty::c_int,
     pub value: *mut ::aya_bpf::cty::c_char,
@@ -24733,12 +23973,11 @@ pub struct audit_proctitle {
 #[derive(Copy, Clone)]
 pub struct audit_context {
     pub dummy: ::aya_bpf::cty::c_int,
-    pub context: audit_context__bindgen_ty_1::Type,
+    pub in_syscall: ::aya_bpf::cty::c_int,
     pub state: audit_state::Type,
     pub current_state: audit_state::Type,
     pub serial: ::aya_bpf::cty::c_uint,
     pub major: ::aya_bpf::cty::c_int,
-    pub uring_op: ::aya_bpf::cty::c_int,
     pub ctime: timespec64,
     pub argv: [::aya_bpf::cty::c_ulong; 4usize],
     pub return_code: ::aya_bpf::cty::c_long,
@@ -24769,51 +24008,44 @@ pub struct audit_context {
     pub target_auid: kuid_t,
     pub target_uid: kuid_t,
     pub target_sessionid: ::aya_bpf::cty::c_uint,
-    pub target_sid: u32_,
+    pub target_lsm: lsmblob,
     pub target_comm: [::aya_bpf::cty::c_char; 16usize],
     pub trees: *mut audit_tree_refs,
     pub first_trees: *mut audit_tree_refs,
     pub killed_trees: list_head,
     pub tree_count: ::aya_bpf::cty::c_int,
     pub type_: ::aya_bpf::cty::c_int,
-    pub __bindgen_anon_1: audit_context__bindgen_ty_2,
+    pub __bindgen_anon_1: audit_context__bindgen_ty_1,
     pub fds: [::aya_bpf::cty::c_int; 2usize],
     pub proctitle: audit_proctitle,
 }
-pub mod audit_context__bindgen_ty_1 {
-    pub type Type = ::aya_bpf::cty::c_uint;
-    pub const AUDIT_CTX_UNUSED: Type = 0;
-    pub const AUDIT_CTX_SYSCALL: Type = 1;
-    pub const AUDIT_CTX_URING: Type = 2;
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub union audit_context__bindgen_ty_1 {
+    pub socketcall: audit_context__bindgen_ty_1__bindgen_ty_1,
+    pub ipc: audit_context__bindgen_ty_1__bindgen_ty_2,
+    pub mq_getsetattr: audit_context__bindgen_ty_1__bindgen_ty_3,
+    pub mq_notify: audit_context__bindgen_ty_1__bindgen_ty_4,
+    pub mq_sendrecv: audit_context__bindgen_ty_1__bindgen_ty_5,
+    pub mq_open: audit_context__bindgen_ty_1__bindgen_ty_6,
+    pub capset: audit_context__bindgen_ty_1__bindgen_ty_7,
+    pub mmap: audit_context__bindgen_ty_1__bindgen_ty_8,
+    pub execve: audit_context__bindgen_ty_1__bindgen_ty_9,
+    pub module: audit_context__bindgen_ty_1__bindgen_ty_10,
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
-pub union audit_context__bindgen_ty_2 {
-    pub socketcall: audit_context__bindgen_ty_2__bindgen_ty_1,
-    pub ipc: audit_context__bindgen_ty_2__bindgen_ty_2,
-    pub mq_getsetattr: audit_context__bindgen_ty_2__bindgen_ty_3,
-    pub mq_notify: audit_context__bindgen_ty_2__bindgen_ty_4,
-    pub mq_sendrecv: audit_context__bindgen_ty_2__bindgen_ty_5,
-    pub mq_open: audit_context__bindgen_ty_2__bindgen_ty_6,
-    pub capset: audit_context__bindgen_ty_2__bindgen_ty_7,
-    pub mmap: audit_context__bindgen_ty_2__bindgen_ty_8,
-    pub openat2: open_how,
-    pub execve: audit_context__bindgen_ty_2__bindgen_ty_9,
-    pub module: audit_context__bindgen_ty_2__bindgen_ty_10,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct audit_context__bindgen_ty_2__bindgen_ty_1 {
+pub struct audit_context__bindgen_ty_1__bindgen_ty_1 {
     pub nargs: ::aya_bpf::cty::c_int,
     pub args: [::aya_bpf::cty::c_long; 6usize],
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct audit_context__bindgen_ty_2__bindgen_ty_2 {
+#[derive(Copy, Clone)]
+pub struct audit_context__bindgen_ty_1__bindgen_ty_2 {
     pub uid: kuid_t,
     pub gid: kgid_t,
     pub mode: umode_t,
-    pub osid: u32_,
+    pub oblob: lsmblob,
     pub has_perm: ::aya_bpf::cty::c_int,
     pub perm_uid: uid_t,
     pub perm_gid: gid_t,
@@ -24821,52 +24053,52 @@ pub struct audit_context__bindgen_ty_2__bindgen_ty_2 {
     pub qbytes: ::aya_bpf::cty::c_ulong,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct audit_context__bindgen_ty_2__bindgen_ty_3 {
+#[derive(Copy, Clone)]
+pub struct audit_context__bindgen_ty_1__bindgen_ty_3 {
     pub mqdes: mqd_t,
     pub mqstat: mq_attr,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct audit_context__bindgen_ty_2__bindgen_ty_4 {
+#[derive(Copy, Clone)]
+pub struct audit_context__bindgen_ty_1__bindgen_ty_4 {
     pub mqdes: mqd_t,
     pub sigev_signo: ::aya_bpf::cty::c_int,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct audit_context__bindgen_ty_2__bindgen_ty_5 {
+#[derive(Copy, Clone)]
+pub struct audit_context__bindgen_ty_1__bindgen_ty_5 {
     pub mqdes: mqd_t,
     pub msg_len: size_t,
     pub msg_prio: ::aya_bpf::cty::c_uint,
     pub abs_timeout: timespec64,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct audit_context__bindgen_ty_2__bindgen_ty_6 {
+#[derive(Copy, Clone)]
+pub struct audit_context__bindgen_ty_1__bindgen_ty_6 {
     pub oflag: ::aya_bpf::cty::c_int,
     pub mode: umode_t,
     pub attr: mq_attr,
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
-pub struct audit_context__bindgen_ty_2__bindgen_ty_7 {
+pub struct audit_context__bindgen_ty_1__bindgen_ty_7 {
     pub pid: pid_t,
     pub cap: audit_cap_data,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct audit_context__bindgen_ty_2__bindgen_ty_8 {
+#[derive(Copy, Clone)]
+pub struct audit_context__bindgen_ty_1__bindgen_ty_8 {
     pub fd: ::aya_bpf::cty::c_int,
     pub flags: ::aya_bpf::cty::c_int,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct audit_context__bindgen_ty_2__bindgen_ty_9 {
+#[derive(Copy, Clone)]
+pub struct audit_context__bindgen_ty_1__bindgen_ty_9 {
     pub argc: ::aya_bpf::cty::c_int,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct audit_context__bindgen_ty_2__bindgen_ty_10 {
+#[derive(Copy, Clone)]
+pub struct audit_context__bindgen_ty_1__bindgen_ty_10 {
     pub name: *mut ::aya_bpf::cty::c_char,
 }
 #[repr(C)]
@@ -24881,7 +24113,7 @@ pub union __kernel_sockaddr_storage__bindgen_ty_1 {
     pub __align: *mut ::aya_bpf::cty::c_void,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct __kernel_sockaddr_storage__bindgen_ty_1__bindgen_ty_1 {
     pub ss_family: __kernel_sa_family_t,
     pub __data: [::aya_bpf::cty::c_char; 126usize],
@@ -24897,7 +24129,7 @@ pub struct net_generic__bindgen_ty_1 {
     pub bindgen_union_field: [u64; 3usize],
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct net_generic__bindgen_ty_1__bindgen_ty_1 {
     pub len: ::aya_bpf::cty::c_uint,
     pub rcu: callback_head,
@@ -24920,27 +24152,153 @@ pub union fsnotify_mark_connector__bindgen_ty_1 {
     pub destroy_next: *mut fsnotify_mark_connector,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct audit_aux_data {
     pub next: *mut audit_aux_data,
     pub type_: ::aya_bpf::cty::c_int,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct audit_chunk {
-    _unused: [u8; 0],
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct audit_tree_refs {
     pub next: *mut audit_tree_refs,
     pub c: [*mut audit_chunk; 31usize],
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
+pub struct fsnotify_ops {
+    pub handle_event: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut fsnotify_group,
+            arg2: u32_,
+            arg3: *const ::aya_bpf::cty::c_void,
+            arg4: ::aya_bpf::cty::c_int,
+            arg5: *mut inode,
+            arg6: *const qstr,
+            arg7: u32_,
+            arg8: *mut fsnotify_iter_info,
+        ) -> ::aya_bpf::cty::c_int,
+    >,
+    pub handle_inode_event: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut fsnotify_mark,
+            arg2: u32_,
+            arg3: *mut inode,
+            arg4: *mut inode,
+            arg5: *const qstr,
+            arg6: u32_,
+        ) -> ::aya_bpf::cty::c_int,
+    >,
+    pub free_group_priv: ::core::option::Option<unsafe extern "C" fn(arg1: *mut fsnotify_group)>,
+    pub freeing_mark: ::core::option::Option<
+        unsafe extern "C" fn(arg1: *mut fsnotify_mark, arg2: *mut fsnotify_group),
+    >,
+    pub free_event: ::core::option::Option<unsafe extern "C" fn(arg1: *mut fsnotify_event)>,
+    pub free_mark: ::core::option::Option<unsafe extern "C" fn(arg1: *mut fsnotify_mark)>,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct inotify_group_private_data {
+    pub idr_lock: spinlock_t,
+    pub idr: idr,
+    pub ucounts: *mut ucounts,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct fanotify_group_private_data {
+    pub merge_hash: *mut hlist_head,
+    pub access_list: list_head,
+    pub access_waitq: wait_queue_head_t,
+    pub flags: ::aya_bpf::cty::c_int,
+    pub f_flags: ::aya_bpf::cty::c_int,
+    pub ucounts: *mut ucounts,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct fsnotify_group {
+    pub ops: *const fsnotify_ops,
+    pub refcnt: refcount_t,
+    pub notification_lock: spinlock_t,
+    pub notification_list: list_head,
+    pub notification_waitq: wait_queue_head_t,
+    pub q_len: ::aya_bpf::cty::c_uint,
+    pub max_events: ::aya_bpf::cty::c_uint,
+    pub priority: ::aya_bpf::cty::c_uint,
+    pub shutdown: bool_,
+    pub mark_mutex: mutex,
+    pub user_waits: atomic_t,
+    pub marks_list: list_head,
+    pub fsn_fa: *mut fasync_struct,
+    pub overflow_event: *mut fsnotify_event,
+    pub memcg: *mut mem_cgroup,
+    pub __bindgen_anon_1: fsnotify_group__bindgen_ty_1,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub union fsnotify_group__bindgen_ty_1 {
+    pub private: *mut ::aya_bpf::cty::c_void,
+    pub inotify_data: inotify_group_private_data,
+    pub fanotify_data: fanotify_group_private_data,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct fsnotify_iter_info {
+    pub marks: [*mut fsnotify_mark; 4usize],
+    pub report_mask: ::aya_bpf::cty::c_uint,
+    pub srcu_idx: ::aya_bpf::cty::c_int,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct fsnotify_mark {
+    pub mask: __u32,
+    pub refcnt: refcount_t,
+    pub group: *mut fsnotify_group,
+    pub g_list: list_head,
+    pub lock: spinlock_t,
+    pub obj_list: hlist_node,
+    pub connector: *mut fsnotify_mark_connector,
+    pub ignored_mask: __u32,
+    pub flags: ::aya_bpf::cty::c_uint,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct fsnotify_event {
+    pub list: list_head,
+}
+#[repr(C)]
+pub struct audit_tree {
+    pub count: refcount_t,
+    pub goner: ::aya_bpf::cty::c_int,
+    pub root: *mut audit_chunk,
+    pub chunks: list_head,
+    pub rules: list_head,
+    pub list: list_head,
+    pub same_root: list_head,
+    pub head: callback_head,
+    pub pathname: __IncompleteArrayField<::aya_bpf::cty::c_char>,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct node {
+    pub list: list_head,
+    pub owner: *mut audit_tree,
+    pub index: ::aya_bpf::cty::c_uint,
+}
+#[repr(C)]
+pub struct audit_chunk {
+    pub hash: list_head,
+    pub key: ::aya_bpf::cty::c_ulong,
+    pub mark: *mut fsnotify_mark,
+    pub trees: list_head,
+    pub count: ::aya_bpf::cty::c_int,
+    pub refs: atomic_long_t,
+    pub head: callback_head,
+    pub owners: __IncompleteArrayField<node>,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
 pub struct action_cache {
-    pub allow_native: [::aya_bpf::cty::c_ulong; 8usize],
-    pub allow_compat: [::aya_bpf::cty::c_ulong; 8usize],
+    pub allow_native: [::aya_bpf::cty::c_ulong; 7usize],
+    pub allow_compat: [::aya_bpf::cty::c_ulong; 7usize],
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
@@ -24984,17 +24342,17 @@ pub struct rchan_buf {
     pub early_bytes: size_t,
     pub cpu: ::aya_bpf::cty::c_uint,
     pub _bitfield_align_1: [u8; 0],
-    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 24usize]>,
+    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 32usize]>,
 }
 impl rchan_buf {
     #[inline]
-    pub fn new_bitfield_1() -> __BindgenBitfieldUnit<[u8; 24usize]> {
-        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 24usize]> = Default::default();
+    pub fn new_bitfield_1() -> __BindgenBitfieldUnit<[u8; 32usize]> {
+        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 32usize]> = Default::default();
         __bindgen_bitfield_unit
     }
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct rchan {
     pub version: u32_,
     pub subbuf_size: size_t,
@@ -25012,7 +24370,7 @@ pub struct rchan {
     pub base_filename: [::aya_bpf::cty::c_char; 255usize],
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct rchan_callbacks {
     pub subbuf_start: ::core::option::Option<
         unsafe extern "C" fn(
@@ -25035,7 +24393,7 @@ pub struct rchan_callbacks {
         ::core::option::Option<unsafe extern "C" fn(arg1: *mut dentry) -> ::aya_bpf::cty::c_int>,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct ftrace_hash {
     pub size_bits: ::aya_bpf::cty::c_ulong,
     pub buckets: *mut hlist_head,
@@ -25044,13 +24402,13 @@ pub struct ftrace_hash {
     pub rcu: callback_head,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct event_filter {
     pub prog: *mut prog_entry,
     pub filter_string: *mut ::aya_bpf::cty::c_char,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct array_buffer {
     pub tr: *mut trace_array,
     pub buffer: *mut trace_buffer,
@@ -25076,8 +24434,8 @@ pub struct trace_array {
     pub buffer_disabled: ::aya_bpf::cty::c_int,
     pub sys_refcount_enter: ::aya_bpf::cty::c_int,
     pub sys_refcount_exit: ::aya_bpf::cty::c_int,
-    pub enter_syscall_files: [*mut trace_event_file; 451usize],
-    pub exit_syscall_files: [*mut trace_event_file; 451usize],
+    pub enter_syscall_files: [*mut trace_event_file; 447usize],
+    pub exit_syscall_files: [*mut trace_event_file; 447usize],
     pub stop_count: ::aya_bpf::cty::c_int,
     pub clock_id: ::aya_bpf::cty::c_int,
     pub nr_topts: ::aya_bpf::cty::c_int,
@@ -25114,7 +24472,7 @@ pub struct trace_array {
     pub last_func_repeats: *mut trace_func_repeats,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct tracer {
     pub name: *const ::aya_bpf::cty::c_char,
     pub init: ::core::option::Option<
@@ -25177,7 +24535,7 @@ pub struct tracer {
     pub noboot: bool_,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct trace_subsystem_dir {
     pub list: list_head,
     pub subsystem: *mut event_subsystem,
@@ -25188,29 +24546,6 @@ pub struct trace_subsystem_dir {
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
-pub union lower_chunk {
-    pub next: *mut lower_chunk,
-    pub data: [::aya_bpf::cty::c_ulong; 256usize],
-}
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub union upper_chunk {
-    pub next: *mut upper_chunk,
-    pub data: [*mut lower_chunk; 256usize],
-}
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct trace_pid_list {
-    pub lock: raw_spinlock_t,
-    pub refill_irqwork: irq_work,
-    pub upper: [*mut upper_chunk; 256usize],
-    pub upper_list: *mut upper_chunk,
-    pub lower_list: *mut lower_chunk,
-    pub free_upper_chunks: ::aya_bpf::cty::c_int,
-    pub free_lower_chunks: ::aya_bpf::cty::c_int,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
 pub struct trace_array_cpu {
     pub disabled: atomic_t,
     pub buffer_page: *mut ::aya_bpf::cty::c_void,
@@ -25231,30 +24566,36 @@ pub struct trace_array_cpu {
     pub ignore_pid: bool_,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct trace_options {
     pub tracer: *mut tracer,
     pub topts: *mut trace_option_dentry,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct trace_option_dentry {
     pub opt: *mut tracer_opt,
     pub flags: *mut tracer_flags,
     pub tr: *mut trace_array,
     pub entry: *mut dentry,
 }
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct trace_pid_list {
+    pub pid_max: ::aya_bpf::cty::c_int,
+    pub pids: *mut ::aya_bpf::cty::c_ulong,
+}
 pub type cond_update_fn_t = ::core::option::Option<
     unsafe extern "C" fn(arg1: *mut trace_array, arg2: *mut ::aya_bpf::cty::c_void) -> bool_,
 >;
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct cond_snapshot {
     pub cond_data: *mut ::aya_bpf::cty::c_void,
     pub update: cond_update_fn_t,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct trace_func_repeats {
     pub ip: ::aya_bpf::cty::c_ulong,
     pub parent_ip: ::aya_bpf::cty::c_ulong,
@@ -25262,20 +24603,20 @@ pub struct trace_func_repeats {
     pub ts_last_call: u64_,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct tracer_opt {
     pub name: *const ::aya_bpf::cty::c_char,
     pub bit: u32_,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct tracer_flags {
     pub val: u32_,
     pub opts: *mut tracer_opt,
     pub trace: *mut tracer,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct event_subsystem {
     pub list: list_head,
     pub name: *const ::aya_bpf::cty::c_char,
@@ -25283,7 +24624,7 @@ pub struct event_subsystem {
     pub ref_count: ::aya_bpf::cty::c_int,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct ring_buffer_iter {
     pub cpu_buffer: *mut ring_buffer_per_cpu,
     pub head: ::aya_bpf::cty::c_ulong,
@@ -25308,7 +24649,7 @@ pub struct rb_irq_work {
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
-pub struct trace_buffer___2 {
+pub struct trace_buffer {
     pub flags: ::aya_bpf::cty::c_uint,
     pub cpus: ::aya_bpf::cty::c_int,
     pub record_disabled: atomic_t,
@@ -25322,14 +24663,13 @@ pub struct trace_buffer___2 {
     pub time_stamp_abs: bool_,
 }
 #[repr(C)]
-#[derive(Debug)]
 pub struct buffer_data_page {
     pub time_stamp: u64_,
     pub commit: local_t,
     pub data: __IncompleteArrayField<::aya_bpf::cty::c_uchar>,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct buffer_page {
     pub list: list_head,
     pub write: local_t,
@@ -25339,7 +24679,7 @@ pub struct buffer_page {
     pub page: *mut buffer_data_page,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct rb_time_struct {
     pub time: local64_t,
 }
@@ -25350,7 +24690,7 @@ pub struct ring_buffer_per_cpu {
     pub cpu: ::aya_bpf::cty::c_int,
     pub record_disabled: atomic_t,
     pub resize_disabled: atomic_t,
-    pub buffer: *mut trace_buffer___2,
+    pub buffer: *mut trace_buffer,
     pub reader_lock: raw_spinlock_t,
     pub lock: arch_spinlock_t,
     pub lock_key: lock_class_key,
@@ -25389,26 +24729,62 @@ pub struct ring_buffer_per_cpu {
     pub irq_work: rb_irq_work,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
+pub struct disk_stats {
+    pub nsecs: [u64_; 4usize],
+    pub sectors: [::aya_bpf::cty::c_ulong; 4usize],
+    pub ios: [::aya_bpf::cty::c_ulong; 4usize],
+    pub merges: [::aya_bpf::cty::c_ulong; 4usize],
+    pub io_ticks: ::aya_bpf::cty::c_ulong,
+    pub in_flight: [local_t; 2usize],
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
 pub struct bio_crypt_ctx {
     pub bc_key: *const blk_crypto_key,
     pub bc_dun: [u64_; 4usize],
 }
+pub type blk_mq_req_flags_t = __u32;
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct sbitmap_word {
-    pub depth: ::aya_bpf::cty::c_ulong,
+#[derive(Copy, Clone)]
+pub struct blk_mq_ctx {
+    pub __bindgen_anon_1: blk_mq_ctx__bindgen_ty_1,
+    pub cpu: ::aya_bpf::cty::c_uint,
+    pub index_hw: [::aya_bpf::cty::c_ushort; 3usize],
+    pub hctxs: [*mut blk_mq_hw_ctx; 3usize],
+    pub rq_dispatched: [::aya_bpf::cty::c_ulong; 2usize],
+    pub rq_merged: ::aya_bpf::cty::c_ulong,
+    pub rq_completed: [::aya_bpf::cty::c_ulong; 2usize],
+    pub queue: *mut request_queue,
+    pub ctxs: *mut blk_mq_ctxs,
+    pub kobj: kobject,
     pub _bitfield_align_1: [u8; 0],
-    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 56usize]>,
-    pub word: ::aya_bpf::cty::c_ulong,
-    pub _bitfield_align_2: [u8; 0],
-    pub _bitfield_2: __BindgenBitfieldUnit<[u8; 56usize]>,
-    pub cleared: ::aya_bpf::cty::c_ulong,
-    pub _bitfield_align_3: [u8; 0],
-    pub _bitfield_3: __BindgenBitfieldUnit<[u8; 56usize]>,
+    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 32usize]>,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
+pub struct blk_mq_ctx__bindgen_ty_1 {
+    pub lock: spinlock_t,
+    pub rq_lists: [list_head; 3usize],
+    pub _bitfield_align_1: [u8; 0],
+    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 8usize]>,
+}
+impl blk_mq_ctx__bindgen_ty_1 {
+    #[inline]
+    pub fn new_bitfield_1() -> __BindgenBitfieldUnit<[u8; 8usize]> {
+        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 8usize]> = Default::default();
+        __bindgen_bitfield_unit
+    }
+}
+impl blk_mq_ctx {
+    #[inline]
+    pub fn new_bitfield_1() -> __BindgenBitfieldUnit<[u8; 32usize]> {
+        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 32usize]> = Default::default();
+        __bindgen_bitfield_unit
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
 pub struct sbitmap {
     pub depth: ::aya_bpf::cty::c_uint,
     pub shift: ::aya_bpf::cty::c_uint,
@@ -25418,124 +24794,6 @@ pub struct sbitmap {
     pub alloc_hint: *mut ::aya_bpf::cty::c_uint,
 }
 #[repr(C)]
-#[derive(Copy, Clone)]
-pub struct sbq_wait_state {
-    pub wait_cnt: atomic_t,
-    pub wait: wait_queue_head_t,
-    pub _bitfield_align_1: [u8; 0],
-    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 32usize]>,
-}
-impl sbq_wait_state {
-    #[inline]
-    pub fn new_bitfield_1() -> __BindgenBitfieldUnit<[u8; 32usize]> {
-        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 32usize]> = Default::default();
-        __bindgen_bitfield_unit
-    }
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct sbitmap_queue {
-    pub sb: sbitmap,
-    pub wake_batch: ::aya_bpf::cty::c_uint,
-    pub wake_index: atomic_t,
-    pub ws: *mut sbq_wait_state,
-    pub ws_active: atomic_t,
-    pub min_shallow_depth: ::aya_bpf::cty::c_uint,
-}
-pub type req_flags_t = __u32;
-pub mod mq_rq_state {
-    pub type Type = ::aya_bpf::cty::c_uint;
-    pub const MQ_RQ_IDLE: Type = 0;
-    pub const MQ_RQ_IN_FLIGHT: Type = 1;
-    pub const MQ_RQ_COMPLETE: Type = 2;
-}
-pub type rq_end_io_fn =
-    ::core::option::Option<unsafe extern "C" fn(arg1: *mut request, arg2: blk_status_t)>;
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct request {
-    pub q: *mut request_queue,
-    pub mq_ctx: *mut blk_mq_ctx,
-    pub mq_hctx: *mut blk_mq_hw_ctx,
-    pub cmd_flags: ::aya_bpf::cty::c_uint,
-    pub rq_flags: req_flags_t,
-    pub tag: ::aya_bpf::cty::c_int,
-    pub internal_tag: ::aya_bpf::cty::c_int,
-    pub timeout: ::aya_bpf::cty::c_uint,
-    pub __data_len: ::aya_bpf::cty::c_uint,
-    pub __sector: sector_t,
-    pub bio: *mut bio,
-    pub biotail: *mut bio,
-    pub __bindgen_anon_1: request__bindgen_ty_1,
-    pub part: *mut block_device,
-    pub alloc_time_ns: u64_,
-    pub start_time_ns: u64_,
-    pub io_start_time_ns: u64_,
-    pub wbt_flags: ::aya_bpf::cty::c_ushort,
-    pub stats_sectors: ::aya_bpf::cty::c_ushort,
-    pub nr_phys_segments: ::aya_bpf::cty::c_ushort,
-    pub nr_integrity_segments: ::aya_bpf::cty::c_ushort,
-    pub crypt_ctx: *mut bio_crypt_ctx,
-    pub crypt_keyslot: *mut blk_crypto_keyslot,
-    pub write_hint: ::aya_bpf::cty::c_ushort,
-    pub ioprio: ::aya_bpf::cty::c_ushort,
-    pub state: mq_rq_state::Type,
-    pub ref_: atomic_t,
-    pub deadline: ::aya_bpf::cty::c_ulong,
-    pub __bindgen_anon_2: request__bindgen_ty_2,
-    pub __bindgen_anon_3: request__bindgen_ty_3,
-    pub __bindgen_anon_4: request__bindgen_ty_4,
-    pub __bindgen_anon_5: request__bindgen_ty_5,
-    pub end_io: rq_end_io_fn,
-    pub end_io_data: *mut ::aya_bpf::cty::c_void,
-}
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub union request__bindgen_ty_1 {
-    pub queuelist: list_head,
-    pub rq_next: *mut request,
-}
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub union request__bindgen_ty_2 {
-    pub hash: hlist_node,
-    pub ipi_list: llist_node,
-}
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub union request__bindgen_ty_3 {
-    pub rb_node: rb_node,
-    pub special_vec: bio_vec,
-    pub completion_data: *mut ::aya_bpf::cty::c_void,
-    pub error_count: ::aya_bpf::cty::c_int,
-}
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub union request__bindgen_ty_4 {
-    pub elv: request__bindgen_ty_4__bindgen_ty_1,
-    pub flush: request__bindgen_ty_4__bindgen_ty_2,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct request__bindgen_ty_4__bindgen_ty_1 {
-    pub icq: *mut io_cq,
-    pub priv_: [*mut ::aya_bpf::cty::c_void; 2usize],
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct request__bindgen_ty_4__bindgen_ty_2 {
-    pub seq: ::aya_bpf::cty::c_uint,
-    pub list: list_head,
-    pub saved_end_io: rq_end_io_fn,
-}
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub union request__bindgen_ty_5 {
-    pub csd: __call_single_data,
-    pub fifo_time: u64_,
-}
-#[repr(C)]
-#[derive(Copy, Clone)]
 pub struct blk_mq_hw_ctx {
     pub __bindgen_anon_1: blk_mq_hw_ctx__bindgen_ty_1,
     pub run_work: delayed_work,
@@ -25560,17 +24818,20 @@ pub struct blk_mq_hw_ctx {
     pub sched_tags: *mut blk_mq_tags,
     pub queued: ::aya_bpf::cty::c_ulong,
     pub run: ::aya_bpf::cty::c_ulong,
+    pub dispatched: [::aya_bpf::cty::c_ulong; 7usize],
     pub numa_node: ::aya_bpf::cty::c_uint,
     pub queue_num: ::aya_bpf::cty::c_uint,
     pub nr_active: atomic_t,
     pub cpuhp_online: hlist_node,
     pub cpuhp_dead: hlist_node,
     pub kobj: kobject,
+    pub poll_considered: ::aya_bpf::cty::c_ulong,
+    pub poll_invoked: ::aya_bpf::cty::c_ulong,
+    pub poll_success: ::aya_bpf::cty::c_ulong,
     pub debugfs_dir: *mut dentry,
     pub sched_debugfs_dir: *mut dentry,
     pub hctx_list: list_head,
-    pub _bitfield_align_1: [u8; 0],
-    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 48usize]>,
+    pub srcu: __IncompleteArrayField<srcu_struct>,
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
@@ -25590,19 +24851,30 @@ impl blk_mq_hw_ctx__bindgen_ty_1 {
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
-pub struct blk_mq_tags {
-    pub nr_tags: ::aya_bpf::cty::c_uint,
-    pub nr_reserved_tags: ::aya_bpf::cty::c_uint,
-    pub active_queues: atomic_t,
-    pub bitmap_tags: sbitmap_queue,
-    pub breserved_tags: sbitmap_queue,
-    pub rqs: *mut *mut request,
-    pub static_rqs: *mut *mut request,
-    pub page_list: list_head,
-    pub lock: spinlock_t,
+pub struct blk_mq_alloc_data {
+    pub q: *mut request_queue,
+    pub flags: blk_mq_req_flags_t,
+    pub shallow_depth: ::aya_bpf::cty::c_uint,
+    pub cmd_flags: ::aya_bpf::cty::c_uint,
+    pub ctx: *mut blk_mq_ctx,
+    pub hctx: *mut blk_mq_hw_ctx,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
+pub struct blk_stat_callback {
+    pub list: list_head,
+    pub timer: timer_list,
+    pub cpu_stat: *mut blk_rq_stat,
+    pub bucket_fn:
+        ::core::option::Option<unsafe extern "C" fn(arg1: *const request) -> ::aya_bpf::cty::c_int>,
+    pub buckets: ::aya_bpf::cty::c_uint,
+    pub stat: *mut blk_rq_stat,
+    pub timer_fn: ::core::option::Option<unsafe extern "C" fn(arg1: *mut blk_stat_callback)>,
+    pub data: *mut ::aya_bpf::cty::c_void,
+    pub rcu: callback_head,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
 pub struct blk_trace {
     pub trace_state: ::aya_bpf::cty::c_int,
     pub rchan: *mut rchan,
@@ -25670,11 +24942,21 @@ impl blk_flush_queue {
     }
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct blk_mq_queue_map {
     pub mq_map: *mut ::aya_bpf::cty::c_uint,
     pub nr_queues: ::aya_bpf::cty::c_uint,
     pub queue_offset: ::aya_bpf::cty::c_uint,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct sbitmap_queue {
+    pub sb: sbitmap,
+    pub wake_batch: ::aya_bpf::cty::c_uint,
+    pub wake_index: atomic_t,
+    pub ws: *mut sbq_wait_state,
+    pub ws_active: atomic_t,
+    pub min_shallow_depth: ::aya_bpf::cty::c_uint,
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
@@ -25690,13 +24972,58 @@ pub struct blk_mq_tag_set {
     pub timeout: ::aya_bpf::cty::c_uint,
     pub flags: ::aya_bpf::cty::c_uint,
     pub driver_data: *mut ::aya_bpf::cty::c_void,
+    pub active_queues_shared_sbitmap: atomic_t,
+    pub __bitmap_tags: sbitmap_queue,
+    pub __breserved_tags: sbitmap_queue,
     pub tags: *mut *mut blk_mq_tags,
-    pub shared_tags: *mut blk_mq_tags,
     pub tag_list_lock: mutex,
     pub tag_list: list_head,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
+pub struct sbitmap_word {
+    pub depth: ::aya_bpf::cty::c_ulong,
+    pub _bitfield_align_1: [u8; 0],
+    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 56usize]>,
+    pub word: ::aya_bpf::cty::c_ulong,
+    pub _bitfield_align_2: [u8; 0],
+    pub _bitfield_2: __BindgenBitfieldUnit<[u8; 56usize]>,
+    pub cleared: ::aya_bpf::cty::c_ulong,
+    pub _bitfield_align_3: [u8; 0],
+    pub _bitfield_3: __BindgenBitfieldUnit<[u8; 56usize]>,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct sbq_wait_state {
+    pub wait_cnt: atomic_t,
+    pub wait: wait_queue_head_t,
+    pub _bitfield_align_1: [u8; 0],
+    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 32usize]>,
+}
+impl sbq_wait_state {
+    #[inline]
+    pub fn new_bitfield_1() -> __BindgenBitfieldUnit<[u8; 32usize]> {
+        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 32usize]> = Default::default();
+        __bindgen_bitfield_unit
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct blk_mq_tags {
+    pub nr_tags: ::aya_bpf::cty::c_uint,
+    pub nr_reserved_tags: ::aya_bpf::cty::c_uint,
+    pub active_queues: atomic_t,
+    pub bitmap_tags: *mut sbitmap_queue,
+    pub breserved_tags: *mut sbitmap_queue,
+    pub __bitmap_tags: sbitmap_queue,
+    pub __breserved_tags: sbitmap_queue,
+    pub rqs: *mut *mut request,
+    pub static_rqs: *mut *mut request,
+    pub page_list: list_head,
+    pub lock: spinlock_t,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
 pub struct blk_mq_queue_data {
     pub rq: *mut request,
     pub last: bool_,
@@ -25710,14 +25037,14 @@ pub mod blk_crypto_mode_num {
     pub const BLK_ENCRYPTION_MODE_MAX: Type = 4;
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct blk_crypto_config {
     pub crypto_mode: blk_crypto_mode_num::Type,
     pub data_unit_size: ::aya_bpf::cty::c_uint,
     pub dun_bytes: ::aya_bpf::cty::c_uint,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct blk_crypto_key {
     pub crypto_cfg: blk_crypto_config,
     pub data_unit_size_bits: ::aya_bpf::cty::c_uint,
@@ -25725,7 +25052,13 @@ pub struct blk_crypto_key {
     pub raw: [u8_; 64usize],
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
+pub struct blk_mq_ctxs {
+    pub kobj: kobject,
+    pub queue_ctx: *mut blk_mq_ctx,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
 pub struct ftrace_event_field {
     pub link: list_head,
     pub name: *const ::aya_bpf::cty::c_char,
@@ -25736,7 +25069,7 @@ pub struct ftrace_event_field {
     pub is_signed: ::aya_bpf::cty::c_int,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct prog_entry {
     pub target: ::aya_bpf::cty::c_int,
     pub when_to_branch: ::aya_bpf::cty::c_int,
@@ -25756,7 +25089,7 @@ pub type regex_match_func = ::core::option::Option<
     ) -> ::aya_bpf::cty::c_int,
 >;
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct regex {
     pub pattern: [::aya_bpf::cty::c_char; 256usize],
     pub len: ::aya_bpf::cty::c_int,
@@ -25764,7 +25097,7 @@ pub struct regex {
     pub match_: regex_match_func,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct filter_pred {
     pub fn_: filter_pred_fn_t,
     pub val: u64_,
@@ -25943,27 +25276,7 @@ pub mod bpf_func_id {
     pub const BPF_FUNC_check_mtu: Type = 163;
     pub const BPF_FUNC_for_each_map_elem: Type = 164;
     pub const BPF_FUNC_snprintf: Type = 165;
-    pub const BPF_FUNC_sys_bpf: Type = 166;
-    pub const BPF_FUNC_btf_find_by_name_kind: Type = 167;
-    pub const BPF_FUNC_sys_close: Type = 168;
-    pub const BPF_FUNC_timer_init: Type = 169;
-    pub const BPF_FUNC_timer_set_callback: Type = 170;
-    pub const BPF_FUNC_timer_start: Type = 171;
-    pub const BPF_FUNC_timer_cancel: Type = 172;
-    pub const BPF_FUNC_get_func_ip: Type = 173;
-    pub const BPF_FUNC_get_attach_cookie: Type = 174;
-    pub const BPF_FUNC_task_pt_regs: Type = 175;
-    pub const BPF_FUNC_get_branch_snapshot: Type = 176;
-    pub const BPF_FUNC_trace_vprintk: Type = 177;
-    pub const BPF_FUNC_skc_to_unix_sock: Type = 178;
-    pub const BPF_FUNC_kallsyms_lookup_name: Type = 179;
-    pub const BPF_FUNC_find_vma: Type = 180;
-    pub const BPF_FUNC_loop: Type = 181;
-    pub const BPF_FUNC_strncmp: Type = 182;
-    pub const BPF_FUNC_get_func_arg: Type = 183;
-    pub const BPF_FUNC_get_func_ret: Type = 184;
-    pub const BPF_FUNC_get_func_arg_cnt: Type = 185;
-    pub const __BPF_FUNC_MAX_ID: Type = 186;
+    pub const __BPF_FUNC_MAX_ID: Type = 166;
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
@@ -25984,6 +25297,54 @@ pub struct bpf_local_storage_map {
     pub cache_idx: u16_,
     pub _bitfield_align_1: [u8; 0],
     pub _bitfield_1: __BindgenBitfieldUnit<[u8; 48usize]>,
+}
+pub mod bpf_arg_type {
+    pub type Type = ::aya_bpf::cty::c_uint;
+    pub const ARG_DONTCARE: Type = 0;
+    pub const ARG_CONST_MAP_PTR: Type = 1;
+    pub const ARG_PTR_TO_MAP_KEY: Type = 2;
+    pub const ARG_PTR_TO_MAP_VALUE: Type = 3;
+    pub const ARG_PTR_TO_UNINIT_MAP_VALUE: Type = 4;
+    pub const ARG_PTR_TO_MAP_VALUE_OR_NULL: Type = 5;
+    pub const ARG_PTR_TO_MEM: Type = 6;
+    pub const ARG_PTR_TO_MEM_OR_NULL: Type = 7;
+    pub const ARG_PTR_TO_UNINIT_MEM: Type = 8;
+    pub const ARG_CONST_SIZE: Type = 9;
+    pub const ARG_CONST_SIZE_OR_ZERO: Type = 10;
+    pub const ARG_PTR_TO_CTX: Type = 11;
+    pub const ARG_PTR_TO_CTX_OR_NULL: Type = 12;
+    pub const ARG_ANYTHING: Type = 13;
+    pub const ARG_PTR_TO_SPIN_LOCK: Type = 14;
+    pub const ARG_PTR_TO_SOCK_COMMON: Type = 15;
+    pub const ARG_PTR_TO_INT: Type = 16;
+    pub const ARG_PTR_TO_LONG: Type = 17;
+    pub const ARG_PTR_TO_SOCKET: Type = 18;
+    pub const ARG_PTR_TO_SOCKET_OR_NULL: Type = 19;
+    pub const ARG_PTR_TO_BTF_ID: Type = 20;
+    pub const ARG_PTR_TO_ALLOC_MEM: Type = 21;
+    pub const ARG_PTR_TO_ALLOC_MEM_OR_NULL: Type = 22;
+    pub const ARG_CONST_ALLOC_SIZE_OR_ZERO: Type = 23;
+    pub const ARG_PTR_TO_BTF_ID_SOCK_COMMON: Type = 24;
+    pub const ARG_PTR_TO_PERCPU_BTF_ID: Type = 25;
+    pub const ARG_PTR_TO_FUNC: Type = 26;
+    pub const ARG_PTR_TO_STACK_OR_NULL: Type = 27;
+    pub const ARG_PTR_TO_CONST_STR: Type = 28;
+    pub const __BPF_ARG_TYPE_MAX: Type = 29;
+}
+pub mod bpf_return_type {
+    pub type Type = ::aya_bpf::cty::c_uint;
+    pub const RET_INTEGER: Type = 0;
+    pub const RET_VOID: Type = 1;
+    pub const RET_PTR_TO_MAP_VALUE: Type = 2;
+    pub const RET_PTR_TO_MAP_VALUE_OR_NULL: Type = 3;
+    pub const RET_PTR_TO_SOCKET_OR_NULL: Type = 4;
+    pub const RET_PTR_TO_TCP_SOCK_OR_NULL: Type = 5;
+    pub const RET_PTR_TO_SOCK_COMMON_OR_NULL: Type = 6;
+    pub const RET_PTR_TO_ALLOC_MEM_OR_NULL: Type = 7;
+    pub const RET_PTR_TO_BTF_ID_OR_NULL: Type = 8;
+    pub const RET_PTR_TO_MEM_OR_BTF_ID_OR_NULL: Type = 9;
+    pub const RET_PTR_TO_MEM_OR_BTF_ID: Type = 10;
+    pub const RET_PTR_TO_BTF_ID: Type = 11;
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
@@ -26006,7 +25367,7 @@ pub union bpf_func_proto__bindgen_ty_1 {
     pub arg_type: [bpf_arg_type::Type; 5usize],
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct bpf_func_proto__bindgen_ty_1__bindgen_ty_1 {
     pub arg1_type: bpf_arg_type::Type,
     pub arg2_type: bpf_arg_type::Type,
@@ -26021,7 +25382,7 @@ pub union bpf_func_proto__bindgen_ty_2 {
     pub arg_btf_id: [*mut u32_; 5usize],
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct bpf_func_proto__bindgen_ty_2__bindgen_ty_1 {
     pub arg1_btf_id: *mut u32_,
     pub arg2_btf_id: *mut u32_,
@@ -26048,13 +25409,13 @@ pub union bpf_insn_access_aux__bindgen_ty_1 {
     pub __bindgen_anon_1: bpf_insn_access_aux__bindgen_ty_1__bindgen_ty_1,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct bpf_insn_access_aux__bindgen_ty_1__bindgen_ty_1 {
     pub btf: *mut btf,
     pub btf_id: u32_,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct bpf_verifier_ops {
     pub get_func_proto: ::core::option::Option<
         unsafe extern "C" fn(
@@ -26101,8 +25462,7 @@ pub struct bpf_verifier_ops {
             arg7: *mut u32_,
         ) -> ::aya_bpf::cty::c_int,
     >,
-    pub check_kfunc_call:
-        ::core::option::Option<unsafe extern "C" fn(arg1: u32_, arg2: *mut module) -> bool_>,
+    pub check_kfunc_call: ::core::option::Option<unsafe extern "C" fn(arg1: u32_) -> bool_>,
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
@@ -26111,7 +25471,6 @@ pub struct bpf_local_storage_map_bucket {
     pub lock: raw_spinlock_t,
 }
 #[repr(C)]
-#[derive(Debug)]
 pub struct bpf_local_storage_data {
     pub smap: *mut bpf_local_storage_map,
     pub data: __IncompleteArrayField<u8_>,
@@ -26123,7 +25482,7 @@ pub mod uprobe_filter_ctx {
     pub const UPROBE_FILTER_MMAP: Type = 2;
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct uprobe_consumer {
     pub handler: ::core::option::Option<
         unsafe extern "C" fn(
@@ -26148,7 +25507,6 @@ pub struct uprobe_consumer {
     pub next: *mut uprobe_consumer,
 }
 #[repr(C)]
-#[derive(Debug)]
 pub struct bucket_table {
     pub size: ::aya_bpf::cty::c_uint,
     pub nest: ::aya_bpf::cty::c_uint,
@@ -26168,9 +25526,11 @@ impl bucket_table {
         __bindgen_bitfield_unit
     }
 }
-pub type bpfptr_t = sockptr_t;
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
+pub struct rhash_lock_head {}
+#[repr(C)]
+#[derive(Copy, Clone)]
 pub struct bpf_verifier_log {
     pub level: u32_,
     pub kbuf: [::aya_bpf::cty::c_char; 1024usize],
@@ -26179,7 +25539,7 @@ pub struct bpf_verifier_log {
     pub len_total: u32_,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct bpf_subprog_info {
     pub start: u32_,
     pub linfo_idx: u32_,
@@ -26187,10 +25547,9 @@ pub struct bpf_subprog_info {
     pub has_tail_call: bool_,
     pub tail_call_reachable: bool_,
     pub has_ld_abs: bool_,
-    pub is_async_cb: bool_,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct bpf_id_pair {
     pub old: u32_,
     pub cur: u32_,
@@ -26239,22 +25598,16 @@ pub struct bpf_verifier_env {
     pub total_states: u32_,
     pub peak_states: u32_,
     pub longest_mark_read_walk: u32_,
-    pub fd_array: bpfptr_t,
-    pub scratched_regs: u32_,
-    pub scratched_stack_slots: u64_,
-    pub prev_log_len: u32_,
-    pub prev_insn_print_len: u32_,
-    pub type_str_buf: [::aya_bpf::cty::c_char; 64usize],
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct bpf_verifier_env__bindgen_ty_1 {
     pub insn_state: *mut ::aya_bpf::cty::c_int,
     pub insn_stack: *mut ::aya_bpf::cty::c_int,
     pub cur_stack: ::aya_bpf::cty::c_int,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct tnum {
     pub value: u64_,
     pub mask: u64_,
@@ -26295,27 +25648,21 @@ pub struct bpf_reg_state {
 #[derive(Copy, Clone)]
 pub union bpf_reg_state__bindgen_ty_1 {
     pub range: ::aya_bpf::cty::c_int,
+    pub map_ptr: *mut bpf_map,
     pub __bindgen_anon_1: bpf_reg_state__bindgen_ty_1__bindgen_ty_1,
-    pub __bindgen_anon_2: bpf_reg_state__bindgen_ty_1__bindgen_ty_2,
     pub mem_size: u32_,
-    pub raw: bpf_reg_state__bindgen_ty_1__bindgen_ty_3,
+    pub raw: bpf_reg_state__bindgen_ty_1__bindgen_ty_2,
     pub subprogno: u32_,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct bpf_reg_state__bindgen_ty_1__bindgen_ty_1 {
-    pub map_ptr: *mut bpf_map,
-    pub map_uid: u32_,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct bpf_reg_state__bindgen_ty_1__bindgen_ty_2 {
     pub btf: *mut btf,
     pub btf_id: u32_,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct bpf_reg_state__bindgen_ty_1__bindgen_ty_3 {
+#[derive(Copy, Clone)]
+pub struct bpf_reg_state__bindgen_ty_1__bindgen_ty_2 {
     pub raw1: ::aya_bpf::cty::c_ulong,
     pub raw2: ::aya_bpf::cty::c_ulong,
 }
@@ -26326,12 +25673,10 @@ pub struct bpf_func_state {
     pub callsite: ::aya_bpf::cty::c_int,
     pub frameno: u32_,
     pub subprogno: u32_,
-    pub async_entry_cnt: u32_,
-    pub in_callback_fn: bool_,
-    pub in_async_callback_fn: bool_,
     pub acquired_refs: ::aya_bpf::cty::c_int,
     pub refs: *mut bpf_reference_state,
     pub allocated_stack: ::aya_bpf::cty::c_int,
+    pub in_callback_fn: bool_,
     pub stack: *mut bpf_stack_state,
 }
 #[repr(C)]
@@ -26341,19 +25686,19 @@ pub struct bpf_stack_state {
     pub slot_type: [u8_; 8usize],
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct bpf_reference_state {
     pub id: ::aya_bpf::cty::c_int,
     pub insn_idx: ::aya_bpf::cty::c_int,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct bpf_idx_pair {
     pub prev_idx: u32_,
     pub idx: u32_,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct bpf_verifier_state {
     pub frame: [*mut bpf_func_state; 8usize],
     pub parent: *mut bpf_verifier_state,
@@ -26368,7 +25713,7 @@ pub struct bpf_verifier_state {
     pub jmp_history_cnt: u32_,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct bpf_verifier_state_list {
     pub state: bpf_verifier_state,
     pub next: *mut bpf_verifier_state_list,
@@ -26399,7 +25744,7 @@ pub union bpf_insn_aux_data__bindgen_ty_1 {
     pub btf_var: bpf_insn_aux_data__bindgen_ty_1__bindgen_ty_2,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct bpf_insn_aux_data__bindgen_ty_1__bindgen_ty_1 {
     pub map_index: u32_,
     pub map_off: u32_,
@@ -26417,153 +25762,26 @@ pub union bpf_insn_aux_data__bindgen_ty_1__bindgen_ty_2__bindgen_ty_1 {
     pub mem_size: u32_,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct bpf_insn_aux_data__bindgen_ty_1__bindgen_ty_2__bindgen_ty_1__bindgen_ty_1 {
     pub btf: *mut btf,
     pub btf_id: u32_,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct rhash_lock_head {}
-pub mod bpf_link_type {
-    pub type Type = ::aya_bpf::cty::c_uint;
-    pub const BPF_LINK_TYPE_UNSPEC: Type = 0;
-    pub const BPF_LINK_TYPE_RAW_TRACEPOINT: Type = 1;
-    pub const BPF_LINK_TYPE_TRACING: Type = 2;
-    pub const BPF_LINK_TYPE_CGROUP: Type = 3;
-    pub const BPF_LINK_TYPE_ITER: Type = 4;
-    pub const BPF_LINK_TYPE_NETNS: Type = 5;
-    pub const BPF_LINK_TYPE_XDP: Type = 6;
-    pub const BPF_LINK_TYPE_PERF_EVENT: Type = 7;
-    pub const MAX_BPF_LINK_TYPE: Type = 8;
-}
-#[repr(C)]
 #[derive(Copy, Clone)]
-pub struct bpf_link_info {
-    pub type_: __u32,
-    pub id: __u32,
-    pub prog_id: __u32,
-    pub __bindgen_anon_1: bpf_link_info__bindgen_ty_1,
-}
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub union bpf_link_info__bindgen_ty_1 {
-    pub raw_tracepoint: bpf_link_info__bindgen_ty_1__bindgen_ty_1,
-    pub tracing: bpf_link_info__bindgen_ty_1__bindgen_ty_2,
-    pub cgroup: bpf_link_info__bindgen_ty_1__bindgen_ty_3,
-    pub iter: bpf_link_info__bindgen_ty_1__bindgen_ty_4,
-    pub netns: bpf_link_info__bindgen_ty_1__bindgen_ty_5,
-    pub xdp: bpf_link_info__bindgen_ty_1__bindgen_ty_6,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct bpf_link_info__bindgen_ty_1__bindgen_ty_1 {
-    pub tp_name: __u64,
-    pub tp_name_len: __u32,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct bpf_link_info__bindgen_ty_1__bindgen_ty_2 {
-    pub attach_type: __u32,
-    pub target_obj_id: __u32,
-    pub target_btf_id: __u32,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct bpf_link_info__bindgen_ty_1__bindgen_ty_3 {
-    pub cgroup_id: __u64,
-    pub attach_type: __u32,
-}
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct bpf_link_info__bindgen_ty_1__bindgen_ty_4 {
-    pub target_name: __u64,
-    pub target_name_len: __u32,
-    pub __bindgen_anon_1: bpf_link_info__bindgen_ty_1__bindgen_ty_4__bindgen_ty_1,
-}
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub union bpf_link_info__bindgen_ty_1__bindgen_ty_4__bindgen_ty_1 {
-    pub map: bpf_link_info__bindgen_ty_1__bindgen_ty_4__bindgen_ty_1__bindgen_ty_1,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct bpf_link_info__bindgen_ty_1__bindgen_ty_4__bindgen_ty_1__bindgen_ty_1 {
-    pub map_id: __u32,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct bpf_link_info__bindgen_ty_1__bindgen_ty_5 {
-    pub netns_ino: __u32,
-    pub attach_type: __u32,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct bpf_link_info__bindgen_ty_1__bindgen_ty_6 {
-    pub ifindex: __u32,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct bpf_link {
-    pub refcnt: atomic64_t,
-    pub id: u32_,
-    pub type_: bpf_link_type::Type,
-    pub ops: *const bpf_link_ops,
-    pub prog: *mut bpf_prog,
-    pub work: work_struct,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct bpf_link_ops {
-    pub release: ::core::option::Option<unsafe extern "C" fn(arg1: *mut bpf_link)>,
-    pub dealloc: ::core::option::Option<unsafe extern "C" fn(arg1: *mut bpf_link)>,
-    pub detach:
-        ::core::option::Option<unsafe extern "C" fn(arg1: *mut bpf_link) -> ::aya_bpf::cty::c_int>,
-    pub update_prog: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut bpf_link,
-            arg2: *mut bpf_prog,
-            arg3: *mut bpf_prog,
-        ) -> ::aya_bpf::cty::c_int,
-    >,
-    pub show_fdinfo:
-        ::core::option::Option<unsafe extern "C" fn(arg1: *const bpf_link, arg2: *mut seq_file)>,
-    pub fill_link_info: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *const bpf_link,
-            arg2: *mut bpf_link_info,
-        ) -> ::aya_bpf::cty::c_int,
-    >,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
 pub struct bpf_kfunc_desc {
     pub func_model: btf_func_model,
     pub func_id: u32_,
     pub imm: s32,
-    pub offset: u16_,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct bpf_kfunc_desc_tab {
     pub descs: [bpf_kfunc_desc; 256usize],
     pub nr_descs: u32_,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct bpf_kfunc_btf {
-    pub btf: *mut btf,
-    pub module: *mut module,
-    pub offset: u16_,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct bpf_kfunc_btf_tab {
-    pub descs: [bpf_kfunc_btf; 256usize],
-    pub nr_descs: u32_,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct bpf_verifier_stack_elem {
     pub st: bpf_verifier_state,
     pub insn_idx: ::aya_bpf::cty::c_int,
@@ -26639,7 +25857,6 @@ pub union ip_ra_chain__bindgen_ty_1 {
     pub saved_sk: *mut sock,
 }
 #[repr(C)]
-#[derive(Debug)]
 pub struct fib_table {
     pub tb_hlist: hlist_node,
     pub tb_id: u32_,
@@ -26656,14 +25873,29 @@ pub struct inet_peer_base {
     pub total: ::aya_bpf::cty::c_int,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct tcp_fastopen_context {
     pub key: [siphash_key_t; 2usize],
     pub num: ::aya_bpf::cty::c_int,
     pub rcu: callback_head,
 }
 #[repr(C)]
-#[derive(Debug)]
+#[derive(Copy, Clone)]
+pub struct xdp_txq_info {
+    pub dev: *mut net_device,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct xdp_buff {
+    pub data: *mut ::aya_bpf::cty::c_void,
+    pub data_end: *mut ::aya_bpf::cty::c_void,
+    pub data_meta: *mut ::aya_bpf::cty::c_void,
+    pub data_hard_start: *mut ::aya_bpf::cty::c_void,
+    pub rxq: *mut xdp_rxq_info,
+    pub txq: *mut xdp_txq_info,
+    pub frame_sz: u32_,
+}
+#[repr(C)]
 pub struct lwtunnel_state {
     pub type_: __u16,
     pub flags: __u16,
@@ -26682,12 +25914,10 @@ pub struct lwtunnel_state {
     pub data: __IncompleteArrayField<__u8>,
 }
 #[repr(C)]
-#[derive(Debug)]
 pub struct sock_reuseport {
     pub rcu: callback_head,
     pub max_socks: u16_,
     pub num_socks: u16_,
-    pub num_closed_socks: u16_,
     pub synq_overflow_ts: ::aya_bpf::cty::c_uint,
     pub reuseport_id: ::aya_bpf::cty::c_uint,
     pub _bitfield_align_1: [u8; 0],
@@ -26736,7 +25966,7 @@ impl sock_reuseport {
     }
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct sk_psock_progs {
     pub msg_parser: *mut bpf_prog,
     pub stream_parser: *mut bpf_prog,
@@ -26744,7 +25974,7 @@ pub struct sk_psock_progs {
     pub skb_verdict: *mut bpf_prog,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct strp_stats {
     pub msgs: ::aya_bpf::cty::c_ulonglong,
     pub bytes: ::aya_bpf::cty::c_ulonglong,
@@ -26755,7 +25985,7 @@ pub struct strp_stats {
     pub bad_hdr_len: ::aya_bpf::cty::c_uint,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct strp_callbacks {
     pub parse_msg: ::core::option::Option<
         unsafe extern "C" fn(arg1: *mut strparser, arg2: *mut sk_buff) -> ::aya_bpf::cty::c_int,
@@ -26775,7 +26005,7 @@ pub struct strp_callbacks {
     pub unlock: ::core::option::Option<unsafe extern "C" fn(arg1: *mut strparser)>,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct strparser {
     pub sk: *mut sock,
     pub _bitfield_align_1: [u8; 0],
@@ -26877,7 +26107,7 @@ impl strparser {
     }
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct sk_psock_work_state {
     pub skb: *mut sk_buff,
     pub len: u32_,
@@ -26920,7 +26150,7 @@ pub struct sk_psock {
     pub rwork: rcu_work,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct inet_ehash_bucket {
     pub chain: hlist_nulls_head,
 }
@@ -26931,20 +26161,18 @@ pub struct inet_bind_hashbucket {
     pub chain: hlist_head,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct ack_sample {
     pub pkts_acked: u32_,
     pub rtt_us: s32,
     pub in_flight: u32_,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct rate_sample {
     pub prior_mstamp: u64_,
     pub prior_delivered: u32_,
-    pub prior_delivered_ce: u32_,
     pub delivered: s32,
-    pub delivered_ce: s32,
     pub interval_us: ::aya_bpf::cty::c_long,
     pub snd_interval_us: u32_,
     pub rcv_interval_us: u32_,
@@ -26957,7 +26185,7 @@ pub struct rate_sample {
     pub is_ack_delayed: bool_,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct sk_msg_sg {
     pub start: u32_,
     pub curr: u32_,
@@ -26968,7 +26196,7 @@ pub struct sk_msg_sg {
     pub data: [scatterlist; 19usize],
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct sk_msg {
     pub sg: sk_msg_sg,
     pub data: *mut ::aya_bpf::cty::c_void,
@@ -26982,23 +26210,22 @@ pub struct sk_msg {
     pub list: list_head,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct xdp_dev_bulk_queue {
     pub q: [*mut xdp_frame; 16usize],
     pub flush_node: list_head,
     pub dev: *mut net_device,
     pub dev_rx: *mut net_device,
-    pub xdp_prog: *mut bpf_prog,
     pub count: ::aya_bpf::cty::c_uint,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct netdev_notifier_info {
     pub dev: *mut net_device,
     pub extack: *mut netlink_ext_ack,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct bpf_prog_offload_ops {
     pub insn_hook: ::core::option::Option<
         unsafe extern "C" fn(
@@ -27031,14 +26258,13 @@ pub struct bpf_prog_offload_ops {
     pub destroy: ::core::option::Option<unsafe extern "C" fn(arg1: *mut bpf_prog)>,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct bpf_offload_dev {
     pub ops: *const bpf_prog_offload_ops,
     pub netdevs: list_head,
     pub priv_: *mut ::aya_bpf::cty::c_void,
 }
 #[repr(C)]
-#[derive(Debug)]
 pub struct xfrm_sec_ctx {
     pub ctx_doi: __u8,
     pub ctx_alg: __u8,
@@ -27108,13 +26334,13 @@ pub struct xol_area {
     pub vaddr: ::aya_bpf::cty::c_ulong,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct capture_control {
     pub cc: *mut compact_control,
     pub page: *mut page,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct compact_control {
     pub freepages: list_head,
     pub migratepages: list_head,
@@ -27145,7 +26371,7 @@ pub struct compact_control {
     pub alloc_contig: bool_,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct static_key_mod {
     pub next: *mut static_key_mod,
     pub entries: *mut jump_entry,
@@ -27166,7 +26392,7 @@ pub mod watch_notification_type {
     pub const WATCH_TYPE__NR: Type = 2;
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct watch_type_filter {
     pub type_: watch_notification_type::Type,
     pub subtype_filter: [__u32; 1usize],
@@ -27183,7 +26409,7 @@ pub struct watch_filter {
 #[derive(Copy, Clone)]
 pub union watch_filter__bindgen_ty_1 {
     pub rcu: callback_head,
-    pub type_filter: [::aya_bpf::cty::c_ulong; 1usize],
+    pub type_filter: [::aya_bpf::cty::c_ulong; 2usize],
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
@@ -27221,26 +26447,48 @@ pub union watch__bindgen_ty_1 {
 }
 pub type __kernel_rwf_t = ::aya_bpf::cty::c_int;
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct pagevec {
-    pub nr: ::aya_bpf::cty::c_uchar,
-    pub percpu_pvec_drained: bool_,
-    pub pages: [*mut page; 15usize],
+pub struct fid {
+    pub __bindgen_anon_1: fid__bindgen_ty_1,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+pub struct fid__bindgen_ty_1 {
+    pub i32_: __BindgenUnionField<fid__bindgen_ty_1__bindgen_ty_1>,
+    pub udf: __BindgenUnionField<fid__bindgen_ty_1__bindgen_ty_2>,
+    pub raw: __BindgenUnionField<[__u32; 0usize]>,
+    pub bindgen_union_field: [u32; 5usize],
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct fid__bindgen_ty_1__bindgen_ty_1 {
+    pub ino: u32_,
+    pub gen: u32_,
+    pub parent_ino: u32_,
+    pub parent_gen: u32_,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct fid__bindgen_ty_1__bindgen_ty_2 {
+    pub block: u32_,
+    pub partref: u16_,
+    pub parent_partref: u16_,
+    pub generation: u32_,
+    pub parent_block: u32_,
+    pub parent_generation: u32_,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
 pub struct reciprocal_value {
     pub m: u32_,
     pub sh1: u8_,
     pub sh2: u8_,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct kmem_cache_order_objects {
     pub x: ::aya_bpf::cty::c_uint,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct kmem_cache {
     pub cpu_slab: *mut kmem_cache_cpu,
     pub flags: slab_flags_t,
@@ -27250,7 +26498,6 @@ pub struct kmem_cache {
     pub reciprocal_size: reciprocal_value,
     pub offset: ::aya_bpf::cty::c_uint,
     pub cpu_partial: ::aya_bpf::cty::c_uint,
-    pub cpu_partial_slabs: ::aya_bpf::cty::c_uint,
     pub oo: kmem_cache_order_objects,
     pub max: kmem_cache_order_objects,
     pub min: kmem_cache_order_objects,
@@ -27268,110 +26515,15 @@ pub struct kmem_cache {
     pub random_seq: *mut ::aya_bpf::cty::c_uint,
     pub useroffset: ::aya_bpf::cty::c_uint,
     pub usersize: ::aya_bpf::cty::c_uint,
-    pub node: [*mut kmem_cache_node; 32usize],
+    pub node: [*mut kmem_cache_node; 1024usize],
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
-pub struct slab {
-    pub __page_flags: ::aya_bpf::cty::c_ulong,
-    pub __bindgen_anon_1: slab__bindgen_ty_1,
-    pub slab_cache: *mut kmem_cache,
-    pub freelist: *mut ::aya_bpf::cty::c_void,
-    pub __bindgen_anon_2: slab__bindgen_ty_2,
-    pub __unused: ::aya_bpf::cty::c_uint,
-    pub __page_refcount: atomic_t,
-    pub memcg_data: ::aya_bpf::cty::c_ulong,
-}
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub union slab__bindgen_ty_1 {
-    pub slab_list: list_head,
-    pub callback_head: callback_head,
-    pub __bindgen_anon_1: slab__bindgen_ty_1__bindgen_ty_1,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct slab__bindgen_ty_1__bindgen_ty_1 {
-    pub next: *mut slab,
-    pub slabs: ::aya_bpf::cty::c_int,
-}
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub union slab__bindgen_ty_2 {
-    pub counters: ::aya_bpf::cty::c_ulong,
-    pub __bindgen_anon_1: slab__bindgen_ty_2__bindgen_ty_1,
-}
-#[repr(C)]
-#[repr(align(4))]
-#[derive(Debug, Copy, Clone)]
-pub struct slab__bindgen_ty_2__bindgen_ty_1 {
-    pub _bitfield_align_1: [u16; 0],
-    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 4usize]>,
-}
-impl slab__bindgen_ty_2__bindgen_ty_1 {
-    #[inline]
-    pub fn inuse(&self) -> ::aya_bpf::cty::c_uint {
-        unsafe { ::core::mem::transmute(self._bitfield_1.get(0usize, 16u8) as u32) }
-    }
-    #[inline]
-    pub fn set_inuse(&mut self, val: ::aya_bpf::cty::c_uint) {
-        unsafe {
-            let val: u32 = ::core::mem::transmute(val);
-            self._bitfield_1.set(0usize, 16u8, val as u64)
-        }
-    }
-    #[inline]
-    pub fn objects(&self) -> ::aya_bpf::cty::c_uint {
-        unsafe { ::core::mem::transmute(self._bitfield_1.get(16usize, 15u8) as u32) }
-    }
-    #[inline]
-    pub fn set_objects(&mut self, val: ::aya_bpf::cty::c_uint) {
-        unsafe {
-            let val: u32 = ::core::mem::transmute(val);
-            self._bitfield_1.set(16usize, 15u8, val as u64)
-        }
-    }
-    #[inline]
-    pub fn frozen(&self) -> ::aya_bpf::cty::c_uint {
-        unsafe { ::core::mem::transmute(self._bitfield_1.get(31usize, 1u8) as u32) }
-    }
-    #[inline]
-    pub fn set_frozen(&mut self, val: ::aya_bpf::cty::c_uint) {
-        unsafe {
-            let val: u32 = ::core::mem::transmute(val);
-            self._bitfield_1.set(31usize, 1u8, val as u64)
-        }
-    }
-    #[inline]
-    pub fn new_bitfield_1(
-        inuse: ::aya_bpf::cty::c_uint,
-        objects: ::aya_bpf::cty::c_uint,
-        frozen: ::aya_bpf::cty::c_uint,
-    ) -> __BindgenBitfieldUnit<[u8; 4usize]> {
-        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 4usize]> = Default::default();
-        __bindgen_bitfield_unit.set(0usize, 16u8, {
-            let inuse: u32 = unsafe { ::core::mem::transmute(inuse) };
-            inuse as u64
-        });
-        __bindgen_bitfield_unit.set(16usize, 15u8, {
-            let objects: u32 = unsafe { ::core::mem::transmute(objects) };
-            objects as u64
-        });
-        __bindgen_bitfield_unit.set(31usize, 1u8, {
-            let frozen: u32 = unsafe { ::core::mem::transmute(frozen) };
-            frozen as u64
-        });
-        __bindgen_bitfield_unit
-    }
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
 pub struct kmem_cache_cpu {
     pub freelist: *mut *mut ::aya_bpf::cty::c_void,
     pub tid: ::aya_bpf::cty::c_ulong,
-    pub slab: *mut slab,
-    pub partial: *mut slab,
-    pub lock: local_lock_t,
+    pub page: *mut page,
+    pub partial: *mut page,
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
@@ -27390,40 +26542,11 @@ pub struct simple_xattrs {
     pub head: list_head,
     pub lock: spinlock_t,
 }
-#[repr(C)]
-pub struct fid {
-    pub __bindgen_anon_1: fid__bindgen_ty_1,
-}
-#[repr(C)]
-pub struct fid__bindgen_ty_1 {
-    pub i32_: __BindgenUnionField<fid__bindgen_ty_1__bindgen_ty_1>,
-    pub udf: __BindgenUnionField<fid__bindgen_ty_1__bindgen_ty_2>,
-    pub raw: __BindgenUnionField<[__u32; 0usize]>,
-    pub bindgen_union_field: [u32; 5usize],
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct fid__bindgen_ty_1__bindgen_ty_1 {
-    pub ino: u32_,
-    pub gen: u32_,
-    pub parent_ino: u32_,
-    pub parent_gen: u32_,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct fid__bindgen_ty_1__bindgen_ty_2 {
-    pub block: u32_,
-    pub partref: u16_,
-    pub parent_partref: u16_,
-    pub generation: u32_,
-    pub parent_block: u32_,
-    pub parent_generation: u32_,
-}
 pub type crypto_completion_t = ::core::option::Option<
     unsafe extern "C" fn(arg1: *mut crypto_async_request, arg2: ::aya_bpf::cty::c_int),
 >;
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct crypto_async_request {
     pub list: list_head,
     pub complete: crypto_completion_t,
@@ -27444,13 +26567,14 @@ pub struct mmu_notifier_subscriptions {
     pub deferred_list: hlist_head,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct cma_kobject {
-    pub kobj: kobject,
-    pub cma: *mut cma,
+#[derive(Copy, Clone)]
+pub struct open_how {
+    pub flags: __u64,
+    pub mode: __u64,
+    pub resolve: __u64,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct fscrypt_policy_v1 {
     pub version: __u8,
     pub contents_encryption_mode: __u8,
@@ -27459,7 +26583,7 @@ pub struct fscrypt_policy_v1 {
     pub master_key_descriptor: [__u8; 8usize],
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct fscrypt_policy_v2 {
     pub version: __u8,
     pub contents_encryption_mode: __u8,
@@ -27476,14 +26600,14 @@ pub union fscrypt_policy {
     pub v2: fscrypt_policy_v2,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct statx_timestamp {
     pub tv_sec: __s64,
     pub tv_nsec: __u32,
     pub __reserved: __s32,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct statx {
     pub stx_mask: __u32,
     pub stx_blksize: __u32,
@@ -27568,13 +26692,13 @@ pub union mount__bindgen_ty_2 {
     pub mnt_umount: hlist_node,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct mnt_pcp {
     pub mnt_count: ::aya_bpf::cty::c_int,
     pub mnt_writers: ::aya_bpf::cty::c_int,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct mountpoint {
     pub m_hash: hlist_node,
     pub m_dentry: *mut dentry,
@@ -27582,7 +26706,7 @@ pub struct mountpoint {
     pub m_count: ::aya_bpf::cty::c_int,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct saved {
     pub link: path,
     pub done: delayed_call,
@@ -27597,7 +26721,6 @@ pub struct nameidata {
     pub root: path,
     pub inode: *mut inode,
     pub flags: ::aya_bpf::cty::c_uint,
-    pub state: ::aya_bpf::cty::c_uint,
     pub seq: ::aya_bpf::cty::c_uint,
     pub m_seq: ::aya_bpf::cty::c_uint,
     pub r_seq: ::aya_bpf::cty::c_uint,
@@ -27614,7 +26737,7 @@ pub struct nameidata {
     pub dir_mode: umode_t,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct fiemap_extent_info {
     pub fi_flags: ::aya_bpf::cty::c_uint,
     pub fi_extents_mapped: ::aya_bpf::cty::c_uint,
@@ -27622,7 +26745,7 @@ pub struct fiemap_extent_info {
     pub fi_extents_start: *mut fiemap_extent,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct fileattr {
     pub flags: u32_,
     pub fsx_xflags: u32_,
@@ -27675,7 +26798,7 @@ impl fileattr {
     }
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct fiemap_extent {
     pub fe_logical: __u64,
     pub fe_physical: __u64,
@@ -27685,30 +26808,46 @@ pub struct fiemap_extent {
     pub fe_reserved: [__u32; 3usize],
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct unicode_map {
-    pub version: ::aya_bpf::cty::c_uint,
-    pub ntab: [*const utf8data; 2usize],
-    pub tables: *const utf8data_table,
+    pub charset: *const ::aya_bpf::cty::c_char,
+    pub version: ::aya_bpf::cty::c_int,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct utf8data {
-    pub maxage: ::aya_bpf::cty::c_uint,
-    pub offset: ::aya_bpf::cty::c_uint,
+#[derive(Copy, Clone)]
+pub struct iomap {
+    pub addr: u64_,
+    pub offset: loff_t,
+    pub length: u64_,
+    pub type_: u16_,
+    pub flags: u16_,
+    pub bdev: *mut block_device,
+    pub dax_dev: *mut dax_device,
+    pub inline_data: *mut ::aya_bpf::cty::c_void,
+    pub private: *mut ::aya_bpf::cty::c_void,
+    pub page_ops: *const iomap_page_ops,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct utf8data_table {
-    pub utf8agetab: *const ::aya_bpf::cty::c_uint,
-    pub utf8agetab_size: ::aya_bpf::cty::c_int,
-    pub utf8nfdicfdata: *const utf8data,
-    pub utf8nfdicfdata_size: ::aya_bpf::cty::c_int,
-    pub utf8nfdidata: *const utf8data,
-    pub utf8nfdidata_size: ::aya_bpf::cty::c_int,
-    pub utf8data: *const ::aya_bpf::cty::c_uchar,
+#[derive(Copy, Clone)]
+pub struct iomap_page_ops {
+    pub page_prepare: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut inode,
+            arg2: loff_t,
+            arg3: ::aya_bpf::cty::c_uint,
+            arg4: *mut iomap,
+        ) -> ::aya_bpf::cty::c_int,
+    >,
+    pub page_done: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut inode,
+            arg2: loff_t,
+            arg3: ::aya_bpf::cty::c_uint,
+            arg4: *mut page,
+            arg5: *mut iomap,
+        ),
+    >,
 }
-pub type blk_mq_req_flags_t = __u32;
 pub type nlink_t = u32_;
 pub type proc_write_t = ::core::option::Option<
     unsafe extern "C" fn(
@@ -27763,10 +26902,19 @@ pub union proc_dir_entry__bindgen_ty_2 {
     >,
 }
 #[repr(C, packed)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct epoll_event {
     pub events: __poll_t,
     pub data: __u64,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct eventfd_ctx {
+    pub kref: kref,
+    pub wqh: wait_queue_head_t,
+    pub count: __u64,
+    pub flags: ::aya_bpf::cty::c_uint,
+    pub id: ::aya_bpf::cty::c_int,
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
@@ -27780,11 +26928,10 @@ pub struct userfaultfd_ctx {
     pub flags: ::aya_bpf::cty::c_uint,
     pub features: ::aya_bpf::cty::c_uint,
     pub released: bool_,
-    pub mmap_changing: atomic_t,
+    pub mmap_changing: bool_,
     pub mm: *mut mm_struct,
 }
 #[repr(C)]
-#[derive(Debug)]
 pub struct kioctx_table {
     pub rcu: callback_head,
     pub nr: ::aya_bpf::cty::c_uint,
@@ -27820,7 +26967,7 @@ pub struct kioctx {
     pub _bitfield_2: __BindgenBitfieldUnit<[u8; 56usize]>,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct kioctx__bindgen_ty_1 {
     pub reqs_available: atomic_t,
     pub _bitfield_align_1: [u8; 0],
@@ -27866,7 +27013,7 @@ impl kioctx {
     }
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct kioctx_cpu {
     pub reqs_available: ::aya_bpf::cty::c_uint,
 }
@@ -27877,12 +27024,7 @@ pub struct ctx_rq_wait {
     pub count: atomic_t,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct io_wq {
-    _unused: [u8; 0],
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct io_wq_work_list {
     pub first: *mut io_wq_work_node,
     pub last: *mut io_wq_work_node,
@@ -27890,7 +27032,6 @@ pub struct io_wq_work_list {
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct io_uring_task {
-    pub cached_refs: ::aya_bpf::cty::c_int,
     pub xa: xarray,
     pub wait: wait_queue_head,
     pub last: *const io_ring_ctx,
@@ -27900,12 +27041,11 @@ pub struct io_uring_task {
     pub in_idle: atomic_t,
     pub task_lock: spinlock_t,
     pub task_list: io_wq_work_list,
-    pub prior_task_list: io_wq_work_list,
+    pub task_state: ::aya_bpf::cty::c_ulong,
     pub task_work: callback_head,
-    pub task_running: bool_,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct user_msghdr {
     pub msg_name: *mut ::aya_bpf::cty::c_void,
     pub msg_namelen: ::aya_bpf::cty::c_int,
@@ -27916,7 +27056,7 @@ pub struct user_msghdr {
     pub msg_flags: ::aya_bpf::cty::c_uint,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct compat_msghdr {
     pub msg_name: compat_uptr_t,
     pub msg_namelen: compat_int_t,
@@ -27925,6 +27065,17 @@ pub struct compat_msghdr {
     pub msg_control: compat_uptr_t,
     pub msg_controllen: compat_size_t,
     pub msg_flags: compat_uint_t,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct io_wq_work_node {
+    pub next: *mut io_wq_work_node,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct io_wq_work {
+    pub list: io_wq_work_node,
+    pub flags: ::aya_bpf::cty::c_uint,
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
@@ -27939,9 +27090,6 @@ pub struct io_uring_sqe {
     pub __bindgen_anon_3: io_uring_sqe__bindgen_ty_3,
     pub user_data: __u64,
     pub __bindgen_anon_4: io_uring_sqe__bindgen_ty_4,
-    pub personality: __u16,
-    pub __bindgen_anon_5: io_uring_sqe__bindgen_ty_5,
-    pub __pad2: [__u64; 2usize],
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
@@ -27973,38 +27121,36 @@ pub union io_uring_sqe__bindgen_ty_3 {
     pub splice_flags: __u32,
     pub rename_flags: __u32,
     pub unlink_flags: __u32,
-    pub hardlink_flags: __u32,
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub union io_uring_sqe__bindgen_ty_4 {
+    pub __bindgen_anon_1: io_uring_sqe__bindgen_ty_4__bindgen_ty_1,
+    pub __pad2: [__u64; 3usize],
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct io_uring_sqe__bindgen_ty_4__bindgen_ty_1 {
+    pub __bindgen_anon_1: io_uring_sqe__bindgen_ty_4__bindgen_ty_1__bindgen_ty_1,
+    pub personality: __u16,
+    pub splice_fd_in: __s32,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub union io_uring_sqe__bindgen_ty_4__bindgen_ty_1__bindgen_ty_1 {
     pub buf_index: __u16,
     pub buf_group: __u16,
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
-pub union io_uring_sqe__bindgen_ty_5 {
-    pub splice_fd_in: __s32,
-    pub file_index: __u32,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
 pub struct io_uring_cqe {
     pub user_data: __u64,
     pub res: __s32,
     pub flags: __u32,
 }
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct io_wq_work_node {
-    pub next: *mut io_wq_work_node,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct io_wq_work {
-    pub list: io_wq_work_node,
-    pub flags: ::aya_bpf::cty::c_uint,
-}
+pub type free_work_fn =
+    ::core::option::Option<unsafe extern "C" fn(arg1: *mut io_wq_work) -> *mut io_wq_work>;
+pub type io_wq_work_fn = ::core::option::Option<unsafe extern "C" fn(arg1: *mut io_wq_work)>;
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct io_wq_hash {
@@ -28013,7 +27159,7 @@ pub struct io_wq_hash {
     pub wait: wait_queue_head,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct io_uring {
     pub head: u32_,
     pub _bitfield_align_1: [u8; 0],
@@ -28023,7 +27169,6 @@ pub struct io_uring {
     pub _bitfield_2: __BindgenBitfieldUnit<[u8; 60usize]>,
 }
 #[repr(C)]
-#[derive(Debug)]
 pub struct io_rings {
     pub sq: io_uring,
     pub cq: io_uring,
@@ -28047,7 +27192,6 @@ impl io_rings {
     }
 }
 #[repr(C)]
-#[derive(Debug)]
 pub struct io_mapped_ubuf {
     pub ubuf: u64_,
     pub ubuf_end: u64_,
@@ -28056,7 +27200,7 @@ pub struct io_mapped_ubuf {
     pub bvec: __IncompleteArrayField<bio_vec>,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct io_fixed_file {
     pub file_ptr: ::aya_bpf::cty::c_ulong,
 }
@@ -28075,12 +27219,12 @@ pub union io_rsrc_put__bindgen_ty_1 {
     pub buf: *mut io_mapped_ubuf,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct io_file_table {
-    pub files: *mut io_fixed_file,
+    pub files: *mut *mut io_fixed_file,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct io_rsrc_node {
     pub refs: percpu_ref,
     pub node: list_head,
@@ -28095,33 +27239,41 @@ pub type rsrc_put_fn =
 #[derive(Copy, Clone)]
 pub struct io_rsrc_data {
     pub ctx: *mut io_ring_ctx,
-    pub tags: *mut *mut u64_,
-    pub nr: ::aya_bpf::cty::c_uint,
+    pub tags: *mut u64_,
     pub do_put: rsrc_put_fn,
     pub refs: atomic_t,
     pub done: completion,
     pub quiesce: bool_,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct io_submit_link {
     pub head: *mut io_kiocb,
     pub last: *mut io_kiocb,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct io_submit_state {
-    pub free_list: io_wq_work_node,
-    pub compl_reqs: io_wq_work_list,
-    pub link: io_submit_link,
-    pub plug_started: bool_,
-    pub need_plug: bool_,
-    pub flush_cqes: bool_,
-    pub submit_nr: ::aya_bpf::cty::c_ushort,
-    pub plug: blk_plug,
+#[derive(Copy, Clone)]
+pub struct io_comp_state {
+    pub reqs: [*mut io_kiocb; 32usize],
+    pub nr: ::aya_bpf::cty::c_uint,
+    pub free_list: list_head,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
+pub struct io_submit_state {
+    pub plug: blk_plug,
+    pub link: io_submit_link,
+    pub reqs: [*mut ::aya_bpf::cty::c_void; 32usize],
+    pub free_reqs: ::aya_bpf::cty::c_uint,
+    pub plug_started: bool_,
+    pub comp: io_comp_state,
+    pub file: *mut file,
+    pub fd: ::aya_bpf::cty::c_uint,
+    pub file_refs: ::aya_bpf::cty::c_uint,
+    pub ios_left: ::aya_bpf::cty::c_uint,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
 pub struct io_restriction {
     pub register_op: [::aya_bpf::cty::c_ulong; 1usize],
     pub sqe_op: [::aya_bpf::cty::c_ulong; 1usize],
@@ -28134,33 +27286,69 @@ pub struct io_restriction {
 pub struct io_ring_ctx {
     pub __bindgen_anon_1: io_ring_ctx__bindgen_ty_1,
     pub __bindgen_anon_2: io_ring_ctx__bindgen_ty_2,
-    pub locked_free_list: io_wq_work_list,
+    pub __bindgen_anon_3: io_ring_ctx__bindgen_ty_3,
+    pub submit_state: io_submit_state,
+    pub locked_free_list: list_head,
     pub locked_free_nr: ::aya_bpf::cty::c_uint,
+    pub rings: *mut io_rings,
     pub sq_creds: *const cred,
     pub sq_data: *mut io_sq_data,
     pub sqo_sq_wait: wait_queue_head,
     pub sqd_list: list_head,
-    pub check_cq_overflow: ::aya_bpf::cty::c_ulong,
+    pub file_data: *mut io_rsrc_data,
+    pub file_table: io_file_table,
+    pub nr_user_files: ::aya_bpf::cty::c_uint,
+    pub buf_data: *mut io_rsrc_data,
+    pub nr_user_bufs: ::aya_bpf::cty::c_uint,
+    pub user_bufs: *mut *mut io_mapped_ubuf,
+    pub io_buffers: xarray,
+    pub personalities: xarray,
+    pub pers_next: u32_,
     pub _bitfield_align_1: [u8; 0],
     pub _bitfield_1: __BindgenBitfieldUnit<[u8; 40usize]>,
-    pub __bindgen_anon_3: io_ring_ctx__bindgen_ty_3,
     pub __bindgen_anon_4: io_ring_ctx__bindgen_ty_4,
-    pub restrictions: io_restriction,
     pub __bindgen_anon_5: io_ring_ctx__bindgen_ty_5,
+    pub rsrc_put_work: delayed_work,
+    pub rsrc_put_llist: llist_head,
+    pub rsrc_ref_list: list_head,
+    pub rsrc_ref_lock: spinlock_t,
+    pub rsrc_node: *mut io_rsrc_node,
+    pub rsrc_backup_node: *mut io_rsrc_node,
+    pub dummy_ubuf: *mut io_mapped_ubuf,
+    pub restrictions: io_restriction,
     pub __bindgen_anon_6: io_ring_ctx__bindgen_ty_6,
     pub _bitfield_align_2: [u8; 0],
-    pub _bitfield_2: __BindgenBitfieldUnit<[u8; 48usize]>,
+    pub _bitfield_2: __BindgenBitfieldUnit<[u8; 32usize]>,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct io_ring_ctx__bindgen_ty_1 {
     pub refs: percpu_ref,
-    pub rings: *mut io_rings,
+    pub _bitfield_align_1: [u8; 0],
+    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 48usize]>,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct io_ring_ctx__bindgen_ty_2 {
     pub flags: ::aya_bpf::cty::c_uint,
     pub _bitfield_align_1: [u8; 0],
-    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 40usize]>,
+    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 1usize]>,
+    pub sq_array: *mut u32_,
+    pub cached_sq_head: ::aya_bpf::cty::c_uint,
+    pub sq_entries: ::aya_bpf::cty::c_uint,
+    pub sq_mask: ::aya_bpf::cty::c_uint,
+    pub sq_thread_idle: ::aya_bpf::cty::c_uint,
+    pub cached_sq_dropped: ::aya_bpf::cty::c_uint,
+    pub cached_cq_overflow: ::aya_bpf::cty::c_uint,
+    pub sq_check_overflow: ::aya_bpf::cty::c_ulong,
+    pub defer_list: list_head,
+    pub timeout_list: list_head,
+    pub cq_overflow_list: list_head,
+    pub sq_sqes: *mut io_uring_sqe,
+    pub _bitfield_align_2: [u8; 0],
+    pub _bitfield_2: __BindgenBitfieldUnit<[u8; 24usize]>,
 }
-impl io_ring_ctx__bindgen_ty_1 {
+impl io_ring_ctx__bindgen_ty_2 {
     #[inline]
     pub fn compat(&self) -> ::aya_bpf::cty::c_uint {
         unsafe { ::core::mem::transmute(self._bitfield_1.get(0usize, 1u8) as u32) }
@@ -28206,122 +27394,82 @@ impl io_ring_ctx__bindgen_ty_1 {
         }
     }
     #[inline]
-    pub fn off_timeout_used(&self) -> ::aya_bpf::cty::c_uint {
-        unsafe { ::core::mem::transmute(self._bitfield_1.get(4usize, 1u8) as u32) }
+    pub fn new_bitfield_1(
+        compat: ::aya_bpf::cty::c_uint,
+        drain_next: ::aya_bpf::cty::c_uint,
+        eventfd_async: ::aya_bpf::cty::c_uint,
+        restricted: ::aya_bpf::cty::c_uint,
+    ) -> __BindgenBitfieldUnit<[u8; 1usize]> {
+        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 1usize]> = Default::default();
+        __bindgen_bitfield_unit.set(0usize, 1u8, {
+            let compat: u32 = unsafe { ::core::mem::transmute(compat) };
+            compat as u64
+        });
+        __bindgen_bitfield_unit.set(1usize, 1u8, {
+            let drain_next: u32 = unsafe { ::core::mem::transmute(drain_next) };
+            drain_next as u64
+        });
+        __bindgen_bitfield_unit.set(2usize, 1u8, {
+            let eventfd_async: u32 = unsafe { ::core::mem::transmute(eventfd_async) };
+            eventfd_async as u64
+        });
+        __bindgen_bitfield_unit.set(3usize, 1u8, {
+            let restricted: u32 = unsafe { ::core::mem::transmute(restricted) };
+            restricted as u64
+        });
+        __bindgen_bitfield_unit
     }
     #[inline]
-    pub fn set_off_timeout_used(&mut self, val: ::aya_bpf::cty::c_uint) {
-        unsafe {
-            let val: u32 = ::core::mem::transmute(val);
-            self._bitfield_1.set(4usize, 1u8, val as u64)
-        }
-    }
-    #[inline]
-    pub fn drain_active(&self) -> ::aya_bpf::cty::c_uint {
-        unsafe { ::core::mem::transmute(self._bitfield_1.get(5usize, 1u8) as u32) }
-    }
-    #[inline]
-    pub fn set_drain_active(&mut self, val: ::aya_bpf::cty::c_uint) {
-        unsafe {
-            let val: u32 = ::core::mem::transmute(val);
-            self._bitfield_1.set(5usize, 1u8, val as u64)
-        }
-    }
-    #[inline]
-    pub fn drain_disabled(&self) -> ::aya_bpf::cty::c_uint {
-        unsafe { ::core::mem::transmute(self._bitfield_1.get(6usize, 1u8) as u32) }
-    }
-    #[inline]
-    pub fn set_drain_disabled(&mut self, val: ::aya_bpf::cty::c_uint) {
-        unsafe {
-            let val: u32 = ::core::mem::transmute(val);
-            self._bitfield_1.set(6usize, 1u8, val as u64)
-        }
-    }
-}
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct io_ring_ctx__bindgen_ty_2 {
-    pub uring_lock: mutex,
-    pub sq_array: *mut u32_,
-    pub sq_sqes: *mut io_uring_sqe,
-    pub cached_sq_head: ::aya_bpf::cty::c_uint,
-    pub sq_entries: ::aya_bpf::cty::c_uint,
-    pub defer_list: list_head,
-    pub rsrc_node: *mut io_rsrc_node,
-    pub rsrc_cached_refs: ::aya_bpf::cty::c_int,
-    pub file_table: io_file_table,
-    pub nr_user_files: ::aya_bpf::cty::c_uint,
-    pub nr_user_bufs: ::aya_bpf::cty::c_uint,
-    pub user_bufs: *mut *mut io_mapped_ubuf,
-    pub submit_state: io_submit_state,
-    pub timeout_list: list_head,
-    pub ltimeout_list: list_head,
-    pub cq_overflow_list: list_head,
-    pub io_buffers: xarray,
-    pub personalities: xarray,
-    pub pers_next: u32_,
-    pub sq_thread_idle: ::aya_bpf::cty::c_uint,
-    pub _bitfield_align_1: [u8; 0],
-    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 32usize]>,
-}
-impl io_ring_ctx__bindgen_ty_2 {
-    #[inline]
-    pub fn new_bitfield_1() -> __BindgenBitfieldUnit<[u8; 32usize]> {
-        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 32usize]> = Default::default();
+    pub fn new_bitfield_2() -> __BindgenBitfieldUnit<[u8; 24usize]> {
+        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 24usize]> = Default::default();
         __bindgen_bitfield_unit
     }
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct io_ring_ctx__bindgen_ty_3 {
-    pub cached_cq_tail: ::aya_bpf::cty::c_uint,
-    pub cq_entries: ::aya_bpf::cty::c_uint,
-    pub cq_ev_fd: *mut eventfd_ctx,
-    pub cq_wait: wait_queue_head,
-    pub cq_extra: ::aya_bpf::cty::c_uint,
-    pub cq_timeouts: atomic_t,
-    pub cq_last_tm_flush: ::aya_bpf::cty::c_uint,
+    pub uring_lock: mutex,
+    pub wait: wait_queue_head_t,
     pub _bitfield_align_1: [u8; 0],
-    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 16usize]>,
+    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 8usize]>,
 }
 impl io_ring_ctx__bindgen_ty_3 {
     #[inline]
-    pub fn new_bitfield_1() -> __BindgenBitfieldUnit<[u8; 16usize]> {
-        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 16usize]> = Default::default();
+    pub fn new_bitfield_1() -> __BindgenBitfieldUnit<[u8; 8usize]> {
+        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 8usize]> = Default::default();
         __bindgen_bitfield_unit
     }
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct io_ring_ctx__bindgen_ty_4 {
+    pub cached_cq_tail: ::aya_bpf::cty::c_uint,
+    pub cq_entries: ::aya_bpf::cty::c_uint,
+    pub cq_mask: ::aya_bpf::cty::c_uint,
+    pub cq_timeouts: atomic_t,
+    pub cq_last_tm_flush: ::aya_bpf::cty::c_uint,
+    pub cq_extra: ::aya_bpf::cty::c_uint,
+    pub cq_check_overflow: ::aya_bpf::cty::c_ulong,
+    pub cq_wait: wait_queue_head,
+    pub cq_ev_fd: *mut eventfd_ctx,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct io_ring_ctx__bindgen_ty_5 {
     pub completion_lock: spinlock_t,
-    pub timeout_lock: spinlock_t,
-    pub iopoll_list: io_wq_work_list,
+    pub iopoll_list: list_head,
     pub cancel_hash: *mut hlist_head,
     pub cancel_hash_bits: ::aya_bpf::cty::c_uint,
-    pub poll_multi_queue: bool_,
+    pub poll_multi_file: bool_,
     pub _bitfield_align_1: [u8; 0],
     pub _bitfield_1: __BindgenBitfieldUnit<[u8; 32usize]>,
 }
-impl io_ring_ctx__bindgen_ty_4 {
+impl io_ring_ctx__bindgen_ty_5 {
     #[inline]
     pub fn new_bitfield_1() -> __BindgenBitfieldUnit<[u8; 32usize]> {
         let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 32usize]> = Default::default();
         __bindgen_bitfield_unit
     }
-}
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct io_ring_ctx__bindgen_ty_5 {
-    pub rsrc_backup_node: *mut io_rsrc_node,
-    pub dummy_ubuf: *mut io_mapped_ubuf,
-    pub file_data: *mut io_rsrc_data,
-    pub buf_data: *mut io_rsrc_data,
-    pub rsrc_put_work: delayed_work,
-    pub rsrc_put_llist: llist_head,
-    pub rsrc_ref_list: list_head,
-    pub rsrc_ref_lock: spinlock_t,
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
@@ -28330,16 +27478,20 @@ pub struct io_ring_ctx__bindgen_ty_6 {
     pub hash_map: *mut io_wq_hash,
     pub user: *mut user_struct,
     pub mm_account: *mut mm_struct,
-    pub fallback_llist: llist_head,
-    pub fallback_work: delayed_work,
+    pub exit_task_work: *mut callback_head,
     pub exit_work: work_struct,
     pub tctx_list: list_head,
     pub ref_comp: completion,
-    pub iowq_limits: [u32_; 2usize],
-    pub iowq_limits_set: bool_,
+}
+impl io_ring_ctx {
+    #[inline]
+    pub fn new_bitfield_2() -> __BindgenBitfieldUnit<[u8; 32usize]> {
+        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 32usize]> = Default::default();
+        __bindgen_bitfield_unit
+    }
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct io_buffer {
     pub list: list_head,
     pub addr: __u64,
@@ -28361,24 +27513,27 @@ pub struct io_sq_data {
     pub task_tgid: pid_t,
     pub state: ::aya_bpf::cty::c_ulong,
     pub exited: completion,
+    pub park_task_work: *mut callback_head,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct io_rw {
     pub kiocb: kiocb,
     pub addr: u64_,
     pub len: u64_,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct io_poll_iocb {
     pub file: *mut file,
     pub head: *mut wait_queue_head,
     pub events: __poll_t,
+    pub done: bool_,
+    pub canceled: bool_,
     pub wait: wait_queue_entry,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct io_poll_update {
     pub file: *mut file,
     pub old_user_data: u64_,
@@ -28388,17 +27543,16 @@ pub struct io_poll_update {
     pub update_user_data: bool_,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct io_accept {
     pub file: *mut file,
     pub addr: *mut sockaddr,
     pub addr_len: *mut ::aya_bpf::cty::c_int,
     pub flags: ::aya_bpf::cty::c_int,
-    pub file_slot: u32_,
     pub nofile: ::aya_bpf::cty::c_ulong,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct io_sync {
     pub file: *mut file,
     pub len: loff_t,
@@ -28407,32 +27561,30 @@ pub struct io_sync {
     pub mode: ::aya_bpf::cty::c_int,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct io_cancel {
     pub file: *mut file,
     pub addr: u64_,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct io_timeout {
     pub file: *mut file,
     pub off: u32_,
     pub target_seq: u32_,
     pub list: list_head,
     pub head: *mut io_kiocb,
-    pub prev: *mut io_kiocb,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct io_timeout_rem {
     pub file: *mut file,
     pub addr: u64_,
     pub ts: timespec64,
     pub flags: u32_,
-    pub ltimeout: bool_,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct io_connect {
     pub file: *mut file,
     pub addr: *mut sockaddr,
@@ -28446,6 +27598,7 @@ pub struct io_sr_msg {
     pub msg_flags: ::aya_bpf::cty::c_int,
     pub bgid: ::aya_bpf::cty::c_int,
     pub len: size_t,
+    pub kbuf: *mut io_buffer,
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
@@ -28455,24 +27608,22 @@ pub union io_sr_msg__bindgen_ty_1 {
     pub buf: *mut ::aya_bpf::cty::c_void,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct io_open {
     pub file: *mut file,
     pub dfd: ::aya_bpf::cty::c_int,
-    pub file_slot: u32_,
     pub filename: *mut filename,
     pub how: open_how,
     pub nofile: ::aya_bpf::cty::c_ulong,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct io_close {
     pub file: *mut file,
     pub fd: ::aya_bpf::cty::c_int,
-    pub file_slot: u32_,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct io_rsrc_update {
     pub file: *mut file,
     pub arg: u64_,
@@ -28480,7 +27631,7 @@ pub struct io_rsrc_update {
     pub offset: u32_,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct io_fadvise {
     pub file: *mut file,
     pub offset: u64_,
@@ -28488,7 +27639,7 @@ pub struct io_fadvise {
     pub advice: u32_,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct io_madvise {
     pub file: *mut file,
     pub addr: u64_,
@@ -28496,7 +27647,7 @@ pub struct io_madvise {
     pub advice: u32_,
 }
 #[repr(C, packed)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct io_epoll {
     pub file: *mut file,
     pub epfd: ::aya_bpf::cty::c_int,
@@ -28505,7 +27656,7 @@ pub struct io_epoll {
     pub event: epoll_event,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct io_splice {
     pub file_out: *mut file,
     pub file_in: *mut file,
@@ -28515,7 +27666,7 @@ pub struct io_splice {
     pub flags: ::aya_bpf::cty::c_uint,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct io_provide_buf {
     pub file: *mut file,
     pub addr: __u64,
@@ -28525,7 +27676,7 @@ pub struct io_provide_buf {
     pub bid: __u16,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct io_statx {
     pub file: *mut file,
     pub dfd: ::aya_bpf::cty::c_int,
@@ -28535,13 +27686,13 @@ pub struct io_statx {
     pub buffer: *mut statx,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct io_shutdown {
     pub file: *mut file,
     pub how: ::aya_bpf::cty::c_int,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct io_rename {
     pub file: *mut file,
     pub old_dfd: ::aya_bpf::cty::c_int,
@@ -28551,7 +27702,7 @@ pub struct io_rename {
     pub flags: ::aya_bpf::cty::c_int,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct io_unlink {
     pub file: *mut file,
     pub dfd: ::aya_bpf::cty::c_int,
@@ -28559,71 +27710,41 @@ pub struct io_unlink {
     pub filename: *mut filename,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct io_mkdir {
+#[derive(Copy, Clone)]
+pub struct io_completion {
     pub file: *mut file,
-    pub dfd: ::aya_bpf::cty::c_int,
-    pub mode: umode_t,
-    pub filename: *mut filename,
+    pub list: list_head,
+    pub cflags: u32_,
 }
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct io_symlink {
-    pub file: *mut file,
-    pub new_dfd: ::aya_bpf::cty::c_int,
-    pub oldpath: *mut filename,
-    pub newpath: *mut filename,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct io_hardlink {
-    pub file: *mut file,
-    pub old_dfd: ::aya_bpf::cty::c_int,
-    pub new_dfd: ::aya_bpf::cty::c_int,
-    pub oldpath: *mut filename,
-    pub newpath: *mut filename,
-    pub flags: ::aya_bpf::cty::c_int,
-}
-pub type io_req_tw_func_t =
-    ::core::option::Option<unsafe extern "C" fn(arg1: *mut io_kiocb, arg2: *mut bool_)>;
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct io_task_work {
-    pub __bindgen_anon_1: io_task_work__bindgen_ty_1,
-    pub func: io_req_tw_func_t,
-}
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub union io_task_work__bindgen_ty_1 {
     pub node: io_wq_work_node,
-    pub fallback_node: llist_node,
+    pub func: task_work_func_t,
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct io_kiocb {
     pub __bindgen_anon_1: io_kiocb__bindgen_ty_1,
+    pub async_data: *mut ::aya_bpf::cty::c_void,
     pub opcode: u8_,
     pub iopoll_completed: u8_,
     pub buf_index: u16_,
-    pub flags: ::aya_bpf::cty::c_uint,
-    pub user_data: u64_,
     pub result: u32_,
-    pub cflags: u32_,
     pub ctx: *mut io_ring_ctx,
-    pub task: *mut task_struct,
-    pub fixed_rsrc_refs: *mut percpu_ref,
-    pub imu: *mut io_mapped_ubuf,
-    pub comp_list: io_wq_work_node,
+    pub flags: ::aya_bpf::cty::c_uint,
     pub refs: atomic_t,
+    pub task: *mut task_struct,
+    pub user_data: u64_,
     pub link: *mut io_kiocb,
-    pub io_task_work: io_task_work,
+    pub fixed_rsrc_refs: *mut percpu_ref,
+    pub inflight_entry: list_head,
+    pub __bindgen_anon_2: io_kiocb__bindgen_ty_2,
     pub hash_node: hlist_node,
     pub apoll: *mut async_poll,
-    pub async_data: *mut ::aya_bpf::cty::c_void,
     pub work: io_wq_work,
     pub creds: *const cred,
-    pub kbuf: *mut io_buffer,
-    pub poll_refs: atomic_t,
+    pub imu: *mut io_mapped_ubuf,
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
@@ -28651,18 +27772,74 @@ pub union io_kiocb__bindgen_ty_1 {
     pub shutdown: io_shutdown,
     pub rename: io_rename,
     pub unlink: io_unlink,
-    pub mkdir: io_mkdir,
-    pub symlink: io_symlink,
-    pub hardlink: io_hardlink,
+    pub compl: io_completion,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
+pub union io_kiocb__bindgen_ty_2 {
+    pub io_task_work: io_task_work,
+    pub task_work: callback_head,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
 pub struct async_poll {
     pub poll: io_poll_iocb,
     pub double_poll: *mut io_poll_iocb,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
+pub struct io_wqe_acct {
+    pub nr_workers: ::aya_bpf::cty::c_uint,
+    pub max_workers: ::aya_bpf::cty::c_uint,
+    pub index: ::aya_bpf::cty::c_int,
+    pub nr_running: atomic_t,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct io_wqe {
+    pub __bindgen_anon_1: io_wqe__bindgen_ty_1,
+    pub node: ::aya_bpf::cty::c_int,
+    pub acct: [io_wqe_acct; 2usize],
+    pub free_list: hlist_nulls_head,
+    pub all_list: list_head,
+    pub wait: wait_queue_entry,
+    pub wq: *mut io_wq,
+    pub hash_tail: [*mut io_wq_work; 64usize],
+    pub _bitfield_align_1: [u8; 0],
+    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 16usize]>,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct io_wqe__bindgen_ty_1 {
+    pub lock: raw_spinlock_t,
+    pub work_list: io_wq_work_list,
+    pub flags: ::aya_bpf::cty::c_uint,
+    pub _bitfield_align_1: [u8; 0],
+    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 40usize]>,
+}
+impl io_wqe {
+    #[inline]
+    pub fn new_bitfield_1() -> __BindgenBitfieldUnit<[u8; 16usize]> {
+        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 16usize]> = Default::default();
+        __bindgen_bitfield_unit
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct io_wq {
+    pub wqes: *mut *mut io_wqe,
+    pub state: ::aya_bpf::cty::c_ulong,
+    pub free_work: free_work_fn,
+    pub do_work: io_wq_work_fn,
+    pub hash: *mut io_wq_hash,
+    pub refs: refcount_t,
+    pub worker_refs: atomic_t,
+    pub worker_done: completion,
+    pub cpuhp_node: hlist_node,
+    pub task: *mut task_struct,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
 pub struct fscrypt_prepared_key {
     pub tfm: *mut crypto_skcipher,
     pub blk_key: *mut fscrypt_blk_crypto_key,
@@ -28685,13 +27862,12 @@ pub struct fscrypt_info {
     pub ci_hashed_ino: u32_,
 }
 #[repr(C)]
-#[derive(Debug)]
 pub struct crypto_skcipher {
     pub reqsize: ::aya_bpf::cty::c_uint,
     pub base: crypto_tfm,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct fscrypt_mode {
     pub friendly_name: *const ::aya_bpf::cty::c_char,
     pub cipher_str: *const ::aya_bpf::cty::c_char,
@@ -28702,51 +27878,7 @@ pub struct fscrypt_mode {
     pub blk_crypto_mode: blk_crypto_mode_num::Type,
 }
 #[repr(C)]
-pub struct crypto_instance {
-    pub alg: crypto_alg,
-    pub tmpl: *mut crypto_template,
-    pub __bindgen_anon_1: crypto_instance__bindgen_ty_1,
-    pub __ctx: __IncompleteArrayField<*mut ::aya_bpf::cty::c_void>,
-}
-#[repr(C)]
 #[derive(Copy, Clone)]
-pub union crypto_instance__bindgen_ty_1 {
-    pub list: hlist_node,
-    pub spawns: *mut crypto_spawn,
-}
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct crypto_spawn {
-    pub list: list_head,
-    pub alg: *mut crypto_alg,
-    pub __bindgen_anon_1: crypto_spawn__bindgen_ty_1,
-    pub frontend: *const crypto_type,
-    pub mask: u32_,
-    pub dead: bool_,
-    pub registered: bool_,
-}
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub union crypto_spawn__bindgen_ty_1 {
-    pub inst: *mut crypto_instance,
-    pub next: *mut crypto_spawn,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct crypto_template {
-    pub list: list_head,
-    pub instances: hlist_head,
-    pub module: *mut module,
-    pub create: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut crypto_template,
-            arg2: *mut *mut rtattr,
-        ) -> ::aya_bpf::cty::c_int,
-    >,
-    pub name: [::aya_bpf::cty::c_char; 128usize],
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
 pub struct fscrypt_direct_key {
     pub dk_node: hlist_node,
     pub dk_refcount: refcount_t,
@@ -28756,14 +27888,13 @@ pub struct fscrypt_direct_key {
     pub dk_raw: [u8_; 64usize],
 }
 #[repr(C)]
-#[derive(Debug)]
 pub struct fscrypt_blk_crypto_key {
     pub base: blk_crypto_key,
     pub num_devs: ::aya_bpf::cty::c_int,
     pub devs: __IncompleteArrayField<*mut request_queue>,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct merkle_tree_params {
     pub hash_alg: *mut fsverity_hash_alg,
     pub hashstate: *const u8_,
@@ -28778,7 +27909,7 @@ pub struct merkle_tree_params {
     pub level_start: [u64_; 8usize],
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct fsverity_info {
     pub tree_params: merkle_tree_params,
     pub root_hash: [u8_; 64usize],
@@ -28795,7 +27926,6 @@ pub struct fsverity_hash_alg {
     pub req_pool: mempool_t,
 }
 #[repr(C)]
-#[derive(Debug)]
 pub struct crypto_ahash {
     pub init: ::core::option::Option<
         unsafe extern "C" fn(arg1: *mut ahash_request) -> ::aya_bpf::cty::c_int,
@@ -28835,7 +27965,6 @@ pub struct crypto_ahash {
     pub base: crypto_tfm,
 }
 #[repr(C)]
-#[derive(Debug)]
 pub struct ahash_request {
     pub base: crypto_async_request,
     pub nbytes: ::aya_bpf::cty::c_uint,
@@ -28845,7 +27974,7 @@ pub struct ahash_request {
     pub __ctx: __IncompleteArrayField<*mut ::aya_bpf::cty::c_void>,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct rpc_timer {
     pub list: list_head,
     pub expires: ::aya_bpf::cty::c_ulong,
@@ -28887,7 +28016,7 @@ pub union nfs4_stateid_struct__bindgen_ty_1 {
     pub __bindgen_anon_1: nfs4_stateid_struct__bindgen_ty_1__bindgen_ty_1,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct nfs4_stateid_struct__bindgen_ty_1__bindgen_ty_1 {
     pub seqid: __be32,
     pub other: [::aya_bpf::cty::c_char; 12usize],
@@ -28916,13 +28045,7 @@ pub struct nfs4_lock_state {
     pub ls_owner: fl_owner_t,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct xdr_netobj {
-    pub len: ::aya_bpf::cty::c_uint,
-    pub data: *mut u8_,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct xdr_buf {
     pub head: [kvec; 1usize],
     pub tail: [kvec; 1usize],
@@ -28935,7 +28058,7 @@ pub struct xdr_buf {
     pub len: ::aya_bpf::cty::c_uint,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct xdr_stream {
     pub p: *mut __be32,
     pub buf: *mut xdr_buf,
@@ -29005,7 +28128,7 @@ pub type kxdrdproc_t = ::core::option::Option<
     ) -> ::aya_bpf::cty::c_int,
 >;
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct rpc_message {
     pub rpc_proc: *const rpc_procinfo,
     pub rpc_argp: *mut ::aya_bpf::cty::c_void,
@@ -29013,7 +28136,7 @@ pub struct rpc_message {
     pub rpc_cred: *const cred,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct rpc_procinfo {
     pub p_proc: u32_,
     pub p_encode: kxdreproc_t,
@@ -29025,7 +28148,7 @@ pub struct rpc_procinfo {
     pub p_name: *const ::aya_bpf::cty::c_char,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct rpc_wait {
     pub list: list_head,
     pub links: list_head,
@@ -29140,7 +28263,7 @@ impl rpc_task {
     }
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct rpc_call_ops {
     pub rpc_call_prepare: ::core::option::Option<
         unsafe extern "C" fn(arg1: *mut rpc_task, arg2: *mut ::aya_bpf::cty::c_void),
@@ -29155,18 +28278,18 @@ pub struct rpc_call_ops {
         ::core::option::Option<unsafe extern "C" fn(arg1: *mut ::aya_bpf::cty::c_void)>,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct rpc_iostats {
     _unused: [u8; 0],
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct rpc_pipe_dir_head {
     pub pdh_entries: list_head,
     pub pdh_dentry: *mut dentry,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct rpc_rtt {
     pub timeo: ::aya_bpf::cty::c_ulong,
     pub srtt: [::aya_bpf::cty::c_ulong; 5usize],
@@ -29174,7 +28297,7 @@ pub struct rpc_rtt {
     pub ntimeouts: [::aya_bpf::cty::c_int; 5usize],
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct rpc_timeout {
     pub to_initval: ::aya_bpf::cty::c_ulong,
     pub to_maxval: ::aya_bpf::cty::c_ulong,
@@ -29183,12 +28306,7 @@ pub struct rpc_timeout {
     pub to_exponential: ::aya_bpf::cty::c_uchar,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct rpc_sysfs_client {
-    _unused: [u8; 0],
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct rpc_xprt_iter {
     pub xpi_xpswitch: *mut rpc_xprt_switch,
     pub xpi_cursor: *mut rpc_xprt,
@@ -29197,11 +28315,10 @@ pub struct rpc_xprt_iter {
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct rpc_clnt {
-    pub cl_count: refcount_t,
+    pub cl_count: atomic_t,
     pub cl_clid: ::aya_bpf::cty::c_uint,
     pub cl_clients: list_head,
     pub cl_tasks: list_head,
-    pub cl_pid: atomic_t,
     pub cl_lock: spinlock_t,
     pub cl_xprt: *mut rpc_xprt,
     pub cl_procinfo: *const rpc_procinfo,
@@ -29225,10 +28342,8 @@ pub struct rpc_clnt {
     pub cl_program: *const rpc_program,
     pub cl_principal: *const ::aya_bpf::cty::c_char,
     pub cl_debugfs: *mut dentry,
-    pub cl_sysfs: *mut rpc_sysfs_client,
     pub __bindgen_anon_1: rpc_clnt__bindgen_ty_1,
     pub cl_cred: *const cred,
-    pub cl_max_connect: ::aya_bpf::cty::c_uint,
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
@@ -29341,13 +28456,13 @@ impl rpc_clnt {
     }
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct svc_xprt {
     _unused: [u8; 0],
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct rpc_sysfs_xprt {
+#[derive(Copy, Clone)]
+pub struct svc_serv {
     _unused: [u8; 0],
 }
 #[repr(C)]
@@ -29355,7 +28470,6 @@ pub struct rpc_sysfs_xprt {
 pub struct rpc_xprt {
     pub kref: kref,
     pub ops: *const rpc_xprt_ops,
-    pub id: ::aya_bpf::cty::c_uint,
     pub timeout: *const rpc_timeout,
     pub addr: __kernel_sockaddr_storage,
     pub addrlen: size_t,
@@ -29407,13 +28521,11 @@ pub struct rpc_xprt {
     pub servername: *const ::aya_bpf::cty::c_char,
     pub address_strings: [*const ::aya_bpf::cty::c_char; 6usize],
     pub debugfs: *mut dentry,
+    pub inject_disconnect: atomic_t,
     pub rcu: callback_head,
-    pub xprt_class: *const xprt_class,
-    pub xprt_sysfs: *mut rpc_sysfs_xprt,
-    pub main: bool_,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct rpc_xprt__bindgen_ty_1 {
     pub bind_count: ::aya_bpf::cty::c_ulong,
     pub connect_count: ::aya_bpf::cty::c_ulong,
@@ -29469,7 +28581,7 @@ impl rpc_xprt {
     }
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct rpc_cred {
     pub cr_hash: hlist_node,
     pub cr_lru: list_head,
@@ -29483,18 +28595,18 @@ pub struct rpc_cred {
 }
 pub type rpc_authflavor_t = u32_;
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct auth_cred {
     pub cred: *const cred,
     pub principal: *const ::aya_bpf::cty::c_char,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct rpc_cred_cache {
     _unused: [u8; 0],
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct rpc_auth {
     pub au_cslack: ::aya_bpf::cty::c_uint,
     pub au_rslack: ::aya_bpf::cty::c_uint,
@@ -29507,7 +28619,7 @@ pub struct rpc_auth {
     pub au_credcache: *mut rpc_cred_cache,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct rpc_credops {
     pub cr_name: *const ::aya_bpf::cty::c_char,
     pub cr_init: ::core::option::Option<
@@ -29543,7 +28655,7 @@ pub struct rpc_credops {
     pub crneed_reencode: ::core::option::Option<unsafe extern "C" fn(arg1: *mut rpc_task) -> bool_>,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct rpc_authops {
     pub owner: *mut module,
     pub au_flavor: rpc_authflavor_t,
@@ -29590,26 +28702,26 @@ pub struct rpc_authops {
     >,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct rpc_auth_create_args {
     pub pseudoflavor: rpc_authflavor_t,
     pub target_name: *const ::aya_bpf::cty::c_char,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct rpcsec_gss_oid {
     pub len: ::aya_bpf::cty::c_uint,
     pub data: [u8_; 32usize],
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct rpcsec_gss_info {
     pub oid: rpcsec_gss_oid,
     pub qop: u32_,
     pub service: u32_,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct rpc_xprt_ops {
     pub set_buffer_size: ::core::option::Option<
         unsafe extern "C" fn(arg1: *mut rpc_xprt, arg2: size_t, arg3: size_t),
@@ -29670,76 +28782,19 @@ pub struct rpc_xprt_ops {
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
-pub struct svc_serv {
-    pub sv_program: *mut svc_program,
-    pub sv_stats: *mut svc_stat,
-    pub sv_lock: spinlock_t,
-    pub sv_refcnt: kref,
-    pub sv_nrthreads: ::aya_bpf::cty::c_uint,
-    pub sv_maxconn: ::aya_bpf::cty::c_uint,
-    pub sv_max_payload: ::aya_bpf::cty::c_uint,
-    pub sv_max_mesg: ::aya_bpf::cty::c_uint,
-    pub sv_xdrsize: ::aya_bpf::cty::c_uint,
-    pub sv_permsocks: list_head,
-    pub sv_tempsocks: list_head,
-    pub sv_tmpcnt: ::aya_bpf::cty::c_int,
-    pub sv_temptimer: timer_list,
-    pub sv_name: *mut ::aya_bpf::cty::c_char,
-    pub sv_nrpools: ::aya_bpf::cty::c_uint,
-    pub sv_pools: *mut svc_pool,
-    pub sv_ops: *const svc_serv_ops,
-    pub sv_cb_list: list_head,
-    pub sv_cb_lock: spinlock_t,
-    pub sv_cb_waitq: wait_queue_head_t,
-    pub sv_bc_enabled: bool_,
-}
-#[repr(C)]
-#[derive(Debug)]
-pub struct xprt_class {
-    pub list: list_head,
-    pub ident: ::aya_bpf::cty::c_int,
-    pub setup:
-        ::core::option::Option<unsafe extern "C" fn(arg1: *mut xprt_create) -> *mut rpc_xprt>,
-    pub owner: *mut module,
-    pub name: [::aya_bpf::cty::c_char; 32usize],
-    pub netid: __IncompleteArrayField<*const ::aya_bpf::cty::c_char>,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct xprt_create {
-    pub ident: ::aya_bpf::cty::c_int,
-    pub net: *mut net,
-    pub srcaddr: *mut sockaddr,
-    pub dstaddr: *mut sockaddr,
-    pub addrlen: size_t,
-    pub servername: *const ::aya_bpf::cty::c_char,
-    pub bc_xprt: *mut svc_xprt,
-    pub bc_xps: *mut rpc_xprt_switch,
-    pub flags: ::aya_bpf::cty::c_uint,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct rpc_sysfs_xprt_switch {
-    _unused: [u8; 0],
-}
-#[repr(C)]
-#[derive(Copy, Clone)]
 pub struct rpc_xprt_switch {
     pub xps_lock: spinlock_t,
     pub xps_kref: kref,
-    pub xps_id: ::aya_bpf::cty::c_uint,
     pub xps_nxprts: ::aya_bpf::cty::c_uint,
     pub xps_nactive: ::aya_bpf::cty::c_uint,
-    pub xps_nunique_destaddr_xprts: ::aya_bpf::cty::c_uint,
     pub xps_queuelen: atomic_long_t,
     pub xps_xprt_list: list_head,
     pub xps_net: *mut net,
     pub xps_iter_ops: *const rpc_xprt_iter_ops,
-    pub xps_sysfs: *mut rpc_sysfs_xprt_switch,
     pub xps_rcu: callback_head,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct rpc_stat {
     pub program: *const rpc_program,
     pub netcnt: ::aya_bpf::cty::c_uint,
@@ -29753,7 +28808,7 @@ pub struct rpc_stat {
     pub rpcgarbage: ::aya_bpf::cty::c_uint,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct rpc_program {
     pub name: *const ::aya_bpf::cty::c_char,
     pub number: u32_,
@@ -29763,52 +28818,7 @@ pub struct rpc_program {
     pub pipe_dir_name: *const ::aya_bpf::cty::c_char,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct svc_stat {
-    pub program: *mut svc_program,
-    pub netcnt: ::aya_bpf::cty::c_uint,
-    pub netudpcnt: ::aya_bpf::cty::c_uint,
-    pub nettcpcnt: ::aya_bpf::cty::c_uint,
-    pub nettcpconn: ::aya_bpf::cty::c_uint,
-    pub rpccnt: ::aya_bpf::cty::c_uint,
-    pub rpcbadfmt: ::aya_bpf::cty::c_uint,
-    pub rpcbadauth: ::aya_bpf::cty::c_uint,
-    pub rpcbadclnt: ::aya_bpf::cty::c_uint,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct svc_program {
-    pub pg_next: *mut svc_program,
-    pub pg_prog: u32_,
-    pub pg_lovers: ::aya_bpf::cty::c_uint,
-    pub pg_hivers: ::aya_bpf::cty::c_uint,
-    pub pg_nvers: ::aya_bpf::cty::c_uint,
-    pub pg_vers: *mut *const svc_version,
-    pub pg_name: *mut ::aya_bpf::cty::c_char,
-    pub pg_class: *mut ::aya_bpf::cty::c_char,
-    pub pg_stats: *mut svc_stat,
-    pub pg_authenticate:
-        ::core::option::Option<unsafe extern "C" fn(arg1: *mut svc_rqst) -> ::aya_bpf::cty::c_int>,
-    pub pg_init_request: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut svc_rqst,
-            arg2: *const svc_program,
-            arg3: *mut svc_process_info,
-        ) -> __be32,
-    >,
-    pub pg_rpcbind_set: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut net,
-            arg2: *const svc_program,
-            arg3: u32_,
-            arg4: ::aya_bpf::cty::c_int,
-            arg5: ::aya_bpf::cty::c_ushort,
-            arg6: ::aya_bpf::cty::c_ushort,
-        ) -> ::aya_bpf::cty::c_int,
-    >,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct rpc_xprt_iter_ops {
     pub xpi_rewind: ::core::option::Option<unsafe extern "C" fn(arg1: *mut rpc_xprt_iter)>,
     pub xpi_xprt:
@@ -29817,7 +28827,7 @@ pub struct rpc_xprt_iter_ops {
         ::core::option::Option<unsafe extern "C" fn(arg1: *mut rpc_xprt_iter) -> *mut rpc_xprt>,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct rpc_version {
     pub number: u32_,
     pub nrprocs: ::aya_bpf::cty::c_uint,
@@ -29825,7 +28835,7 @@ pub struct rpc_version {
     pub counts: *mut ::aya_bpf::cty::c_uint,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct nfs_fh {
     pub size: ::aya_bpf::cty::c_ushort,
     pub data: [::aya_bpf::cty::c_uchar; 128usize],
@@ -29838,7 +28848,7 @@ pub mod nfs3_stable_how {
     pub const NFS_INVALID_STABLE_HOW: Type = 4294967295;
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct nfs4_label {
     pub lfs: u32,
     pub pi: u32,
@@ -29846,7 +28856,7 @@ pub struct nfs4_label {
     pub label: *mut ::aya_bpf::cty::c_char,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct nfs4_verifier {
     pub data: [::aya_bpf::cty::c_char; 8usize],
 }
@@ -29859,96 +28869,19 @@ pub mod nfs4_change_attr_type {
     pub const NFS4_CHANGE_TYPE_IS_UNDEFINED: Type = 4;
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct gss_ctx {
-    pub mech_type: *mut gss_api_mech,
-    pub internal_ctx_id: *mut ::aya_bpf::cty::c_void,
-    pub slack: ::aya_bpf::cty::c_uint,
-    pub align: ::aya_bpf::cty::c_uint,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct gss_api_mech {
-    pub gm_list: list_head,
-    pub gm_owner: *mut module,
-    pub gm_oid: rpcsec_gss_oid,
-    pub gm_name: *mut ::aya_bpf::cty::c_char,
-    pub gm_ops: *const gss_api_ops,
-    pub gm_pf_num: ::aya_bpf::cty::c_int,
-    pub gm_pfs: *mut pf_desc,
-    pub gm_upcall_enctypes: *const ::aya_bpf::cty::c_char,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct pf_desc {
-    pub pseudoflavor: u32_,
-    pub qop: u32_,
-    pub service: u32_,
-    pub name: *mut ::aya_bpf::cty::c_char,
-    pub auth_domain_name: *mut ::aya_bpf::cty::c_char,
-    pub domain: *mut auth_domain,
-    pub datatouch: bool_,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct auth_domain {
-    pub ref_: kref,
-    pub hash: hlist_node,
-    pub name: *mut ::aya_bpf::cty::c_char,
-    pub flavour: *mut auth_ops,
-    pub callback_head: callback_head,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct gss_api_ops {
-    pub gss_import_sec_context: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *const ::aya_bpf::cty::c_void,
-            arg2: size_t,
-            arg3: *mut gss_ctx,
-            arg4: *mut time64_t,
-            arg5: gfp_t,
-        ) -> ::aya_bpf::cty::c_int,
-    >,
-    pub gss_get_mic: ::core::option::Option<
-        unsafe extern "C" fn(arg1: *mut gss_ctx, arg2: *mut xdr_buf, arg3: *mut xdr_netobj) -> u32_,
-    >,
-    pub gss_verify_mic: ::core::option::Option<
-        unsafe extern "C" fn(arg1: *mut gss_ctx, arg2: *mut xdr_buf, arg3: *mut xdr_netobj) -> u32_,
-    >,
-    pub gss_wrap: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut gss_ctx,
-            arg2: ::aya_bpf::cty::c_int,
-            arg3: *mut xdr_buf,
-            arg4: *mut *mut page,
-        ) -> u32_,
-    >,
-    pub gss_unwrap: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut gss_ctx,
-            arg2: ::aya_bpf::cty::c_int,
-            arg3: ::aya_bpf::cty::c_int,
-            arg4: *mut xdr_buf,
-        ) -> u32_,
-    >,
-    pub gss_delete_sec_context:
-        ::core::option::Option<unsafe extern "C" fn(arg1: *mut ::aya_bpf::cty::c_void)>,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct nfs4_string {
     pub len: ::aya_bpf::cty::c_uint,
     pub data: *mut ::aya_bpf::cty::c_char,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct nfs_fsid {
     pub major: u64,
     pub minor: u64,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct nfs4_threshold {
     pub bm: __u32,
     pub l_type: __u32,
@@ -29993,18 +28926,18 @@ pub union nfs_fattr__bindgen_ty_1 {
     pub nfs3: nfs_fattr__bindgen_ty_1__bindgen_ty_2,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct nfs_fattr__bindgen_ty_1__bindgen_ty_1 {
     pub blocksize: __u32,
     pub blocks: __u32,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct nfs_fattr__bindgen_ty_1__bindgen_ty_2 {
     pub used: __u64,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct nfs_fsinfo {
     pub fattr: *mut nfs_fattr,
     pub rtmax: __u32,
@@ -30025,7 +28958,7 @@ pub struct nfs_fsinfo {
     pub xattr_support: __u32,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct nfs_fsstat {
     pub fattr: *mut nfs_fattr,
     pub tbytes: __u64,
@@ -30036,26 +28969,26 @@ pub struct nfs_fsstat {
     pub afiles: __u64,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct nfs_pathconf {
     pub fattr: *mut nfs_fattr,
     pub max_link: __u32,
     pub max_namelen: __u32,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct nfs4_change_info {
     pub atomic: u32_,
     pub before: u64_,
     pub after: u64_,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct nfs4_slot {
     _unused: [u8; 0],
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct nfs4_sequence_args {
     pub sa_slot: *mut nfs4_slot,
     pub _bitfield_align_1: [u8; 0],
@@ -30103,7 +29036,7 @@ impl nfs4_sequence_args {
     }
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct nfs4_sequence_res {
     pub sr_slot: *mut nfs4_slot,
     pub sr_timestamp: ::aya_bpf::cty::c_ulong,
@@ -30113,7 +29046,7 @@ pub struct nfs4_sequence_res {
     pub sr_target_highest_slotid: u32_,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct nfs_lock_context {
     pub count: refcount_t,
     pub list: list_head,
@@ -30123,7 +29056,7 @@ pub struct nfs_lock_context {
     pub callback_head: callback_head,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct nfs_open_context {
     pub lock_context: nfs_lock_context,
     pub flock_owner: fl_owner_t,
@@ -30139,28 +29072,33 @@ pub struct nfs_open_context {
     pub callback_head: callback_head,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct nlm_host {
     _unused: [u8; 0],
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct nfs_iostats {
     _unused: [u8; 0],
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct nfs_auth_info {
     pub flavor_len: ::aya_bpf::cty::c_uint,
     pub flavors: [rpc_authflavor_t; 12usize],
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct fscache_volume {
+#[derive(Copy, Clone)]
+pub struct nfs_fscache_key {
     _unused: [u8; 0],
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
+pub struct fscache_cookie {
+    _unused: [u8; 0],
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
 pub struct pnfs_layoutdriver_type {
     _unused: [u8; 0],
 }
@@ -30204,8 +29142,8 @@ pub struct nfs_server {
     pub super_: *mut super_block,
     pub s_dev: dev_t,
     pub auth_info: nfs_auth_info,
-    pub fscache: *mut fscache_volume,
-    pub fscache_uniq: *mut ::aya_bpf::cty::c_char,
+    pub fscache_key: *mut nfs_fscache_key,
+    pub fscache: *mut fscache_cookie,
     pub pnfs_blksize: u32_,
     pub attr_bitmask: [u32_; 3usize],
     pub attr_bitmask_nl: [u32_; 3usize],
@@ -30238,22 +29176,22 @@ pub struct nfs_server {
     pub has_sec_mnt_opts: bool_,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct nfs_subversion {
     _unused: [u8; 0],
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct idmap {
     _unused: [u8; 0],
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct nfs4_slot_table {
     _unused: [u8; 0],
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct nfs4_session {
     _unused: [u8; 0],
 }
@@ -30277,7 +29215,6 @@ pub struct nfs_client {
     pub cl_nfs_mod: *mut nfs_subversion,
     pub cl_minorversion: u32_,
     pub cl_nconnect: ::aya_bpf::cty::c_uint,
-    pub cl_max_connect: ::aya_bpf::cty::c_uint,
     pub cl_principal: *const ::aya_bpf::cty::c_char,
     pub cl_ds_clients: list_head,
     pub cl_clientid: u64_,
@@ -30304,28 +29241,29 @@ pub struct nfs_client {
     pub cl_sp4_flags: ::aya_bpf::cty::c_ulong,
     pub cl_lock_waitq: wait_queue_head_t,
     pub cl_ipaddr: [::aya_bpf::cty::c_char; 48usize],
+    pub fscache: *mut fscache_cookie,
     pub cl_net: *mut net,
     pub pending_cb_stateids: list_head,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct pnfs_layout_segment {
     _unused: [u8; 0],
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct nfs_seqid {
     pub sequence: *mut nfs_seqid_counter,
     pub list: list_head,
     pub task: *mut rpc_task,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct nfs_write_verifier {
     pub data: [::aya_bpf::cty::c_char; 8usize],
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct nfs_writeverf {
     pub verifier: nfs_write_verifier,
     pub committed: nfs3_stable_how::Type,
@@ -30351,7 +29289,7 @@ pub union nfs_pgio_args__bindgen_ty_1 {
     pub __bindgen_anon_1: nfs_pgio_args__bindgen_ty_1__bindgen_ty_1,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct nfs_pgio_args__bindgen_ty_1__bindgen_ty_1 {
     pub bitmask: *const u32_,
     pub bitmask_store: [u32_; 3usize],
@@ -30373,19 +29311,19 @@ pub union nfs_pgio_res__bindgen_ty_1 {
     pub __bindgen_anon_2: nfs_pgio_res__bindgen_ty_1__bindgen_ty_2,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct nfs_pgio_res__bindgen_ty_1__bindgen_ty_1 {
     pub replen: ::aya_bpf::cty::c_uint,
     pub eof: ::aya_bpf::cty::c_int,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct nfs_pgio_res__bindgen_ty_1__bindgen_ty_2 {
     pub verf: *mut nfs_writeverf,
     pub server: *const nfs_server,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct nfs_commitargs {
     pub seq_args: nfs4_sequence_args,
     pub fh: *mut nfs_fh,
@@ -30394,7 +29332,7 @@ pub struct nfs_commitargs {
     pub bitmask: *const u32_,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct nfs_commitres {
     pub seq_res: nfs4_sequence_res,
     pub op_status: __u32,
@@ -30410,7 +29348,7 @@ pub struct nfs_removeargs {
     pub name: qstr,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct nfs_removeres {
     pub seq_res: nfs4_sequence_res,
     pub server: *mut nfs_server,
@@ -30418,7 +29356,7 @@ pub struct nfs_removeres {
     pub cinfo: nfs4_change_info,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct nfs_renameargs {
     pub seq_args: nfs4_sequence_args,
     pub old_dir: *const nfs_fh,
@@ -30427,7 +29365,7 @@ pub struct nfs_renameargs {
     pub new_name: *const qstr,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct nfs_renameres {
     pub seq_res: nfs4_sequence_res,
     pub server: *mut nfs_server,
@@ -30437,7 +29375,7 @@ pub struct nfs_renameres {
     pub new_fattr: *mut nfs_fattr,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct nfs_entry {
     pub ino: __u64,
     pub cookie: __u64,
@@ -30447,11 +29385,12 @@ pub struct nfs_entry {
     pub eof: ::aya_bpf::cty::c_int,
     pub fh: *mut nfs_fh,
     pub fattr: *mut nfs_fattr,
+    pub label: *mut nfs4_label,
     pub d_type: ::aya_bpf::cty::c_uchar,
     pub server: *mut nfs_server,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct nfs_readdir_arg {
     pub dentry: *mut dentry,
     pub cred: *const cred,
@@ -30462,18 +29401,18 @@ pub struct nfs_readdir_arg {
     pub plus: bool_,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct nfs_readdir_res {
     pub verf: *mut __be32,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct nfs4_pathname {
     pub ncomponents: ::aya_bpf::cty::c_uint,
     pub components: [nfs4_string; 512usize],
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct nfs4_fs_location {
     pub nservers: ::aya_bpf::cty::c_uint,
     pub servers: [nfs4_string; 10usize],
@@ -30489,18 +29428,18 @@ pub struct nfs4_fs_locations {
     pub locations: [nfs4_fs_location; 10usize],
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct nfstime4 {
     pub seconds: u64_,
     pub nseconds: u32_,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct pnfs_commit_ops {
     _unused: [u8; 0],
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct pnfs_ds_commit_info {
     pub commits: list_head,
     pub nwritten: ::aya_bpf::cty::c_uint,
@@ -30508,49 +29447,49 @@ pub struct pnfs_ds_commit_info {
     pub ops: *const pnfs_commit_ops,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct nfs41_server_owner {
     pub minor_id: u64,
     pub major_id_sz: u32,
     pub major_id: [::aya_bpf::cty::c_char; 1024usize],
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct nfs41_server_scope {
     pub server_scope_sz: u32,
     pub server_scope: [::aya_bpf::cty::c_char; 1024usize],
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct nfs41_impl_id {
     pub domain: [::aya_bpf::cty::c_char; 1025usize],
     pub name: [::aya_bpf::cty::c_char; 1025usize],
     pub date: nfstime4,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct nfs_page_array {
     pub pagevec: *mut *mut page,
     pub npages: ::aya_bpf::cty::c_uint,
     pub page_array: [*mut page; 8usize],
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct nfs_page {
     _unused: [u8; 0],
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct nfs_rw_ops {
     _unused: [u8; 0],
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct nfs_io_completion {
     _unused: [u8; 0],
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct nfs_direct_req {
     _unused: [u8; 0],
 }
@@ -30593,7 +29532,7 @@ pub struct nfs_pgio_header {
     pub pgio_mirror_idx: u32_,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct nfs_pgio_completion_ops {
     pub error_cleanup: ::core::option::Option<
         unsafe extern "C" fn(arg1: *mut list_head, arg2: ::aya_bpf::cty::c_int),
@@ -30603,14 +29542,14 @@ pub struct nfs_pgio_completion_ops {
     pub reschedule_io: ::core::option::Option<unsafe extern "C" fn(arg1: *mut nfs_pgio_header)>,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct nfs_mds_commit_info {
     pub rpcs_out: atomic_t,
     pub ncommit: atomic_long_t,
     pub list: list_head,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct nfs_commit_completion_ops {
     pub completion: ::core::option::Option<unsafe extern "C" fn(arg1: *mut nfs_commit_data)>,
     pub resched_write: ::core::option::Option<
@@ -30646,7 +29585,7 @@ pub struct nfs_commit_data {
     pub flags: ::aya_bpf::cty::c_ulong,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct nfs_commit_info {
     pub inode: *mut inode,
     pub mds: *mut nfs_mds_commit_info,
@@ -30684,17 +29623,17 @@ pub struct nfs_renamedata {
     pub cancelled: bool_,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct nlmclnt_operations {
     _unused: [u8; 0],
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct nfs_client_initdata {
     _unused: [u8; 0],
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct nfs_rpc_ops {
     pub version: u32_,
     pub dentry_ops: *const dentry_operations,
@@ -30720,7 +29659,8 @@ pub struct nfs_rpc_ops {
             arg1: *mut nfs_server,
             arg2: *mut nfs_fh,
             arg3: *mut nfs_fattr,
-            arg4: *mut inode,
+            arg4: *mut nfs4_label,
+            arg5: *mut inode,
         ) -> ::aya_bpf::cty::c_int,
     >,
     pub setattr: ::core::option::Option<
@@ -30736,6 +29676,7 @@ pub struct nfs_rpc_ops {
             arg2: *mut dentry,
             arg3: *mut nfs_fh,
             arg4: *mut nfs_fattr,
+            arg5: *mut nfs4_label,
         ) -> ::aya_bpf::cty::c_int,
     >,
     pub lookupp: ::core::option::Option<
@@ -30743,13 +29684,13 @@ pub struct nfs_rpc_ops {
             arg1: *mut inode,
             arg2: *mut nfs_fh,
             arg3: *mut nfs_fattr,
+            arg4: *mut nfs4_label,
         ) -> ::aya_bpf::cty::c_int,
     >,
     pub access: ::core::option::Option<
         unsafe extern "C" fn(
             arg1: *mut inode,
             arg2: *mut nfs_access_entry,
-            arg3: *const cred,
         ) -> ::aya_bpf::cty::c_int,
     >,
     pub readlink: ::core::option::Option<
@@ -30954,23 +29895,18 @@ pub struct nfs_rpc_ops {
             arg4: rpc_authflavor_t,
         ) -> *mut nfs_server,
     >,
-    pub discover_trunking: ::core::option::Option<
-        unsafe extern "C" fn(arg1: *mut nfs_server, arg2: *mut nfs_fh) -> ::aya_bpf::cty::c_int,
-    >,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct nfs_access_entry {
     pub rb_node: rb_node,
     pub lru: list_head,
-    pub fsuid: kuid_t,
-    pub fsgid: kgid_t,
-    pub group_info: *mut group_info,
+    pub cred: *const cred,
     pub mask: __u32,
     pub callback_head: callback_head,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct nfs4_minor_version_ops {
     pub minor_version: u32_,
     pub init_caps: ::aya_bpf::cty::c_uint,
@@ -31036,216 +29972,7 @@ pub struct nfs4_state {
     pub callback_head: callback_head,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct cache_head {
-    pub cache_list: hlist_node,
-    pub expiry_time: time64_t,
-    pub last_refresh: time64_t,
-    pub ref_: kref,
-    pub flags: ::aya_bpf::cty::c_ulong,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct cache_req {
-    pub defer: ::core::option::Option<
-        unsafe extern "C" fn(arg1: *mut cache_req) -> *mut cache_deferred_req,
-    >,
-    pub thread_wait: ::aya_bpf::cty::c_int,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct cache_deferred_req {
-    pub hash: hlist_node,
-    pub recent: list_head,
-    pub item: *mut cache_head,
-    pub owner: *mut ::aya_bpf::cty::c_void,
-    pub revisit: ::core::option::Option<
-        unsafe extern "C" fn(arg1: *mut cache_deferred_req, arg2: ::aya_bpf::cty::c_int),
-    >,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct svc_cred {
-    pub cr_uid: kuid_t,
-    pub cr_gid: kgid_t,
-    pub cr_group_info: *mut group_info,
-    pub cr_flavor: u32_,
-    pub cr_raw_principal: *mut ::aya_bpf::cty::c_char,
-    pub cr_principal: *mut ::aya_bpf::cty::c_char,
-    pub cr_targ_princ: *mut ::aya_bpf::cty::c_char,
-    pub cr_gss_mech: *mut gss_api_mech,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct auth_ops {
-    pub name: *mut ::aya_bpf::cty::c_char,
-    pub owner: *mut module,
-    pub flavour: ::aya_bpf::cty::c_int,
-    pub accept:
-        ::core::option::Option<unsafe extern "C" fn(arg1: *mut svc_rqst) -> ::aya_bpf::cty::c_int>,
-    pub release:
-        ::core::option::Option<unsafe extern "C" fn(arg1: *mut svc_rqst) -> ::aya_bpf::cty::c_int>,
-    pub domain_release: ::core::option::Option<unsafe extern "C" fn(arg1: *mut auth_domain)>,
-    pub set_client:
-        ::core::option::Option<unsafe extern "C" fn(arg1: *mut svc_rqst) -> ::aya_bpf::cty::c_int>,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct svc_cacherep {
-    _unused: [u8; 0],
-}
-#[repr(C)]
 #[derive(Copy, Clone)]
-pub struct svc_rqst {
-    pub rq_all: list_head,
-    pub rq_rcu_head: callback_head,
-    pub rq_xprt: *mut svc_xprt,
-    pub rq_addr: __kernel_sockaddr_storage,
-    pub rq_addrlen: size_t,
-    pub rq_daddr: __kernel_sockaddr_storage,
-    pub rq_daddrlen: size_t,
-    pub rq_server: *mut svc_serv,
-    pub rq_pool: *mut svc_pool,
-    pub rq_procinfo: *const svc_procedure,
-    pub rq_authop: *mut auth_ops,
-    pub rq_cred: svc_cred,
-    pub rq_xprt_ctxt: *mut ::aya_bpf::cty::c_void,
-    pub rq_deferred: *mut svc_deferred_req,
-    pub rq_xprt_hlen: size_t,
-    pub rq_arg: xdr_buf,
-    pub rq_arg_stream: xdr_stream,
-    pub rq_res_stream: xdr_stream,
-    pub rq_scratch_page: *mut page,
-    pub rq_res: xdr_buf,
-    pub rq_pages: [*mut page; 260usize],
-    pub rq_respages: *mut *mut page,
-    pub rq_next_page: *mut *mut page,
-    pub rq_page_end: *mut *mut page,
-    pub rq_pvec: pagevec,
-    pub rq_vec: [kvec; 259usize],
-    pub rq_bvec: [bio_vec; 259usize],
-    pub rq_xid: __be32,
-    pub rq_prog: u32_,
-    pub rq_vers: u32_,
-    pub rq_proc: u32_,
-    pub rq_prot: u32_,
-    pub rq_cachetype: ::aya_bpf::cty::c_int,
-    pub rq_flags: ::aya_bpf::cty::c_ulong,
-    pub rq_qtime: ktime_t,
-    pub rq_argp: *mut ::aya_bpf::cty::c_void,
-    pub rq_resp: *mut ::aya_bpf::cty::c_void,
-    pub rq_auth_data: *mut ::aya_bpf::cty::c_void,
-    pub rq_auth_stat: __be32,
-    pub rq_auth_slack: ::aya_bpf::cty::c_int,
-    pub rq_reserved: ::aya_bpf::cty::c_int,
-    pub rq_stime: ktime_t,
-    pub rq_chandle: cache_req,
-    pub rq_client: *mut auth_domain,
-    pub rq_gssclient: *mut auth_domain,
-    pub rq_cacherep: *mut svc_cacherep,
-    pub rq_task: *mut task_struct,
-    pub rq_lock: spinlock_t,
-    pub rq_bc_net: *mut net,
-    pub rq_lease_breaker: *mut *mut ::aya_bpf::cty::c_void,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct svc_pool_stats {
-    pub packets: atomic_long_t,
-    pub sockets_queued: ::aya_bpf::cty::c_ulong,
-    pub threads_woken: atomic_long_t,
-    pub threads_timedout: atomic_long_t,
-}
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct svc_pool {
-    pub sp_id: ::aya_bpf::cty::c_uint,
-    pub sp_lock: spinlock_t,
-    pub sp_sockets: list_head,
-    pub sp_nrthreads: ::aya_bpf::cty::c_uint,
-    pub sp_all_threads: list_head,
-    pub sp_stats: svc_pool_stats,
-    pub sp_flags: ::aya_bpf::cty::c_ulong,
-    pub _bitfield_align_1: [u8; 0],
-    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 40usize]>,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct svc_serv_ops {
-    pub svo_shutdown:
-        ::core::option::Option<unsafe extern "C" fn(arg1: *mut svc_serv, arg2: *mut net)>,
-    pub svo_function: ::core::option::Option<
-        unsafe extern "C" fn(arg1: *mut ::aya_bpf::cty::c_void) -> ::aya_bpf::cty::c_int,
-    >,
-    pub svo_enqueue_xprt: ::core::option::Option<unsafe extern "C" fn(arg1: *mut svc_xprt)>,
-    pub svo_module: *mut module,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct svc_procedure {
-    pub pc_func: ::core::option::Option<unsafe extern "C" fn(arg1: *mut svc_rqst) -> __be32>,
-    pub pc_decode: ::core::option::Option<
-        unsafe extern "C" fn(arg1: *mut svc_rqst, arg2: *mut xdr_stream) -> bool_,
-    >,
-    pub pc_encode: ::core::option::Option<
-        unsafe extern "C" fn(arg1: *mut svc_rqst, arg2: *mut xdr_stream) -> bool_,
-    >,
-    pub pc_release: ::core::option::Option<unsafe extern "C" fn(arg1: *mut svc_rqst)>,
-    pub pc_argsize: ::aya_bpf::cty::c_uint,
-    pub pc_ressize: ::aya_bpf::cty::c_uint,
-    pub pc_cachetype: ::aya_bpf::cty::c_uint,
-    pub pc_xdrressize: ::aya_bpf::cty::c_uint,
-    pub pc_name: *const ::aya_bpf::cty::c_char,
-}
-#[repr(C)]
-pub struct svc_deferred_req {
-    pub prot: u32_,
-    pub xprt: *mut svc_xprt,
-    pub addr: __kernel_sockaddr_storage,
-    pub addrlen: size_t,
-    pub daddr: __kernel_sockaddr_storage,
-    pub daddrlen: size_t,
-    pub handle: cache_deferred_req,
-    pub xprt_hlen: size_t,
-    pub argslen: ::aya_bpf::cty::c_int,
-    pub args: __IncompleteArrayField<__be32>,
-}
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct svc_process_info {
-    pub __bindgen_anon_1: svc_process_info__bindgen_ty_1,
-}
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub union svc_process_info__bindgen_ty_1 {
-    pub dispatch: ::core::option::Option<
-        unsafe extern "C" fn(arg1: *mut svc_rqst, arg2: *mut __be32) -> ::aya_bpf::cty::c_int,
-    >,
-    pub mismatch: svc_process_info__bindgen_ty_1__bindgen_ty_1,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct svc_process_info__bindgen_ty_1__bindgen_ty_1 {
-    pub lovers: ::aya_bpf::cty::c_uint,
-    pub hivers: ::aya_bpf::cty::c_uint,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct svc_version {
-    pub vs_vers: u32_,
-    pub vs_nproc: u32_,
-    pub vs_proc: *const svc_procedure,
-    pub vs_count: *mut ::aya_bpf::cty::c_uint,
-    pub vs_xdrsize: u32_,
-    pub vs_hidden: bool_,
-    pub vs_rpcb_optnl: bool_,
-    pub vs_need_cong_ctrl: bool_,
-    pub vs_dispatch: ::core::option::Option<
-        unsafe extern "C" fn(arg1: *mut svc_rqst, arg2: *mut __be32) -> ::aya_bpf::cty::c_int,
-    >,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
 pub struct nfs4_state_recovery_ops {
     pub owner_flag_bit: ::aya_bpf::cty::c_int,
     pub state_flag_bit: ::aya_bpf::cty::c_int,
@@ -31273,7 +30000,7 @@ pub struct nfs4_state_recovery_ops {
     >,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct nfs4_state_maintenance_ops {
     pub sched_state_renewal: ::core::option::Option<
         unsafe extern "C" fn(
@@ -31289,15 +30016,14 @@ pub struct nfs4_state_maintenance_ops {
     >,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct nfs4_mig_recovery_ops {
     pub get_locations: ::core::option::Option<
         unsafe extern "C" fn(
-            arg1: *mut nfs_server,
-            arg2: *mut nfs_fh,
-            arg3: *mut nfs4_fs_locations,
-            arg4: *mut page,
-            arg5: *const cred,
+            arg1: *mut inode,
+            arg2: *mut nfs4_fs_locations,
+            arg3: *mut page,
+            arg4: *const cred,
         ) -> ::aya_bpf::cty::c_int,
     >,
     pub fsid_present: ::core::option::Option<
@@ -31361,14 +30087,14 @@ pub struct key_user {
     pub qnbytes: ::aya_bpf::cty::c_int,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct ethhdr {
     pub h_dest: [::aya_bpf::cty::c_uchar; 6usize],
     pub h_source: [::aya_bpf::cty::c_uchar; 6usize],
     pub h_proto: __be16,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct ethtool_drvinfo {
     pub cmd: __u32,
     pub driver: [::aya_bpf::cty::c_char; 32usize],
@@ -31384,7 +30110,7 @@ pub struct ethtool_drvinfo {
     pub regdump_len: __u32,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct ethtool_wolinfo {
     pub cmd: __u32,
     pub supported: __u32,
@@ -31392,7 +30118,6 @@ pub struct ethtool_wolinfo {
     pub sopass: [__u8; 6usize],
 }
 #[repr(C)]
-#[derive(Debug)]
 pub struct ethtool_tunable {
     pub cmd: __u32,
     pub id: __u32,
@@ -31401,7 +30126,6 @@ pub struct ethtool_tunable {
     pub data: __IncompleteArrayField<*mut ::aya_bpf::cty::c_void>,
 }
 #[repr(C)]
-#[derive(Debug)]
 pub struct ethtool_regs {
     pub cmd: __u32,
     pub version: __u32,
@@ -31409,7 +30133,6 @@ pub struct ethtool_regs {
     pub data: __IncompleteArrayField<__u8>,
 }
 #[repr(C)]
-#[derive(Debug)]
 pub struct ethtool_eeprom {
     pub cmd: __u32,
     pub magic: __u32,
@@ -31418,7 +30141,7 @@ pub struct ethtool_eeprom {
     pub data: __IncompleteArrayField<__u8>,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct ethtool_eee {
     pub cmd: __u32,
     pub supported: __u32,
@@ -31431,7 +30154,7 @@ pub struct ethtool_eee {
     pub reserved: [__u32; 2usize],
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct ethtool_modinfo {
     pub cmd: __u32,
     pub type_: __u32,
@@ -31439,7 +30162,7 @@ pub struct ethtool_modinfo {
     pub reserved: [__u32; 8usize],
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct ethtool_coalesce {
     pub cmd: __u32,
     pub rx_coalesce_usecs: __u32,
@@ -31466,7 +30189,7 @@ pub struct ethtool_coalesce {
     pub rate_sample_interval: __u32,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct ethtool_ringparam {
     pub cmd: __u32,
     pub rx_max_pending: __u32,
@@ -31479,7 +30202,7 @@ pub struct ethtool_ringparam {
     pub tx_pending: __u32,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct ethtool_channels {
     pub cmd: __u32,
     pub max_rx: __u32,
@@ -31492,7 +30215,7 @@ pub struct ethtool_channels {
     pub combined_count: __u32,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct ethtool_pauseparam {
     pub cmd: __u32,
     pub autoneg: __u32,
@@ -31511,7 +30234,6 @@ pub mod ethtool_link_ext_state {
     pub const ETHTOOL_LINK_EXT_STATE_CALIBRATION_FAILURE: Type = 7;
     pub const ETHTOOL_LINK_EXT_STATE_POWER_BUDGET_EXCEEDED: Type = 8;
     pub const ETHTOOL_LINK_EXT_STATE_OVERHEAT: Type = 9;
-    pub const ETHTOOL_LINK_EXT_STATE_MODULE: Type = 10;
 }
 pub mod ethtool_link_ext_substate_autoneg {
     pub type Type = ::aya_bpf::cty::c_uint;
@@ -31541,30 +30263,13 @@ pub mod ethtool_link_ext_substate_bad_signal_integrity {
     pub type Type = ::aya_bpf::cty::c_uint;
     pub const ETHTOOL_LINK_EXT_SUBSTATE_BSI_LARGE_NUMBER_OF_PHYSICAL_ERRORS: Type = 1;
     pub const ETHTOOL_LINK_EXT_SUBSTATE_BSI_UNSUPPORTED_RATE: Type = 2;
-    pub const ETHTOOL_LINK_EXT_SUBSTATE_BSI_SERDES_REFERENCE_CLOCK_LOST: Type = 3;
-    pub const ETHTOOL_LINK_EXT_SUBSTATE_BSI_SERDES_ALOS: Type = 4;
 }
 pub mod ethtool_link_ext_substate_cable_issue {
     pub type Type = ::aya_bpf::cty::c_uint;
     pub const ETHTOOL_LINK_EXT_SUBSTATE_CI_UNSUPPORTED_CABLE: Type = 1;
     pub const ETHTOOL_LINK_EXT_SUBSTATE_CI_CABLE_TEST_FAILURE: Type = 2;
 }
-pub mod ethtool_link_ext_substate_module {
-    pub type Type = ::aya_bpf::cty::c_uint;
-    pub const ETHTOOL_LINK_EXT_SUBSTATE_MODULE_CMIS_NOT_READY: Type = 1;
-}
-pub mod ethtool_module_power_mode_policy {
-    pub type Type = ::aya_bpf::cty::c_uint;
-    pub const ETHTOOL_MODULE_POWER_MODE_POLICY_HIGH: Type = 1;
-    pub const ETHTOOL_MODULE_POWER_MODE_POLICY_AUTO: Type = 2;
-}
-pub mod ethtool_module_power_mode {
-    pub type Type = ::aya_bpf::cty::c_uint;
-    pub const ETHTOOL_MODULE_POWER_MODE_LOW: Type = 1;
-    pub const ETHTOOL_MODULE_POWER_MODE_HIGH: Type = 2;
-}
 #[repr(C)]
-#[derive(Debug)]
 pub struct ethtool_test {
     pub cmd: __u32,
     pub flags: __u32,
@@ -31573,14 +30278,13 @@ pub struct ethtool_test {
     pub data: __IncompleteArrayField<__u64>,
 }
 #[repr(C)]
-#[derive(Debug)]
 pub struct ethtool_stats {
     pub cmd: __u32,
     pub n_stats: __u32,
     pub data: __IncompleteArrayField<__u64>,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct ethtool_tcpip4_spec {
     pub ip4src: __be32,
     pub ip4dst: __be32,
@@ -31589,7 +30293,7 @@ pub struct ethtool_tcpip4_spec {
     pub tos: __u8,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct ethtool_ah_espip4_spec {
     pub ip4src: __be32,
     pub ip4dst: __be32,
@@ -31597,7 +30301,7 @@ pub struct ethtool_ah_espip4_spec {
     pub tos: __u8,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct ethtool_usrip4_spec {
     pub ip4src: __be32,
     pub ip4dst: __be32,
@@ -31607,7 +30311,7 @@ pub struct ethtool_usrip4_spec {
     pub proto: __u8,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct ethtool_tcpip6_spec {
     pub ip6src: [__be32; 4usize],
     pub ip6dst: [__be32; 4usize],
@@ -31616,7 +30320,7 @@ pub struct ethtool_tcpip6_spec {
     pub tclass: __u8,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct ethtool_ah_espip6_spec {
     pub ip6src: [__be32; 4usize],
     pub ip6dst: [__be32; 4usize],
@@ -31624,7 +30328,7 @@ pub struct ethtool_ah_espip6_spec {
     pub tclass: __u8,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct ethtool_usrip6_spec {
     pub ip6src: [__be32; 4usize],
     pub ip6dst: [__be32; 4usize],
@@ -31651,7 +30355,7 @@ pub union ethtool_flow_union {
     pub hdata: [__u8; 52usize],
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct ethtool_flow_ext {
     pub padding: [__u8; 2usize],
     pub h_dest: [::aya_bpf::cty::c_uchar; 6usize],
@@ -31686,14 +30390,13 @@ pub union ethtool_rxnfc__bindgen_ty_1 {
     pub rss_context: __u32,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct ethtool_flash {
     pub cmd: __u32,
     pub region: __u32,
     pub data: [::aya_bpf::cty::c_char; 128usize],
 }
 #[repr(C)]
-#[derive(Debug)]
 pub struct ethtool_dump {
     pub cmd: __u32,
     pub version: __u32,
@@ -31702,7 +30405,7 @@ pub struct ethtool_dump {
     pub data: __IncompleteArrayField<__u8>,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct ethtool_ts_info {
     pub cmd: __u32,
     pub so_timestamping: __u32,
@@ -31713,7 +30416,7 @@ pub struct ethtool_ts_info {
     pub rx_reserved: [__u32; 3usize],
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct ethtool_fecparam {
     pub cmd: __u32,
     pub active_fec: __u32,
@@ -31721,7 +30424,6 @@ pub struct ethtool_fecparam {
     pub reserved: __u32,
 }
 #[repr(C)]
-#[derive(Debug)]
 pub struct ethtool_link_settings {
     pub cmd: __u32,
     pub speed: __u32,
@@ -31741,11 +30443,6 @@ pub struct ethtool_link_settings {
     pub link_mode_masks: __IncompleteArrayField<__u32>,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct kernel_ethtool_ringparam {
-    pub rx_buf_len: u32_,
-}
-#[repr(C)]
 #[derive(Copy, Clone)]
 pub struct ethtool_link_ext_state_info {
     pub link_ext_state: ethtool_link_ext_state::Type,
@@ -31759,31 +30456,23 @@ pub union ethtool_link_ext_state_info__bindgen_ty_1 {
     pub link_logical_mismatch: ethtool_link_ext_substate_link_logical_mismatch::Type,
     pub bad_signal_integrity: ethtool_link_ext_substate_bad_signal_integrity::Type,
     pub cable_issue: ethtool_link_ext_substate_cable_issue::Type,
-    pub module: ethtool_link_ext_substate_module::Type,
-    pub __link_ext_substate: u32_,
+    pub __link_ext_substate: u8_,
 }
 #[repr(C)]
-#[derive(Debug)]
 pub struct ethtool_link_ksettings {
     pub base: ethtool_link_settings,
     pub link_modes: ethtool_link_ksettings__bindgen_ty_1,
     pub lanes: u32_,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct ethtool_link_ksettings__bindgen_ty_1 {
     pub supported: [::aya_bpf::cty::c_ulong; 2usize],
     pub advertising: [::aya_bpf::cty::c_ulong; 2usize],
     pub lp_advertising: [::aya_bpf::cty::c_ulong; 2usize],
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct kernel_ethtool_coalesce {
-    pub use_cqe_mode_tx: u8_,
-    pub use_cqe_mode_rx: u8_,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct ethtool_eth_mac_stats {
     pub FramesTransmittedOK: u64_,
     pub SingleCollisionFrames: u64_,
@@ -31809,44 +30498,44 @@ pub struct ethtool_eth_mac_stats {
     pub FrameTooLongErrors: u64_,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct ethtool_eth_phy_stats {
     pub SymbolErrorDuringCarrier: u64_,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct ethtool_eth_ctrl_stats {
     pub MACControlFramesTransmitted: u64_,
     pub MACControlFramesReceived: u64_,
     pub UnsupportedOpcodesReceived: u64_,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct ethtool_pause_stats {
     pub tx_pause_frames: u64_,
     pub rx_pause_frames: u64_,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct ethtool_fec_stat {
     pub total: u64_,
     pub lanes: [u64_; 8usize],
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct ethtool_fec_stats {
     pub corrected_blocks: ethtool_fec_stat,
     pub uncorrectable_blocks: ethtool_fec_stat,
     pub corrected_bits: ethtool_fec_stat,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct ethtool_rmon_hist_range {
     pub low: u16_,
     pub high: u16_,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct ethtool_rmon_stats {
     pub undersize_pkts: u64_,
     pub oversize_pkts: u64_,
@@ -31856,24 +30545,18 @@ pub struct ethtool_rmon_stats {
     pub hist_tx: [u64_; 10usize],
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct ethtool_module_eeprom {
-    pub offset: u32_,
-    pub length: u32_,
-    pub page: u8_,
-    pub bank: u8_,
-    pub i2c_address: u8_,
-    pub data: *mut u8_,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct ethtool_module_power_mode_params {
-    pub policy: ethtool_module_power_mode_policy::Type,
-    pub mode: ethtool_module_power_mode::Type,
+    pub offset: __u32,
+    pub length: __u32,
+    pub page: __u8,
+    pub bank: __u8,
+    pub i2c_address: __u8,
+    pub data: *mut __u8,
 }
 pub type __sum16 = __u16;
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct in_addr {
     pub s_addr: __be32,
 }
@@ -31885,22 +30568,21 @@ pub type nf_hookfn = ::core::option::Option<
     ) -> ::aya_bpf::cty::c_uint,
 >;
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct nf_hook_entry {
     pub hook: nf_hookfn,
     pub priv_: *mut ::aya_bpf::cty::c_void,
 }
 #[repr(C)]
-#[derive(Debug)]
 pub struct nf_hook_entries {
     pub num_hook_entries: u16_,
     pub hooks: __IncompleteArrayField<nf_hook_entry>,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct nf_hook_state {
-    pub hook: u8_,
-    pub pf: u8_,
+    pub hook: ::aya_bpf::cty::c_uint,
+    pub pf: u_int8_t,
     pub in_: *mut net_device,
     pub out: *mut net_device,
     pub sk: *mut sock,
@@ -31914,7 +30596,7 @@ pub struct nf_hook_state {
     >,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct iphdr {
     pub _bitfield_align_1: [u8; 0],
     pub _bitfield_1: __BindgenBitfieldUnit<[u8; 1usize]>,
@@ -31975,7 +30657,6 @@ pub struct rt6key {
 #[derive(Copy, Clone)]
 pub struct fib_nh_common {
     pub nhc_dev: *mut net_device,
-    pub nhc_dev_tracker: netdevice_tracker,
     pub nhc_oif: ::aya_bpf::cty::c_int,
     pub nhc_scope: ::aya_bpf::cty::c_uchar,
     pub nhc_family: u8_,
@@ -32020,9 +30701,6 @@ pub struct fib6_info {
     pub fib6_metric: u32_,
     pub fib6_protocol: u8_,
     pub fib6_type: u8_,
-    pub offload: u8_,
-    pub trap: u8_,
-    pub offload_failed: u8_,
     pub _bitfield_align_1: [u8; 0],
     pub _bitfield_1: __BindgenBitfieldUnit<[u8; 1usize]>,
     pub rcu: callback_head,
@@ -32081,14 +30759,47 @@ impl fib6_info {
         }
     }
     #[inline]
+    pub fn offload(&self) -> u8_ {
+        unsafe { ::core::mem::transmute(self._bitfield_1.get(4usize, 1u8) as u8) }
+    }
+    #[inline]
+    pub fn set_offload(&mut self, val: u8_) {
+        unsafe {
+            let val: u8 = ::core::mem::transmute(val);
+            self._bitfield_1.set(4usize, 1u8, val as u64)
+        }
+    }
+    #[inline]
+    pub fn trap(&self) -> u8_ {
+        unsafe { ::core::mem::transmute(self._bitfield_1.get(5usize, 1u8) as u8) }
+    }
+    #[inline]
+    pub fn set_trap(&mut self, val: u8_) {
+        unsafe {
+            let val: u8 = ::core::mem::transmute(val);
+            self._bitfield_1.set(5usize, 1u8, val as u64)
+        }
+    }
+    #[inline]
+    pub fn offload_failed(&self) -> u8_ {
+        unsafe { ::core::mem::transmute(self._bitfield_1.get(6usize, 1u8) as u8) }
+    }
+    #[inline]
+    pub fn set_offload_failed(&mut self, val: u8_) {
+        unsafe {
+            let val: u8 = ::core::mem::transmute(val);
+            self._bitfield_1.set(6usize, 1u8, val as u64)
+        }
+    }
+    #[inline]
     pub fn unused(&self) -> u8_ {
-        unsafe { ::core::mem::transmute(self._bitfield_1.get(4usize, 4u8) as u8) }
+        unsafe { ::core::mem::transmute(self._bitfield_1.get(7usize, 1u8) as u8) }
     }
     #[inline]
     pub fn set_unused(&mut self, val: u8_) {
         unsafe {
             let val: u8 = ::core::mem::transmute(val);
-            self._bitfield_1.set(4usize, 4u8, val as u64)
+            self._bitfield_1.set(7usize, 1u8, val as u64)
         }
     }
     #[inline]
@@ -32097,6 +30808,9 @@ impl fib6_info {
         dst_nocount: u8_,
         dst_nopolicy: u8_,
         fib6_destroying: u8_,
+        offload: u8_,
+        trap: u8_,
+        offload_failed: u8_,
         unused: u8_,
     ) -> __BindgenBitfieldUnit<[u8; 1usize]> {
         let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 1usize]> = Default::default();
@@ -32116,7 +30830,19 @@ impl fib6_info {
             let fib6_destroying: u8 = unsafe { ::core::mem::transmute(fib6_destroying) };
             fib6_destroying as u64
         });
-        __bindgen_bitfield_unit.set(4usize, 4u8, {
+        __bindgen_bitfield_unit.set(4usize, 1u8, {
+            let offload: u8 = unsafe { ::core::mem::transmute(offload) };
+            offload as u64
+        });
+        __bindgen_bitfield_unit.set(5usize, 1u8, {
+            let trap: u8 = unsafe { ::core::mem::transmute(trap) };
+            trap as u64
+        });
+        __bindgen_bitfield_unit.set(6usize, 1u8, {
+            let offload_failed: u8 = unsafe { ::core::mem::transmute(offload_failed) };
+            offload_failed as u64
+        });
+        __bindgen_bitfield_unit.set(7usize, 1u8, {
             let unused: u8 = unsafe { ::core::mem::transmute(unused) };
             unused as u64
         });
@@ -32139,7 +30865,7 @@ pub struct rt6_info {
     pub rt6i_nfheader_len: ::aya_bpf::cty::c_ushort,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct rt6_statistics {
     pub fib_nodes: __u32,
     pub fib_route_nodes: __u32,
@@ -32150,7 +30876,7 @@ pub struct rt6_statistics {
     pub fib_rt_uncache: atomic_t,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct fib6_node {
     pub parent: *mut fib6_node,
     pub left: *mut fib6_node,
@@ -32205,7 +30931,7 @@ pub struct xfrm_selector {
     pub user: __kernel_uid32_t,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct xfrm_lifetime_cfg {
     pub soft_byte_limit: __u64,
     pub hard_byte_limit: __u64,
@@ -32217,7 +30943,7 @@ pub struct xfrm_lifetime_cfg {
     pub hard_use_expires_seconds: __u64,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct xfrm_lifetime_cur {
     pub bytes: __u64,
     pub packets: __u64,
@@ -32225,14 +30951,13 @@ pub struct xfrm_lifetime_cur {
     pub use_time: __u64,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct xfrm_replay_state {
     pub oseq: __u32,
     pub seq: __u32,
     pub bitmap: __u32,
 }
 #[repr(C)]
-#[derive(Debug)]
 pub struct xfrm_replay_state_esn {
     pub bmp_len: ::aya_bpf::cty::c_uint,
     pub oseq: __u32,
@@ -32243,14 +30968,12 @@ pub struct xfrm_replay_state_esn {
     pub bmp: __IncompleteArrayField<__u32>,
 }
 #[repr(C)]
-#[derive(Debug)]
 pub struct xfrm_algo {
     pub alg_name: [::aya_bpf::cty::c_char; 64usize],
     pub alg_key_len: ::aya_bpf::cty::c_uint,
     pub alg_key: __IncompleteArrayField<::aya_bpf::cty::c_char>,
 }
 #[repr(C)]
-#[derive(Debug)]
 pub struct xfrm_algo_auth {
     pub alg_name: [::aya_bpf::cty::c_char; 64usize],
     pub alg_key_len: ::aya_bpf::cty::c_uint,
@@ -32258,7 +30981,6 @@ pub struct xfrm_algo_auth {
     pub alg_key: __IncompleteArrayField<::aya_bpf::cty::c_char>,
 }
 #[repr(C)]
-#[derive(Debug)]
 pub struct xfrm_algo_aead {
     pub alg_name: [::aya_bpf::cty::c_char; 64usize],
     pub alg_key_len: ::aya_bpf::cty::c_uint,
@@ -32266,7 +30988,7 @@ pub struct xfrm_algo_aead {
     pub alg_key: __IncompleteArrayField<::aya_bpf::cty::c_char>,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct xfrm_stats {
     pub replay_window: __u32,
     pub replay: __u32,
@@ -32281,7 +31003,7 @@ pub struct xfrm_encap_tmpl {
     pub encap_oa: xfrm_address_t,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct xfrm_mark {
     pub v: __u32,
     pub m: __u32,
@@ -32296,7 +31018,7 @@ pub struct xfrm_address_filter {
     pub dplen: __u8,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct xfrm_state_walk {
     pub all: list_head,
     pub state: u8_,
@@ -32305,24 +31027,17 @@ pub struct xfrm_state_walk {
     pub seq: u32_,
     pub filter: *mut xfrm_address_filter,
 }
-pub mod xfrm_replay_mode {
-    pub type Type = ::aya_bpf::cty::c_uint;
-    pub const XFRM_REPLAY_MODE_LEGACY: Type = 0;
-    pub const XFRM_REPLAY_MODE_BMP: Type = 1;
-    pub const XFRM_REPLAY_MODE_ESN: Type = 2;
-}
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct xfrm_state_offload {
     pub dev: *mut net_device,
-    pub dev_tracker: netdevice_tracker,
     pub real_dev: *mut net_device,
     pub offload_handle: ::aya_bpf::cty::c_ulong,
     pub num_exthdrs: ::aya_bpf::cty::c_uint,
     pub flags: u8_,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct xfrm_mode {
     pub encap: u8_,
     pub family: u8_,
@@ -32335,7 +31050,6 @@ pub struct xfrm_state {
     pub __bindgen_anon_1: xfrm_state__bindgen_ty_1,
     pub bysrc: hlist_node,
     pub byspi: hlist_node,
-    pub byseq: hlist_node,
     pub refcnt: refcount_t,
     pub lock: spinlock_t,
     pub id: xfrm_id,
@@ -32364,7 +31078,7 @@ pub struct xfrm_state {
     pub replay_esn: *mut xfrm_replay_state_esn,
     pub preplay: xfrm_replay_state,
     pub preplay_esn: *mut xfrm_replay_state_esn,
-    pub repl_mode: xfrm_replay_mode::Type,
+    pub repl: *const xfrm_replay,
     pub xflags: u32_,
     pub replay_maxage: u32_,
     pub replay_maxdiff: u32_,
@@ -32408,13 +31122,13 @@ pub struct xfrm_state__bindgen_ty_2 {
     pub smark: xfrm_mark,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct dst_metrics {
     pub metrics: [u32_; 17usize],
     pub refcnt: refcount_t,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct xfrm_policy_walk_entry {
     pub all: list_head,
     pub dead: u8_,
@@ -32473,7 +31187,7 @@ pub struct xfrm_policy {
     pub rcu: callback_head,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct udp_table {
     pub hash: *mut udp_hslot,
     pub hash2: *mut udp_hslot,
@@ -32481,7 +31195,7 @@ pub struct udp_table {
     pub log: ::aya_bpf::cty::c_uint,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct fib_nh_exception {
     pub fnhe_next: *mut fib_nh_exception,
     pub fnhe_genid: ::aya_bpf::cty::c_int,
@@ -32559,19 +31273,45 @@ impl rtable {
     }
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct fnhe_hash_bucket {
     pub chain: *mut fib_nh_exception,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct rt6_exception_bucket {
     pub chain: hlist_head,
     pub depth: ::aya_bpf::cty::c_int,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
+pub struct xfrm_replay {
+    pub advance: ::core::option::Option<unsafe extern "C" fn(arg1: *mut xfrm_state, arg2: __be32)>,
+    pub check: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut xfrm_state,
+            arg2: *mut sk_buff,
+            arg3: __be32,
+        ) -> ::aya_bpf::cty::c_int,
+    >,
+    pub recheck: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut xfrm_state,
+            arg2: *mut sk_buff,
+            arg3: __be32,
+        ) -> ::aya_bpf::cty::c_int,
+    >,
+    pub notify: ::core::option::Option<
+        unsafe extern "C" fn(arg1: *mut xfrm_state, arg2: ::aya_bpf::cty::c_int),
+    >,
+    pub overflow: ::core::option::Option<
+        unsafe extern "C" fn(arg1: *mut xfrm_state, arg2: *mut sk_buff) -> ::aya_bpf::cty::c_int,
+    >,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
 pub struct xfrm_type {
+    pub description: *mut ::aya_bpf::cty::c_char,
     pub owner: *mut module,
     pub proto: u8_,
     pub flags: u8_,
@@ -32592,10 +31332,18 @@ pub struct xfrm_type {
             arg3: *const flowi,
         ) -> ::aya_bpf::cty::c_int,
     >,
+    pub hdr_offset: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut xfrm_state,
+            arg2: *mut sk_buff,
+            arg3: *mut *mut u8_,
+        ) -> ::aya_bpf::cty::c_int,
+    >,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct xfrm_type_offload {
+    pub description: *mut ::aya_bpf::cty::c_char,
     pub owner: *mut module,
     pub proto: u8_,
     pub encap:
@@ -32619,46 +31367,19 @@ pub struct udp_hslot {
     pub lock: spinlock_t,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct rtattr {
     pub rta_len: ::aya_bpf::cty::c_ushort,
     pub rta_type: ::aya_bpf::cty::c_ushort,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct disk_stats {
-    pub nsecs: [u64_; 4usize],
-    pub sectors: [::aya_bpf::cty::c_ulong; 4usize],
-    pub ios: [::aya_bpf::cty::c_ulong; 4usize],
-    pub merges: [::aya_bpf::cty::c_ulong; 4usize],
-    pub io_ticks: ::aya_bpf::cty::c_ulong,
-    pub in_flight: [local_t; 2usize],
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct blk_integrity_iter {
-    pub prot_buf: *mut ::aya_bpf::cty::c_void,
-    pub data_buf: *mut ::aya_bpf::cty::c_void,
-    pub seed: sector_t,
-    pub data_size: ::aya_bpf::cty::c_uint,
-    pub interval: ::aya_bpf::cty::c_ushort,
-    pub disk_name: *const ::aya_bpf::cty::c_char,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct bio_alloc_cache {
-    pub free_list: *mut bio,
-    pub nr: ::aya_bpf::cty::c_uint,
 }
 pub mod rq_qos_id {
     pub type Type = ::aya_bpf::cty::c_uint;
     pub const RQ_QOS_WBT: Type = 0;
     pub const RQ_QOS_LATENCY: Type = 1;
     pub const RQ_QOS_COST: Type = 2;
-    pub const RQ_QOS_IOPRIO: Type = 3;
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct rq_qos {
     pub ops: *mut rq_qos_ops,
     pub q: *mut request_queue,
@@ -32667,28 +31388,7 @@ pub struct rq_qos {
     pub debugfs_dir: *mut dentry,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct blk_mq_debugfs_attr {
-    pub name: *const ::aya_bpf::cty::c_char,
-    pub mode: umode_t,
-    pub show: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut ::aya_bpf::cty::c_void,
-            arg2: *mut seq_file,
-        ) -> ::aya_bpf::cty::c_int,
-    >,
-    pub write: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut ::aya_bpf::cty::c_void,
-            arg2: *const ::aya_bpf::cty::c_char,
-            arg3: size_t,
-            arg4: *mut loff_t,
-        ) -> ssize_t,
-    >,
-    pub seq_ops: *const seq_operations,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct rq_qos_ops {
     pub throttle: ::core::option::Option<unsafe extern "C" fn(arg1: *mut rq_qos, arg2: *mut bio)>,
     pub track: ::core::option::Option<
@@ -32709,235 +31409,13 @@ pub struct rq_qos_ops {
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
-pub struct elevator_queue {
-    pub type_: *mut elevator_type,
-    pub elevator_data: *mut ::aya_bpf::cty::c_void,
-    pub kobj: kobject,
-    pub sysfs_lock: mutex,
-    pub _bitfield_align_1: [u8; 0],
-    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 1usize]>,
-    pub hash: [hlist_head; 64usize],
-}
-impl elevator_queue {
-    #[inline]
-    pub fn registered(&self) -> ::aya_bpf::cty::c_uint {
-        unsafe { ::core::mem::transmute(self._bitfield_1.get(0usize, 1u8) as u32) }
-    }
-    #[inline]
-    pub fn set_registered(&mut self, val: ::aya_bpf::cty::c_uint) {
-        unsafe {
-            let val: u32 = ::core::mem::transmute(val);
-            self._bitfield_1.set(0usize, 1u8, val as u64)
-        }
-    }
-    #[inline]
-    pub fn new_bitfield_1(
-        registered: ::aya_bpf::cty::c_uint,
-    ) -> __BindgenBitfieldUnit<[u8; 1usize]> {
-        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 1usize]> = Default::default();
-        __bindgen_bitfield_unit.set(0usize, 1u8, {
-            let registered: u32 = unsafe { ::core::mem::transmute(registered) };
-            registered as u64
-        });
-        __bindgen_bitfield_unit
-    }
-}
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct blk_mq_ctx {
-    pub __bindgen_anon_1: blk_mq_ctx__bindgen_ty_1,
-    pub cpu: ::aya_bpf::cty::c_uint,
-    pub index_hw: [::aya_bpf::cty::c_ushort; 3usize],
-    pub hctxs: [*mut blk_mq_hw_ctx; 3usize],
-    pub queue: *mut request_queue,
-    pub ctxs: *mut blk_mq_ctxs,
-    pub kobj: kobject,
-    pub _bitfield_align_1: [u8; 0],
-    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 8usize]>,
-}
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct blk_mq_ctx__bindgen_ty_1 {
-    pub lock: spinlock_t,
-    pub rq_lists: [list_head; 3usize],
-    pub _bitfield_align_1: [u8; 0],
-    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 8usize]>,
-}
-impl blk_mq_ctx__bindgen_ty_1 {
-    #[inline]
-    pub fn new_bitfield_1() -> __BindgenBitfieldUnit<[u8; 8usize]> {
-        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 8usize]> = Default::default();
-        __bindgen_bitfield_unit
-    }
-}
-impl blk_mq_ctx {
-    #[inline]
-    pub fn new_bitfield_1() -> __BindgenBitfieldUnit<[u8; 8usize]> {
-        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 8usize]> = Default::default();
-        __bindgen_bitfield_unit
-    }
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct blk_stat_callback {
-    pub list: list_head,
-    pub timer: timer_list,
-    pub cpu_stat: *mut blk_rq_stat,
-    pub bucket_fn:
-        ::core::option::Option<unsafe extern "C" fn(arg1: *const request) -> ::aya_bpf::cty::c_int>,
-    pub buckets: ::aya_bpf::cty::c_uint,
-    pub stat: *mut blk_rq_stat,
-    pub timer_fn: ::core::option::Option<unsafe extern "C" fn(arg1: *mut blk_stat_callback)>,
-    pub data: *mut ::aya_bpf::cty::c_void,
-    pub rcu: callback_head,
-}
-pub mod elv_merge {
-    pub type Type = ::aya_bpf::cty::c_uint;
-    pub const ELEVATOR_NO_MERGE: Type = 0;
-    pub const ELEVATOR_FRONT_MERGE: Type = 1;
-    pub const ELEVATOR_BACK_MERGE: Type = 2;
-    pub const ELEVATOR_DISCARD_MERGE: Type = 3;
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct elevator_mq_ops {
-    pub init_sched: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut request_queue,
-            arg2: *mut elevator_type,
-        ) -> ::aya_bpf::cty::c_int,
-    >,
-    pub exit_sched: ::core::option::Option<unsafe extern "C" fn(arg1: *mut elevator_queue)>,
-    pub init_hctx: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut blk_mq_hw_ctx,
-            arg2: ::aya_bpf::cty::c_uint,
-        ) -> ::aya_bpf::cty::c_int,
-    >,
-    pub exit_hctx: ::core::option::Option<
-        unsafe extern "C" fn(arg1: *mut blk_mq_hw_ctx, arg2: ::aya_bpf::cty::c_uint),
-    >,
-    pub depth_updated: ::core::option::Option<unsafe extern "C" fn(arg1: *mut blk_mq_hw_ctx)>,
-    pub allow_merge: ::core::option::Option<
-        unsafe extern "C" fn(arg1: *mut request_queue, arg2: *mut request, arg3: *mut bio) -> bool_,
-    >,
-    pub bio_merge: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut request_queue,
-            arg2: *mut bio,
-            arg3: ::aya_bpf::cty::c_uint,
-        ) -> bool_,
-    >,
-    pub request_merge: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut request_queue,
-            arg2: *mut *mut request,
-            arg3: *mut bio,
-        ) -> ::aya_bpf::cty::c_int,
-    >,
-    pub request_merged: ::core::option::Option<
-        unsafe extern "C" fn(arg1: *mut request_queue, arg2: *mut request, arg3: elv_merge::Type),
-    >,
-    pub requests_merged: ::core::option::Option<
-        unsafe extern "C" fn(arg1: *mut request_queue, arg2: *mut request, arg3: *mut request),
-    >,
-    pub limit_depth: ::core::option::Option<
-        unsafe extern "C" fn(arg1: ::aya_bpf::cty::c_uint, arg2: *mut blk_mq_alloc_data),
-    >,
-    pub prepare_request: ::core::option::Option<unsafe extern "C" fn(arg1: *mut request)>,
-    pub finish_request: ::core::option::Option<unsafe extern "C" fn(arg1: *mut request)>,
-    pub insert_requests: ::core::option::Option<
-        unsafe extern "C" fn(arg1: *mut blk_mq_hw_ctx, arg2: *mut list_head, arg3: bool_),
-    >,
-    pub dispatch_request:
-        ::core::option::Option<unsafe extern "C" fn(arg1: *mut blk_mq_hw_ctx) -> *mut request>,
-    pub has_work: ::core::option::Option<unsafe extern "C" fn(arg1: *mut blk_mq_hw_ctx) -> bool_>,
-    pub completed_request:
-        ::core::option::Option<unsafe extern "C" fn(arg1: *mut request, arg2: u64_)>,
-    pub requeue_request: ::core::option::Option<unsafe extern "C" fn(arg1: *mut request)>,
-    pub former_request: ::core::option::Option<
-        unsafe extern "C" fn(arg1: *mut request_queue, arg2: *mut request) -> *mut request,
-    >,
-    pub next_request: ::core::option::Option<
-        unsafe extern "C" fn(arg1: *mut request_queue, arg2: *mut request) -> *mut request,
-    >,
-    pub init_icq: ::core::option::Option<unsafe extern "C" fn(arg1: *mut io_cq)>,
-    pub exit_icq: ::core::option::Option<unsafe extern "C" fn(arg1: *mut io_cq)>,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct elevator_type {
-    pub icq_cache: *mut kmem_cache,
-    pub ops: elevator_mq_ops,
-    pub icq_size: size_t,
-    pub icq_align: size_t,
-    pub elevator_attrs: *mut elv_fs_entry,
-    pub elevator_name: *const ::aya_bpf::cty::c_char,
-    pub elevator_alias: *const ::aya_bpf::cty::c_char,
-    pub elevator_features: ::aya_bpf::cty::c_uint,
-    pub elevator_owner: *mut module,
-    pub queue_debugfs_attrs: *const blk_mq_debugfs_attr,
-    pub hctx_debugfs_attrs: *const blk_mq_debugfs_attr,
-    pub icq_cache_name: [::aya_bpf::cty::c_char; 22usize],
-    pub list: list_head,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct blk_mq_alloc_data {
-    pub q: *mut request_queue,
-    pub flags: blk_mq_req_flags_t,
-    pub shallow_depth: ::aya_bpf::cty::c_uint,
-    pub cmd_flags: ::aya_bpf::cty::c_uint,
-    pub rq_flags: req_flags_t,
-    pub nr_tags: ::aya_bpf::cty::c_uint,
-    pub cached_rq: *mut *mut request,
-    pub ctx: *mut blk_mq_ctx,
-    pub hctx: *mut blk_mq_hw_ctx,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct elv_fs_entry {
-    pub attr: attribute,
-    pub show: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut elevator_queue,
-            arg2: *mut ::aya_bpf::cty::c_char,
-        ) -> ssize_t,
-    >,
-    pub store: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut elevator_queue,
-            arg2: *const ::aya_bpf::cty::c_char,
-            arg3: size_t,
-        ) -> ssize_t,
-    >,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct blk_mq_ctxs {
-    pub kobj: kobject,
-    pub queue_ctx: *mut blk_mq_ctx,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct throtl_service_queue {
-    pub parent_sq: *mut throtl_service_queue,
-    pub queued: [list_head; 2usize],
-    pub nr_queued: [::aya_bpf::cty::c_uint; 2usize],
-    pub pending_tree: rb_root_cached,
-    pub nr_pending: ::aya_bpf::cty::c_uint,
-    pub first_pending_disptime: ::aya_bpf::cty::c_ulong,
-    pub pending_timer: timer_list,
-}
-#[repr(C)]
-#[derive(Copy, Clone)]
 pub struct blk_queue_stats {
     pub callbacks: list_head,
     pub lock: spinlock_t,
-    pub accounting: ::aya_bpf::cty::c_int,
+    pub enable_accounting: bool_,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct hd_geometry {
     pub heads: ::aya_bpf::cty::c_uchar,
     pub sectors: ::aya_bpf::cty::c_uchar,
@@ -32953,11 +31431,24 @@ pub struct klist {
     pub put: ::core::option::Option<unsafe extern "C" fn(arg1: *mut klist_node)>,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct klist_node {
     pub n_klist: *mut ::aya_bpf::cty::c_void,
     pub n_node: list_head,
     pub n_ref: kref,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct disk_events {
+    pub node: list_head,
+    pub disk: *mut gendisk,
+    pub lock: spinlock_t,
+    pub block_mutex: mutex,
+    pub block: ::aya_bpf::cty::c_int,
+    pub pending: ::aya_bpf::cty::c_uint,
+    pub clearing: ::aya_bpf::cty::c_uint,
+    pub poll_msecs: ::aya_bpf::cty::c_long,
+    pub dwork: delayed_work,
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
@@ -32974,760 +31465,6 @@ pub struct badblocks {
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
-pub struct disk_events {
-    pub node: list_head,
-    pub disk: *mut gendisk,
-    pub lock: spinlock_t,
-    pub block_mutex: mutex,
-    pub block: ::aya_bpf::cty::c_int,
-    pub pending: ::aya_bpf::cty::c_uint,
-    pub clearing: ::aya_bpf::cty::c_uint,
-    pub poll_msecs: ::aya_bpf::cty::c_long,
-    pub dwork: delayed_work,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct latency_bucket {
-    pub total_latency: ::aya_bpf::cty::c_ulong,
-    pub samples: ::aya_bpf::cty::c_int,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct avg_latency_bucket {
-    pub latency: ::aya_bpf::cty::c_ulong,
-    pub valid: bool_,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct throtl_data {
-    pub service_queue: throtl_service_queue,
-    pub queue: *mut request_queue,
-    pub nr_queued: [::aya_bpf::cty::c_uint; 2usize],
-    pub throtl_slice: ::aya_bpf::cty::c_uint,
-    pub dispatch_work: work_struct,
-    pub limit_index: ::aya_bpf::cty::c_uint,
-    pub limit_valid: [bool_; 2usize],
-    pub low_upgrade_time: ::aya_bpf::cty::c_ulong,
-    pub low_downgrade_time: ::aya_bpf::cty::c_ulong,
-    pub scale: ::aya_bpf::cty::c_uint,
-    pub tmp_buckets: [latency_bucket; 18usize],
-    pub avg_buckets: [avg_latency_bucket; 18usize],
-    pub latency_buckets: [*mut latency_bucket; 2usize],
-    pub last_calculate_time: ::aya_bpf::cty::c_ulong,
-    pub filtered_latency: ::aya_bpf::cty::c_ulong,
-    pub track_bio_latency: bool_,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct blk_crypto_ll_ops {
-    pub keyslot_program: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut blk_crypto_profile,
-            arg2: *const blk_crypto_key,
-            arg3: ::aya_bpf::cty::c_uint,
-        ) -> ::aya_bpf::cty::c_int,
-    >,
-    pub keyslot_evict: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut blk_crypto_profile,
-            arg2: *const blk_crypto_key,
-            arg3: ::aya_bpf::cty::c_uint,
-        ) -> ::aya_bpf::cty::c_int,
-    >,
-}
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct blk_crypto_profile {
-    pub ll_ops: blk_crypto_ll_ops,
-    pub max_dun_bytes_supported: ::aya_bpf::cty::c_uint,
-    pub modes_supported: [::aya_bpf::cty::c_uint; 4usize],
-    pub dev: *mut device,
-    pub num_slots: ::aya_bpf::cty::c_uint,
-    pub lock: rw_semaphore,
-    pub idle_slots_wait_queue: wait_queue_head_t,
-    pub idle_slots: list_head,
-    pub idle_slots_lock: spinlock_t,
-    pub slot_hashtable: *mut hlist_head,
-    pub log_slot_ht_size: ::aya_bpf::cty::c_uint,
-    pub slots: *mut blk_crypto_keyslot,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct blk_crypto_keyslot {
-    pub slot_refs: atomic_t,
-    pub idle_slot_node: list_head,
-    pub hash_node: hlist_node,
-    pub key: *const blk_crypto_key,
-    pub profile: *mut blk_crypto_profile,
-}
-#[repr(C)]
-#[derive(Debug)]
-pub struct cpu_rmap {
-    pub refcount: kref,
-    pub size: u16_,
-    pub used: u16_,
-    pub obj: *mut *mut ::aya_bpf::cty::c_void,
-    pub near: __IncompleteArrayField<cpu_rmap__bindgen_ty_1>,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct cpu_rmap__bindgen_ty_1 {
-    pub index: u16_,
-    pub dist: u16_,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct uevent_sock {
-    pub list: list_head,
-    pub sk: *mut sock,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct dev_pin_info {
-    pub p: *mut pinctrl,
-    pub default_state: *mut pinctrl_state,
-    pub init_state: *mut pinctrl_state,
-    pub sleep_state: *mut pinctrl_state,
-    pub idle_state: *mut pinctrl_state,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct pinctrl {
-    pub node: list_head,
-    pub dev: *mut device,
-    pub states: list_head,
-    pub state: *mut pinctrl_state,
-    pub dt_maps: list_head,
-    pub users: kref,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct pinctrl_state {
-    pub node: list_head,
-    pub name: *const ::aya_bpf::cty::c_char,
-    pub settings: list_head,
-}
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct gpio_irq_chip {
-    pub chip: *mut irq_chip,
-    pub domain: *mut irq_domain,
-    pub domain_ops: *const irq_domain_ops,
-    pub fwnode: *mut fwnode_handle,
-    pub parent_domain: *mut irq_domain,
-    pub child_to_parent_hwirq: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut gpio_chip,
-            arg2: ::aya_bpf::cty::c_uint,
-            arg3: ::aya_bpf::cty::c_uint,
-            arg4: *mut ::aya_bpf::cty::c_uint,
-            arg5: *mut ::aya_bpf::cty::c_uint,
-        ) -> ::aya_bpf::cty::c_int,
-    >,
-    pub populate_parent_alloc_arg: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut gpio_chip,
-            arg2: ::aya_bpf::cty::c_uint,
-            arg3: ::aya_bpf::cty::c_uint,
-        ) -> *mut ::aya_bpf::cty::c_void,
-    >,
-    pub child_offset_to_irq: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut gpio_chip,
-            arg2: ::aya_bpf::cty::c_uint,
-        ) -> ::aya_bpf::cty::c_uint,
-    >,
-    pub child_irq_domain_ops: irq_domain_ops,
-    pub handler: irq_flow_handler_t,
-    pub default_type: ::aya_bpf::cty::c_uint,
-    pub lock_key: *mut lock_class_key,
-    pub request_key: *mut lock_class_key,
-    pub parent_handler: irq_flow_handler_t,
-    pub __bindgen_anon_1: gpio_irq_chip__bindgen_ty_1,
-    pub num_parents: ::aya_bpf::cty::c_uint,
-    pub parents: *mut ::aya_bpf::cty::c_uint,
-    pub map: *mut ::aya_bpf::cty::c_uint,
-    pub threaded: bool_,
-    pub per_parent_data: bool_,
-    pub init_hw:
-        ::core::option::Option<unsafe extern "C" fn(arg1: *mut gpio_chip) -> ::aya_bpf::cty::c_int>,
-    pub init_valid_mask: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut gpio_chip,
-            arg2: *mut ::aya_bpf::cty::c_ulong,
-            arg3: ::aya_bpf::cty::c_uint,
-        ),
-    >,
-    pub valid_mask: *mut ::aya_bpf::cty::c_ulong,
-    pub first: ::aya_bpf::cty::c_uint,
-    pub irq_enable: ::core::option::Option<unsafe extern "C" fn(arg1: *mut irq_data)>,
-    pub irq_disable: ::core::option::Option<unsafe extern "C" fn(arg1: *mut irq_data)>,
-    pub irq_unmask: ::core::option::Option<unsafe extern "C" fn(arg1: *mut irq_data)>,
-    pub irq_mask: ::core::option::Option<unsafe extern "C" fn(arg1: *mut irq_data)>,
-}
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub union gpio_irq_chip__bindgen_ty_1 {
-    pub parent_handler_data: *mut ::aya_bpf::cty::c_void,
-    pub parent_handler_data_array: *mut *mut ::aya_bpf::cty::c_void,
-}
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct gpio_chip {
-    pub label: *const ::aya_bpf::cty::c_char,
-    pub gpiodev: *mut gpio_device,
-    pub parent: *mut device,
-    pub fwnode: *mut fwnode_handle,
-    pub owner: *mut module,
-    pub request: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut gpio_chip,
-            arg2: ::aya_bpf::cty::c_uint,
-        ) -> ::aya_bpf::cty::c_int,
-    >,
-    pub free: ::core::option::Option<
-        unsafe extern "C" fn(arg1: *mut gpio_chip, arg2: ::aya_bpf::cty::c_uint),
-    >,
-    pub get_direction: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut gpio_chip,
-            arg2: ::aya_bpf::cty::c_uint,
-        ) -> ::aya_bpf::cty::c_int,
-    >,
-    pub direction_input: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut gpio_chip,
-            arg2: ::aya_bpf::cty::c_uint,
-        ) -> ::aya_bpf::cty::c_int,
-    >,
-    pub direction_output: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut gpio_chip,
-            arg2: ::aya_bpf::cty::c_uint,
-            arg3: ::aya_bpf::cty::c_int,
-        ) -> ::aya_bpf::cty::c_int,
-    >,
-    pub get: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut gpio_chip,
-            arg2: ::aya_bpf::cty::c_uint,
-        ) -> ::aya_bpf::cty::c_int,
-    >,
-    pub get_multiple: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut gpio_chip,
-            arg2: *mut ::aya_bpf::cty::c_ulong,
-            arg3: *mut ::aya_bpf::cty::c_ulong,
-        ) -> ::aya_bpf::cty::c_int,
-    >,
-    pub set: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut gpio_chip,
-            arg2: ::aya_bpf::cty::c_uint,
-            arg3: ::aya_bpf::cty::c_int,
-        ),
-    >,
-    pub set_multiple: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut gpio_chip,
-            arg2: *mut ::aya_bpf::cty::c_ulong,
-            arg3: *mut ::aya_bpf::cty::c_ulong,
-        ),
-    >,
-    pub set_config: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut gpio_chip,
-            arg2: ::aya_bpf::cty::c_uint,
-            arg3: ::aya_bpf::cty::c_ulong,
-        ) -> ::aya_bpf::cty::c_int,
-    >,
-    pub to_irq: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut gpio_chip,
-            arg2: ::aya_bpf::cty::c_uint,
-        ) -> ::aya_bpf::cty::c_int,
-    >,
-    pub dbg_show:
-        ::core::option::Option<unsafe extern "C" fn(arg1: *mut seq_file, arg2: *mut gpio_chip)>,
-    pub init_valid_mask: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut gpio_chip,
-            arg2: *mut ::aya_bpf::cty::c_ulong,
-            arg3: ::aya_bpf::cty::c_uint,
-        ) -> ::aya_bpf::cty::c_int,
-    >,
-    pub add_pin_ranges:
-        ::core::option::Option<unsafe extern "C" fn(arg1: *mut gpio_chip) -> ::aya_bpf::cty::c_int>,
-    pub base: ::aya_bpf::cty::c_int,
-    pub ngpio: u16_,
-    pub offset: u16_,
-    pub names: *const *const ::aya_bpf::cty::c_char,
-    pub can_sleep: bool_,
-    pub read_reg: ::core::option::Option<
-        unsafe extern "C" fn(arg1: *mut ::aya_bpf::cty::c_void) -> ::aya_bpf::cty::c_ulong,
-    >,
-    pub write_reg: ::core::option::Option<
-        unsafe extern "C" fn(arg1: *mut ::aya_bpf::cty::c_void, arg2: ::aya_bpf::cty::c_ulong),
-    >,
-    pub be_bits: bool_,
-    pub reg_dat: *mut ::aya_bpf::cty::c_void,
-    pub reg_set: *mut ::aya_bpf::cty::c_void,
-    pub reg_clr: *mut ::aya_bpf::cty::c_void,
-    pub reg_dir_out: *mut ::aya_bpf::cty::c_void,
-    pub reg_dir_in: *mut ::aya_bpf::cty::c_void,
-    pub bgpio_dir_unreadable: bool_,
-    pub bgpio_bits: ::aya_bpf::cty::c_int,
-    pub bgpio_lock: spinlock_t,
-    pub bgpio_data: ::aya_bpf::cty::c_ulong,
-    pub bgpio_dir: ::aya_bpf::cty::c_ulong,
-    pub irq: gpio_irq_chip,
-    pub valid_mask: *mut ::aya_bpf::cty::c_ulong,
-}
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct gpio_device {
-    pub id: ::aya_bpf::cty::c_int,
-    pub dev: device,
-    pub chrdev: cdev,
-    pub mockdev: *mut device,
-    pub owner: *mut module,
-    pub chip: *mut gpio_chip,
-    pub descs: *mut gpio_desc,
-    pub base: ::aya_bpf::cty::c_int,
-    pub ngpio: u16_,
-    pub label: *const ::aya_bpf::cty::c_char,
-    pub data: *mut ::aya_bpf::cty::c_void,
-    pub list: list_head,
-    pub notifier: blocking_notifier_head,
-    pub pin_ranges: list_head,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct gpio_desc {
-    pub gdev: *mut gpio_device,
-    pub flags: ::aya_bpf::cty::c_ulong,
-    pub label: *const ::aya_bpf::cty::c_char,
-    pub name: *const ::aya_bpf::cty::c_char,
-    pub debounce_period_us: ::aya_bpf::cty::c_uint,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct reset_control {
-    _unused: [u8; 0],
-}
-pub type u_char = ::aya_bpf::cty::c_uchar;
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct pm_domain_data {
-    pub list_node: list_head,
-    pub dev: *mut device,
-}
-pub mod led_brightness {
-    pub type Type = ::aya_bpf::cty::c_uint;
-    pub const LED_OFF: Type = 0;
-    pub const LED_ON: Type = 1;
-    pub const LED_HALF: Type = 127;
-    pub const LED_FULL: Type = 255;
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct led_hw_trigger_type {
-    pub dummy: ::aya_bpf::cty::c_int,
-}
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct led_classdev {
-    pub name: *const ::aya_bpf::cty::c_char,
-    pub brightness: ::aya_bpf::cty::c_uint,
-    pub max_brightness: ::aya_bpf::cty::c_uint,
-    pub flags: ::aya_bpf::cty::c_int,
-    pub work_flags: ::aya_bpf::cty::c_ulong,
-    pub brightness_set: ::core::option::Option<
-        unsafe extern "C" fn(arg1: *mut led_classdev, arg2: led_brightness::Type),
-    >,
-    pub brightness_set_blocking: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut led_classdev,
-            arg2: led_brightness::Type,
-        ) -> ::aya_bpf::cty::c_int,
-    >,
-    pub brightness_get: ::core::option::Option<
-        unsafe extern "C" fn(arg1: *mut led_classdev) -> led_brightness::Type,
-    >,
-    pub blink_set: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut led_classdev,
-            arg2: *mut ::aya_bpf::cty::c_ulong,
-            arg3: *mut ::aya_bpf::cty::c_ulong,
-        ) -> ::aya_bpf::cty::c_int,
-    >,
-    pub pattern_set: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut led_classdev,
-            arg2: *mut led_pattern,
-            arg3: u32_,
-            arg4: ::aya_bpf::cty::c_int,
-        ) -> ::aya_bpf::cty::c_int,
-    >,
-    pub pattern_clear: ::core::option::Option<
-        unsafe extern "C" fn(arg1: *mut led_classdev) -> ::aya_bpf::cty::c_int,
-    >,
-    pub dev: *mut device,
-    pub groups: *mut *const attribute_group,
-    pub node: list_head,
-    pub default_trigger: *const ::aya_bpf::cty::c_char,
-    pub blink_delay_on: ::aya_bpf::cty::c_ulong,
-    pub blink_delay_off: ::aya_bpf::cty::c_ulong,
-    pub blink_timer: timer_list,
-    pub blink_brightness: ::aya_bpf::cty::c_int,
-    pub new_blink_brightness: ::aya_bpf::cty::c_int,
-    pub flash_resume: ::core::option::Option<unsafe extern "C" fn(arg1: *mut led_classdev)>,
-    pub set_brightness_work: work_struct,
-    pub delayed_set_value: ::aya_bpf::cty::c_int,
-    pub trigger_lock: rw_semaphore,
-    pub trigger: *mut led_trigger,
-    pub trig_list: list_head,
-    pub trigger_data: *mut ::aya_bpf::cty::c_void,
-    pub activated: bool_,
-    pub trigger_type: *mut led_hw_trigger_type,
-    pub brightness_hw_changed: ::aya_bpf::cty::c_int,
-    pub brightness_hw_changed_kn: *mut kernfs_node,
-    pub led_access: mutex,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct led_pattern {
-    pub delta_t: u32_,
-    pub brightness: ::aya_bpf::cty::c_int,
-}
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct led_trigger {
-    pub name: *const ::aya_bpf::cty::c_char,
-    pub activate: ::core::option::Option<
-        unsafe extern "C" fn(arg1: *mut led_classdev) -> ::aya_bpf::cty::c_int,
-    >,
-    pub deactivate: ::core::option::Option<unsafe extern "C" fn(arg1: *mut led_classdev)>,
-    pub trigger_type: *mut led_hw_trigger_type,
-    pub leddev_list_lock: spinlock_t,
-    pub led_cdevs: list_head,
-    pub next_trig: list_head,
-    pub groups: *mut *const attribute_group,
-}
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct tty_audit_buf {
-    pub mutex: mutex,
-    pub dev: dev_t,
-    pub _bitfield_align_1: [u8; 0],
-    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 1usize]>,
-    pub valid: size_t,
-    pub data: *mut ::aya_bpf::cty::c_uchar,
-}
-impl tty_audit_buf {
-    #[inline]
-    pub fn icanon(&self) -> ::aya_bpf::cty::c_uint {
-        unsafe { ::core::mem::transmute(self._bitfield_1.get(0usize, 1u8) as u32) }
-    }
-    #[inline]
-    pub fn set_icanon(&mut self, val: ::aya_bpf::cty::c_uint) {
-        unsafe {
-            let val: u32 = ::core::mem::transmute(val);
-            self._bitfield_1.set(0usize, 1u8, val as u64)
-        }
-    }
-    #[inline]
-    pub fn new_bitfield_1(icanon: ::aya_bpf::cty::c_uint) -> __BindgenBitfieldUnit<[u8; 1usize]> {
-        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 1usize]> = Default::default();
-        __bindgen_bitfield_unit.set(0usize, 1u8, {
-            let icanon: u32 = unsafe { ::core::mem::transmute(icanon) };
-            icanon as u64
-        });
-        __bindgen_bitfield_unit
-    }
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct timer_rand_state {
-    pub last_time: cycles_t,
-    pub last_delta: ::aya_bpf::cty::c_long,
-    pub last_delta2: ::aya_bpf::cty::c_long,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct iova {
-    pub node: rb_node,
-    pub pfn_hi: ::aya_bpf::cty::c_ulong,
-    pub pfn_lo: ::aya_bpf::cty::c_ulong,
-}
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct iova_rcache {
-    pub lock: spinlock_t,
-    pub depot_size: ::aya_bpf::cty::c_ulong,
-    pub depot: [*mut iova_magazine; 32usize],
-    pub cpu_rcaches: *mut iova_cpu_rcache,
-}
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct iova_domain {
-    pub iova_rbtree_lock: spinlock_t,
-    pub rbroot: rb_root,
-    pub cached_node: *mut rb_node,
-    pub cached32_node: *mut rb_node,
-    pub granule: ::aya_bpf::cty::c_ulong,
-    pub start_pfn: ::aya_bpf::cty::c_ulong,
-    pub dma_32bit_pfn: ::aya_bpf::cty::c_ulong,
-    pub max32_alloc_size: ::aya_bpf::cty::c_ulong,
-    pub anchor: iova,
-    pub rcaches: [iova_rcache; 6usize],
-    pub cpuhp_dead: hlist_node,
-}
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct iommu_group {
-    pub kobj: kobject,
-    pub devices_kobj: *mut kobject,
-    pub devices: list_head,
-    pub mutex: mutex,
-    pub notifier: blocking_notifier_head,
-    pub iommu_data: *mut ::aya_bpf::cty::c_void,
-    pub iommu_data_release:
-        ::core::option::Option<unsafe extern "C" fn(arg1: *mut ::aya_bpf::cty::c_void)>,
-    pub name: *mut ::aya_bpf::cty::c_char,
-    pub id: ::aya_bpf::cty::c_int,
-    pub default_domain: *mut iommu_domain,
-    pub domain: *mut iommu_domain,
-    pub entry: list_head,
-}
-pub mod iommu_dma_cookie_type {
-    pub type Type = ::aya_bpf::cty::c_uint;
-    pub const IOMMU_DMA_IOVA_COOKIE: Type = 0;
-    pub const IOMMU_DMA_MSI_COOKIE: Type = 1;
-}
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct iommu_dma_cookie {
-    pub type_: iommu_dma_cookie_type::Type,
-    pub __bindgen_anon_1: iommu_dma_cookie__bindgen_ty_1,
-    pub msi_page_list: list_head,
-    pub fq_domain: *mut iommu_domain,
-}
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub union iommu_dma_cookie__bindgen_ty_1 {
-    pub __bindgen_anon_1: iommu_dma_cookie__bindgen_ty_1__bindgen_ty_1,
-    pub msi_iova: dma_addr_t,
-}
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct iommu_dma_cookie__bindgen_ty_1__bindgen_ty_1 {
-    pub iovad: iova_domain,
-    pub fq: *mut iova_fq,
-    pub fq_flush_start_cnt: atomic64_t,
-    pub fq_flush_finish_cnt: atomic64_t,
-    pub fq_timer: timer_list,
-    pub fq_timer_on: atomic_t,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct iova_fq_entry {
-    pub iova_pfn: ::aya_bpf::cty::c_ulong,
-    pub pages: ::aya_bpf::cty::c_ulong,
-    pub freelist: list_head,
-    pub counter: u64_,
-}
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct iova_fq {
-    pub entries: [iova_fq_entry; 256usize],
-    pub head: ::aya_bpf::cty::c_uint,
-    pub tail: ::aya_bpf::cty::c_uint,
-    pub lock: spinlock_t,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct iova_magazine {
-    pub size: ::aya_bpf::cty::c_ulong,
-    pub pfns: [::aya_bpf::cty::c_ulong; 128usize],
-}
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct iova_cpu_rcache {
-    pub lock: spinlock_t,
-    pub loaded: *mut iova_magazine,
-    pub prev: *mut iova_magazine,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct iopf_device_param {
-    pub dev: *mut device,
-    pub queue: *mut iopf_queue___2,
-    pub queue_list: list_head,
-    pub partial: list_head,
-}
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct iopf_queue___2 {
-    pub wq: *mut workqueue_struct,
-    pub devices: list_head,
-    pub lock: mutex,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct wake_irq {
-    pub dev: *mut device,
-    pub status: ::aya_bpf::cty::c_uint,
-    pub irq: ::aya_bpf::cty::c_int,
-    pub name: *const ::aya_bpf::cty::c_char,
-}
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct subsys_private {
-    pub subsys: kset,
-    pub devices_kset: *mut kset,
-    pub interfaces: list_head,
-    pub mutex: mutex,
-    pub drivers_kset: *mut kset,
-    pub klist_devices: klist,
-    pub klist_drivers: klist,
-    pub bus_notifier: blocking_notifier_head,
-    pub _bitfield_align_1: [u8; 0],
-    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 1usize]>,
-    pub bus: *mut bus_type,
-    pub glue_dirs: kset,
-    pub class: *mut class,
-}
-impl subsys_private {
-    #[inline]
-    pub fn drivers_autoprobe(&self) -> ::aya_bpf::cty::c_uint {
-        unsafe { ::core::mem::transmute(self._bitfield_1.get(0usize, 1u8) as u32) }
-    }
-    #[inline]
-    pub fn set_drivers_autoprobe(&mut self, val: ::aya_bpf::cty::c_uint) {
-        unsafe {
-            let val: u32 = ::core::mem::transmute(val);
-            self._bitfield_1.set(0usize, 1u8, val as u64)
-        }
-    }
-    #[inline]
-    pub fn new_bitfield_1(
-        drivers_autoprobe: ::aya_bpf::cty::c_uint,
-    ) -> __BindgenBitfieldUnit<[u8; 1usize]> {
-        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 1usize]> = Default::default();
-        __bindgen_bitfield_unit.set(0usize, 1u8, {
-            let drivers_autoprobe: u32 = unsafe { ::core::mem::transmute(drivers_autoprobe) };
-            drivers_autoprobe as u64
-        });
-        __bindgen_bitfield_unit
-    }
-}
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct driver_private {
-    pub kobj: kobject,
-    pub klist_devices: klist,
-    pub knode_bus: klist_node,
-    pub mkobj: *mut module_kobject,
-    pub driver: *mut device_driver,
-}
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct device_private {
-    pub klist_children: klist,
-    pub knode_parent: klist_node,
-    pub knode_driver: klist_node,
-    pub knode_bus: klist_node,
-    pub knode_class: klist_node,
-    pub deferred_probe: list_head,
-    pub async_driver: *mut device_driver,
-    pub deferred_probe_reason: *mut ::aya_bpf::cty::c_char,
-    pub device: *mut device,
-    pub _bitfield_align_1: [u8; 0],
-    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 1usize]>,
-    pub __bindgen_padding_0: [u8; 7usize],
-}
-impl device_private {
-    #[inline]
-    pub fn dead(&self) -> u8_ {
-        unsafe { ::core::mem::transmute(self._bitfield_1.get(0usize, 1u8) as u8) }
-    }
-    #[inline]
-    pub fn set_dead(&mut self, val: u8_) {
-        unsafe {
-            let val: u8 = ::core::mem::transmute(val);
-            self._bitfield_1.set(0usize, 1u8, val as u64)
-        }
-    }
-    #[inline]
-    pub fn new_bitfield_1(dead: u8_) -> __BindgenBitfieldUnit<[u8; 1usize]> {
-        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 1usize]> = Default::default();
-        __bindgen_bitfield_unit.set(0usize, 1u8, {
-            let dead: u8 = unsafe { ::core::mem::transmute(dead) };
-            dead as u64
-        });
-        __bindgen_bitfield_unit
-    }
-}
-pub mod phy_interface_t {
-    pub type Type = ::aya_bpf::cty::c_uint;
-    pub const PHY_INTERFACE_MODE_NA: Type = 0;
-    pub const PHY_INTERFACE_MODE_INTERNAL: Type = 1;
-    pub const PHY_INTERFACE_MODE_MII: Type = 2;
-    pub const PHY_INTERFACE_MODE_GMII: Type = 3;
-    pub const PHY_INTERFACE_MODE_SGMII: Type = 4;
-    pub const PHY_INTERFACE_MODE_TBI: Type = 5;
-    pub const PHY_INTERFACE_MODE_REVMII: Type = 6;
-    pub const PHY_INTERFACE_MODE_RMII: Type = 7;
-    pub const PHY_INTERFACE_MODE_REVRMII: Type = 8;
-    pub const PHY_INTERFACE_MODE_RGMII: Type = 9;
-    pub const PHY_INTERFACE_MODE_RGMII_ID: Type = 10;
-    pub const PHY_INTERFACE_MODE_RGMII_RXID: Type = 11;
-    pub const PHY_INTERFACE_MODE_RGMII_TXID: Type = 12;
-    pub const PHY_INTERFACE_MODE_RTBI: Type = 13;
-    pub const PHY_INTERFACE_MODE_SMII: Type = 14;
-    pub const PHY_INTERFACE_MODE_XGMII: Type = 15;
-    pub const PHY_INTERFACE_MODE_XLGMII: Type = 16;
-    pub const PHY_INTERFACE_MODE_MOCA: Type = 17;
-    pub const PHY_INTERFACE_MODE_QSGMII: Type = 18;
-    pub const PHY_INTERFACE_MODE_TRGMII: Type = 19;
-    pub const PHY_INTERFACE_MODE_100BASEX: Type = 20;
-    pub const PHY_INTERFACE_MODE_1000BASEX: Type = 21;
-    pub const PHY_INTERFACE_MODE_2500BASEX: Type = 22;
-    pub const PHY_INTERFACE_MODE_5GBASER: Type = 23;
-    pub const PHY_INTERFACE_MODE_RXAUI: Type = 24;
-    pub const PHY_INTERFACE_MODE_XAUI: Type = 25;
-    pub const PHY_INTERFACE_MODE_10GBASER: Type = 26;
-    pub const PHY_INTERFACE_MODE_25GBASER: Type = 27;
-    pub const PHY_INTERFACE_MODE_USXGMII: Type = 28;
-    pub const PHY_INTERFACE_MODE_10GKR: Type = 29;
-    pub const PHY_INTERFACE_MODE_MAX: Type = 30;
-}
-pub type irq_write_msi_msg_t =
-    ::core::option::Option<unsafe extern "C" fn(arg1: *mut msi_desc, arg2: *mut msi_msg)>;
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct platform_msi_priv_data {
-    pub dev: *mut device,
-    pub host_data: *mut ::aya_bpf::cty::c_void,
-    pub arg: msi_alloc_info_t,
-    pub write_msg: irq_write_msi_msg_t,
-    pub devid: ::aya_bpf::cty::c_int,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct scsi_sense_hdr {
-    pub response_code: u8_,
-    pub sense_key: u8_,
-    pub asc: u8_,
-    pub ascq: u8_,
-    pub byte4: u8_,
-    pub byte5: u8_,
-    pub byte6: u8_,
-    pub additional_length: u8_,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
 pub struct cdrom_device_info {
     pub ops: *const cdrom_device_ops,
     pub list: list_head,
@@ -33753,7 +31490,6 @@ pub struct cdrom_device_info {
         unsafe extern "C" fn(arg1: *mut cdrom_device_info) -> ::aya_bpf::cty::c_int,
     >,
     pub mrw_mode_page: ::aya_bpf::cty::c_int,
-    pub last_media_change_ms: __s64,
 }
 impl cdrom_device_info {
     #[inline]
@@ -33850,7 +31586,19 @@ impl cdrom_device_info {
     }
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
+pub struct scsi_sense_hdr {
+    pub response_code: u8_,
+    pub sense_key: u8_,
+    pub asc: u8_,
+    pub ascq: u8_,
+    pub byte4: u8_,
+    pub byte5: u8_,
+    pub byte6: u8_,
+    pub additional_length: u8_,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
 pub struct cdrom_msf0 {
     pub minute: __u8,
     pub second: __u8,
@@ -33870,12 +31618,12 @@ pub struct cdrom_multisession {
     pub addr_format: __u8,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct cdrom_mcn {
     pub medium_catalog_number: [__u8; 14usize],
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct packet_command {
     pub cmd: [::aya_bpf::cty::c_uchar; 12usize],
     pub buffer: *mut ::aya_bpf::cty::c_uchar,
@@ -33888,7 +31636,7 @@ pub struct packet_command {
     pub reserved: [*mut ::aya_bpf::cty::c_void; 1usize],
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct cdrom_device_ops {
     pub open: ::core::option::Option<
         unsafe extern "C" fn(
@@ -33956,22 +31704,649 @@ pub struct cdrom_device_ops {
             arg3: *mut ::aya_bpf::cty::c_void,
         ) -> ::aya_bpf::cty::c_int,
     >,
+    pub capability: ::aya_bpf::cty::c_int,
     pub generic_packet: ::core::option::Option<
         unsafe extern "C" fn(
             arg1: *mut cdrom_device_info,
             arg2: *mut packet_command,
         ) -> ::aya_bpf::cty::c_int,
     >,
-    pub read_cdda_bpc: ::core::option::Option<
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct throtl_service_queue {
+    pub parent_sq: *mut throtl_service_queue,
+    pub queued: [list_head; 2usize],
+    pub nr_queued: [::aya_bpf::cty::c_uint; 2usize],
+    pub pending_tree: rb_root_cached,
+    pub nr_pending: ::aya_bpf::cty::c_uint,
+    pub first_pending_disptime: ::aya_bpf::cty::c_ulong,
+    pub pending_timer: timer_list,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct latency_bucket {
+    pub total_latency: ::aya_bpf::cty::c_ulong,
+    pub samples: ::aya_bpf::cty::c_int,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct avg_latency_bucket {
+    pub latency: ::aya_bpf::cty::c_ulong,
+    pub valid: bool_,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct throtl_data {
+    pub service_queue: throtl_service_queue,
+    pub queue: *mut request_queue,
+    pub nr_queued: [::aya_bpf::cty::c_uint; 2usize],
+    pub throtl_slice: ::aya_bpf::cty::c_uint,
+    pub dispatch_work: work_struct,
+    pub limit_index: ::aya_bpf::cty::c_uint,
+    pub limit_valid: [bool_; 2usize],
+    pub low_upgrade_time: ::aya_bpf::cty::c_ulong,
+    pub low_downgrade_time: ::aya_bpf::cty::c_ulong,
+    pub scale: ::aya_bpf::cty::c_uint,
+    pub tmp_buckets: [latency_bucket; 18usize],
+    pub avg_buckets: [avg_latency_bucket; 18usize],
+    pub latency_buckets: [*mut latency_bucket; 2usize],
+    pub last_calculate_time: ::aya_bpf::cty::c_ulong,
+    pub filtered_latency: ::aya_bpf::cty::c_ulong,
+    pub track_bio_latency: bool_,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct blk_ksm_keyslot {
+    pub slot_refs: atomic_t,
+    pub idle_slot_node: list_head,
+    pub hash_node: hlist_node,
+    pub key: *const blk_crypto_key,
+    pub ksm: *mut blk_keyslot_manager,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct blk_ksm_ll_ops {
+    pub keyslot_program: ::core::option::Option<
         unsafe extern "C" fn(
-            arg1: *mut cdrom_device_info,
-            arg2: *mut ::aya_bpf::cty::c_void,
-            arg3: u32_,
-            arg4: u32_,
-            arg5: *mut u8_,
+            arg1: *mut blk_keyslot_manager,
+            arg2: *const blk_crypto_key,
+            arg3: ::aya_bpf::cty::c_uint,
         ) -> ::aya_bpf::cty::c_int,
     >,
-    pub capability: ::aya_bpf::cty::c_int,
+    pub keyslot_evict: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut blk_keyslot_manager,
+            arg2: *const blk_crypto_key,
+            arg3: ::aya_bpf::cty::c_uint,
+        ) -> ::aya_bpf::cty::c_int,
+    >,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct blk_keyslot_manager {
+    pub ksm_ll_ops: blk_ksm_ll_ops,
+    pub max_dun_bytes_supported: ::aya_bpf::cty::c_uint,
+    pub crypto_modes_supported: [::aya_bpf::cty::c_uint; 4usize],
+    pub dev: *mut device,
+    pub num_slots: ::aya_bpf::cty::c_uint,
+    pub lock: rw_semaphore,
+    pub idle_slots_wait_queue: wait_queue_head_t,
+    pub idle_slots: list_head,
+    pub idle_slots_lock: spinlock_t,
+    pub slot_hashtable: *mut hlist_head,
+    pub log_slot_ht_size: ::aya_bpf::cty::c_uint,
+    pub slots: *mut blk_ksm_keyslot,
+}
+#[repr(C)]
+pub struct cpu_rmap {
+    pub refcount: kref,
+    pub size: u16_,
+    pub used: u16_,
+    pub obj: *mut *mut ::aya_bpf::cty::c_void,
+    pub near: __IncompleteArrayField<cpu_rmap__bindgen_ty_1>,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct cpu_rmap__bindgen_ty_1 {
+    pub index: u16_,
+    pub dist: u16_,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct uevent_sock {
+    pub list: list_head,
+    pub sk: *mut sock,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct dev_pin_info {
+    pub p: *mut pinctrl,
+    pub default_state: *mut pinctrl_state,
+    pub init_state: *mut pinctrl_state,
+    pub sleep_state: *mut pinctrl_state,
+    pub idle_state: *mut pinctrl_state,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct pinctrl {
+    pub node: list_head,
+    pub dev: *mut device,
+    pub states: list_head,
+    pub state: *mut pinctrl_state,
+    pub dt_maps: list_head,
+    pub users: kref,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct pinctrl_state {
+    pub node: list_head,
+    pub name: *const ::aya_bpf::cty::c_char,
+    pub settings: list_head,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct gpio_irq_chip {
+    pub chip: *mut irq_chip,
+    pub domain: *mut irq_domain,
+    pub domain_ops: *const irq_domain_ops,
+    pub fwnode: *mut fwnode_handle,
+    pub parent_domain: *mut irq_domain,
+    pub child_to_parent_hwirq: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut gpio_chip,
+            arg2: ::aya_bpf::cty::c_uint,
+            arg3: ::aya_bpf::cty::c_uint,
+            arg4: *mut ::aya_bpf::cty::c_uint,
+            arg5: *mut ::aya_bpf::cty::c_uint,
+        ) -> ::aya_bpf::cty::c_int,
+    >,
+    pub populate_parent_alloc_arg: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut gpio_chip,
+            arg2: ::aya_bpf::cty::c_uint,
+            arg3: ::aya_bpf::cty::c_uint,
+        ) -> *mut ::aya_bpf::cty::c_void,
+    >,
+    pub child_offset_to_irq: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut gpio_chip,
+            arg2: ::aya_bpf::cty::c_uint,
+        ) -> ::aya_bpf::cty::c_uint,
+    >,
+    pub child_irq_domain_ops: irq_domain_ops,
+    pub handler: irq_flow_handler_t,
+    pub default_type: ::aya_bpf::cty::c_uint,
+    pub lock_key: *mut lock_class_key,
+    pub request_key: *mut lock_class_key,
+    pub parent_handler: irq_flow_handler_t,
+    pub parent_handler_data: *mut ::aya_bpf::cty::c_void,
+    pub num_parents: ::aya_bpf::cty::c_uint,
+    pub parents: *mut ::aya_bpf::cty::c_uint,
+    pub map: *mut ::aya_bpf::cty::c_uint,
+    pub threaded: bool_,
+    pub init_hw:
+        ::core::option::Option<unsafe extern "C" fn(arg1: *mut gpio_chip) -> ::aya_bpf::cty::c_int>,
+    pub init_valid_mask: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut gpio_chip,
+            arg2: *mut ::aya_bpf::cty::c_ulong,
+            arg3: ::aya_bpf::cty::c_uint,
+        ),
+    >,
+    pub valid_mask: *mut ::aya_bpf::cty::c_ulong,
+    pub first: ::aya_bpf::cty::c_uint,
+    pub irq_enable: ::core::option::Option<unsafe extern "C" fn(arg1: *mut irq_data)>,
+    pub irq_disable: ::core::option::Option<unsafe extern "C" fn(arg1: *mut irq_data)>,
+    pub irq_unmask: ::core::option::Option<unsafe extern "C" fn(arg1: *mut irq_data)>,
+    pub irq_mask: ::core::option::Option<unsafe extern "C" fn(arg1: *mut irq_data)>,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct gpio_chip {
+    pub label: *const ::aya_bpf::cty::c_char,
+    pub gpiodev: *mut gpio_device,
+    pub parent: *mut device,
+    pub owner: *mut module,
+    pub request: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut gpio_chip,
+            arg2: ::aya_bpf::cty::c_uint,
+        ) -> ::aya_bpf::cty::c_int,
+    >,
+    pub free: ::core::option::Option<
+        unsafe extern "C" fn(arg1: *mut gpio_chip, arg2: ::aya_bpf::cty::c_uint),
+    >,
+    pub get_direction: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut gpio_chip,
+            arg2: ::aya_bpf::cty::c_uint,
+        ) -> ::aya_bpf::cty::c_int,
+    >,
+    pub direction_input: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut gpio_chip,
+            arg2: ::aya_bpf::cty::c_uint,
+        ) -> ::aya_bpf::cty::c_int,
+    >,
+    pub direction_output: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut gpio_chip,
+            arg2: ::aya_bpf::cty::c_uint,
+            arg3: ::aya_bpf::cty::c_int,
+        ) -> ::aya_bpf::cty::c_int,
+    >,
+    pub get: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut gpio_chip,
+            arg2: ::aya_bpf::cty::c_uint,
+        ) -> ::aya_bpf::cty::c_int,
+    >,
+    pub get_multiple: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut gpio_chip,
+            arg2: *mut ::aya_bpf::cty::c_ulong,
+            arg3: *mut ::aya_bpf::cty::c_ulong,
+        ) -> ::aya_bpf::cty::c_int,
+    >,
+    pub set: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut gpio_chip,
+            arg2: ::aya_bpf::cty::c_uint,
+            arg3: ::aya_bpf::cty::c_int,
+        ),
+    >,
+    pub set_multiple: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut gpio_chip,
+            arg2: *mut ::aya_bpf::cty::c_ulong,
+            arg3: *mut ::aya_bpf::cty::c_ulong,
+        ),
+    >,
+    pub set_config: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut gpio_chip,
+            arg2: ::aya_bpf::cty::c_uint,
+            arg3: ::aya_bpf::cty::c_ulong,
+        ) -> ::aya_bpf::cty::c_int,
+    >,
+    pub to_irq: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut gpio_chip,
+            arg2: ::aya_bpf::cty::c_uint,
+        ) -> ::aya_bpf::cty::c_int,
+    >,
+    pub dbg_show:
+        ::core::option::Option<unsafe extern "C" fn(arg1: *mut seq_file, arg2: *mut gpio_chip)>,
+    pub init_valid_mask: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut gpio_chip,
+            arg2: *mut ::aya_bpf::cty::c_ulong,
+            arg3: ::aya_bpf::cty::c_uint,
+        ) -> ::aya_bpf::cty::c_int,
+    >,
+    pub add_pin_ranges:
+        ::core::option::Option<unsafe extern "C" fn(arg1: *mut gpio_chip) -> ::aya_bpf::cty::c_int>,
+    pub base: ::aya_bpf::cty::c_int,
+    pub ngpio: u16_,
+    pub names: *const *const ::aya_bpf::cty::c_char,
+    pub can_sleep: bool_,
+    pub read_reg: ::core::option::Option<
+        unsafe extern "C" fn(arg1: *mut ::aya_bpf::cty::c_void) -> ::aya_bpf::cty::c_ulong,
+    >,
+    pub write_reg: ::core::option::Option<
+        unsafe extern "C" fn(arg1: *mut ::aya_bpf::cty::c_void, arg2: ::aya_bpf::cty::c_ulong),
+    >,
+    pub be_bits: bool_,
+    pub reg_dat: *mut ::aya_bpf::cty::c_void,
+    pub reg_set: *mut ::aya_bpf::cty::c_void,
+    pub reg_clr: *mut ::aya_bpf::cty::c_void,
+    pub reg_dir_out: *mut ::aya_bpf::cty::c_void,
+    pub reg_dir_in: *mut ::aya_bpf::cty::c_void,
+    pub bgpio_dir_unreadable: bool_,
+    pub bgpio_bits: ::aya_bpf::cty::c_int,
+    pub bgpio_lock: spinlock_t,
+    pub bgpio_data: ::aya_bpf::cty::c_ulong,
+    pub bgpio_dir: ::aya_bpf::cty::c_ulong,
+    pub irq: gpio_irq_chip,
+    pub valid_mask: *mut ::aya_bpf::cty::c_ulong,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct gpio_device {
+    pub id: ::aya_bpf::cty::c_int,
+    pub dev: device,
+    pub chrdev: cdev,
+    pub mockdev: *mut device,
+    pub owner: *mut module,
+    pub chip: *mut gpio_chip,
+    pub descs: *mut gpio_desc,
+    pub base: ::aya_bpf::cty::c_int,
+    pub ngpio: u16_,
+    pub label: *const ::aya_bpf::cty::c_char,
+    pub data: *mut ::aya_bpf::cty::c_void,
+    pub list: list_head,
+    pub notifier: blocking_notifier_head,
+    pub pin_ranges: list_head,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct gpio_desc {
+    pub gdev: *mut gpio_device,
+    pub flags: ::aya_bpf::cty::c_ulong,
+    pub label: *const ::aya_bpf::cty::c_char,
+    pub name: *const ::aya_bpf::cty::c_char,
+    pub debounce_period_us: ::aya_bpf::cty::c_uint,
+}
+pub type u_char = ::aya_bpf::cty::c_uchar;
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct pm_domain_data {
+    pub list_node: list_head,
+    pub dev: *mut device,
+}
+pub mod led_brightness {
+    pub type Type = ::aya_bpf::cty::c_uint;
+    pub const LED_OFF: Type = 0;
+    pub const LED_ON: Type = 1;
+    pub const LED_HALF: Type = 127;
+    pub const LED_FULL: Type = 255;
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct led_hw_trigger_type {
+    pub dummy: ::aya_bpf::cty::c_int,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct led_classdev {
+    pub name: *const ::aya_bpf::cty::c_char,
+    pub brightness: ::aya_bpf::cty::c_uint,
+    pub max_brightness: ::aya_bpf::cty::c_uint,
+    pub flags: ::aya_bpf::cty::c_int,
+    pub work_flags: ::aya_bpf::cty::c_ulong,
+    pub brightness_set: ::core::option::Option<
+        unsafe extern "C" fn(arg1: *mut led_classdev, arg2: led_brightness::Type),
+    >,
+    pub brightness_set_blocking: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut led_classdev,
+            arg2: led_brightness::Type,
+        ) -> ::aya_bpf::cty::c_int,
+    >,
+    pub brightness_get: ::core::option::Option<
+        unsafe extern "C" fn(arg1: *mut led_classdev) -> led_brightness::Type,
+    >,
+    pub blink_set: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut led_classdev,
+            arg2: *mut ::aya_bpf::cty::c_ulong,
+            arg3: *mut ::aya_bpf::cty::c_ulong,
+        ) -> ::aya_bpf::cty::c_int,
+    >,
+    pub pattern_set: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut led_classdev,
+            arg2: *mut led_pattern,
+            arg3: u32_,
+            arg4: ::aya_bpf::cty::c_int,
+        ) -> ::aya_bpf::cty::c_int,
+    >,
+    pub pattern_clear: ::core::option::Option<
+        unsafe extern "C" fn(arg1: *mut led_classdev) -> ::aya_bpf::cty::c_int,
+    >,
+    pub dev: *mut device,
+    pub groups: *mut *const attribute_group,
+    pub node: list_head,
+    pub default_trigger: *const ::aya_bpf::cty::c_char,
+    pub blink_delay_on: ::aya_bpf::cty::c_ulong,
+    pub blink_delay_off: ::aya_bpf::cty::c_ulong,
+    pub blink_timer: timer_list,
+    pub blink_brightness: ::aya_bpf::cty::c_int,
+    pub new_blink_brightness: ::aya_bpf::cty::c_int,
+    pub flash_resume: ::core::option::Option<unsafe extern "C" fn(arg1: *mut led_classdev)>,
+    pub set_brightness_work: work_struct,
+    pub delayed_set_value: ::aya_bpf::cty::c_int,
+    pub trigger_lock: rw_semaphore,
+    pub trigger: *mut led_trigger,
+    pub trig_list: list_head,
+    pub trigger_data: *mut ::aya_bpf::cty::c_void,
+    pub activated: bool_,
+    pub trigger_type: *mut led_hw_trigger_type,
+    pub brightness_hw_changed: ::aya_bpf::cty::c_int,
+    pub brightness_hw_changed_kn: *mut kernfs_node,
+    pub led_access: mutex,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct led_pattern {
+    pub delta_t: u32_,
+    pub brightness: ::aya_bpf::cty::c_int,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct led_trigger {
+    pub name: *const ::aya_bpf::cty::c_char,
+    pub activate: ::core::option::Option<
+        unsafe extern "C" fn(arg1: *mut led_classdev) -> ::aya_bpf::cty::c_int,
+    >,
+    pub deactivate: ::core::option::Option<unsafe extern "C" fn(arg1: *mut led_classdev)>,
+    pub trigger_type: *mut led_hw_trigger_type,
+    pub leddev_list_lock: rwlock_t,
+    pub led_cdevs: list_head,
+    pub next_trig: list_head,
+    pub groups: *mut *const attribute_group,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct reset_control {
+    pub rcdev: *mut reset_controller_dev,
+    pub list: list_head,
+    pub id: ::aya_bpf::cty::c_uint,
+    pub refcnt: kref,
+    pub acquired: bool_,
+    pub shared: bool_,
+    pub array: bool_,
+    pub deassert_count: atomic_t,
+    pub triggered_count: atomic_t,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct reset_control_ops {
+    pub reset: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut reset_controller_dev,
+            arg2: ::aya_bpf::cty::c_ulong,
+        ) -> ::aya_bpf::cty::c_int,
+    >,
+    pub assert: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut reset_controller_dev,
+            arg2: ::aya_bpf::cty::c_ulong,
+        ) -> ::aya_bpf::cty::c_int,
+    >,
+    pub deassert: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut reset_controller_dev,
+            arg2: ::aya_bpf::cty::c_ulong,
+        ) -> ::aya_bpf::cty::c_int,
+    >,
+    pub status: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut reset_controller_dev,
+            arg2: ::aya_bpf::cty::c_ulong,
+        ) -> ::aya_bpf::cty::c_int,
+    >,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct reset_controller_dev {
+    pub ops: *const reset_control_ops,
+    pub owner: *mut module,
+    pub list: list_head,
+    pub reset_control_head: list_head,
+    pub dev: *mut device,
+    pub of_node: *mut device_node,
+    pub of_reset_n_cells: ::aya_bpf::cty::c_int,
+    pub of_xlate: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut reset_controller_dev,
+            arg2: *const of_phandle_args,
+        ) -> ::aya_bpf::cty::c_int,
+    >,
+    pub nr_resets: ::aya_bpf::cty::c_uint,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct tty_audit_buf {
+    pub mutex: mutex,
+    pub dev: dev_t,
+    pub _bitfield_align_1: [u8; 0],
+    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 1usize]>,
+    pub valid: size_t,
+    pub data: *mut ::aya_bpf::cty::c_uchar,
+}
+impl tty_audit_buf {
+    #[inline]
+    pub fn icanon(&self) -> ::aya_bpf::cty::c_uint {
+        unsafe { ::core::mem::transmute(self._bitfield_1.get(0usize, 1u8) as u32) }
+    }
+    #[inline]
+    pub fn set_icanon(&mut self, val: ::aya_bpf::cty::c_uint) {
+        unsafe {
+            let val: u32 = ::core::mem::transmute(val);
+            self._bitfield_1.set(0usize, 1u8, val as u64)
+        }
+    }
+    #[inline]
+    pub fn new_bitfield_1(icanon: ::aya_bpf::cty::c_uint) -> __BindgenBitfieldUnit<[u8; 1usize]> {
+        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 1usize]> = Default::default();
+        __bindgen_bitfield_unit.set(0usize, 1u8, {
+            let icanon: u32 = unsafe { ::core::mem::transmute(icanon) };
+            icanon as u64
+        });
+        __bindgen_bitfield_unit
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct timer_rand_state {
+    pub last_time: cycles_t,
+    pub last_delta: ::aya_bpf::cty::c_long,
+    pub last_delta2: ::aya_bpf::cty::c_long,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct iommu_group {
+    pub kobj: kobject,
+    pub devices_kobj: *mut kobject,
+    pub devices: list_head,
+    pub mutex: mutex,
+    pub notifier: blocking_notifier_head,
+    pub iommu_data: *mut ::aya_bpf::cty::c_void,
+    pub iommu_data_release:
+        ::core::option::Option<unsafe extern "C" fn(arg1: *mut ::aya_bpf::cty::c_void)>,
+    pub name: *mut ::aya_bpf::cty::c_char,
+    pub id: ::aya_bpf::cty::c_int,
+    pub default_domain: *mut iommu_domain,
+    pub domain: *mut iommu_domain,
+    pub entry: list_head,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct wake_irq {
+    pub dev: *mut device,
+    pub status: ::aya_bpf::cty::c_uint,
+    pub irq: ::aya_bpf::cty::c_int,
+    pub name: *const ::aya_bpf::cty::c_char,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct subsys_private {
+    pub subsys: kset,
+    pub devices_kset: *mut kset,
+    pub interfaces: list_head,
+    pub mutex: mutex,
+    pub drivers_kset: *mut kset,
+    pub klist_devices: klist,
+    pub klist_drivers: klist,
+    pub bus_notifier: blocking_notifier_head,
+    pub _bitfield_align_1: [u8; 0],
+    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 1usize]>,
+    pub bus: *mut bus_type,
+    pub glue_dirs: kset,
+    pub class: *mut class,
+}
+impl subsys_private {
+    #[inline]
+    pub fn drivers_autoprobe(&self) -> ::aya_bpf::cty::c_uint {
+        unsafe { ::core::mem::transmute(self._bitfield_1.get(0usize, 1u8) as u32) }
+    }
+    #[inline]
+    pub fn set_drivers_autoprobe(&mut self, val: ::aya_bpf::cty::c_uint) {
+        unsafe {
+            let val: u32 = ::core::mem::transmute(val);
+            self._bitfield_1.set(0usize, 1u8, val as u64)
+        }
+    }
+    #[inline]
+    pub fn new_bitfield_1(
+        drivers_autoprobe: ::aya_bpf::cty::c_uint,
+    ) -> __BindgenBitfieldUnit<[u8; 1usize]> {
+        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 1usize]> = Default::default();
+        __bindgen_bitfield_unit.set(0usize, 1u8, {
+            let drivers_autoprobe: u32 = unsafe { ::core::mem::transmute(drivers_autoprobe) };
+            drivers_autoprobe as u64
+        });
+        __bindgen_bitfield_unit
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct driver_private {
+    pub kobj: kobject,
+    pub klist_devices: klist,
+    pub knode_bus: klist_node,
+    pub mkobj: *mut module_kobject,
+    pub driver: *mut device_driver,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct device_private {
+    pub klist_children: klist,
+    pub knode_parent: klist_node,
+    pub knode_driver: klist_node,
+    pub knode_bus: klist_node,
+    pub knode_class: klist_node,
+    pub deferred_probe: list_head,
+    pub async_driver: *mut device_driver,
+    pub deferred_probe_reason: *mut ::aya_bpf::cty::c_char,
+    pub device: *mut device,
+    pub _bitfield_align_1: [u8; 0],
+    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 1usize]>,
+    pub __bindgen_padding_0: [u8; 7usize],
+}
+impl device_private {
+    #[inline]
+    pub fn dead(&self) -> u8_ {
+        unsafe { ::core::mem::transmute(self._bitfield_1.get(0usize, 1u8) as u8) }
+    }
+    #[inline]
+    pub fn set_dead(&mut self, val: u8_) {
+        unsafe {
+            let val: u8 = ::core::mem::transmute(val);
+            self._bitfield_1.set(0usize, 1u8, val as u64)
+        }
+    }
+    #[inline]
+    pub fn new_bitfield_1(dead: u8_) -> __BindgenBitfieldUnit<[u8; 1usize]> {
+        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 1usize]> = Default::default();
+        __bindgen_bitfield_unit.set(0usize, 1u8, {
+            let dead: u8 = unsafe { ::core::mem::transmute(dead) };
+            dead as u64
+        });
+        __bindgen_bitfield_unit
+    }
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
@@ -33992,79 +32367,7 @@ pub struct mdio_device {
     pub reset_deassert_delay: ::aya_bpf::cty::c_uint,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct mdio_bus_stats {
-    pub transfers: u64_stats_t,
-    pub errors: u64_stats_t,
-    pub writes: u64_stats_t,
-    pub reads: u64_stats_t,
-    pub syncp: u64_stats_sync,
-}
-#[repr(C)]
 #[derive(Copy, Clone)]
-pub struct mii_bus {
-    pub owner: *mut module,
-    pub name: *const ::aya_bpf::cty::c_char,
-    pub id: [::aya_bpf::cty::c_char; 61usize],
-    pub priv_: *mut ::aya_bpf::cty::c_void,
-    pub read: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut mii_bus,
-            arg2: ::aya_bpf::cty::c_int,
-            arg3: ::aya_bpf::cty::c_int,
-        ) -> ::aya_bpf::cty::c_int,
-    >,
-    pub write: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut mii_bus,
-            arg2: ::aya_bpf::cty::c_int,
-            arg3: ::aya_bpf::cty::c_int,
-            arg4: u16_,
-        ) -> ::aya_bpf::cty::c_int,
-    >,
-    pub reset:
-        ::core::option::Option<unsafe extern "C" fn(arg1: *mut mii_bus) -> ::aya_bpf::cty::c_int>,
-    pub stats: [mdio_bus_stats; 32usize],
-    pub mdio_lock: mutex,
-    pub parent: *mut device,
-    pub state: mii_bus__bindgen_ty_1::Type,
-    pub dev: device,
-    pub mdio_map: [*mut mdio_device; 32usize],
-    pub phy_mask: u32_,
-    pub phy_ignore_ta_mask: u32_,
-    pub irq: [::aya_bpf::cty::c_int; 32usize],
-    pub reset_delay_us: ::aya_bpf::cty::c_int,
-    pub reset_post_delay_us: ::aya_bpf::cty::c_int,
-    pub reset_gpiod: *mut gpio_desc,
-    pub probe_capabilities: mii_bus__bindgen_ty_2::Type,
-    pub shared_lock: mutex,
-    pub shared: [*mut phy_package_shared; 32usize],
-}
-pub mod mii_bus__bindgen_ty_1 {
-    pub type Type = ::aya_bpf::cty::c_uint;
-    pub const MDIOBUS_ALLOCATED: Type = 1;
-    pub const MDIOBUS_REGISTERED: Type = 2;
-    pub const MDIOBUS_UNREGISTERED: Type = 3;
-    pub const MDIOBUS_RELEASED: Type = 4;
-}
-pub mod mii_bus__bindgen_ty_2 {
-    pub type Type = ::aya_bpf::cty::c_uint;
-    pub const MDIOBUS_NO_CAP: Type = 0;
-    pub const MDIOBUS_C22: Type = 1;
-    pub const MDIOBUS_C45: Type = 2;
-    pub const MDIOBUS_C22_C45: Type = 3;
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct phy_package_shared {
-    pub addr: ::aya_bpf::cty::c_int,
-    pub refcnt: refcount_t,
-    pub flags: ::aya_bpf::cty::c_ulong,
-    pub priv_size: size_t,
-    pub priv_: *mut ::aya_bpf::cty::c_void,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
 pub struct phy_c45_device_ids {
     pub devices_in_package: u32_,
     pub mmds_present: u32_,
@@ -34080,8 +32383,40 @@ pub mod phy_state {
     pub const PHY_NOLINK: Type = 5;
     pub const PHY_CABLETEST: Type = 6;
 }
+pub mod phy_interface_t {
+    pub type Type = ::aya_bpf::cty::c_uint;
+    pub const PHY_INTERFACE_MODE_NA: Type = 0;
+    pub const PHY_INTERFACE_MODE_INTERNAL: Type = 1;
+    pub const PHY_INTERFACE_MODE_MII: Type = 2;
+    pub const PHY_INTERFACE_MODE_GMII: Type = 3;
+    pub const PHY_INTERFACE_MODE_SGMII: Type = 4;
+    pub const PHY_INTERFACE_MODE_TBI: Type = 5;
+    pub const PHY_INTERFACE_MODE_REVMII: Type = 6;
+    pub const PHY_INTERFACE_MODE_RMII: Type = 7;
+    pub const PHY_INTERFACE_MODE_RGMII: Type = 8;
+    pub const PHY_INTERFACE_MODE_RGMII_ID: Type = 9;
+    pub const PHY_INTERFACE_MODE_RGMII_RXID: Type = 10;
+    pub const PHY_INTERFACE_MODE_RGMII_TXID: Type = 11;
+    pub const PHY_INTERFACE_MODE_RTBI: Type = 12;
+    pub const PHY_INTERFACE_MODE_SMII: Type = 13;
+    pub const PHY_INTERFACE_MODE_XGMII: Type = 14;
+    pub const PHY_INTERFACE_MODE_XLGMII: Type = 15;
+    pub const PHY_INTERFACE_MODE_MOCA: Type = 16;
+    pub const PHY_INTERFACE_MODE_QSGMII: Type = 17;
+    pub const PHY_INTERFACE_MODE_TRGMII: Type = 18;
+    pub const PHY_INTERFACE_MODE_100BASEX: Type = 19;
+    pub const PHY_INTERFACE_MODE_1000BASEX: Type = 20;
+    pub const PHY_INTERFACE_MODE_2500BASEX: Type = 21;
+    pub const PHY_INTERFACE_MODE_5GBASER: Type = 22;
+    pub const PHY_INTERFACE_MODE_RXAUI: Type = 23;
+    pub const PHY_INTERFACE_MODE_XAUI: Type = 24;
+    pub const PHY_INTERFACE_MODE_10GBASER: Type = 25;
+    pub const PHY_INTERFACE_MODE_USXGMII: Type = 26;
+    pub const PHY_INTERFACE_MODE_10GKR: Type = 27;
+    pub const PHY_INTERFACE_MODE_MAX: Type = 28;
+}
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct phylink {
     _unused: [u8; 0],
 }
@@ -34400,7 +32735,7 @@ impl phy_device {
     }
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct phy_tdr_config {
     pub first: u32_,
     pub last: u32_,
@@ -34408,13 +32743,76 @@ pub struct phy_tdr_config {
     pub pair: s8,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
+pub struct mdio_bus_stats {
+    pub transfers: u64_stats_t,
+    pub errors: u64_stats_t,
+    pub writes: u64_stats_t,
+    pub reads: u64_stats_t,
+    pub syncp: u64_stats_sync,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct mii_bus {
+    pub owner: *mut module,
+    pub name: *const ::aya_bpf::cty::c_char,
+    pub id: [::aya_bpf::cty::c_char; 61usize],
+    pub priv_: *mut ::aya_bpf::cty::c_void,
+    pub read: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut mii_bus,
+            arg2: ::aya_bpf::cty::c_int,
+            arg3: ::aya_bpf::cty::c_int,
+        ) -> ::aya_bpf::cty::c_int,
+    >,
+    pub write: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut mii_bus,
+            arg2: ::aya_bpf::cty::c_int,
+            arg3: ::aya_bpf::cty::c_int,
+            arg4: u16_,
+        ) -> ::aya_bpf::cty::c_int,
+    >,
+    pub reset:
+        ::core::option::Option<unsafe extern "C" fn(arg1: *mut mii_bus) -> ::aya_bpf::cty::c_int>,
+    pub stats: [mdio_bus_stats; 32usize],
+    pub mdio_lock: mutex,
+    pub parent: *mut device,
+    pub state: mii_bus__bindgen_ty_1::Type,
+    pub dev: device,
+    pub mdio_map: [*mut mdio_device; 32usize],
+    pub phy_mask: u32_,
+    pub phy_ignore_ta_mask: u32_,
+    pub irq: [::aya_bpf::cty::c_int; 32usize],
+    pub reset_delay_us: ::aya_bpf::cty::c_int,
+    pub reset_post_delay_us: ::aya_bpf::cty::c_int,
+    pub reset_gpiod: *mut gpio_desc,
+    pub probe_capabilities: mii_bus__bindgen_ty_2::Type,
+    pub shared_lock: mutex,
+    pub shared: [*mut phy_package_shared; 32usize],
+}
+pub mod mii_bus__bindgen_ty_1 {
+    pub type Type = ::aya_bpf::cty::c_uint;
+    pub const MDIOBUS_ALLOCATED: Type = 1;
+    pub const MDIOBUS_REGISTERED: Type = 2;
+    pub const MDIOBUS_UNREGISTERED: Type = 3;
+    pub const MDIOBUS_RELEASED: Type = 4;
+}
+pub mod mii_bus__bindgen_ty_2 {
+    pub type Type = ::aya_bpf::cty::c_uint;
+    pub const MDIOBUS_NO_CAP: Type = 0;
+    pub const MDIOBUS_C22: Type = 1;
+    pub const MDIOBUS_C45: Type = 2;
+    pub const MDIOBUS_C22_C45: Type = 3;
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
 pub struct mdio_driver_common {
     pub driver: device_driver,
     pub flags: ::aya_bpf::cty::c_int,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct mii_timestamper {
     pub rxtstamp: ::core::option::Option<
         unsafe extern "C" fn(
@@ -34445,7 +32843,16 @@ pub struct mii_timestamper {
     pub device: *mut device,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
+pub struct phy_package_shared {
+    pub addr: ::aya_bpf::cty::c_int,
+    pub refcnt: refcount_t,
+    pub flags: ::aya_bpf::cty::c_ulong,
+    pub priv_size: size_t,
+    pub priv_: *mut ::aya_bpf::cty::c_void,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
 pub struct phy_driver {
     pub mdiodrv: mdio_driver_common,
     pub phy_id: u32_,
@@ -34581,6 +32988,75 @@ pub struct phy_driver {
         unsafe extern "C" fn(arg1: *mut phy_device) -> ::aya_bpf::cty::c_int,
     >,
 }
+pub type irq_write_msi_msg_t =
+    ::core::option::Option<unsafe extern "C" fn(arg1: *mut msi_desc, arg2: *mut msi_msg)>;
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct platform_msi_priv_data {
+    pub dev: *mut device,
+    pub host_data: *mut ::aya_bpf::cty::c_void,
+    pub arg: msi_alloc_info_t,
+    pub write_msg: irq_write_msi_msg_t,
+    pub devid: ::aya_bpf::cty::c_int,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct dax_operations {
+    pub direct_access: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut dax_device,
+            arg2: ::aya_bpf::cty::c_ulong,
+            arg3: ::aya_bpf::cty::c_long,
+            arg4: *mut *mut ::aya_bpf::cty::c_void,
+            arg5: *mut pfn_t,
+        ) -> ::aya_bpf::cty::c_long,
+    >,
+    pub dax_supported: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut dax_device,
+            arg2: *mut block_device,
+            arg3: ::aya_bpf::cty::c_int,
+            arg4: sector_t,
+            arg5: sector_t,
+        ) -> bool_,
+    >,
+    pub copy_from_iter: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut dax_device,
+            arg2: ::aya_bpf::cty::c_ulong,
+            arg3: *mut ::aya_bpf::cty::c_void,
+            arg4: size_t,
+            arg5: *mut iov_iter,
+        ) -> size_t,
+    >,
+    pub copy_to_iter: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut dax_device,
+            arg2: ::aya_bpf::cty::c_ulong,
+            arg3: *mut ::aya_bpf::cty::c_void,
+            arg4: size_t,
+            arg5: *mut iov_iter,
+        ) -> size_t,
+    >,
+    pub zero_page_range: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut dax_device,
+            arg2: ::aya_bpf::cty::c_ulong,
+            arg3: size_t,
+        ) -> ::aya_bpf::cty::c_int,
+    >,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct dax_device {
+    pub list: hlist_node,
+    pub inode: inode,
+    pub cdev: cdev,
+    pub host: *const ::aya_bpf::cty::c_char,
+    pub private: *mut ::aya_bpf::cty::c_void,
+    pub flags: ::aya_bpf::cty::c_ulong,
+    pub ops: *const dax_operations,
+}
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct phy_led_trigger {
@@ -34618,7 +33094,7 @@ pub union sfp_eeprom_base__bindgen_ty_1 {
     pub active: sfp_eeprom_base__bindgen_ty_1__bindgen_ty_2,
 }
 #[repr(C, packed)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct sfp_eeprom_base__bindgen_ty_1__bindgen_ty_1 {
     pub _bitfield_align_1: [u8; 0],
     pub _bitfield_1: __BindgenBitfieldUnit<[u8; 2usize]>,
@@ -34696,7 +33172,7 @@ impl sfp_eeprom_base__bindgen_ty_1__bindgen_ty_1 {
     }
 }
 #[repr(C, packed)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct sfp_eeprom_base__bindgen_ty_1__bindgen_ty_2 {
     pub _bitfield_align_1: [u8; 0],
     pub _bitfield_1: __BindgenBitfieldUnit<[u8; 2usize]>,
@@ -35850,7 +34326,7 @@ impl sfp_eeprom_base {
     }
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct sfp_eeprom_ext {
     pub options: __be16,
     pub br_max: u8_,
@@ -35869,7 +34345,7 @@ pub struct sfp_eeprom_id {
     pub ext: sfp_eeprom_ext,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct sfp_upstream_ops {
     pub attach: ::core::option::Option<
         unsafe extern "C" fn(arg1: *mut ::aya_bpf::cty::c_void, arg2: *mut sfp_bus),
@@ -35902,12 +34378,21 @@ pub struct sfp_upstream_ops {
         ::core::option::Option<unsafe extern "C" fn(arg1: *mut ::aya_bpf::cty::c_void)>,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
+pub struct fixed_phy_status {
+    pub link: ::aya_bpf::cty::c_int,
+    pub speed: ::aya_bpf::cty::c_int,
+    pub duplex: ::aya_bpf::cty::c_int,
+    pub pause: ::aya_bpf::cty::c_int,
+    pub asym_pause: ::aya_bpf::cty::c_int,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
 pub struct sfp {
     _unused: [u8; 0],
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct sfp_bus {
     pub kref: kref,
     pub node: list_head,
@@ -35923,7 +34408,7 @@ pub struct sfp_bus {
     pub started: bool_,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct sfp_socket_ops {
     pub attach: ::core::option::Option<unsafe extern "C" fn(arg1: *mut sfp)>,
     pub detach: ::core::option::Option<unsafe extern "C" fn(arg1: *mut sfp)>,
@@ -35948,12 +34433,299 @@ pub struct sfp_socket_ops {
     >,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct sfp_quirk {
     pub vendor: *const ::aya_bpf::cty::c_char,
     pub part: *const ::aya_bpf::cty::c_char,
     pub modes: ::core::option::Option<
         unsafe extern "C" fn(arg1: *const sfp_eeprom_id, arg2: *mut ::aya_bpf::cty::c_ulong),
+    >,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct flow_dissector {
+    pub used_keys: ::aya_bpf::cty::c_uint,
+    pub offset: [::aya_bpf::cty::c_ushort; 28usize],
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct nf_conntrack {
+    pub use_: atomic_t,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct ip_tunnel_parm {
+    pub name: [::aya_bpf::cty::c_char; 16usize],
+    pub link: ::aya_bpf::cty::c_int,
+    pub i_flags: __be16,
+    pub o_flags: __be16,
+    pub i_key: __be32,
+    pub o_key: __be32,
+    pub iph: iphdr,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct wpan_dev {
+    pub wpan_phy: *mut wpan_phy,
+    pub iftype: ::aya_bpf::cty::c_int,
+    pub list: list_head,
+    pub netdev: *mut net_device,
+    pub header_ops: *const wpan_dev_header_ops,
+    pub lowpan_dev: *mut net_device,
+    pub identifier: u32_,
+    pub pan_id: __le16,
+    pub short_addr: __le16,
+    pub extended_addr: __le64,
+    pub bsn: atomic_t,
+    pub dsn: atomic_t,
+    pub min_be: u8_,
+    pub max_be: u8_,
+    pub csma_retries: u8_,
+    pub frame_retries: s8,
+    pub lbt: bool_,
+    pub promiscuous_mode: bool_,
+    pub ackreq: bool_,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct fib_nh {
+    pub nh_common: fib_nh_common,
+    pub nh_hash: hlist_node,
+    pub nh_parent: *mut fib_info,
+    pub nh_tclassid: __u32,
+    pub nh_saddr: __be32,
+    pub nh_saddr_genid: ::aya_bpf::cty::c_int,
+}
+#[repr(C)]
+pub struct fib_info {
+    pub fib_hash: hlist_node,
+    pub fib_lhash: hlist_node,
+    pub nh_list: list_head,
+    pub fib_net: *mut net,
+    pub fib_treeref: ::aya_bpf::cty::c_int,
+    pub fib_clntref: refcount_t,
+    pub fib_flags: ::aya_bpf::cty::c_uint,
+    pub fib_dead: ::aya_bpf::cty::c_uchar,
+    pub fib_protocol: ::aya_bpf::cty::c_uchar,
+    pub fib_scope: ::aya_bpf::cty::c_uchar,
+    pub fib_type: ::aya_bpf::cty::c_uchar,
+    pub fib_prefsrc: __be32,
+    pub fib_tb_id: u32_,
+    pub fib_priority: u32_,
+    pub fib_metrics: *mut dst_metrics,
+    pub fib_nhs: ::aya_bpf::cty::c_int,
+    pub fib_nh_is_v6: bool_,
+    pub nh_updated: bool_,
+    pub nh: *mut nexthop,
+    pub rcu: callback_head,
+    pub fib_nh: __IncompleteArrayField<fib_nh>,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct nexthop {
+    pub rb_node: rb_node,
+    pub fi_list: list_head,
+    pub f6i_list: list_head,
+    pub fdb_list: list_head,
+    pub grp_list: list_head,
+    pub net: *mut net,
+    pub id: u32_,
+    pub protocol: u8_,
+    pub nh_flags: u8_,
+    pub is_group: bool_,
+    pub refcnt: refcount_t,
+    pub rcu: callback_head,
+    pub __bindgen_anon_1: nexthop__bindgen_ty_1,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub union nexthop__bindgen_ty_1 {
+    pub nh_info: *mut nh_info,
+    pub nh_grp: *mut nh_group,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct nh_info {
+    pub dev_hash: hlist_node,
+    pub nh_parent: *mut nexthop,
+    pub family: u8_,
+    pub reject_nh: bool_,
+    pub fdb_nh: bool_,
+    pub __bindgen_anon_1: nh_info__bindgen_ty_1,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub union nh_info__bindgen_ty_1 {
+    pub fib_nhc: fib_nh_common,
+    pub fib_nh: fib_nh,
+    pub fib6_nh: fib6_nh,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct nh_res_bucket {
+    pub nh_entry: *mut nh_grp_entry,
+    pub used_time: atomic_long_t,
+    pub migrated_time: ::aya_bpf::cty::c_ulong,
+    pub occupied: bool_,
+    pub nh_flags: u8_,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct nh_grp_entry {
+    pub nh: *mut nexthop,
+    pub weight: u8_,
+    pub __bindgen_anon_1: nh_grp_entry__bindgen_ty_1,
+    pub nh_list: list_head,
+    pub nh_parent: *mut nexthop,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub union nh_grp_entry__bindgen_ty_1 {
+    pub hthr: nh_grp_entry__bindgen_ty_1__bindgen_ty_1,
+    pub res: nh_grp_entry__bindgen_ty_1__bindgen_ty_2,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct nh_grp_entry__bindgen_ty_1__bindgen_ty_1 {
+    pub upper_bound: atomic_t,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct nh_grp_entry__bindgen_ty_1__bindgen_ty_2 {
+    pub uw_nh_entry: list_head,
+    pub count_buckets: u16_,
+    pub wants_buckets: u16_,
+}
+#[repr(C)]
+pub struct nh_res_table {
+    pub net: *mut net,
+    pub nhg_id: u32_,
+    pub upkeep_dw: delayed_work,
+    pub uw_nh_entries: list_head,
+    pub unbalanced_since: ::aya_bpf::cty::c_ulong,
+    pub idle_timer: u32_,
+    pub unbalanced_timer: u32_,
+    pub num_nh_buckets: u16_,
+    pub nh_buckets: __IncompleteArrayField<nh_res_bucket>,
+}
+#[repr(C)]
+pub struct nh_group {
+    pub spare: *mut nh_group,
+    pub num_nh: u16_,
+    pub is_multipath: bool_,
+    pub hash_threshold: bool_,
+    pub resilient: bool_,
+    pub fdb_nh: bool_,
+    pub has_v4: bool_,
+    pub res_table: *mut nh_res_table,
+    pub nh_entries: __IncompleteArrayField<nh_grp_entry>,
+}
+pub mod nl802154_cca_modes {
+    pub type Type = ::aya_bpf::cty::c_uint;
+    pub const __NL802154_CCA_INVALID: Type = 0;
+    pub const NL802154_CCA_ENERGY: Type = 1;
+    pub const NL802154_CCA_CARRIER: Type = 2;
+    pub const NL802154_CCA_ENERGY_CARRIER: Type = 3;
+    pub const NL802154_CCA_ALOHA: Type = 4;
+    pub const NL802154_CCA_UWB_SHR: Type = 5;
+    pub const NL802154_CCA_UWB_MULTIPLEXED: Type = 6;
+    pub const __NL802154_CCA_ATTR_AFTER_LAST: Type = 7;
+    pub const NL802154_CCA_ATTR_MAX: Type = 6;
+}
+pub mod nl802154_cca_opts {
+    pub type Type = ::aya_bpf::cty::c_uint;
+    pub const NL802154_CCA_OPT_ENERGY_CARRIER_AND: Type = 0;
+    pub const NL802154_CCA_OPT_ENERGY_CARRIER_OR: Type = 1;
+    pub const __NL802154_CCA_OPT_ATTR_AFTER_LAST: Type = 2;
+    pub const NL802154_CCA_OPT_ATTR_MAX: Type = 1;
+}
+pub mod nl802154_supported_bool_states {
+    pub type Type = ::aya_bpf::cty::c_uint;
+    pub const NL802154_SUPPORTED_BOOL_FALSE: Type = 0;
+    pub const NL802154_SUPPORTED_BOOL_TRUE: Type = 1;
+    pub const __NL802154_SUPPORTED_BOOL_INVALD: Type = 2;
+    pub const NL802154_SUPPORTED_BOOL_BOTH: Type = 3;
+    pub const __NL802154_SUPPORTED_BOOL_AFTER_LAST: Type = 4;
+    pub const NL802154_SUPPORTED_BOOL_MAX: Type = 3;
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct wpan_phy_supported {
+    pub channels: [u32_; 32usize],
+    pub cca_modes: u32_,
+    pub cca_opts: u32_,
+    pub iftypes: u32_,
+    pub lbt: nl802154_supported_bool_states::Type,
+    pub min_minbe: u8_,
+    pub max_minbe: u8_,
+    pub min_maxbe: u8_,
+    pub max_maxbe: u8_,
+    pub min_csma_backoffs: u8_,
+    pub max_csma_backoffs: u8_,
+    pub min_frame_retries: s8,
+    pub max_frame_retries: s8,
+    pub tx_powers_size: size_t,
+    pub cca_ed_levels_size: size_t,
+    pub tx_powers: *const s32,
+    pub cca_ed_levels: *const s32,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct wpan_phy_cca {
+    pub mode: nl802154_cca_modes::Type,
+    pub opt: nl802154_cca_opts::Type,
+}
+#[repr(C)]
+pub struct wpan_phy {
+    pub privid: *const ::aya_bpf::cty::c_void,
+    pub flags: u32_,
+    pub current_channel: u8_,
+    pub current_page: u8_,
+    pub supported: wpan_phy_supported,
+    pub transmit_power: s32,
+    pub cca: wpan_phy_cca,
+    pub perm_extended_addr: __le64,
+    pub cca_ed_level: s32,
+    pub symbol_duration: u8_,
+    pub lifs_period: u16_,
+    pub sifs_period: u16_,
+    pub dev: device,
+    pub _net: possible_net_t,
+    pub _bitfield_align_1: [u8; 0],
+    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 8usize]>,
+    pub priv_: __IncompleteArrayField<::aya_bpf::cty::c_char>,
+}
+impl wpan_phy {
+    #[inline]
+    pub fn new_bitfield_1() -> __BindgenBitfieldUnit<[u8; 8usize]> {
+        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 8usize]> = Default::default();
+        __bindgen_bitfield_unit
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct ieee802154_addr {
+    pub mode: u8_,
+    pub pan_id: __le16,
+    pub __bindgen_anon_1: ieee802154_addr__bindgen_ty_1,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub union ieee802154_addr__bindgen_ty_1 {
+    pub short_addr: __le16,
+    pub extended_addr: __le64,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct wpan_dev_header_ops {
+    pub create: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut sk_buff,
+            arg2: *mut net_device,
+            arg3: *const ieee802154_addr,
+            arg4: *const ieee802154_addr,
+            arg5: ::aya_bpf::cty::c_uint,
+        ) -> ::aya_bpf::cty::c_int,
     >,
 }
 #[repr(C)]
@@ -35973,18 +34745,18 @@ pub struct cpuidle_device_kobj {
     pub kobj: kobject,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct libipw_device {
     _unused: [u8; 0],
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct iw_public_data {
     pub spy_data: *mut iw_spy_data,
     pub libipw: *mut libipw_device,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct iw_param {
     pub value: __s32,
     pub fixed: __u8,
@@ -35992,14 +34764,14 @@ pub struct iw_param {
     pub flags: __u16,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct iw_point {
     pub pointer: *mut ::aya_bpf::cty::c_void,
     pub length: __u16,
     pub flags: __u16,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct iw_freq {
     pub m: __s32,
     pub e: __s16,
@@ -36007,7 +34779,7 @@ pub struct iw_freq {
     pub flags: __u8,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct iw_quality {
     pub qual: __u8,
     pub level: __u8,
@@ -36015,7 +34787,7 @@ pub struct iw_quality {
     pub updated: __u8,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct iw_discarded {
     pub nwid: __u32,
     pub code: __u32,
@@ -36024,12 +34796,12 @@ pub struct iw_discarded {
     pub misc: __u32,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct iw_missed {
     pub beacon: __u32,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct iw_statistics {
     pub status: __u16,
     pub qual: iw_quality,
@@ -36059,7 +34831,7 @@ pub union iwreq_data {
     pub data: iw_point,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct iw_priv_args {
     pub cmd: __u32,
     pub set_args: __u16,
@@ -36067,13 +34839,13 @@ pub struct iw_priv_args {
     pub name: [::aya_bpf::cty::c_char; 16usize],
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct iw_request_info {
     pub cmd: __u16,
     pub flags: __u16,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct iw_spy_data {
     pub spy_number: ::aya_bpf::cty::c_int,
     pub spy_address: [u_char; 48usize],
@@ -36083,12 +34855,12 @@ pub struct iw_spy_data {
     pub spy_thr_under: [u_char; 8usize],
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct nf_conntrack {
-    pub use_: refcount_t,
+#[derive(Copy, Clone)]
+pub struct prot_inuse {
+    pub val: [::aya_bpf::cty::c_int; 64usize],
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct qdisc_walker {
     pub stop: ::aya_bpf::cty::c_int,
     pub skip: ::aya_bpf::cty::c_int,
@@ -36101,15 +34873,27 @@ pub struct qdisc_walker {
         ) -> ::aya_bpf::cty::c_int,
     >,
 }
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct net_rate_estimator {
+    pub bstats: *mut gnet_stats_basic_packed,
+    pub stats_lock: *mut spinlock_t,
+    pub running: *mut seqcount_t,
+    pub cpu_bstats: *mut gnet_stats_basic_cpu,
+    pub ewma_log: u8_,
+    pub intvl_log: u8_,
+    pub seq: seqcount_t,
+    pub last_packets: u64_,
+    pub last_bytes: u64_,
+    pub avpps: u64_,
+    pub avbps: u64_,
+    pub next_jiffies: ::aya_bpf::cty::c_ulong,
+    pub timer: timer_list,
+    pub rcu: callback_head,
+}
 pub type u_int16_t = u16_;
 pub type u_int32_t = u32_;
 pub type u_int64_t = u64_;
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct flow_dissector {
-    pub used_keys: ::aya_bpf::cty::c_uint,
-    pub offset: [::aya_bpf::cty::c_ushort; 28usize],
-}
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub union nf_inet_addr {
@@ -36120,7 +34904,7 @@ pub union nf_inet_addr {
     pub in6: in6_addr,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct ip_ct_tcp_state {
     pub td_end: u_int32_t,
     pub td_maxend: u_int32_t,
@@ -36130,7 +34914,7 @@ pub struct ip_ct_tcp_state {
     pub flags: u_int8_t,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct ip_ct_tcp {
     pub seen: [ip_ct_tcp_state; 2usize],
     pub state: u_int8_t,
@@ -36156,37 +34940,37 @@ pub union nf_conntrack_man_proto {
     pub gre: nf_conntrack_man_proto__bindgen_ty_6,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct nf_conntrack_man_proto__bindgen_ty_1 {
     pub port: __be16,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct nf_conntrack_man_proto__bindgen_ty_2 {
     pub port: __be16,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct nf_conntrack_man_proto__bindgen_ty_3 {
     pub id: __be16,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct nf_conntrack_man_proto__bindgen_ty_4 {
     pub port: __be16,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct nf_conntrack_man_proto__bindgen_ty_5 {
     pub port: __be16,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct nf_conntrack_man_proto__bindgen_ty_6 {
     pub key: __be16,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct nf_ct_dccp {
     pub role: [u_int8_t; 2usize],
     pub state: u_int8_t,
@@ -36195,7 +34979,7 @@ pub struct nf_ct_dccp {
     pub handshake_seq: u_int64_t,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct ip_ct_sctp {
     pub state: sctp_conntrack::Type,
     pub vtag: [__be32; 2usize],
@@ -36203,18 +34987,22 @@ pub struct ip_ct_sctp {
     pub flags: u8_,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct nf_ct_event_notifier {
-    pub ct_event: ::core::option::Option<
+    pub fcn: ::core::option::Option<
         unsafe extern "C" fn(
             arg1: ::aya_bpf::cty::c_uint,
-            arg2: *const nf_ct_event,
+            arg2: *mut nf_ct_event,
         ) -> ::aya_bpf::cty::c_int,
     >,
-    pub exp_event: ::core::option::Option<
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct nf_exp_event_notifier {
+    pub fcn: ::core::option::Option<
         unsafe extern "C" fn(
             arg1: ::aya_bpf::cty::c_uint,
-            arg2: *const nf_exp_event,
+            arg2: *mut nf_exp_event,
         ) -> ::aya_bpf::cty::c_int,
     >,
 }
@@ -36237,13 +35025,13 @@ pub mod devlink_port_flavour {
     pub const DEVLINK_PORT_FLAVOUR_PCI_SF: Type = 7;
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct devlink_port_phys_attrs {
     pub port_number: u32_,
     pub split_subport_number: u32_,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct devlink_port_pci_pf_attrs {
     pub controller: u32_,
     pub pf: u16_,
@@ -36274,7 +35062,7 @@ impl devlink_port_pci_pf_attrs {
     }
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct devlink_port_pci_vf_attrs {
     pub controller: u32_,
     pub pf: u16_,
@@ -36306,7 +35094,7 @@ impl devlink_port_pci_vf_attrs {
     }
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct devlink_port_pci_sf_attrs {
     pub controller: u32_,
     pub sf: u32_,
@@ -36400,6 +35188,7 @@ pub struct devlink_port {
     pub region_list: list_head,
     pub devlink: *mut devlink,
     pub index: ::aya_bpf::cty::c_uint,
+    pub registered: bool_,
     pub type_lock: spinlock_t,
     pub type_: devlink_port_type::Type,
     pub desired_type: devlink_port_type::Type,
@@ -36410,7 +35199,6 @@ pub struct devlink_port {
     pub type_warn_dw: delayed_work,
     pub reporter_list: list_head,
     pub reporters_lock: mutex,
-    pub devlink_rate: *mut devlink_rate,
 }
 impl devlink_port {
     #[inline]
@@ -36449,36 +35237,22 @@ impl devlink_port {
         __bindgen_bitfield_unit
     }
 }
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct ip_tunnel_parm {
-    pub name: [::aya_bpf::cty::c_char; 16usize],
-    pub link: ::aya_bpf::cty::c_int,
-    pub i_flags: __be16,
-    pub o_flags: __be16,
-    pub i_key: __be32,
-    pub o_key: __be32,
-    pub iph: iphdr,
-}
 pub mod phylink_op_type {
     pub type Type = ::aya_bpf::cty::c_uint;
     pub const PHYLINK_NETDEV: Type = 0;
     pub const PHYLINK_DEV: Type = 1;
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct phylink_config {
     pub dev: *mut device,
     pub type_: phylink_op_type::Type,
-    pub legacy_pre_march2020: bool_,
     pub pcs_poll: bool_,
     pub poll_fixed_state: bool_,
     pub ovr_an_inband: bool_,
     pub get_fixed_state: ::core::option::Option<
         unsafe extern "C" fn(arg1: *mut phylink_config, arg2: *mut phylink_link_state),
     >,
-    pub supported_interfaces: [::aya_bpf::cty::c_ulong; 1usize],
-    pub mac_capabilities: ::aya_bpf::cty::c_ulong,
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
@@ -36487,31 +35261,38 @@ pub struct dsa_port {
     pub tag_ops: *const dsa_device_ops,
     pub dst: *mut dsa_switch_tree,
     pub rcv: ::core::option::Option<
-        unsafe extern "C" fn(arg1: *mut sk_buff, arg2: *mut net_device) -> *mut sk_buff,
+        unsafe extern "C" fn(
+            arg1: *mut sk_buff,
+            arg2: *mut net_device,
+            arg3: *mut packet_type,
+        ) -> *mut sk_buff,
     >,
+    pub filter: ::core::option::Option<
+        unsafe extern "C" fn(arg1: *const sk_buff, arg2: *mut net_device) -> bool_,
+    >,
+    pub type_: dsa_port__bindgen_ty_2::Type,
     pub ds: *mut dsa_switch,
     pub index: ::aya_bpf::cty::c_uint,
-    pub type_: dsa_port__bindgen_ty_2::Type,
     pub name: *const ::aya_bpf::cty::c_char,
     pub cpu_dp: *mut dsa_port,
     pub mac: [u8_; 6usize],
-    pub stp_state: u8_,
-    pub _bitfield_align_1: [u8; 0],
-    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 1usize]>,
     pub dn: *mut device_node,
     pub ageing_time: ::aya_bpf::cty::c_uint,
-    pub bridge: *mut dsa_bridge,
+    pub vlan_filtering: bool_,
+    pub stp_state: u8_,
+    pub bridge_dev: *mut net_device,
     pub devlink_port: devlink_port,
+    pub devlink_port_setup: bool_,
     pub pl: *mut phylink,
     pub pl_config: phylink_config,
     pub lag_dev: *mut net_device,
+    pub lag_tx_enabled: bool_,
     pub hsr_dev: *mut net_device,
     pub list: list_head,
+    pub priv_: *mut ::aya_bpf::cty::c_void,
     pub orig_ethtool_ops: *const ethtool_ops,
     pub netdev_ops: *const dsa_netdevice_ops,
-    pub addr_lists_lock: mutex,
-    pub fdbs: list_head,
-    pub mdbs: list_head,
+    pub setup: bool_,
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
@@ -36526,93 +35307,29 @@ pub mod dsa_port__bindgen_ty_2 {
     pub const DSA_PORT_TYPE_DSA: Type = 2;
     pub const DSA_PORT_TYPE_USER: Type = 3;
 }
-impl dsa_port {
-    #[inline]
-    pub fn vlan_filtering(&self) -> u8_ {
-        unsafe { ::core::mem::transmute(self._bitfield_1.get(0usize, 1u8) as u8) }
-    }
-    #[inline]
-    pub fn set_vlan_filtering(&mut self, val: u8_) {
-        unsafe {
-            let val: u8 = ::core::mem::transmute(val);
-            self._bitfield_1.set(0usize, 1u8, val as u64)
-        }
-    }
-    #[inline]
-    pub fn learning(&self) -> u8_ {
-        unsafe { ::core::mem::transmute(self._bitfield_1.get(1usize, 1u8) as u8) }
-    }
-    #[inline]
-    pub fn set_learning(&mut self, val: u8_) {
-        unsafe {
-            let val: u8 = ::core::mem::transmute(val);
-            self._bitfield_1.set(1usize, 1u8, val as u64)
-        }
-    }
-    #[inline]
-    pub fn lag_tx_enabled(&self) -> u8_ {
-        unsafe { ::core::mem::transmute(self._bitfield_1.get(2usize, 1u8) as u8) }
-    }
-    #[inline]
-    pub fn set_lag_tx_enabled(&mut self, val: u8_) {
-        unsafe {
-            let val: u8 = ::core::mem::transmute(val);
-            self._bitfield_1.set(2usize, 1u8, val as u64)
-        }
-    }
-    #[inline]
-    pub fn devlink_port_setup(&self) -> u8_ {
-        unsafe { ::core::mem::transmute(self._bitfield_1.get(3usize, 1u8) as u8) }
-    }
-    #[inline]
-    pub fn set_devlink_port_setup(&mut self, val: u8_) {
-        unsafe {
-            let val: u8 = ::core::mem::transmute(val);
-            self._bitfield_1.set(3usize, 1u8, val as u64)
-        }
-    }
-    #[inline]
-    pub fn setup(&self) -> u8_ {
-        unsafe { ::core::mem::transmute(self._bitfield_1.get(4usize, 1u8) as u8) }
-    }
-    #[inline]
-    pub fn set_setup(&mut self, val: u8_) {
-        unsafe {
-            let val: u8 = ::core::mem::transmute(val);
-            self._bitfield_1.set(4usize, 1u8, val as u64)
-        }
-    }
-    #[inline]
-    pub fn new_bitfield_1(
-        vlan_filtering: u8_,
-        learning: u8_,
-        lag_tx_enabled: u8_,
-        devlink_port_setup: u8_,
-        setup: u8_,
-    ) -> __BindgenBitfieldUnit<[u8; 1usize]> {
-        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 1usize]> = Default::default();
-        __bindgen_bitfield_unit.set(0usize, 1u8, {
-            let vlan_filtering: u8 = unsafe { ::core::mem::transmute(vlan_filtering) };
-            vlan_filtering as u64
-        });
-        __bindgen_bitfield_unit.set(1usize, 1u8, {
-            let learning: u8 = unsafe { ::core::mem::transmute(learning) };
-            learning as u64
-        });
-        __bindgen_bitfield_unit.set(2usize, 1u8, {
-            let lag_tx_enabled: u8 = unsafe { ::core::mem::transmute(lag_tx_enabled) };
-            lag_tx_enabled as u64
-        });
-        __bindgen_bitfield_unit.set(3usize, 1u8, {
-            let devlink_port_setup: u8 = unsafe { ::core::mem::transmute(devlink_port_setup) };
-            devlink_port_setup as u64
-        });
-        __bindgen_bitfield_unit.set(4usize, 1u8, {
-            let setup: u8 = unsafe { ::core::mem::transmute(setup) };
-            setup as u64
-        });
-        __bindgen_bitfield_unit
-    }
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct packet_type {
+    pub type_: __be16,
+    pub ignore_outgoing: bool_,
+    pub dev: *mut net_device,
+    pub func: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut sk_buff,
+            arg2: *mut net_device,
+            arg3: *mut packet_type,
+            arg4: *mut net_device,
+        ) -> ::aya_bpf::cty::c_int,
+    >,
+    pub list_func: ::core::option::Option<
+        unsafe extern "C" fn(arg1: *mut list_head, arg2: *mut packet_type, arg3: *mut net_device),
+    >,
+    pub id_match: ::core::option::Option<
+        unsafe extern "C" fn(arg1: *mut packet_type, arg2: *mut sock) -> bool_,
+    >,
+    pub af_packet_net: *mut net,
+    pub af_packet_priv: *mut ::aya_bpf::cty::c_void,
+    pub list: list_head,
 }
 pub mod netdev_lag_tx_type {
     pub type Type = ::aya_bpf::cty::c_uint;
@@ -36635,13 +35352,13 @@ pub mod netdev_lag_hash {
     pub const NETDEV_LAG_HASH_UNKNOWN: Type = 7;
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct netdev_lag_upper_info {
     pub tx_type: netdev_lag_tx_type::Type,
     pub hash_type: netdev_lag_hash::Type,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct netdev_notifier_changeupper_info {
     pub info: netdev_notifier_info,
     pub upper_dev: *mut net_device,
@@ -36650,7 +35367,7 @@ pub struct netdev_notifier_changeupper_info {
     pub upper_info: *mut ::aya_bpf::cty::c_void,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct flow_match {
     pub dissector: *mut flow_dissector,
     pub mask: *mut ::aya_bpf::cty::c_void,
@@ -36710,13 +35427,12 @@ pub mod flow_action_hw_stats {
 pub type action_destr =
     ::core::option::Option<unsafe extern "C" fn(arg1: *mut ::aya_bpf::cty::c_void)>;
 #[repr(C)]
-#[derive(Debug)]
 pub struct flow_action_cookie {
     pub cookie_len: u32_,
     pub cookie: __IncompleteArrayField<u8_>,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct nf_flowtable {
     _unused: [u8; 0],
 }
@@ -36739,7 +35455,7 @@ pub union ip_tunnel_key__bindgen_ty_1 {
     pub ipv6: ip_tunnel_key__bindgen_ty_1__bindgen_ty_2,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct ip_tunnel_key__bindgen_ty_1__bindgen_ty_1 {
     pub src: __be32,
     pub dst: __be32,
@@ -36751,7 +35467,7 @@ pub struct ip_tunnel_key__bindgen_ty_1__bindgen_ty_2 {
     pub dst: in6_addr,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct dst_cache {
     pub cache: *mut dst_cache_pcpu,
     pub reset_ts: ::aya_bpf::cty::c_ulong,
@@ -36768,7 +35484,6 @@ pub struct ip_tunnel_info {
 #[derive(Copy, Clone)]
 pub struct flow_action_entry {
     pub id: flow_action_id::Type,
-    pub hw_index: u32_,
     pub hw_stats: flow_action_hw_stats::Type,
     pub destructor: action_destr,
     pub destructor_priv: *mut ::aya_bpf::cty::c_void,
@@ -36799,14 +35514,14 @@ pub union flow_action_entry__bindgen_ty_1 {
     pub pppoe: flow_action_entry__bindgen_ty_1__bindgen_ty_12,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct flow_action_entry__bindgen_ty_1__bindgen_ty_1 {
     pub vid: u16_,
     pub proto: __be16,
     pub prio: u8_,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct flow_action_entry__bindgen_ty_1__bindgen_ty_2 {
     pub htype: flow_action_mangle_base::Type,
     pub offset: u32_,
@@ -36814,14 +35529,14 @@ pub struct flow_action_entry__bindgen_ty_1__bindgen_ty_2 {
     pub val: u32_,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct flow_action_entry__bindgen_ty_1__bindgen_ty_3 {
     pub ctx: u32_,
     pub index: u32_,
     pub vf: u8_,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct flow_action_entry__bindgen_ty_1__bindgen_ty_4 {
     pub psample_group: *mut psample_group,
     pub rate: u32_,
@@ -36829,8 +35544,9 @@ pub struct flow_action_entry__bindgen_ty_1__bindgen_ty_4 {
     pub truncate: bool_,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct flow_action_entry__bindgen_ty_1__bindgen_ty_5 {
+    pub index: u32_,
     pub burst: u32_,
     pub rate_bytes_ps: u64_,
     pub burst_pkt: u64_,
@@ -36838,14 +35554,14 @@ pub struct flow_action_entry__bindgen_ty_1__bindgen_ty_5 {
     pub mtu: u32_,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct flow_action_entry__bindgen_ty_1__bindgen_ty_6 {
     pub action: ::aya_bpf::cty::c_int,
     pub zone: u16_,
     pub flow_table: *mut nf_flowtable,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct flow_action_entry__bindgen_ty_1__bindgen_ty_7 {
     pub cookie: ::aya_bpf::cty::c_ulong,
     pub mark: u32_,
@@ -36853,7 +35569,7 @@ pub struct flow_action_entry__bindgen_ty_1__bindgen_ty_7 {
     pub orig_dir: bool_,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct flow_action_entry__bindgen_ty_1__bindgen_ty_8 {
     pub label: u32_,
     pub proto: __be16,
@@ -36862,12 +35578,12 @@ pub struct flow_action_entry__bindgen_ty_1__bindgen_ty_8 {
     pub ttl: u8_,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct flow_action_entry__bindgen_ty_1__bindgen_ty_9 {
     pub proto: __be16,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct flow_action_entry__bindgen_ty_1__bindgen_ty_10 {
     pub label: u32_,
     pub tc: u8_,
@@ -36875,8 +35591,9 @@ pub struct flow_action_entry__bindgen_ty_1__bindgen_ty_10 {
     pub ttl: u8_,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct flow_action_entry__bindgen_ty_1__bindgen_ty_11 {
+    pub index: u32_,
     pub prio: s32,
     pub basetime: u64_,
     pub cycletime: u64_,
@@ -36885,7 +35602,7 @@ pub struct flow_action_entry__bindgen_ty_1__bindgen_ty_11 {
     pub entries: *mut action_gate_entry,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct flow_action_entry__bindgen_ty_1__bindgen_ty_12 {
     pub sid: u16_,
 }
@@ -36900,7 +35617,7 @@ pub struct flow_rule {
     pub action: flow_action,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct flow_stats {
     pub pkts: u64_,
     pub bytes: u64_,
@@ -36918,7 +35635,7 @@ pub mod flow_cls_command {
     pub const FLOW_CLS_TMPLT_DESTROY: Type = 4;
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct flow_cls_common_offload {
     pub chain_index: u32_,
     pub protocol: __be16,
@@ -36926,7 +35643,7 @@ pub struct flow_cls_common_offload {
     pub extack: *mut netlink_ext_ack,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct flow_cls_offload {
     pub common: flow_cls_common_offload,
     pub command: flow_cls_command::Type,
@@ -36936,7 +35653,7 @@ pub struct flow_cls_offload {
     pub classid: u32_,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct dsa_chip_data {
     pub host_dev: *mut device,
     pub sw_addr: ::aya_bpf::cty::c_int,
@@ -36948,7 +35665,7 @@ pub struct dsa_chip_data {
     pub rtable: [s8; 4usize],
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct dsa_platform_data {
     pub netdev: *mut device,
     pub of_netdev: *mut net_device,
@@ -36956,7 +35673,7 @@ pub struct dsa_platform_data {
     pub chip: *mut dsa_chip_data,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct phylink_link_state {
     pub advertising: [::aya_bpf::cty::c_ulong; 2usize],
     pub lp_advertising: [::aya_bpf::cty::c_ulong; 2usize],
@@ -37034,10 +35751,10 @@ pub mod devlink_sb_threshold_type {
     pub const DEVLINK_SB_THRESHOLD_TYPE_STATIC: Type = 0;
     pub const DEVLINK_SB_THRESHOLD_TYPE_DYNAMIC: Type = 1;
 }
-pub mod devlink_rate_type {
+pub mod devlink_eswitch_encap_mode {
     pub type Type = ::aya_bpf::cty::c_uint;
-    pub const DEVLINK_RATE_TYPE_LEAF: Type = 0;
-    pub const DEVLINK_RATE_TYPE_NODE: Type = 1;
+    pub const DEVLINK_ESWITCH_ENCAP_MODE_NONE: Type = 0;
+    pub const DEVLINK_ESWITCH_ENCAP_MODE_BASIC: Type = 1;
 }
 pub mod devlink_param_cmode {
     pub type Type = ::aya_bpf::cty::c_uint;
@@ -37047,37 +35764,532 @@ pub mod devlink_param_cmode {
     pub const __DEVLINK_PARAM_CMODE_MAX: Type = 3;
     pub const DEVLINK_PARAM_CMODE_MAX: Type = 2;
 }
+pub mod devlink_trap_action {
+    pub type Type = ::aya_bpf::cty::c_uint;
+    pub const DEVLINK_TRAP_ACTION_DROP: Type = 0;
+    pub const DEVLINK_TRAP_ACTION_TRAP: Type = 1;
+    pub const DEVLINK_TRAP_ACTION_MIRROR: Type = 2;
+}
+pub mod devlink_trap_type {
+    pub type Type = ::aya_bpf::cty::c_uint;
+    pub const DEVLINK_TRAP_TYPE_DROP: Type = 0;
+    pub const DEVLINK_TRAP_TYPE_EXCEPTION: Type = 1;
+    pub const DEVLINK_TRAP_TYPE_CONTROL: Type = 2;
+}
+pub mod devlink_reload_action {
+    pub type Type = ::aya_bpf::cty::c_uint;
+    pub const DEVLINK_RELOAD_ACTION_UNSPEC: Type = 0;
+    pub const DEVLINK_RELOAD_ACTION_DRIVER_REINIT: Type = 1;
+    pub const DEVLINK_RELOAD_ACTION_FW_ACTIVATE: Type = 2;
+    pub const __DEVLINK_RELOAD_ACTION_MAX: Type = 3;
+    pub const DEVLINK_RELOAD_ACTION_MAX: Type = 2;
+}
+pub mod devlink_reload_limit {
+    pub type Type = ::aya_bpf::cty::c_uint;
+    pub const DEVLINK_RELOAD_LIMIT_UNSPEC: Type = 0;
+    pub const DEVLINK_RELOAD_LIMIT_NO_RESET: Type = 1;
+    pub const __DEVLINK_RELOAD_LIMIT_MAX: Type = 2;
+    pub const DEVLINK_RELOAD_LIMIT_MAX: Type = 1;
+}
+pub mod devlink_dpipe_field_mapping_type {
+    pub type Type = ::aya_bpf::cty::c_uint;
+    pub const DEVLINK_DPIPE_FIELD_MAPPING_TYPE_NONE: Type = 0;
+    pub const DEVLINK_DPIPE_FIELD_MAPPING_TYPE_IFINDEX: Type = 1;
+}
+pub mod devlink_port_fn_state {
+    pub type Type = ::aya_bpf::cty::c_uint;
+    pub const DEVLINK_PORT_FN_STATE_INACTIVE: Type = 0;
+    pub const DEVLINK_PORT_FN_STATE_ACTIVE: Type = 1;
+}
+pub mod devlink_port_fn_opstate {
+    pub type Type = ::aya_bpf::cty::c_uint;
+    pub const DEVLINK_PORT_FN_OPSTATE_DETACHED: Type = 0;
+    pub const DEVLINK_PORT_FN_OPSTATE_ATTACHED: Type = 1;
+}
 #[repr(C)]
 #[derive(Copy, Clone)]
-pub struct devlink_rate {
+pub struct devlink_dev_stats {
+    pub reload_stats: [u32_; 6usize],
+    pub remote_reload_stats: [u32_; 6usize],
+}
+#[repr(C)]
+pub struct devlink {
     pub list: list_head,
-    pub type_: devlink_rate_type::Type,
-    pub devlink: *mut devlink,
-    pub priv_: *mut ::aya_bpf::cty::c_void,
-    pub tx_share: u64_,
-    pub tx_max: u64_,
-    pub parent: *mut devlink_rate,
-    pub __bindgen_anon_1: devlink_rate__bindgen_ty_1,
+    pub port_list: list_head,
+    pub sb_list: list_head,
+    pub dpipe_table_list: list_head,
+    pub resource_list: list_head,
+    pub param_list: list_head,
+    pub region_list: list_head,
+    pub reporter_list: list_head,
+    pub reporters_lock: mutex,
+    pub dpipe_headers: *mut devlink_dpipe_headers,
+    pub trap_list: list_head,
+    pub trap_group_list: list_head,
+    pub trap_policer_list: list_head,
+    pub ops: *const devlink_ops,
+    pub snapshot_ids: xarray,
+    pub stats: devlink_dev_stats,
+    pub dev: *mut device,
+    pub _net: possible_net_t,
+    pub lock: mutex,
+    pub _bitfield_align_1: [u8; 0],
+    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 16usize]>,
+    pub priv_: __IncompleteArrayField<::aya_bpf::cty::c_char>,
+}
+impl devlink {
+    #[inline]
+    pub fn reload_failed(&self) -> u8_ {
+        unsafe { ::core::mem::transmute(self._bitfield_1.get(0usize, 1u8) as u8) }
+    }
+    #[inline]
+    pub fn set_reload_failed(&mut self, val: u8_) {
+        unsafe {
+            let val: u8 = ::core::mem::transmute(val);
+            self._bitfield_1.set(0usize, 1u8, val as u64)
+        }
+    }
+    #[inline]
+    pub fn reload_enabled(&self) -> u8_ {
+        unsafe { ::core::mem::transmute(self._bitfield_1.get(1usize, 1u8) as u8) }
+    }
+    #[inline]
+    pub fn set_reload_enabled(&mut self, val: u8_) {
+        unsafe {
+            let val: u8 = ::core::mem::transmute(val);
+            self._bitfield_1.set(1usize, 1u8, val as u64)
+        }
+    }
+    #[inline]
+    pub fn registered(&self) -> u8_ {
+        unsafe { ::core::mem::transmute(self._bitfield_1.get(2usize, 1u8) as u8) }
+    }
+    #[inline]
+    pub fn set_registered(&mut self, val: u8_) {
+        unsafe {
+            let val: u8 = ::core::mem::transmute(val);
+            self._bitfield_1.set(2usize, 1u8, val as u64)
+        }
+    }
+    #[inline]
+    pub fn new_bitfield_1(
+        reload_failed: u8_,
+        reload_enabled: u8_,
+        registered: u8_,
+    ) -> __BindgenBitfieldUnit<[u8; 16usize]> {
+        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 16usize]> = Default::default();
+        __bindgen_bitfield_unit.set(0usize, 1u8, {
+            let reload_failed: u8 = unsafe { ::core::mem::transmute(reload_failed) };
+            reload_failed as u64
+        });
+        __bindgen_bitfield_unit.set(1usize, 1u8, {
+            let reload_enabled: u8 = unsafe { ::core::mem::transmute(reload_enabled) };
+            reload_enabled as u64
+        });
+        __bindgen_bitfield_unit.set(2usize, 1u8, {
+            let registered: u8 = unsafe { ::core::mem::transmute(registered) };
+            registered as u64
+        });
+        __bindgen_bitfield_unit
+    }
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
-pub union devlink_rate__bindgen_ty_1 {
-    pub devlink_port: *mut devlink_port,
-    pub __bindgen_anon_1: devlink_rate__bindgen_ty_1__bindgen_ty_1,
+pub struct devlink_dpipe_headers {
+    pub headers: *mut *mut devlink_dpipe_header,
+    pub headers_count: ::aya_bpf::cty::c_uint,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct devlink_rate__bindgen_ty_1__bindgen_ty_1 {
-    pub name: *mut ::aya_bpf::cty::c_char,
-    pub refcnt: refcount_t,
+#[derive(Copy, Clone)]
+pub struct devlink_ops {
+    pub supported_flash_update_params: u32_,
+    pub reload_actions: ::aya_bpf::cty::c_ulong,
+    pub reload_limits: ::aya_bpf::cty::c_ulong,
+    pub reload_down: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut devlink,
+            arg2: bool_,
+            arg3: devlink_reload_action::Type,
+            arg4: devlink_reload_limit::Type,
+            arg5: *mut netlink_ext_ack,
+        ) -> ::aya_bpf::cty::c_int,
+    >,
+    pub reload_up: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut devlink,
+            arg2: devlink_reload_action::Type,
+            arg3: devlink_reload_limit::Type,
+            arg4: *mut u32_,
+            arg5: *mut netlink_ext_ack,
+        ) -> ::aya_bpf::cty::c_int,
+    >,
+    pub port_type_set: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut devlink_port,
+            arg2: devlink_port_type::Type,
+        ) -> ::aya_bpf::cty::c_int,
+    >,
+    pub port_split: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut devlink,
+            arg2: ::aya_bpf::cty::c_uint,
+            arg3: ::aya_bpf::cty::c_uint,
+            arg4: *mut netlink_ext_ack,
+        ) -> ::aya_bpf::cty::c_int,
+    >,
+    pub port_unsplit: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut devlink,
+            arg2: ::aya_bpf::cty::c_uint,
+            arg3: *mut netlink_ext_ack,
+        ) -> ::aya_bpf::cty::c_int,
+    >,
+    pub sb_pool_get: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut devlink,
+            arg2: ::aya_bpf::cty::c_uint,
+            arg3: u16_,
+            arg4: *mut devlink_sb_pool_info,
+        ) -> ::aya_bpf::cty::c_int,
+    >,
+    pub sb_pool_set: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut devlink,
+            arg2: ::aya_bpf::cty::c_uint,
+            arg3: u16_,
+            arg4: u32_,
+            arg5: devlink_sb_threshold_type::Type,
+            arg6: *mut netlink_ext_ack,
+        ) -> ::aya_bpf::cty::c_int,
+    >,
+    pub sb_port_pool_get: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut devlink_port,
+            arg2: ::aya_bpf::cty::c_uint,
+            arg3: u16_,
+            arg4: *mut u32_,
+        ) -> ::aya_bpf::cty::c_int,
+    >,
+    pub sb_port_pool_set: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut devlink_port,
+            arg2: ::aya_bpf::cty::c_uint,
+            arg3: u16_,
+            arg4: u32_,
+            arg5: *mut netlink_ext_ack,
+        ) -> ::aya_bpf::cty::c_int,
+    >,
+    pub sb_tc_pool_bind_get: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut devlink_port,
+            arg2: ::aya_bpf::cty::c_uint,
+            arg3: u16_,
+            arg4: devlink_sb_pool_type::Type,
+            arg5: *mut u16_,
+            arg6: *mut u32_,
+        ) -> ::aya_bpf::cty::c_int,
+    >,
+    pub sb_tc_pool_bind_set: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut devlink_port,
+            arg2: ::aya_bpf::cty::c_uint,
+            arg3: u16_,
+            arg4: devlink_sb_pool_type::Type,
+            arg5: u16_,
+            arg6: u32_,
+            arg7: *mut netlink_ext_ack,
+        ) -> ::aya_bpf::cty::c_int,
+    >,
+    pub sb_occ_snapshot: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut devlink,
+            arg2: ::aya_bpf::cty::c_uint,
+        ) -> ::aya_bpf::cty::c_int,
+    >,
+    pub sb_occ_max_clear: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut devlink,
+            arg2: ::aya_bpf::cty::c_uint,
+        ) -> ::aya_bpf::cty::c_int,
+    >,
+    pub sb_occ_port_pool_get: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut devlink_port,
+            arg2: ::aya_bpf::cty::c_uint,
+            arg3: u16_,
+            arg4: *mut u32_,
+            arg5: *mut u32_,
+        ) -> ::aya_bpf::cty::c_int,
+    >,
+    pub sb_occ_tc_port_bind_get: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut devlink_port,
+            arg2: ::aya_bpf::cty::c_uint,
+            arg3: u16_,
+            arg4: devlink_sb_pool_type::Type,
+            arg5: *mut u32_,
+            arg6: *mut u32_,
+        ) -> ::aya_bpf::cty::c_int,
+    >,
+    pub eswitch_mode_get: ::core::option::Option<
+        unsafe extern "C" fn(arg1: *mut devlink, arg2: *mut u16_) -> ::aya_bpf::cty::c_int,
+    >,
+    pub eswitch_mode_set: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut devlink,
+            arg2: u16_,
+            arg3: *mut netlink_ext_ack,
+        ) -> ::aya_bpf::cty::c_int,
+    >,
+    pub eswitch_inline_mode_get: ::core::option::Option<
+        unsafe extern "C" fn(arg1: *mut devlink, arg2: *mut u8_) -> ::aya_bpf::cty::c_int,
+    >,
+    pub eswitch_inline_mode_set: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut devlink,
+            arg2: u8_,
+            arg3: *mut netlink_ext_ack,
+        ) -> ::aya_bpf::cty::c_int,
+    >,
+    pub eswitch_encap_mode_get: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut devlink,
+            arg2: *mut devlink_eswitch_encap_mode::Type,
+        ) -> ::aya_bpf::cty::c_int,
+    >,
+    pub eswitch_encap_mode_set: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut devlink,
+            arg2: devlink_eswitch_encap_mode::Type,
+            arg3: *mut netlink_ext_ack,
+        ) -> ::aya_bpf::cty::c_int,
+    >,
+    pub info_get: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut devlink,
+            arg2: *mut devlink_info_req,
+            arg3: *mut netlink_ext_ack,
+        ) -> ::aya_bpf::cty::c_int,
+    >,
+    pub flash_update: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut devlink,
+            arg2: *mut devlink_flash_update_params,
+            arg3: *mut netlink_ext_ack,
+        ) -> ::aya_bpf::cty::c_int,
+    >,
+    pub trap_init: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut devlink,
+            arg2: *const devlink_trap,
+            arg3: *mut ::aya_bpf::cty::c_void,
+        ) -> ::aya_bpf::cty::c_int,
+    >,
+    pub trap_fini: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut devlink,
+            arg2: *const devlink_trap,
+            arg3: *mut ::aya_bpf::cty::c_void,
+        ),
+    >,
+    pub trap_action_set: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut devlink,
+            arg2: *const devlink_trap,
+            arg3: devlink_trap_action::Type,
+            arg4: *mut netlink_ext_ack,
+        ) -> ::aya_bpf::cty::c_int,
+    >,
+    pub trap_group_init: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut devlink,
+            arg2: *const devlink_trap_group,
+        ) -> ::aya_bpf::cty::c_int,
+    >,
+    pub trap_group_set: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut devlink,
+            arg2: *const devlink_trap_group,
+            arg3: *const devlink_trap_policer,
+            arg4: *mut netlink_ext_ack,
+        ) -> ::aya_bpf::cty::c_int,
+    >,
+    pub trap_group_action_set: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut devlink,
+            arg2: *const devlink_trap_group,
+            arg3: devlink_trap_action::Type,
+            arg4: *mut netlink_ext_ack,
+        ) -> ::aya_bpf::cty::c_int,
+    >,
+    pub trap_policer_init: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut devlink,
+            arg2: *const devlink_trap_policer,
+        ) -> ::aya_bpf::cty::c_int,
+    >,
+    pub trap_policer_fini: ::core::option::Option<
+        unsafe extern "C" fn(arg1: *mut devlink, arg2: *const devlink_trap_policer),
+    >,
+    pub trap_policer_set: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut devlink,
+            arg2: *const devlink_trap_policer,
+            arg3: u64_,
+            arg4: u64_,
+            arg5: *mut netlink_ext_ack,
+        ) -> ::aya_bpf::cty::c_int,
+    >,
+    pub trap_policer_counter_get: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut devlink,
+            arg2: *const devlink_trap_policer,
+            arg3: *mut u64_,
+        ) -> ::aya_bpf::cty::c_int,
+    >,
+    pub port_function_hw_addr_get: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut devlink,
+            arg2: *mut devlink_port,
+            arg3: *mut u8_,
+            arg4: *mut ::aya_bpf::cty::c_int,
+            arg5: *mut netlink_ext_ack,
+        ) -> ::aya_bpf::cty::c_int,
+    >,
+    pub port_function_hw_addr_set: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut devlink,
+            arg2: *mut devlink_port,
+            arg3: *const u8_,
+            arg4: ::aya_bpf::cty::c_int,
+            arg5: *mut netlink_ext_ack,
+        ) -> ::aya_bpf::cty::c_int,
+    >,
+    pub port_new: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut devlink,
+            arg2: *const devlink_port_new_attrs,
+            arg3: *mut netlink_ext_ack,
+            arg4: *mut ::aya_bpf::cty::c_uint,
+        ) -> ::aya_bpf::cty::c_int,
+    >,
+    pub port_del: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut devlink,
+            arg2: ::aya_bpf::cty::c_uint,
+            arg3: *mut netlink_ext_ack,
+        ) -> ::aya_bpf::cty::c_int,
+    >,
+    pub port_fn_state_get: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut devlink,
+            arg2: *mut devlink_port,
+            arg3: *mut devlink_port_fn_state::Type,
+            arg4: *mut devlink_port_fn_opstate::Type,
+            arg5: *mut netlink_ext_ack,
+        ) -> ::aya_bpf::cty::c_int,
+    >,
+    pub port_fn_state_set: ::core::option::Option<
+        unsafe extern "C" fn(
+            arg1: *mut devlink,
+            arg2: *mut devlink_port,
+            arg3: devlink_port_fn_state::Type,
+            arg4: *mut netlink_ext_ack,
+        ) -> ::aya_bpf::cty::c_int,
+    >,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
+pub struct devlink_port_new_attrs {
+    pub flavour: devlink_port_flavour::Type,
+    pub port_index: ::aya_bpf::cty::c_uint,
+    pub controller: u32_,
+    pub sfnum: u32_,
+    pub pfnum: u16_,
+    pub _bitfield_align_1: [u8; 0],
+    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 1usize]>,
+    pub __bindgen_padding_0: u8,
+}
+impl devlink_port_new_attrs {
+    #[inline]
+    pub fn port_index_valid(&self) -> u8_ {
+        unsafe { ::core::mem::transmute(self._bitfield_1.get(0usize, 1u8) as u8) }
+    }
+    #[inline]
+    pub fn set_port_index_valid(&mut self, val: u8_) {
+        unsafe {
+            let val: u8 = ::core::mem::transmute(val);
+            self._bitfield_1.set(0usize, 1u8, val as u64)
+        }
+    }
+    #[inline]
+    pub fn controller_valid(&self) -> u8_ {
+        unsafe { ::core::mem::transmute(self._bitfield_1.get(1usize, 1u8) as u8) }
+    }
+    #[inline]
+    pub fn set_controller_valid(&mut self, val: u8_) {
+        unsafe {
+            let val: u8 = ::core::mem::transmute(val);
+            self._bitfield_1.set(1usize, 1u8, val as u64)
+        }
+    }
+    #[inline]
+    pub fn sfnum_valid(&self) -> u8_ {
+        unsafe { ::core::mem::transmute(self._bitfield_1.get(2usize, 1u8) as u8) }
+    }
+    #[inline]
+    pub fn set_sfnum_valid(&mut self, val: u8_) {
+        unsafe {
+            let val: u8 = ::core::mem::transmute(val);
+            self._bitfield_1.set(2usize, 1u8, val as u64)
+        }
+    }
+    #[inline]
+    pub fn new_bitfield_1(
+        port_index_valid: u8_,
+        controller_valid: u8_,
+        sfnum_valid: u8_,
+    ) -> __BindgenBitfieldUnit<[u8; 1usize]> {
+        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 1usize]> = Default::default();
+        __bindgen_bitfield_unit.set(0usize, 1u8, {
+            let port_index_valid: u8 = unsafe { ::core::mem::transmute(port_index_valid) };
+            port_index_valid as u64
+        });
+        __bindgen_bitfield_unit.set(1usize, 1u8, {
+            let controller_valid: u8 = unsafe { ::core::mem::transmute(controller_valid) };
+            controller_valid as u64
+        });
+        __bindgen_bitfield_unit.set(2usize, 1u8, {
+            let sfnum_valid: u8 = unsafe { ::core::mem::transmute(sfnum_valid) };
+            sfnum_valid as u64
+        });
+        __bindgen_bitfield_unit
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
 pub struct devlink_sb_pool_info {
     pub pool_type: devlink_sb_pool_type::Type,
     pub size: u32_,
     pub threshold_type: devlink_sb_threshold_type::Type,
     pub cell_size: u32_,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct devlink_dpipe_field {
+    pub name: *const ::aya_bpf::cty::c_char,
+    pub id: ::aya_bpf::cty::c_uint,
+    pub bitwidth: ::aya_bpf::cty::c_uint,
+    pub mapping_type: devlink_dpipe_field_mapping_type::Type,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct devlink_dpipe_header {
+    pub name: *const ::aya_bpf::cty::c_char,
+    pub id: ::aya_bpf::cty::c_uint,
+    pub fields: *mut devlink_dpipe_field,
+    pub fields_count: ::aya_bpf::cty::c_uint,
+    pub global: bool_,
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
@@ -37095,69 +36307,44 @@ pub struct devlink_param_gset_ctx {
     pub cmode: devlink_param_cmode::Type,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct devlink_info_req {
-    _unused: [u8; 0],
+#[derive(Copy, Clone)]
+pub struct devlink_flash_update_params {
+    pub fw: *const firmware,
+    pub component: *const ::aya_bpf::cty::c_char,
+    pub overwrite_mask: u32_,
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
-pub struct fib_nh {
-    pub nh_common: fib_nh_common,
-    pub nh_hash: hlist_node,
-    pub nh_parent: *mut fib_info,
-    pub nh_tclassid: __u32,
-    pub nh_saddr: __be32,
-    pub nh_saddr_genid: ::aya_bpf::cty::c_int,
-}
-#[repr(C)]
-pub struct fib_info {
-    pub fib_hash: hlist_node,
-    pub fib_lhash: hlist_node,
-    pub nh_list: list_head,
-    pub fib_net: *mut net,
-    pub fib_treeref: refcount_t,
-    pub fib_clntref: refcount_t,
-    pub fib_flags: ::aya_bpf::cty::c_uint,
-    pub fib_dead: ::aya_bpf::cty::c_uchar,
-    pub fib_protocol: ::aya_bpf::cty::c_uchar,
-    pub fib_scope: ::aya_bpf::cty::c_uchar,
-    pub fib_type: ::aya_bpf::cty::c_uchar,
-    pub fib_prefsrc: __be32,
-    pub fib_tb_id: u32_,
-    pub fib_priority: u32_,
-    pub fib_metrics: *mut dst_metrics,
-    pub fib_nhs: ::aya_bpf::cty::c_int,
-    pub fib_nh_is_v6: bool_,
-    pub nh_updated: bool_,
-    pub nh: *mut nexthop,
-    pub rcu: callback_head,
-    pub fib_nh: __IncompleteArrayField<fib_nh>,
-}
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct nexthop {
-    pub rb_node: rb_node,
-    pub fi_list: list_head,
-    pub f6i_list: list_head,
-    pub fdb_list: list_head,
-    pub grp_list: list_head,
-    pub net: *mut net,
+pub struct devlink_trap_policer {
     pub id: u32_,
-    pub protocol: u8_,
-    pub nh_flags: u8_,
-    pub is_group: bool_,
-    pub refcnt: refcount_t,
-    pub rcu: callback_head,
-    pub __bindgen_anon_1: nexthop__bindgen_ty_1,
+    pub init_rate: u64_,
+    pub init_burst: u64_,
+    pub max_rate: u64_,
+    pub min_rate: u64_,
+    pub max_burst: u64_,
+    pub min_burst: u64_,
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
-pub union nexthop__bindgen_ty_1 {
-    pub nh_info: *mut nh_info,
-    pub nh_grp: *mut nh_group,
+pub struct devlink_trap_group {
+    pub name: *const ::aya_bpf::cty::c_char,
+    pub id: u16_,
+    pub generic: bool_,
+    pub init_policer_id: u32_,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
+pub struct devlink_trap {
+    pub type_: devlink_trap_type::Type,
+    pub init_action: devlink_trap_action::Type,
+    pub generic: bool_,
+    pub id: u16_,
+    pub name: *const ::aya_bpf::cty::c_char,
+    pub init_group_id: u16_,
+    pub metadata_cap: u32_,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
 pub struct switchdev_brport_flags {
     pub val: ::aya_bpf::cty::c_ulong,
     pub mask: ::aya_bpf::cty::c_ulong,
@@ -37177,7 +36364,7 @@ pub mod switchdev_obj_id {
     pub const SWITCHDEV_OBJ_ID_IN_STATE_MRP: Type = 10;
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct switchdev_obj {
     pub list: list_head,
     pub orig_dev: *mut net_device,
@@ -37193,21 +36380,21 @@ pub struct switchdev_obj {
     >,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct switchdev_obj_port_vlan {
     pub obj: switchdev_obj,
     pub flags: u16_,
     pub vid: u16_,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct switchdev_obj_port_mdb {
     pub obj: switchdev_obj,
     pub addr: [::aya_bpf::cty::c_uchar; 6usize],
     pub vid: u16_,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct switchdev_obj_mrp {
     pub obj: switchdev_obj,
     pub p_port: *mut net_device,
@@ -37216,7 +36403,7 @@ pub struct switchdev_obj_mrp {
     pub prio: u16_,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct switchdev_obj_ring_role_mrp {
     pub obj: switchdev_obj,
     pub ring_role: u8_,
@@ -37248,17 +36435,19 @@ pub mod dsa_tag_protocol {
     pub const DSA_TAG_PROTO_XRS700X: Type = 19;
     pub const DSA_TAG_PROTO_OCELOT_8021Q: Type = 20;
     pub const DSA_TAG_PROTO_SEVILLE: Type = 21;
-    pub const DSA_TAG_PROTO_SJA1110: Type = 23;
-    pub const DSA_TAG_PROTO_RTL8_4: Type = 24;
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct dsa_device_ops {
     pub xmit: ::core::option::Option<
         unsafe extern "C" fn(arg1: *mut sk_buff, arg2: *mut net_device) -> *mut sk_buff,
     >,
     pub rcv: ::core::option::Option<
-        unsafe extern "C" fn(arg1: *mut sk_buff, arg2: *mut net_device) -> *mut sk_buff,
+        unsafe extern "C" fn(
+            arg1: *mut sk_buff,
+            arg2: *mut net_device,
+            arg3: *mut packet_type,
+        ) -> *mut sk_buff,
     >,
     pub flow_dissect: ::core::option::Option<
         unsafe extern "C" fn(
@@ -37267,206 +36456,19 @@ pub struct dsa_device_ops {
             arg3: *mut ::aya_bpf::cty::c_int,
         ),
     >,
-    pub connect: ::core::option::Option<
-        unsafe extern "C" fn(arg1: *mut dsa_switch) -> ::aya_bpf::cty::c_int,
+    pub filter: ::core::option::Option<
+        unsafe extern "C" fn(arg1: *const sk_buff, arg2: *mut net_device) -> bool_,
     >,
-    pub disconnect: ::core::option::Option<unsafe extern "C" fn(arg1: *mut dsa_switch)>,
-    pub needed_headroom: ::aya_bpf::cty::c_uint,
-    pub needed_tailroom: ::aya_bpf::cty::c_uint,
+    pub overhead: ::aya_bpf::cty::c_uint,
     pub name: *const ::aya_bpf::cty::c_char,
     pub proto: dsa_tag_protocol::Type,
     pub promisc_on_master: bool_,
+    pub tail_tag: bool_,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct dsa_8021q_context {
-    _unused: [u8; 0],
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct dsa_switch {
-    pub dev: *mut device,
-    pub dst: *mut dsa_switch_tree,
-    pub index: ::aya_bpf::cty::c_uint,
-    pub _bitfield_align_1: [u8; 0],
-    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 2usize]>,
-    pub nb: notifier_block,
-    pub priv_: *mut ::aya_bpf::cty::c_void,
-    pub tagger_data: *mut ::aya_bpf::cty::c_void,
-    pub cd: *mut dsa_chip_data,
-    pub ops: *const dsa_switch_ops,
-    pub phys_mii_mask: u32_,
-    pub slave_mii_bus: *mut mii_bus,
-    pub ageing_time_min: ::aya_bpf::cty::c_uint,
-    pub ageing_time_max: ::aya_bpf::cty::c_uint,
-    pub tag_8021q_ctx: *mut dsa_8021q_context,
-    pub devlink: *mut devlink,
-    pub num_tx_queues: ::aya_bpf::cty::c_uint,
-    pub num_lag_ids: ::aya_bpf::cty::c_uint,
-    pub max_num_bridges: ::aya_bpf::cty::c_uint,
-    pub num_ports: ::aya_bpf::cty::c_uint,
-}
-impl dsa_switch {
-    #[inline]
-    pub fn setup(&self) -> u32_ {
-        unsafe { ::core::mem::transmute(self._bitfield_1.get(0usize, 1u8) as u32) }
-    }
-    #[inline]
-    pub fn set_setup(&mut self, val: u32_) {
-        unsafe {
-            let val: u32 = ::core::mem::transmute(val);
-            self._bitfield_1.set(0usize, 1u8, val as u64)
-        }
-    }
-    #[inline]
-    pub fn vlan_filtering_is_global(&self) -> u32_ {
-        unsafe { ::core::mem::transmute(self._bitfield_1.get(1usize, 1u8) as u32) }
-    }
-    #[inline]
-    pub fn set_vlan_filtering_is_global(&mut self, val: u32_) {
-        unsafe {
-            let val: u32 = ::core::mem::transmute(val);
-            self._bitfield_1.set(1usize, 1u8, val as u64)
-        }
-    }
-    #[inline]
-    pub fn needs_standalone_vlan_filtering(&self) -> u32_ {
-        unsafe { ::core::mem::transmute(self._bitfield_1.get(2usize, 1u8) as u32) }
-    }
-    #[inline]
-    pub fn set_needs_standalone_vlan_filtering(&mut self, val: u32_) {
-        unsafe {
-            let val: u32 = ::core::mem::transmute(val);
-            self._bitfield_1.set(2usize, 1u8, val as u64)
-        }
-    }
-    #[inline]
-    pub fn configure_vlan_while_not_filtering(&self) -> u32_ {
-        unsafe { ::core::mem::transmute(self._bitfield_1.get(3usize, 1u8) as u32) }
-    }
-    #[inline]
-    pub fn set_configure_vlan_while_not_filtering(&mut self, val: u32_) {
-        unsafe {
-            let val: u32 = ::core::mem::transmute(val);
-            self._bitfield_1.set(3usize, 1u8, val as u64)
-        }
-    }
-    #[inline]
-    pub fn untag_bridge_pvid(&self) -> u32_ {
-        unsafe { ::core::mem::transmute(self._bitfield_1.get(4usize, 1u8) as u32) }
-    }
-    #[inline]
-    pub fn set_untag_bridge_pvid(&mut self, val: u32_) {
-        unsafe {
-            let val: u32 = ::core::mem::transmute(val);
-            self._bitfield_1.set(4usize, 1u8, val as u64)
-        }
-    }
-    #[inline]
-    pub fn assisted_learning_on_cpu_port(&self) -> u32_ {
-        unsafe { ::core::mem::transmute(self._bitfield_1.get(5usize, 1u8) as u32) }
-    }
-    #[inline]
-    pub fn set_assisted_learning_on_cpu_port(&mut self, val: u32_) {
-        unsafe {
-            let val: u32 = ::core::mem::transmute(val);
-            self._bitfield_1.set(5usize, 1u8, val as u64)
-        }
-    }
-    #[inline]
-    pub fn vlan_filtering(&self) -> u32_ {
-        unsafe { ::core::mem::transmute(self._bitfield_1.get(6usize, 1u8) as u32) }
-    }
-    #[inline]
-    pub fn set_vlan_filtering(&mut self, val: u32_) {
-        unsafe {
-            let val: u32 = ::core::mem::transmute(val);
-            self._bitfield_1.set(6usize, 1u8, val as u64)
-        }
-    }
-    #[inline]
-    pub fn pcs_poll(&self) -> u32_ {
-        unsafe { ::core::mem::transmute(self._bitfield_1.get(7usize, 1u8) as u32) }
-    }
-    #[inline]
-    pub fn set_pcs_poll(&mut self, val: u32_) {
-        unsafe {
-            let val: u32 = ::core::mem::transmute(val);
-            self._bitfield_1.set(7usize, 1u8, val as u64)
-        }
-    }
-    #[inline]
-    pub fn mtu_enforcement_ingress(&self) -> u32_ {
-        unsafe { ::core::mem::transmute(self._bitfield_1.get(8usize, 1u8) as u32) }
-    }
-    #[inline]
-    pub fn set_mtu_enforcement_ingress(&mut self, val: u32_) {
-        unsafe {
-            let val: u32 = ::core::mem::transmute(val);
-            self._bitfield_1.set(8usize, 1u8, val as u64)
-        }
-    }
-    #[inline]
-    pub fn new_bitfield_1(
-        setup: u32_,
-        vlan_filtering_is_global: u32_,
-        needs_standalone_vlan_filtering: u32_,
-        configure_vlan_while_not_filtering: u32_,
-        untag_bridge_pvid: u32_,
-        assisted_learning_on_cpu_port: u32_,
-        vlan_filtering: u32_,
-        pcs_poll: u32_,
-        mtu_enforcement_ingress: u32_,
-    ) -> __BindgenBitfieldUnit<[u8; 2usize]> {
-        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 2usize]> = Default::default();
-        __bindgen_bitfield_unit.set(0usize, 1u8, {
-            let setup: u32 = unsafe { ::core::mem::transmute(setup) };
-            setup as u64
-        });
-        __bindgen_bitfield_unit.set(1usize, 1u8, {
-            let vlan_filtering_is_global: u32 =
-                unsafe { ::core::mem::transmute(vlan_filtering_is_global) };
-            vlan_filtering_is_global as u64
-        });
-        __bindgen_bitfield_unit.set(2usize, 1u8, {
-            let needs_standalone_vlan_filtering: u32 =
-                unsafe { ::core::mem::transmute(needs_standalone_vlan_filtering) };
-            needs_standalone_vlan_filtering as u64
-        });
-        __bindgen_bitfield_unit.set(3usize, 1u8, {
-            let configure_vlan_while_not_filtering: u32 =
-                unsafe { ::core::mem::transmute(configure_vlan_while_not_filtering) };
-            configure_vlan_while_not_filtering as u64
-        });
-        __bindgen_bitfield_unit.set(4usize, 1u8, {
-            let untag_bridge_pvid: u32 = unsafe { ::core::mem::transmute(untag_bridge_pvid) };
-            untag_bridge_pvid as u64
-        });
-        __bindgen_bitfield_unit.set(5usize, 1u8, {
-            let assisted_learning_on_cpu_port: u32 =
-                unsafe { ::core::mem::transmute(assisted_learning_on_cpu_port) };
-            assisted_learning_on_cpu_port as u64
-        });
-        __bindgen_bitfield_unit.set(6usize, 1u8, {
-            let vlan_filtering: u32 = unsafe { ::core::mem::transmute(vlan_filtering) };
-            vlan_filtering as u64
-        });
-        __bindgen_bitfield_unit.set(7usize, 1u8, {
-            let pcs_poll: u32 = unsafe { ::core::mem::transmute(pcs_poll) };
-            pcs_poll as u64
-        });
-        __bindgen_bitfield_unit.set(8usize, 1u8, {
-            let mtu_enforcement_ingress: u32 =
-                unsafe { ::core::mem::transmute(mtu_enforcement_ingress) };
-            mtu_enforcement_ingress as u64
-        });
-        __bindgen_bitfield_unit
-    }
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct dsa_netdevice_ops {
-    pub ndo_eth_ioctl: ::core::option::Option<
+    pub ndo_do_ioctl: ::core::option::Option<
         unsafe extern "C" fn(
             arg1: *mut net_device,
             arg2: *mut ifreq,
@@ -37475,46 +36477,59 @@ pub struct dsa_netdevice_ops {
     >,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct dsa_switch_tree {
     pub list: list_head,
-    pub ports: list_head,
     pub nh: raw_notifier_head,
     pub index: ::aya_bpf::cty::c_uint,
     pub refcount: kref,
-    pub lags: *mut *mut net_device,
+    pub setup: bool_,
     pub tag_ops: *const dsa_device_ops,
     pub default_proto: dsa_tag_protocol::Type,
-    pub setup: bool_,
     pub pd: *mut dsa_platform_data,
+    pub ports: list_head,
     pub rtable: list_head,
+    pub lags: *mut *mut net_device,
     pub lags_len: ::aya_bpf::cty::c_uint,
-    pub last_switch: ::aya_bpf::cty::c_uint,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct dsa_mall_mirror_tc_entry {
     pub to_local_port: u8_,
     pub ingress: bool_,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct dsa_mall_policer_tc_entry {
     pub burst: u32_,
     pub rate_bytes_per_sec: u64_,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct dsa_bridge {
-    pub dev: *mut net_device,
-    pub num: ::aya_bpf::cty::c_uint,
-    pub tx_fwd_offload: bool_,
-    pub refcount: refcount_t,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct fixed_phy_status___2 {
-    _unused: [u8; 0],
+#[derive(Copy, Clone)]
+pub struct dsa_switch {
+    pub setup: bool_,
+    pub dev: *mut device,
+    pub dst: *mut dsa_switch_tree,
+    pub index: ::aya_bpf::cty::c_uint,
+    pub nb: notifier_block,
+    pub priv_: *mut ::aya_bpf::cty::c_void,
+    pub cd: *mut dsa_chip_data,
+    pub ops: *const dsa_switch_ops,
+    pub phys_mii_mask: u32_,
+    pub slave_mii_bus: *mut mii_bus,
+    pub ageing_time_min: ::aya_bpf::cty::c_uint,
+    pub ageing_time_max: ::aya_bpf::cty::c_uint,
+    pub devlink: *mut devlink,
+    pub num_tx_queues: ::aya_bpf::cty::c_uint,
+    pub vlan_filtering_is_global: bool_,
+    pub configure_vlan_while_not_filtering: bool_,
+    pub untag_bridge_pvid: bool_,
+    pub assisted_learning_on_cpu_port: bool_,
+    pub vlan_filtering: bool_,
+    pub pcs_poll: bool_,
+    pub mtu_enforcement_ingress: bool_,
+    pub num_lag_ids: ::aya_bpf::cty::c_uint,
+    pub num_ports: size_t,
 }
 pub type dsa_fdb_dump_cb_t = ::core::option::Option<
     unsafe extern "C" fn(
@@ -37525,7 +36540,7 @@ pub type dsa_fdb_dump_cb_t = ::core::option::Option<
     ) -> ::aya_bpf::cty::c_int,
 >;
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct dsa_switch_ops {
     pub get_tag_protocol: ::core::option::Option<
         unsafe extern "C" fn(
@@ -37539,12 +36554,6 @@ pub struct dsa_switch_ops {
             arg1: *mut dsa_switch,
             arg2: ::aya_bpf::cty::c_int,
             arg3: dsa_tag_protocol::Type,
-        ) -> ::aya_bpf::cty::c_int,
-    >,
-    pub connect_tag_protocol: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut dsa_switch,
-            arg2: dsa_tag_protocol::Type,
         ) -> ::aya_bpf::cty::c_int,
     >,
     pub setup: ::core::option::Option<
@@ -37589,14 +36598,7 @@ pub struct dsa_switch_ops {
         unsafe extern "C" fn(
             arg1: *mut dsa_switch,
             arg2: ::aya_bpf::cty::c_int,
-            arg3: *mut fixed_phy_status___2,
-        ),
-    >,
-    pub phylink_get_caps: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut dsa_switch,
-            arg2: ::aya_bpf::cty::c_int,
-            arg3: *mut phylink_config,
+            arg3: *mut fixed_phy_status,
         ),
     >,
     pub phylink_validate: ::core::option::Option<
@@ -37673,27 +36675,6 @@ pub struct dsa_switch_ops {
     >,
     pub get_ethtool_phy_stats: ::core::option::Option<
         unsafe extern "C" fn(arg1: *mut dsa_switch, arg2: ::aya_bpf::cty::c_int, arg3: *mut u64),
-    >,
-    pub get_eth_phy_stats: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut dsa_switch,
-            arg2: ::aya_bpf::cty::c_int,
-            arg3: *mut ethtool_eth_phy_stats,
-        ),
-    >,
-    pub get_eth_mac_stats: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut dsa_switch,
-            arg2: ::aya_bpf::cty::c_int,
-            arg3: *mut ethtool_eth_mac_stats,
-        ),
-    >,
-    pub get_eth_ctrl_stats: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut dsa_switch,
-            arg2: ::aya_bpf::cty::c_int,
-            arg3: *mut ethtool_eth_ctrl_stats,
-        ),
     >,
     pub get_stats64: ::core::option::Option<
         unsafe extern "C" fn(
@@ -37809,12 +36790,15 @@ pub struct dsa_switch_ops {
         unsafe extern "C" fn(
             arg1: *mut dsa_switch,
             arg2: ::aya_bpf::cty::c_int,
-            arg3: dsa_bridge,
-            arg4: *mut bool_,
+            arg3: *mut net_device,
         ) -> ::aya_bpf::cty::c_int,
     >,
     pub port_bridge_leave: ::core::option::Option<
-        unsafe extern "C" fn(arg1: *mut dsa_switch, arg2: ::aya_bpf::cty::c_int, arg3: dsa_bridge),
+        unsafe extern "C" fn(
+            arg1: *mut dsa_switch,
+            arg2: ::aya_bpf::cty::c_int,
+            arg3: *mut net_device,
+        ),
     >,
     pub port_stp_state_set: ::core::option::Option<
         unsafe extern "C" fn(arg1: *mut dsa_switch, arg2: ::aya_bpf::cty::c_int, arg3: u8_),
@@ -37977,7 +36961,7 @@ pub struct dsa_switch_ops {
             arg2: ::aya_bpf::cty::c_int,
             arg3: ::aya_bpf::cty::c_int,
             arg4: ::aya_bpf::cty::c_int,
-            arg5: dsa_bridge,
+            arg5: *mut net_device,
         ) -> ::aya_bpf::cty::c_int,
     >,
     pub crosschip_bridge_leave: ::core::option::Option<
@@ -37986,7 +36970,7 @@ pub struct dsa_switch_ops {
             arg2: ::aya_bpf::cty::c_int,
             arg3: ::aya_bpf::cty::c_int,
             arg4: ::aya_bpf::cty::c_int,
-            arg5: dsa_bridge,
+            arg5: *mut net_device,
         ),
     >,
     pub crosschip_lag_change: ::core::option::Option<
@@ -38232,102 +37216,9 @@ pub struct dsa_switch_ops {
             arg3: *const switchdev_obj_ring_role_mrp,
         ) -> ::aya_bpf::cty::c_int,
     >,
-    pub tag_8021q_vlan_add: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut dsa_switch,
-            arg2: ::aya_bpf::cty::c_int,
-            arg3: u16_,
-            arg4: u16_,
-        ) -> ::aya_bpf::cty::c_int,
-    >,
-    pub tag_8021q_vlan_del: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut dsa_switch,
-            arg2: ::aya_bpf::cty::c_int,
-            arg3: u16_,
-        ) -> ::aya_bpf::cty::c_int,
-    >,
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
-pub struct nh_info {
-    pub dev_hash: hlist_node,
-    pub nh_parent: *mut nexthop,
-    pub family: u8_,
-    pub reject_nh: bool_,
-    pub fdb_nh: bool_,
-    pub __bindgen_anon_1: nh_info__bindgen_ty_1,
-}
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub union nh_info__bindgen_ty_1 {
-    pub fib_nhc: fib_nh_common,
-    pub fib_nh: fib_nh,
-    pub fib6_nh: fib6_nh,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct nh_res_bucket {
-    pub nh_entry: *mut nh_grp_entry,
-    pub used_time: atomic_long_t,
-    pub migrated_time: ::aya_bpf::cty::c_ulong,
-    pub occupied: bool_,
-    pub nh_flags: u8_,
-}
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct nh_grp_entry {
-    pub nh: *mut nexthop,
-    pub weight: u8_,
-    pub __bindgen_anon_1: nh_grp_entry__bindgen_ty_1,
-    pub nh_list: list_head,
-    pub nh_parent: *mut nexthop,
-}
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub union nh_grp_entry__bindgen_ty_1 {
-    pub hthr: nh_grp_entry__bindgen_ty_1__bindgen_ty_1,
-    pub res: nh_grp_entry__bindgen_ty_1__bindgen_ty_2,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct nh_grp_entry__bindgen_ty_1__bindgen_ty_1 {
-    pub upper_bound: atomic_t,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct nh_grp_entry__bindgen_ty_1__bindgen_ty_2 {
-    pub uw_nh_entry: list_head,
-    pub count_buckets: u16_,
-    pub wants_buckets: u16_,
-}
-#[repr(C)]
-#[derive(Debug)]
-pub struct nh_res_table {
-    pub net: *mut net,
-    pub nhg_id: u32_,
-    pub upkeep_dw: delayed_work,
-    pub uw_nh_entries: list_head,
-    pub unbalanced_since: ::aya_bpf::cty::c_ulong,
-    pub idle_timer: u32_,
-    pub unbalanced_timer: u32_,
-    pub num_nh_buckets: u16_,
-    pub nh_buckets: __IncompleteArrayField<nh_res_bucket>,
-}
-#[repr(C)]
-pub struct nh_group {
-    pub spare: *mut nh_group,
-    pub num_nh: u16_,
-    pub is_multipath: bool_,
-    pub hash_threshold: bool_,
-    pub resilient: bool_,
-    pub fdb_nh: bool_,
-    pub has_v4: bool_,
-    pub res_table: *mut nh_res_table,
-    pub nh_entries: __IncompleteArrayField<nh_grp_entry>,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
 pub struct nf_conntrack_zone {
     pub id: u16_,
     pub flags: u8_,
@@ -38366,33 +37257,33 @@ pub union nf_conntrack_tuple__bindgen_ty_1__bindgen_ty_1 {
     pub gre: nf_conntrack_tuple__bindgen_ty_1__bindgen_ty_1__bindgen_ty_6,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct nf_conntrack_tuple__bindgen_ty_1__bindgen_ty_1__bindgen_ty_1 {
     pub port: __be16,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct nf_conntrack_tuple__bindgen_ty_1__bindgen_ty_1__bindgen_ty_2 {
     pub port: __be16,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct nf_conntrack_tuple__bindgen_ty_1__bindgen_ty_1__bindgen_ty_3 {
     pub type_: u_int8_t,
     pub code: u_int8_t,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct nf_conntrack_tuple__bindgen_ty_1__bindgen_ty_1__bindgen_ty_4 {
     pub port: __be16,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct nf_conntrack_tuple__bindgen_ty_1__bindgen_ty_1__bindgen_ty_5 {
     pub port: __be16,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct nf_conntrack_tuple__bindgen_ty_1__bindgen_ty_1__bindgen_ty_6 {
     pub key: __be16,
 }
@@ -38403,12 +37294,12 @@ pub struct nf_conntrack_tuple_hash {
     pub tuple: nf_conntrack_tuple,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct nf_ct_udp {
     pub stream_ts: ::aya_bpf::cty::c_ulong,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct nf_ct_gre {
     pub stream_timeout: ::aya_bpf::cty::c_uint,
     pub timeout: ::aya_bpf::cty::c_uint,
@@ -38443,7 +37334,7 @@ pub struct nf_conn {
     pub proto: nf_conntrack_proto,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct nf_conn__bindgen_ty_1 {}
 #[repr(C)]
 #[derive(Copy, Clone)]
@@ -38457,14 +37348,13 @@ pub struct nf_conntrack_tuple_mask__bindgen_ty_1 {
     pub u: nf_conntrack_man_proto,
 }
 #[repr(C)]
-#[derive(Debug)]
 pub struct nf_ct_ext {
-    pub offset: [u8_; 10usize],
+    pub offset: [u8_; 9usize],
     pub len: u8_,
     pub data: __IncompleteArrayField<::aya_bpf::cty::c_char>,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct nf_conntrack_helper {
     _unused: [u8; 0],
 }
@@ -38490,28 +37380,28 @@ pub struct nf_conntrack_expect {
     pub rcu: callback_head,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct nf_ct_event {
     pub ct: *mut nf_conn,
     pub portid: u32_,
     pub report: ::aya_bpf::cty::c_int,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct nf_exp_event {
     pub exp: *mut nf_conntrack_expect,
     pub portid: u32_,
     pub report: ::aya_bpf::cty::c_int,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct ipv4_devconf {
     pub sysctl: *mut ::aya_bpf::cty::c_void,
-    pub data: [::aya_bpf::cty::c_int; 33usize],
+    pub data: [::aya_bpf::cty::c_int; 32usize],
     pub state: [::aya_bpf::cty::c_ulong; 1usize],
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct bpf_xdp_link {
     pub link: bpf_link,
     pub dev: *mut net_device,
@@ -38531,7 +37421,6 @@ pub struct netpoll_info {
 #[derive(Copy, Clone)]
 pub struct in_device {
     pub dev: *mut net_device,
-    pub dev_tracker: netdevice_tracker,
     pub refcnt: refcount_t,
     pub dead: ::aya_bpf::cty::c_int,
     pub ifa_list: *mut in_ifaddr,
@@ -38567,7 +37456,6 @@ pub union inet_addr {
 #[derive(Copy, Clone)]
 pub struct netpoll {
     pub dev: *mut net_device,
-    pub dev_tracker: netdevice_tracker,
     pub dev_name: [::aya_bpf::cty::c_char; 16usize],
     pub name: *const ::aya_bpf::cty::c_char,
     pub local_ip: inet_addr,
@@ -38578,7 +37466,7 @@ pub struct netpoll {
     pub remote_mac: [u8_; 6usize],
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct tcf_walker {
     pub stop: ::aya_bpf::cty::c_int,
     pub skip: ::aya_bpf::cty::c_int,
@@ -38594,7 +37482,7 @@ pub struct tcf_walker {
     >,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct in_ifaddr {
     pub hash: hlist_node,
     pub ifa_next: *mut in_ifaddr,
@@ -38615,7 +37503,7 @@ pub struct in_ifaddr {
     pub ifa_tstamp: ::aya_bpf::cty::c_ulong,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct udp_tunnel_info {
     pub type_: ::aya_bpf::cty::c_ushort,
     pub sa_family: sa_family_t,
@@ -38623,7 +37511,7 @@ pub struct udp_tunnel_info {
     pub hw_priv: u8_,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct udp_tunnel_nic_shared {
     pub udp_tunnel_nic_info: *mut udp_tunnel_nic,
     pub devices: list_head,
@@ -38636,7 +37524,7 @@ pub struct seg6_pernet_data {
     pub hmac_infos: rhashtable,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct xdp_umem {
     pub addrs: *mut ::aya_bpf::cty::c_void,
     pub size: u64_,
@@ -38654,13 +37542,13 @@ pub struct xdp_umem {
     pub work: work_struct,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct tls_crypto_info {
     pub version: __u16,
     pub cipher_type: __u16,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct tls12_crypto_info_aes_gcm_128 {
     pub info: tls_crypto_info,
     pub iv: [::aya_bpf::cty::c_uchar; 8usize],
@@ -38669,7 +37557,7 @@ pub struct tls12_crypto_info_aes_gcm_128 {
     pub rec_seq: [::aya_bpf::cty::c_uchar; 8usize],
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct tls12_crypto_info_aes_gcm_256 {
     pub info: tls_crypto_info,
     pub iv: [::aya_bpf::cty::c_uchar; 8usize],
@@ -38678,7 +37566,6 @@ pub struct tls12_crypto_info_aes_gcm_256 {
     pub rec_seq: [::aya_bpf::cty::c_uchar; 8usize],
 }
 #[repr(C)]
-#[derive(Debug)]
 pub struct tls12_crypto_info_chacha20_poly1305 {
     pub info: tls_crypto_info,
     pub iv: [::aya_bpf::cty::c_uchar; 12usize],
@@ -38687,25 +37574,7 @@ pub struct tls12_crypto_info_chacha20_poly1305 {
     pub rec_seq: [::aya_bpf::cty::c_uchar; 8usize],
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct tls12_crypto_info_sm4_gcm {
-    pub info: tls_crypto_info,
-    pub iv: [::aya_bpf::cty::c_uchar; 8usize],
-    pub key: [::aya_bpf::cty::c_uchar; 16usize],
-    pub salt: [::aya_bpf::cty::c_uchar; 4usize],
-    pub rec_seq: [::aya_bpf::cty::c_uchar; 8usize],
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct tls12_crypto_info_sm4_ccm {
-    pub info: tls_crypto_info,
-    pub iv: [::aya_bpf::cty::c_uchar; 8usize],
-    pub key: [::aya_bpf::cty::c_uchar; 16usize],
-    pub salt: [::aya_bpf::cty::c_uchar; 4usize],
-    pub rec_seq: [::aya_bpf::cty::c_uchar; 8usize],
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct cipher_context {
     pub iv: *mut ::aya_bpf::cty::c_char,
     pub rec_seq: *mut ::aya_bpf::cty::c_char,
@@ -38721,12 +37590,10 @@ pub struct tls_crypto_context__bindgen_ty_1 {
     pub aes_gcm_128: __BindgenUnionField<tls12_crypto_info_aes_gcm_128>,
     pub aes_gcm_256: __BindgenUnionField<tls12_crypto_info_aes_gcm_256>,
     pub chacha20_poly1305: __BindgenUnionField<tls12_crypto_info_chacha20_poly1305>,
-    pub sm4_gcm: __BindgenUnionField<tls12_crypto_info_sm4_gcm>,
-    pub sm4_ccm: __BindgenUnionField<tls12_crypto_info_sm4_ccm>,
     pub bindgen_union_field: [u16; 28usize],
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct tls_prot_info {
     pub version: u16_,
     pub cipher_type: u16_,
@@ -38830,7 +37697,6 @@ pub struct xsk_buff_pool {
     pub free_heads_cnt: u32_,
     pub headroom: u32_,
     pub chunk_size: u32_,
-    pub chunk_shift: u32_,
     pub frame_len: u32_,
     pub cached_need_wakeup: u8_,
     pub uses_need_wakeup: bool_,
@@ -38855,84 +37721,15 @@ impl xsk_buff_pool {
     }
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct xdp_buff_xsk {
     pub xdp: xdp_buff,
     pub dma: dma_addr_t,
     pub frame_dma: dma_addr_t,
     pub pool: *mut xsk_buff_pool,
+    pub unaligned: bool_,
     pub orig_addr: u64_,
     pub free_list_node: list_head,
-}
-pub mod devlink_trap_type {
-    pub type Type = ::aya_bpf::cty::c_uint;
-    pub const DEVLINK_TRAP_TYPE_DROP: Type = 0;
-    pub const DEVLINK_TRAP_TYPE_EXCEPTION: Type = 1;
-    pub const DEVLINK_TRAP_TYPE_CONTROL: Type = 2;
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct devlink_dev_stats {
-    pub reload_stats: [u32_; 6usize],
-    pub remote_reload_stats: [u32_; 6usize],
-}
-#[repr(C)]
-pub struct devlink {
-    pub index: u32_,
-    pub port_list: list_head,
-    pub rate_list: list_head,
-    pub sb_list: list_head,
-    pub dpipe_table_list: list_head,
-    pub resource_list: list_head,
-    pub param_list: list_head,
-    pub region_list: list_head,
-    pub reporter_list: list_head,
-    pub reporters_lock: mutex,
-    pub dpipe_headers: *mut devlink_dpipe_headers,
-    pub trap_list: list_head,
-    pub trap_group_list: list_head,
-    pub trap_policer_list: list_head,
-    pub ops: *const devlink_ops,
-    pub features: u64_,
-    pub snapshot_ids: xarray,
-    pub stats: devlink_dev_stats,
-    pub dev: *mut device,
-    pub _net: possible_net_t,
-    pub lock: mutex,
-    pub _bitfield_align_1: [u8; 0],
-    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 1usize]>,
-    pub refcount: refcount_t,
-    pub comp: completion,
-    pub _bitfield_align_2: [u8; 0],
-    pub _bitfield_2: __BindgenBitfieldUnit<[u8; 24usize]>,
-    pub priv_: __IncompleteArrayField<::aya_bpf::cty::c_char>,
-}
-impl devlink {
-    #[inline]
-    pub fn reload_failed(&self) -> u8_ {
-        unsafe { ::core::mem::transmute(self._bitfield_1.get(0usize, 1u8) as u8) }
-    }
-    #[inline]
-    pub fn set_reload_failed(&mut self, val: u8_) {
-        unsafe {
-            let val: u8 = ::core::mem::transmute(val);
-            self._bitfield_1.set(0usize, 1u8, val as u64)
-        }
-    }
-    #[inline]
-    pub fn new_bitfield_1(reload_failed: u8_) -> __BindgenBitfieldUnit<[u8; 1usize]> {
-        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 1usize]> = Default::default();
-        __bindgen_bitfield_unit.set(0usize, 1u8, {
-            let reload_failed: u8 = unsafe { ::core::mem::transmute(reload_failed) };
-            reload_failed as u64
-        });
-        __bindgen_bitfield_unit
-    }
-    #[inline]
-    pub fn new_bitfield_2() -> __BindgenBitfieldUnit<[u8; 24usize]> {
-        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 24usize]> = Default::default();
-        __bindgen_bitfield_unit
-    }
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
@@ -38948,548 +37745,13 @@ pub union dst_cache_pcpu__bindgen_ty_1 {
     pub in_saddr: in_addr,
     pub in6_saddr: in6_addr,
 }
-pub mod devlink_eswitch_encap_mode {
-    pub type Type = ::aya_bpf::cty::c_uint;
-    pub const DEVLINK_ESWITCH_ENCAP_MODE_NONE: Type = 0;
-    pub const DEVLINK_ESWITCH_ENCAP_MODE_BASIC: Type = 1;
-}
-pub mod devlink_trap_action {
-    pub type Type = ::aya_bpf::cty::c_uint;
-    pub const DEVLINK_TRAP_ACTION_DROP: Type = 0;
-    pub const DEVLINK_TRAP_ACTION_TRAP: Type = 1;
-    pub const DEVLINK_TRAP_ACTION_MIRROR: Type = 2;
-}
-pub mod devlink_reload_action {
-    pub type Type = ::aya_bpf::cty::c_uint;
-    pub const DEVLINK_RELOAD_ACTION_UNSPEC: Type = 0;
-    pub const DEVLINK_RELOAD_ACTION_DRIVER_REINIT: Type = 1;
-    pub const DEVLINK_RELOAD_ACTION_FW_ACTIVATE: Type = 2;
-    pub const __DEVLINK_RELOAD_ACTION_MAX: Type = 3;
-    pub const DEVLINK_RELOAD_ACTION_MAX: Type = 2;
-}
-pub mod devlink_reload_limit {
-    pub type Type = ::aya_bpf::cty::c_uint;
-    pub const DEVLINK_RELOAD_LIMIT_UNSPEC: Type = 0;
-    pub const DEVLINK_RELOAD_LIMIT_NO_RESET: Type = 1;
-    pub const __DEVLINK_RELOAD_LIMIT_MAX: Type = 2;
-    pub const DEVLINK_RELOAD_LIMIT_MAX: Type = 1;
-}
-pub mod devlink_dpipe_field_mapping_type {
-    pub type Type = ::aya_bpf::cty::c_uint;
-    pub const DEVLINK_DPIPE_FIELD_MAPPING_TYPE_NONE: Type = 0;
-    pub const DEVLINK_DPIPE_FIELD_MAPPING_TYPE_IFINDEX: Type = 1;
-}
-pub mod devlink_port_fn_state {
-    pub type Type = ::aya_bpf::cty::c_uint;
-    pub const DEVLINK_PORT_FN_STATE_INACTIVE: Type = 0;
-    pub const DEVLINK_PORT_FN_STATE_ACTIVE: Type = 1;
-}
-pub mod devlink_port_fn_opstate {
-    pub type Type = ::aya_bpf::cty::c_uint;
-    pub const DEVLINK_PORT_FN_OPSTATE_DETACHED: Type = 0;
-    pub const DEVLINK_PORT_FN_OPSTATE_ATTACHED: Type = 1;
-}
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct devlink_port_new_attrs {
-    pub flavour: devlink_port_flavour::Type,
-    pub port_index: ::aya_bpf::cty::c_uint,
-    pub controller: u32_,
-    pub sfnum: u32_,
-    pub pfnum: u16_,
-    pub _bitfield_align_1: [u8; 0],
-    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 1usize]>,
-    pub __bindgen_padding_0: u8,
-}
-impl devlink_port_new_attrs {
-    #[inline]
-    pub fn port_index_valid(&self) -> u8_ {
-        unsafe { ::core::mem::transmute(self._bitfield_1.get(0usize, 1u8) as u8) }
-    }
-    #[inline]
-    pub fn set_port_index_valid(&mut self, val: u8_) {
-        unsafe {
-            let val: u8 = ::core::mem::transmute(val);
-            self._bitfield_1.set(0usize, 1u8, val as u64)
-        }
-    }
-    #[inline]
-    pub fn controller_valid(&self) -> u8_ {
-        unsafe { ::core::mem::transmute(self._bitfield_1.get(1usize, 1u8) as u8) }
-    }
-    #[inline]
-    pub fn set_controller_valid(&mut self, val: u8_) {
-        unsafe {
-            let val: u8 = ::core::mem::transmute(val);
-            self._bitfield_1.set(1usize, 1u8, val as u64)
-        }
-    }
-    #[inline]
-    pub fn sfnum_valid(&self) -> u8_ {
-        unsafe { ::core::mem::transmute(self._bitfield_1.get(2usize, 1u8) as u8) }
-    }
-    #[inline]
-    pub fn set_sfnum_valid(&mut self, val: u8_) {
-        unsafe {
-            let val: u8 = ::core::mem::transmute(val);
-            self._bitfield_1.set(2usize, 1u8, val as u64)
-        }
-    }
-    #[inline]
-    pub fn new_bitfield_1(
-        port_index_valid: u8_,
-        controller_valid: u8_,
-        sfnum_valid: u8_,
-    ) -> __BindgenBitfieldUnit<[u8; 1usize]> {
-        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 1usize]> = Default::default();
-        __bindgen_bitfield_unit.set(0usize, 1u8, {
-            let port_index_valid: u8 = unsafe { ::core::mem::transmute(port_index_valid) };
-            port_index_valid as u64
-        });
-        __bindgen_bitfield_unit.set(1usize, 1u8, {
-            let controller_valid: u8 = unsafe { ::core::mem::transmute(controller_valid) };
-            controller_valid as u64
-        });
-        __bindgen_bitfield_unit.set(2usize, 1u8, {
-            let sfnum_valid: u8 = unsafe { ::core::mem::transmute(sfnum_valid) };
-            sfnum_valid as u64
-        });
-        __bindgen_bitfield_unit
-    }
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct devlink_dpipe_field {
-    pub name: *const ::aya_bpf::cty::c_char,
-    pub id: ::aya_bpf::cty::c_uint,
-    pub bitwidth: ::aya_bpf::cty::c_uint,
-    pub mapping_type: devlink_dpipe_field_mapping_type::Type,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct devlink_dpipe_header {
-    pub name: *const ::aya_bpf::cty::c_char,
-    pub id: ::aya_bpf::cty::c_uint,
-    pub fields: *mut devlink_dpipe_field,
-    pub fields_count: ::aya_bpf::cty::c_uint,
-    pub global: bool_,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct devlink_dpipe_headers {
-    pub headers: *mut *mut devlink_dpipe_header,
-    pub headers_count: ::aya_bpf::cty::c_uint,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct devlink_flash_update_params {
-    pub fw: *const firmware,
-    pub component: *const ::aya_bpf::cty::c_char,
-    pub overwrite_mask: u32_,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct devlink_trap_policer {
-    pub id: u32_,
-    pub init_rate: u64_,
-    pub init_burst: u64_,
-    pub max_rate: u64_,
-    pub min_rate: u64_,
-    pub max_burst: u64_,
-    pub min_burst: u64_,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct devlink_trap_group {
-    pub name: *const ::aya_bpf::cty::c_char,
-    pub id: u16_,
-    pub generic: bool_,
-    pub init_policer_id: u32_,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct devlink_trap {
-    pub type_: devlink_trap_type::Type,
-    pub init_action: devlink_trap_action::Type,
-    pub generic: bool_,
-    pub id: u16_,
-    pub name: *const ::aya_bpf::cty::c_char,
-    pub init_group_id: u16_,
-    pub metadata_cap: u32_,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct devlink_ops {
-    pub supported_flash_update_params: u32_,
-    pub reload_actions: ::aya_bpf::cty::c_ulong,
-    pub reload_limits: ::aya_bpf::cty::c_ulong,
-    pub reload_down: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut devlink,
-            arg2: bool_,
-            arg3: devlink_reload_action::Type,
-            arg4: devlink_reload_limit::Type,
-            arg5: *mut netlink_ext_ack,
-        ) -> ::aya_bpf::cty::c_int,
-    >,
-    pub reload_up: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut devlink,
-            arg2: devlink_reload_action::Type,
-            arg3: devlink_reload_limit::Type,
-            arg4: *mut u32_,
-            arg5: *mut netlink_ext_ack,
-        ) -> ::aya_bpf::cty::c_int,
-    >,
-    pub port_type_set: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut devlink_port,
-            arg2: devlink_port_type::Type,
-        ) -> ::aya_bpf::cty::c_int,
-    >,
-    pub port_split: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut devlink,
-            arg2: ::aya_bpf::cty::c_uint,
-            arg3: ::aya_bpf::cty::c_uint,
-            arg4: *mut netlink_ext_ack,
-        ) -> ::aya_bpf::cty::c_int,
-    >,
-    pub port_unsplit: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut devlink,
-            arg2: ::aya_bpf::cty::c_uint,
-            arg3: *mut netlink_ext_ack,
-        ) -> ::aya_bpf::cty::c_int,
-    >,
-    pub sb_pool_get: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut devlink,
-            arg2: ::aya_bpf::cty::c_uint,
-            arg3: u16_,
-            arg4: *mut devlink_sb_pool_info,
-        ) -> ::aya_bpf::cty::c_int,
-    >,
-    pub sb_pool_set: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut devlink,
-            arg2: ::aya_bpf::cty::c_uint,
-            arg3: u16_,
-            arg4: u32_,
-            arg5: devlink_sb_threshold_type::Type,
-            arg6: *mut netlink_ext_ack,
-        ) -> ::aya_bpf::cty::c_int,
-    >,
-    pub sb_port_pool_get: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut devlink_port,
-            arg2: ::aya_bpf::cty::c_uint,
-            arg3: u16_,
-            arg4: *mut u32_,
-        ) -> ::aya_bpf::cty::c_int,
-    >,
-    pub sb_port_pool_set: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut devlink_port,
-            arg2: ::aya_bpf::cty::c_uint,
-            arg3: u16_,
-            arg4: u32_,
-            arg5: *mut netlink_ext_ack,
-        ) -> ::aya_bpf::cty::c_int,
-    >,
-    pub sb_tc_pool_bind_get: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut devlink_port,
-            arg2: ::aya_bpf::cty::c_uint,
-            arg3: u16_,
-            arg4: devlink_sb_pool_type::Type,
-            arg5: *mut u16_,
-            arg6: *mut u32_,
-        ) -> ::aya_bpf::cty::c_int,
-    >,
-    pub sb_tc_pool_bind_set: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut devlink_port,
-            arg2: ::aya_bpf::cty::c_uint,
-            arg3: u16_,
-            arg4: devlink_sb_pool_type::Type,
-            arg5: u16_,
-            arg6: u32_,
-            arg7: *mut netlink_ext_ack,
-        ) -> ::aya_bpf::cty::c_int,
-    >,
-    pub sb_occ_snapshot: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut devlink,
-            arg2: ::aya_bpf::cty::c_uint,
-        ) -> ::aya_bpf::cty::c_int,
-    >,
-    pub sb_occ_max_clear: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut devlink,
-            arg2: ::aya_bpf::cty::c_uint,
-        ) -> ::aya_bpf::cty::c_int,
-    >,
-    pub sb_occ_port_pool_get: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut devlink_port,
-            arg2: ::aya_bpf::cty::c_uint,
-            arg3: u16_,
-            arg4: *mut u32_,
-            arg5: *mut u32_,
-        ) -> ::aya_bpf::cty::c_int,
-    >,
-    pub sb_occ_tc_port_bind_get: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut devlink_port,
-            arg2: ::aya_bpf::cty::c_uint,
-            arg3: u16_,
-            arg4: devlink_sb_pool_type::Type,
-            arg5: *mut u32_,
-            arg6: *mut u32_,
-        ) -> ::aya_bpf::cty::c_int,
-    >,
-    pub eswitch_mode_get: ::core::option::Option<
-        unsafe extern "C" fn(arg1: *mut devlink, arg2: *mut u16_) -> ::aya_bpf::cty::c_int,
-    >,
-    pub eswitch_mode_set: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut devlink,
-            arg2: u16_,
-            arg3: *mut netlink_ext_ack,
-        ) -> ::aya_bpf::cty::c_int,
-    >,
-    pub eswitch_inline_mode_get: ::core::option::Option<
-        unsafe extern "C" fn(arg1: *mut devlink, arg2: *mut u8_) -> ::aya_bpf::cty::c_int,
-    >,
-    pub eswitch_inline_mode_set: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut devlink,
-            arg2: u8_,
-            arg3: *mut netlink_ext_ack,
-        ) -> ::aya_bpf::cty::c_int,
-    >,
-    pub eswitch_encap_mode_get: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut devlink,
-            arg2: *mut devlink_eswitch_encap_mode::Type,
-        ) -> ::aya_bpf::cty::c_int,
-    >,
-    pub eswitch_encap_mode_set: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut devlink,
-            arg2: devlink_eswitch_encap_mode::Type,
-            arg3: *mut netlink_ext_ack,
-        ) -> ::aya_bpf::cty::c_int,
-    >,
-    pub info_get: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut devlink,
-            arg2: *mut devlink_info_req___2,
-            arg3: *mut netlink_ext_ack,
-        ) -> ::aya_bpf::cty::c_int,
-    >,
-    pub flash_update: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut devlink,
-            arg2: *mut devlink_flash_update_params,
-            arg3: *mut netlink_ext_ack,
-        ) -> ::aya_bpf::cty::c_int,
-    >,
-    pub trap_init: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut devlink,
-            arg2: *const devlink_trap,
-            arg3: *mut ::aya_bpf::cty::c_void,
-        ) -> ::aya_bpf::cty::c_int,
-    >,
-    pub trap_fini: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut devlink,
-            arg2: *const devlink_trap,
-            arg3: *mut ::aya_bpf::cty::c_void,
-        ),
-    >,
-    pub trap_action_set: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut devlink,
-            arg2: *const devlink_trap,
-            arg3: devlink_trap_action::Type,
-            arg4: *mut netlink_ext_ack,
-        ) -> ::aya_bpf::cty::c_int,
-    >,
-    pub trap_group_init: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut devlink,
-            arg2: *const devlink_trap_group,
-        ) -> ::aya_bpf::cty::c_int,
-    >,
-    pub trap_group_set: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut devlink,
-            arg2: *const devlink_trap_group,
-            arg3: *const devlink_trap_policer,
-            arg4: *mut netlink_ext_ack,
-        ) -> ::aya_bpf::cty::c_int,
-    >,
-    pub trap_group_action_set: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut devlink,
-            arg2: *const devlink_trap_group,
-            arg3: devlink_trap_action::Type,
-            arg4: *mut netlink_ext_ack,
-        ) -> ::aya_bpf::cty::c_int,
-    >,
-    pub trap_drop_counter_get: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut devlink,
-            arg2: *const devlink_trap,
-            arg3: *mut u64_,
-        ) -> ::aya_bpf::cty::c_int,
-    >,
-    pub trap_policer_init: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut devlink,
-            arg2: *const devlink_trap_policer,
-        ) -> ::aya_bpf::cty::c_int,
-    >,
-    pub trap_policer_fini: ::core::option::Option<
-        unsafe extern "C" fn(arg1: *mut devlink, arg2: *const devlink_trap_policer),
-    >,
-    pub trap_policer_set: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut devlink,
-            arg2: *const devlink_trap_policer,
-            arg3: u64_,
-            arg4: u64_,
-            arg5: *mut netlink_ext_ack,
-        ) -> ::aya_bpf::cty::c_int,
-    >,
-    pub trap_policer_counter_get: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut devlink,
-            arg2: *const devlink_trap_policer,
-            arg3: *mut u64_,
-        ) -> ::aya_bpf::cty::c_int,
-    >,
-    pub port_function_hw_addr_get: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut devlink_port,
-            arg2: *mut u8_,
-            arg3: *mut ::aya_bpf::cty::c_int,
-            arg4: *mut netlink_ext_ack,
-        ) -> ::aya_bpf::cty::c_int,
-    >,
-    pub port_function_hw_addr_set: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut devlink_port,
-            arg2: *const u8_,
-            arg3: ::aya_bpf::cty::c_int,
-            arg4: *mut netlink_ext_ack,
-        ) -> ::aya_bpf::cty::c_int,
-    >,
-    pub port_new: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut devlink,
-            arg2: *const devlink_port_new_attrs,
-            arg3: *mut netlink_ext_ack,
-            arg4: *mut ::aya_bpf::cty::c_uint,
-        ) -> ::aya_bpf::cty::c_int,
-    >,
-    pub port_del: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut devlink,
-            arg2: ::aya_bpf::cty::c_uint,
-            arg3: *mut netlink_ext_ack,
-        ) -> ::aya_bpf::cty::c_int,
-    >,
-    pub port_fn_state_get: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut devlink_port,
-            arg2: *mut devlink_port_fn_state::Type,
-            arg3: *mut devlink_port_fn_opstate::Type,
-            arg4: *mut netlink_ext_ack,
-        ) -> ::aya_bpf::cty::c_int,
-    >,
-    pub port_fn_state_set: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut devlink_port,
-            arg2: devlink_port_fn_state::Type,
-            arg3: *mut netlink_ext_ack,
-        ) -> ::aya_bpf::cty::c_int,
-    >,
-    pub rate_leaf_tx_share_set: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut devlink_rate,
-            arg2: *mut ::aya_bpf::cty::c_void,
-            arg3: u64_,
-            arg4: *mut netlink_ext_ack,
-        ) -> ::aya_bpf::cty::c_int,
-    >,
-    pub rate_leaf_tx_max_set: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut devlink_rate,
-            arg2: *mut ::aya_bpf::cty::c_void,
-            arg3: u64_,
-            arg4: *mut netlink_ext_ack,
-        ) -> ::aya_bpf::cty::c_int,
-    >,
-    pub rate_node_tx_share_set: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut devlink_rate,
-            arg2: *mut ::aya_bpf::cty::c_void,
-            arg3: u64_,
-            arg4: *mut netlink_ext_ack,
-        ) -> ::aya_bpf::cty::c_int,
-    >,
-    pub rate_node_tx_max_set: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut devlink_rate,
-            arg2: *mut ::aya_bpf::cty::c_void,
-            arg3: u64_,
-            arg4: *mut netlink_ext_ack,
-        ) -> ::aya_bpf::cty::c_int,
-    >,
-    pub rate_node_new: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut devlink_rate,
-            arg2: *mut *mut ::aya_bpf::cty::c_void,
-            arg3: *mut netlink_ext_ack,
-        ) -> ::aya_bpf::cty::c_int,
-    >,
-    pub rate_node_del: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut devlink_rate,
-            arg2: *mut ::aya_bpf::cty::c_void,
-            arg3: *mut netlink_ext_ack,
-        ) -> ::aya_bpf::cty::c_int,
-    >,
-    pub rate_leaf_parent_set: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut devlink_rate,
-            arg2: *mut devlink_rate,
-            arg3: *mut ::aya_bpf::cty::c_void,
-            arg4: *mut ::aya_bpf::cty::c_void,
-            arg5: *mut netlink_ext_ack,
-        ) -> ::aya_bpf::cty::c_int,
-    >,
-    pub rate_node_parent_set: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut devlink_rate,
-            arg2: *mut devlink_rate,
-            arg3: *mut ::aya_bpf::cty::c_void,
-            arg4: *mut ::aya_bpf::cty::c_void,
-            arg5: *mut netlink_ext_ack,
-        ) -> ::aya_bpf::cty::c_int,
-    >,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct devlink_info_req___2 {
+#[derive(Copy, Clone)]
+pub struct devlink_info_req {
     pub msg: *mut sk_buff,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct psample_group {
     pub list: list_head,
     pub net: *mut net,
@@ -39499,12 +37761,24 @@ pub struct psample_group {
     pub rcu: callback_head,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct action_gate_entry {
     pub gate_state: u8_,
     pub interval: u32_,
     pub ipv: s32,
     pub maxoctets: s32,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct nf_queue_entry {
+    pub list: list_head,
+    pub skb: *mut sk_buff,
+    pub id: ::aya_bpf::cty::c_uint,
+    pub hook_index: ::aya_bpf::cty::c_uint,
+    pub physin: *mut net_device,
+    pub physout: *mut net_device,
+    pub state: nf_hook_state,
+    pub size: u16_,
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
@@ -39519,7 +37793,7 @@ pub union nf_loginfo__bindgen_ty_1 {
     pub log: nf_loginfo__bindgen_ty_1__bindgen_ty_2,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct nf_loginfo__bindgen_ty_1__bindgen_ty_1 {
     pub copy_len: u_int32_t,
     pub group: u_int16_t,
@@ -39527,7 +37801,7 @@ pub struct nf_loginfo__bindgen_ty_1__bindgen_ty_1 {
     pub flags: u_int16_t,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct nf_loginfo__bindgen_ty_1__bindgen_ty_2 {
     pub level: u_int8_t,
     pub logflags: u_int8_t,
@@ -39562,7 +37836,7 @@ pub union ip_mc_list__bindgen_ty_1 {
     pub next_rcu: *mut ip_mc_list,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct ip_sf_list {
     pub sf_next: *mut ip_sf_list,
     pub sf_count: [::aya_bpf::cty::c_ulong; 2usize],
@@ -39584,7 +37858,7 @@ pub struct raw_hashinfo {
     pub ht: [hlist_head; 256usize],
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct tcpvegas_info {
     pub tcpv_enabled: __u32,
     pub tcpv_rttcnt: __u32,
@@ -39592,7 +37866,7 @@ pub struct tcpvegas_info {
     pub tcpv_minrtt: __u32,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct tcp_dctcp_info {
     pub dctcp_enabled: __u16,
     pub dctcp_ce_state: __u16,
@@ -39601,7 +37875,7 @@ pub struct tcp_dctcp_info {
     pub dctcp_ab_tot: __u32,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct tcp_bbr_info {
     pub bbr_bw_lo: __u32,
     pub bbr_bw_hi: __u32,
@@ -39618,142 +37892,13 @@ pub union tcp_cc_info {
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
-pub struct ioam6_pernet_data {
-    pub lock: mutex,
-    pub namespaces: rhashtable,
-    pub schemas: rhashtable,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct wpan_dev {
-    pub wpan_phy: *mut wpan_phy,
-    pub iftype: ::aya_bpf::cty::c_int,
-    pub list: list_head,
-    pub netdev: *mut net_device,
-    pub header_ops: *const wpan_dev_header_ops,
-    pub lowpan_dev: *mut net_device,
-    pub identifier: u32_,
-    pub pan_id: __le16,
-    pub short_addr: __le16,
-    pub extended_addr: __le64,
-    pub bsn: atomic_t,
-    pub dsn: atomic_t,
-    pub min_be: u8_,
-    pub max_be: u8_,
-    pub csma_retries: u8_,
-    pub frame_retries: s8,
-    pub lbt: bool_,
-    pub promiscuous_mode: bool_,
-    pub ackreq: bool_,
-}
-pub mod nl802154_cca_modes {
-    pub type Type = ::aya_bpf::cty::c_uint;
-    pub const __NL802154_CCA_INVALID: Type = 0;
-    pub const NL802154_CCA_ENERGY: Type = 1;
-    pub const NL802154_CCA_CARRIER: Type = 2;
-    pub const NL802154_CCA_ENERGY_CARRIER: Type = 3;
-    pub const NL802154_CCA_ALOHA: Type = 4;
-    pub const NL802154_CCA_UWB_SHR: Type = 5;
-    pub const NL802154_CCA_UWB_MULTIPLEXED: Type = 6;
-    pub const __NL802154_CCA_ATTR_AFTER_LAST: Type = 7;
-    pub const NL802154_CCA_ATTR_MAX: Type = 6;
-}
-pub mod nl802154_cca_opts {
-    pub type Type = ::aya_bpf::cty::c_uint;
-    pub const NL802154_CCA_OPT_ENERGY_CARRIER_AND: Type = 0;
-    pub const NL802154_CCA_OPT_ENERGY_CARRIER_OR: Type = 1;
-    pub const __NL802154_CCA_OPT_ATTR_AFTER_LAST: Type = 2;
-    pub const NL802154_CCA_OPT_ATTR_MAX: Type = 1;
-}
-pub mod nl802154_supported_bool_states {
-    pub type Type = ::aya_bpf::cty::c_uint;
-    pub const NL802154_SUPPORTED_BOOL_FALSE: Type = 0;
-    pub const NL802154_SUPPORTED_BOOL_TRUE: Type = 1;
-    pub const __NL802154_SUPPORTED_BOOL_INVALD: Type = 2;
-    pub const NL802154_SUPPORTED_BOOL_BOTH: Type = 3;
-    pub const __NL802154_SUPPORTED_BOOL_AFTER_LAST: Type = 4;
-    pub const NL802154_SUPPORTED_BOOL_MAX: Type = 3;
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct wpan_phy_supported {
-    pub channels: [u32_; 32usize],
-    pub cca_modes: u32_,
-    pub cca_opts: u32_,
-    pub iftypes: u32_,
-    pub lbt: nl802154_supported_bool_states::Type,
-    pub min_minbe: u8_,
-    pub max_minbe: u8_,
-    pub min_maxbe: u8_,
-    pub max_maxbe: u8_,
-    pub min_csma_backoffs: u8_,
-    pub max_csma_backoffs: u8_,
-    pub min_frame_retries: s8,
-    pub max_frame_retries: s8,
-    pub tx_powers_size: size_t,
-    pub cca_ed_levels_size: size_t,
-    pub tx_powers: *const s32,
-    pub cca_ed_levels: *const s32,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct wpan_phy_cca {
-    pub mode: nl802154_cca_modes::Type,
-    pub opt: nl802154_cca_opts::Type,
-}
-#[repr(C)]
-pub struct wpan_phy {
-    pub privid: *const ::aya_bpf::cty::c_void,
-    pub flags: u32_,
-    pub current_channel: u8_,
-    pub current_page: u8_,
-    pub supported: wpan_phy_supported,
-    pub transmit_power: s32,
-    pub cca: wpan_phy_cca,
-    pub perm_extended_addr: __le64,
-    pub cca_ed_level: s32,
-    pub symbol_duration: u8_,
-    pub lifs_period: u16_,
-    pub sifs_period: u16_,
-    pub dev: device,
-    pub _net: possible_net_t,
-    pub priv_: __IncompleteArrayField<::aya_bpf::cty::c_char>,
-}
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct ieee802154_addr {
-    pub mode: u8_,
-    pub pan_id: __le16,
-    pub __bindgen_anon_1: ieee802154_addr__bindgen_ty_1,
-}
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub union ieee802154_addr__bindgen_ty_1 {
-    pub short_addr: __le16,
-    pub extended_addr: __le64,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct wpan_dev_header_ops {
-    pub create: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: *mut sk_buff,
-            arg2: *mut net_device,
-            arg3: *const ieee802154_addr,
-            arg4: *const ieee802154_addr,
-            arg5: ::aya_bpf::cty::c_uint,
-        ) -> ::aya_bpf::cty::c_int,
-    >,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
 pub struct vlan_group {
     pub nr_vlan_devs: ::aya_bpf::cty::c_uint,
     pub hlist: hlist_node,
     pub vlan_devices_arrays: [*mut *mut net_device; 16usize],
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct vlan_info {
     pub real_dev: *mut net_device,
     pub grp: vlan_group,
@@ -39780,12 +37925,12 @@ pub mod nl80211_iftype {
     pub const NL80211_IFTYPE_MAX: Type = 12;
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct cfg80211_conn {
     _unused: [u8; 0],
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct cfg80211_cached_keys {
     _unused: [u8; 0],
 }
@@ -39798,7 +37943,7 @@ pub mod ieee80211_bss_type {
     pub const IEEE80211_BSS_TYPE_ANY: Type = 4;
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct cfg80211_internal_bss {
     _unused: [u8; 0],
 }
@@ -39834,13 +37979,13 @@ pub mod ieee80211_edmg_bw_config {
     pub const IEEE80211_EDMG_BW_CONFIG_15: Type = 15;
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct ieee80211_edmg {
     pub channels: u8_,
     pub bw_config: ieee80211_edmg_bw_config::Type,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct cfg80211_chan_def {
     pub chan: *mut ieee80211_channel,
     pub width: nl80211_chan_width::Type,
@@ -39850,7 +37995,7 @@ pub struct cfg80211_chan_def {
     pub freq1_offset: u16_,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct ieee80211_mcs_info {
     pub rx_mask: [u8_; 10usize],
     pub rx_highest: __le16,
@@ -39858,7 +38003,7 @@ pub struct ieee80211_mcs_info {
     pub reserved: [u8_; 3usize],
 }
 #[repr(C, packed)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct ieee80211_ht_cap {
     pub cap_info: __le16,
     pub ampdu_params_info: u8_,
@@ -39868,7 +38013,7 @@ pub struct ieee80211_ht_cap {
     pub antenna_selection_info: u8_,
 }
 #[repr(C, packed)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct cfg80211_ibss_params {
     pub ssid: *const u8_,
     pub bssid: *const u8_,
@@ -39885,15 +38030,13 @@ pub struct cfg80211_ibss_params {
     pub userspace_handles_dfs: bool_,
     pub _bitfield_align_1: [u8; 0],
     pub _bitfield_1: __BindgenBitfieldUnit<[u8; 3usize]>,
-    pub mcast_rate: [::aya_bpf::cty::c_int; 6usize],
+    pub mcast_rate: [::aya_bpf::cty::c_int; 5usize],
     pub ht_capa: ieee80211_ht_cap,
     pub ht_capa_mask: ieee80211_ht_cap,
-    pub _bitfield_align_2: [u8; 0],
-    pub _bitfield_2: __BindgenBitfieldUnit<[u8; 4usize]>,
     pub wep_keys: *mut key_params,
     pub wep_tx_key: ::aya_bpf::cty::c_int,
-    pub _bitfield_align_3: [u8; 0],
-    pub _bitfield_3: __BindgenBitfieldUnit<[u8; 4usize]>,
+    pub _bitfield_align_2: [u8; 0],
+    pub _bitfield_2: __BindgenBitfieldUnit<[u8; 4usize]>,
 }
 impl cfg80211_ibss_params {
     #[inline]
@@ -39903,11 +38046,6 @@ impl cfg80211_ibss_params {
     }
     #[inline]
     pub fn new_bitfield_2() -> __BindgenBitfieldUnit<[u8; 4usize]> {
-        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 4usize]> = Default::default();
-        __bindgen_bitfield_unit
-    }
-    #[inline]
-    pub fn new_bitfield_3() -> __BindgenBitfieldUnit<[u8; 4usize]> {
         let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 4usize]> = Default::default();
         __bindgen_bitfield_unit
     }
@@ -39940,7 +38078,7 @@ pub mod nl80211_sae_pwe_mechanism {
     pub const NL80211_SAE_PWE_BOTH: Type = 3;
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct cfg80211_crypto_settings {
     pub wpa_versions: u32_,
     pub cipher_group: u32_,
@@ -39961,7 +38099,7 @@ pub struct cfg80211_crypto_settings {
     pub sae_pwe: nl80211_sae_pwe_mechanism::Type,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct ieee80211_vht_mcs_info {
     pub rx_mcs_map: __le16,
     pub rx_highest: __le16,
@@ -39969,7 +38107,7 @@ pub struct ieee80211_vht_mcs_info {
     pub tx_highest: __le16,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct ieee80211_vht_cap {
     pub vht_cap_info: __le32,
     pub supp_mcs: ieee80211_vht_mcs_info,
@@ -39990,11 +38128,10 @@ pub mod nl80211_band {
     pub const NL80211_BAND_60GHZ: Type = 2;
     pub const NL80211_BAND_6GHZ: Type = 3;
     pub const NL80211_BAND_S1GHZ: Type = 4;
-    pub const NL80211_BAND_LC: Type = 5;
-    pub const NUM_NL80211_BANDS: Type = 6;
+    pub const NUM_NL80211_BANDS: Type = 5;
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct cfg80211_bss_select_adjust {
     pub band: nl80211_band::Type,
     pub delta: s8,
@@ -40100,7 +38237,7 @@ impl cfg80211_connect_params {
     }
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct cfg80211_cqm_config {
     _unused: [u8; 0],
 }
@@ -40229,21 +38366,20 @@ pub mod nl80211_bss_scan_width {
     pub const NL80211_BSS_CHAN_WIDTH_2: Type = 4;
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct nl80211_wowlan_tcp_data_seq {
     pub start: __u32,
     pub offset: __u32,
     pub len: __u32,
 }
 #[repr(C)]
-#[derive(Debug)]
 pub struct nl80211_wowlan_tcp_data_token {
     pub offset: __u32,
     pub len: __u32,
     pub token_stream: __IncompleteArrayField<__u8>,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct nl80211_wowlan_tcp_data_token_feature {
     pub min_len: __u32,
     pub max_len: __u32,
@@ -40256,7 +38392,7 @@ pub mod nl80211_dfs_state {
     pub const NL80211_DFS_AVAILABLE: Type = 2;
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct nl80211_vendor_cmd_info {
     pub vendor_id: __u32,
     pub subcmd: __u32,
@@ -40267,13 +38403,13 @@ pub mod nl80211_sar_type {
     pub const NUM_NL80211_SAR_TYPE: Type = 1;
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct ieee80211_he_cap_elem {
     pub mac_cap_info: [u8_; 6usize],
     pub phy_cap_info: [u8_; 11usize],
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct ieee80211_he_mcs_nss_supp {
     pub rx_mcs_80: __le16,
     pub tx_mcs_80: __le16,
@@ -40283,14 +38419,9 @@ pub struct ieee80211_he_mcs_nss_supp {
     pub tx_mcs_80p80: __le16,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct ieee80211_he_6ghz_capa {
     pub capa: __le16,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct rfkill {
-    _unused: [u8; 0],
 }
 pub mod environment_cap {
     pub type Type = ::aya_bpf::cty::c_uint;
@@ -40299,7 +38430,7 @@ pub mod environment_cap {
     pub const ENVIRON_OUTDOOR: Type = 2;
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct regulatory_request {
     pub callback_head: callback_head,
     pub wiphy_idx: ::aya_bpf::cty::c_int,
@@ -40313,20 +38444,20 @@ pub struct regulatory_request {
     pub list: list_head,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct ieee80211_freq_range {
     pub start_freq_khz: u32_,
     pub end_freq_khz: u32_,
     pub max_bandwidth_khz: u32_,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct ieee80211_power_rule {
     pub max_antenna_gain: u32_,
     pub max_eirp: u32_,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct ieee80211_wmm_ac {
     pub cw_min: u16_,
     pub cw_max: u16_,
@@ -40334,13 +38465,13 @@ pub struct ieee80211_wmm_ac {
     pub aifsn: u8_,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct ieee80211_wmm_rule {
     pub client: [ieee80211_wmm_ac; 4usize],
     pub ap: [ieee80211_wmm_ac; 4usize],
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct ieee80211_reg_rule {
     pub freq_range: ieee80211_freq_range,
     pub power_rule: ieee80211_power_rule,
@@ -40350,7 +38481,6 @@ pub struct ieee80211_reg_rule {
     pub has_wmm: bool_,
 }
 #[repr(C)]
-#[derive(Debug)]
 pub struct ieee80211_regdomain {
     pub callback_head: callback_head,
     pub n_reg_rules: u32_,
@@ -40359,7 +38489,7 @@ pub struct ieee80211_regdomain {
     pub reg_rules: __IncompleteArrayField<ieee80211_reg_rule>,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct ieee80211_channel {
     pub band: nl80211_band::Type,
     pub center_freq: u32_,
@@ -40378,7 +38508,7 @@ pub struct ieee80211_channel {
     pub dfs_cac_ms: ::aya_bpf::cty::c_uint,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct ieee80211_rate {
     pub flags: u32_,
     pub bitrate: u16_,
@@ -40386,7 +38516,7 @@ pub struct ieee80211_rate {
     pub hw_value_short: u16_,
 }
 #[repr(C, packed)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct ieee80211_sta_ht_cap {
     pub cap: u16_,
     pub ht_supported: bool_,
@@ -40404,14 +38534,14 @@ impl ieee80211_sta_ht_cap {
     }
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct ieee80211_sta_vht_cap {
     pub vht_supported: bool_,
     pub cap: u32_,
     pub vht_mcs: ieee80211_vht_mcs_info,
 }
 #[repr(C, packed)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct ieee80211_sta_he_cap {
     pub has_he: bool_,
     pub he_cap_elem: ieee80211_he_cap_elem,
@@ -40419,37 +38549,30 @@ pub struct ieee80211_sta_he_cap {
     pub ppe_thres: [u8_; 25usize],
 }
 #[repr(C, packed)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct ieee80211_sband_iftype_data {
     pub types_mask: u16_,
     pub he_cap: ieee80211_sta_he_cap,
     pub he_6ghz_capa: ieee80211_he_6ghz_capa,
     pub _bitfield_align_1: [u8; 0],
-    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 5usize]>,
-    pub vendor_elems: ieee80211_sband_iftype_data__bindgen_ty_1,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct ieee80211_sband_iftype_data__bindgen_ty_1 {
-    pub data: *const u8_,
-    pub len: ::aya_bpf::cty::c_uint,
+    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 1usize]>,
 }
 impl ieee80211_sband_iftype_data {
     #[inline]
-    pub fn new_bitfield_1() -> __BindgenBitfieldUnit<[u8; 5usize]> {
-        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 5usize]> = Default::default();
+    pub fn new_bitfield_1() -> __BindgenBitfieldUnit<[u8; 1usize]> {
+        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 1usize]> = Default::default();
         __bindgen_bitfield_unit
     }
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct ieee80211_sta_s1g_cap {
     pub s1g: bool_,
     pub cap: [u8_; 10usize],
     pub nss_mcs: [u8_; 5usize],
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct ieee80211_supported_band {
     pub channels: *mut ieee80211_channel,
     pub bitrates: *mut ieee80211_rate,
@@ -40464,7 +38587,7 @@ pub struct ieee80211_supported_band {
     pub iftype_data: *const ieee80211_sband_iftype_data,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct key_params {
     pub key: *const u8_,
     pub seq: *const u8_,
@@ -40475,25 +38598,25 @@ pub struct key_params {
     pub mode: nl80211_key_mode::Type,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct mac_address {
     pub addr: [u8_; 6usize],
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct cfg80211_sar_freq_ranges {
     pub start_freq: u32_,
     pub end_freq: u32_,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct cfg80211_sar_capa {
     pub type_: nl80211_sar_type::Type,
     pub num_freq_ranges: u32_,
     pub freq_ranges: *const cfg80211_sar_freq_ranges,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct cfg80211_ssid {
     pub ssid: [u8_; 32usize],
     pub ssid_len: u8_,
@@ -40559,7 +38682,7 @@ pub struct wiphy {
     pub iftype_ext_capab: *const wiphy_iftype_ext_capab,
     pub num_iftype_ext_capab: ::aya_bpf::cty::c_uint,
     pub privid: *const ::aya_bpf::cty::c_void,
-    pub bands: [*mut ieee80211_supported_band; 6usize],
+    pub bands: [*mut ieee80211_supported_band; 5usize],
     pub reg_notifier: ::core::option::Option<
         unsafe extern "C" fn(arg1: *mut wiphy, arg2: *mut regulatory_request),
     >,
@@ -40591,15 +38714,12 @@ pub struct wiphy {
     pub tid_config_support: wiphy__bindgen_ty_1,
     pub max_data_retry_count: u8_,
     pub sar_capa: *const cfg80211_sar_capa,
-    pub rfkill: *mut rfkill,
-    pub mbssid_max_interfaces: u8_,
-    pub ema_max_profile_periodicity: u8_,
     pub _bitfield_align_2: [u8; 0],
-    pub _bitfield_2: __BindgenBitfieldUnit<[u8; 32usize]>,
+    pub _bitfield_2: __BindgenBitfieldUnit<[u8; 24usize]>,
     pub priv_: __IncompleteArrayField<::aya_bpf::cty::c_char>,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct wiphy__bindgen_ty_1 {
     pub peer: u64_,
     pub vif: u64_,
@@ -40646,27 +38766,26 @@ impl wiphy {
         __bindgen_bitfield_unit
     }
     #[inline]
-    pub fn new_bitfield_2() -> __BindgenBitfieldUnit<[u8; 32usize]> {
-        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 32usize]> = Default::default();
+    pub fn new_bitfield_2() -> __BindgenBitfieldUnit<[u8; 24usize]> {
+        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 24usize]> = Default::default();
         __bindgen_bitfield_unit
     }
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct cfg80211_match_set {
     pub ssid: cfg80211_ssid,
     pub bssid: [u8_; 6usize],
     pub rssi_thold: s32,
-    pub per_band_rssi_thold: [s32; 6usize],
+    pub per_band_rssi_thold: [s32; 5usize],
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct cfg80211_sched_scan_plan {
     pub interval: u32_,
     pub iterations: u32_,
 }
 #[repr(C)]
-#[derive(Debug)]
 pub struct cfg80211_sched_scan_request {
     pub reqid: u64_,
     pub ssids: *mut cfg80211_ssid,
@@ -40698,7 +38817,7 @@ pub struct cfg80211_sched_scan_request {
     pub channels: __IncompleteArrayField<*mut ieee80211_channel>,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct cfg80211_pkt_pattern {
     pub mask: *const u8_,
     pub pattern: *const u8_,
@@ -40706,7 +38825,6 @@ pub struct cfg80211_pkt_pattern {
     pub pkt_offset: ::aya_bpf::cty::c_int,
 }
 #[repr(C)]
-#[derive(Debug)]
 pub struct cfg80211_wowlan_tcp {
     pub sock: *mut socket,
     pub src: __be32,
@@ -40725,7 +38843,7 @@ pub struct cfg80211_wowlan_tcp {
     pub payload_tok: nl80211_wowlan_tcp_data_token,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct cfg80211_wowlan {
     pub any: bool_,
     pub disconnect: bool_,
@@ -40740,13 +38858,13 @@ pub struct cfg80211_wowlan {
     pub nd_config: *mut cfg80211_sched_scan_request,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct ieee80211_iface_limit {
     pub max: u16_,
     pub types: u16_,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct ieee80211_iface_combination {
     pub limits: *const ieee80211_iface_limit,
     pub num_different_channels: u32_,
@@ -40758,13 +38876,13 @@ pub struct ieee80211_iface_combination {
     pub beacon_int_min_gcd: u32_,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct ieee80211_txrx_stypes {
     pub tx: u16_,
     pub rx: u16_,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct wiphy_wowlan_tcp_support {
     pub tok: *const nl80211_wowlan_tcp_data_token_feature,
     pub data_payload_max: u32_,
@@ -40773,7 +38891,7 @@ pub struct wiphy_wowlan_tcp_support {
     pub seq: bool_,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct wiphy_wowlan_support {
     pub flags: u32_,
     pub n_patterns: ::aya_bpf::cty::c_int,
@@ -40784,7 +38902,7 @@ pub struct wiphy_wowlan_support {
     pub tcp: *const wiphy_wowlan_tcp_support,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct wiphy_coalesce_support {
     pub n_rules: ::aya_bpf::cty::c_int,
     pub max_delay: ::aya_bpf::cty::c_int,
@@ -40794,7 +38912,7 @@ pub struct wiphy_coalesce_support {
     pub max_pkt_offset: ::aya_bpf::cty::c_int,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct wiphy_vendor_command {
     pub info: nl80211_vendor_cmd_info,
     pub flags: u32_,
@@ -40820,7 +38938,7 @@ pub struct wiphy_vendor_command {
     pub maxattr: ::aya_bpf::cty::c_uint,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct wiphy_iftype_ext_capab {
     pub iftype: nl80211_iftype::Type,
     pub extended_capabilities: *const u8_,
@@ -40828,7 +38946,7 @@ pub struct wiphy_iftype_ext_capab {
     pub extended_capabilities_len: u8_,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct cfg80211_pmsr_capabilities {
     pub max_peers: ::aya_bpf::cty::c_uint,
     pub _bitfield_align_1: [u8; 0],
@@ -40836,7 +38954,7 @@ pub struct cfg80211_pmsr_capabilities {
     pub ftm: cfg80211_pmsr_capabilities__bindgen_ty_1,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct cfg80211_pmsr_capabilities__bindgen_ty_1 {
     pub preambles: u32_,
     pub bandwidths: u32_,
@@ -41007,14 +39125,14 @@ impl cfg80211_pmsr_capabilities {
     }
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct wiphy_iftype_akm_suites {
     pub iftypes_mask: u16_,
     pub akm_suites: *const u32_,
     pub n_akm_suites: ::aya_bpf::cty::c_int,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct xsk_queue {
     pub ring_mask: u32_,
     pub nentries: u32_,
@@ -41025,7 +39143,7 @@ pub struct xsk_queue {
     pub queue_empty_descs: u64_,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct xdp_ring {
     pub producer: u32_,
     pub _bitfield_align_1: [u8; 0],
@@ -41045,8 +39163,8 @@ pub struct xdp_ring {
     pub _bitfield_5: __BindgenBitfieldUnit<[u8; 60usize]>,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct mptcp_mib {
-    pub mibs: [::aya_bpf::cty::c_ulong; 43usize],
+    pub mibs: [::aya_bpf::cty::c_ulong; 35usize],
 }
 
