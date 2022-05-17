@@ -30,6 +30,7 @@ tracing = "0.1"
 tracing-core = "0.1"
 tracing-log = "0.1"
 tracing-subscriber = { version = "0.3", features = ["json"] }
+walkdir = "2.3"
 
 [dev-dependencies]
 tempfile = "3.3"
