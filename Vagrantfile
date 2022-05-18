@@ -17,7 +17,7 @@ Vagrant.configure("2") do |config|
     libvirt.memory = MEMORY
   end
 
-  config.vm.provision "shell", reboot: true, inline: <<-SHELL
+  config.vm.provision "shell", inline: <<-SHELL
     wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | apt-key add -
     add-apt-repository 'deb http://apt.llvm.org/impish/ llvm-toolchain-impish-14 main'
     apt-get update
@@ -31,8 +31,10 @@ Vagrant.configure("2") do |config|
     sed -i 's/GRUB_CMDLINE_LINUX=\"\"/GRUB_CMDLINE_LINUX=\"lsm=lockdown,yama,bpf\"/' /etc/default/grub
     update-grub
   SHELL
+  config.vm.provision :reload
   config.vm.provision "shell", privileged: false, inline: <<-SHELL
-    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+    source $HOME/.cargo/env
     rustup toolchain install nightly --component rust-src
     cargo install bpf-linker
 
@@ -42,7 +44,9 @@ Vagrant.configure("2") do |config|
     cargo xtask install
     popd
   SHELL
-
+  config.vm.provision "shell", inline: <<-SHELL
+    systemctl enable --now lockc
+  SHELL
   config.vm.define "server" do |server|
     server.vm.network "private_network", ip: "192.168.33.10"
     server.vm.provision "shell", inline: <<-SHELL
@@ -50,10 +54,11 @@ Vagrant.configure("2") do |config|
     SHELL
   end
 
-  config.vm.define "agent" do |agent|
-    agent.vm.network "private_network", ip: "192.168.33.11"
-    agent.vm.provision "shell", inline: <<-SHELL
-      curl -sfL https://get.k3s.io | K3S_URL=https://192.168.33.10:6443 K3S_TOKEN=mynodetoken sh -
-    SHELL
-  end
+  # TODO(vadorovsky): Enble agent when we deploy lockc with helm.
+  # config.vm.define "agent" do |agent|
+  #   agent.vm.network "private_network", ip: "192.168.33.11"
+  #   agent.vm.provision "shell", inline: <<-SHELL
+  #     curl -sfL https://get.k3s.io | K3S_URL=https://192.168.33.10:6443 K3S_TOKEN=mynodetoken sh -
+  #   SHELL
+  # end
 end
