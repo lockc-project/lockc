@@ -34,5 +34,5 @@ on `#lockc` channel on the [Rust Cloud Native Discord server](https://discord.gg
 
 **lockc's** userspace part is licensed under [Apache License, version 2.0](https://github.com/lockc-project/lockc/blob/main/LICENSE).
 
-eBPF programs inside [lockc/src/bpf directory](https://github.com/lockc-project/lockc/tree/main/lockc/src/bpf)
-are licensed under [GNU General Public License, version 2](https://github.com/lockc-project/lockc/blob/main/lockc/src/bpf/LICENSE).
+eBPF programs inside [lockc/src/bpf directory](https://github.com/lockc-project/lockc/tree/main/lock-ebpf)
+are licensed under [GNU General Public License, version 2](https://github.com/lockc-project/lockc/blob/main/lockc-ebpf/LICENSE).
