@@ -1,5 +1,6 @@
 mod bintar;
 mod build_ebpf;
+mod codegen;
 mod install;
 mod run;
 
@@ -18,6 +19,7 @@ enum Command {
     BuildEbpf(build_ebpf::Options),
     Install(install::Options),
     Run(run::Options),
+    Codegen,
 }
 
 fn main() {
@@ -25,12 +27,11 @@ fn main() {
 
     use Command::*;
     let ret = match opts.command {
-        Bintar(opts) => {
-            bintar::BinTar::new(opts).do_bin_tar()
-        }
+        Bintar(opts) => bintar::BinTar::new(opts).do_bin_tar(),
         BuildEbpf(opts) => build_ebpf::build_ebpf(opts),
         Install(opts) => install::Installer::new(opts).do_install(),
         Run(opts) => run::run(opts),
+        Codegen => codegen::generate(),
     };
 
     if let Err(e) = ret {
