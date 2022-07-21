@@ -4,7 +4,7 @@
 use aya_bpf::{
     bindings::path,
     cty::{c_char, c_long},
-    helpers::{bpf_d_path, bpf_probe_read_kernel_str},
+    helpers::{bpf_d_path, bpf_probe_read_kernel_str, bpf_probe_read_kernel_str_bytes},
     macros::lsm,
     programs::LsmContext,
 };
@@ -92,11 +92,12 @@ fn try_sb_mount(ctx: LsmContext) -> Result<i32, i32> {
 
     let mount_type = unsafe {
         let mount_type: *const c_char = ctx.arg(2);
-        let mount_type_buf = MOUNT_TYPE_BUF.get_mut(0).ok_or(0)?;
-        let len =
-            bpf_probe_read_kernel_str(mount_type as *const u8, &mut mount_type_buf.mount_type)
-                .map_err(|e| e as i32)?;
-        core::str::from_utf8_unchecked(&mount_type_buf.mount_type[..len])
+        let buf_ptr = MOUNT_TYPE_BUF.get_ptr_mut(0).ok_or(0)?;
+        let buf = &mut *buf_ptr;
+        core::str::from_utf8_unchecked(
+            bpf_probe_read_kernel_str_bytes(mount_type as *const u8, &mut buf.mount_type)
+                .map_err(|e| e as i32)?,
+        )
     };
 
     // Apply the policy only on bind mounts, ignore all the other types.
@@ -106,10 +107,12 @@ fn try_sb_mount(ctx: LsmContext) -> Result<i32, i32> {
 
     let src_path = unsafe {
         let dev_name: *const c_char = ctx.arg(0);
-        let path_buf = PATH_BUF.get_mut(0).ok_or(0)?;
-        let len = bpf_probe_read_kernel_str(dev_name as *const u8, &mut path_buf.path)
-            .map_err(|e| e as i32)?;
-        core::str::from_utf8_unchecked(&path_buf.path[..len])
+        let buf_ptr = PATH_BUF.get_ptr_mut(0).ok_or(0)?;
+        let buf = &mut *buf_ptr;
+        core::str::from_utf8_unchecked(
+            bpf_probe_read_kernel_str_bytes(dev_name as *const u8, &mut buf.path)
+                .map_err(|e| e as i32)?,
+        )
     };
 
     if src_path.starts_with("/run/k3s")
@@ -230,7 +233,10 @@ fn try_file_open(ctx: LsmContext) -> Result<i32, i32> {
         }
     }
 
-    let buf = unsafe { PATH_BUF.get_mut(0).ok_or(0)? };
+    let buf = unsafe {
+        let buf_ptr = PATH_BUF.get_ptr_mut(0).ok_or(0)?;
+        &mut *buf_ptr
+    };
 
     let p = unsafe {
         let f: *const file = ctx.arg(0);
