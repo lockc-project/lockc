@@ -26,7 +26,7 @@ Please note that currently lockc is an experimental project, not meant for
 production environment and without any official binaries or packages to use -
 currently the only way to use it is building from sources.
 
-See [the full documentation here](https://lockc-project.github.io/book/).
+See [the full documentation here](https://lockc-project.github.io/).
 And [the code documentation here](https://docs.rs/lockc/).
 
 If you need help or want to talk with contributors, plese come chat with us
