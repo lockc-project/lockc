@@ -19,7 +19,7 @@ pub enum LoadError {
 /// Loads BPF programs from the object file built with clang.
 pub fn load_bpf<P: AsRef<Path>>(path_base_r: P) -> Result<Bpf, LoadError> {
     let path_base = path_base_r.as_ref();
-    std::fs::create_dir_all(&path_base)?;
+    std::fs::create_dir_all(path_base)?;
 
     #[cfg(debug_assertions)]
     let bpf = Bpf::load(include_bytes_aligned!(
