@@ -4,7 +4,7 @@
 use aya_bpf::{
     bindings::path,
     cty::{c_char, c_long},
-    helpers::{bpf_d_path, bpf_probe_read_kernel_str, bpf_probe_read_kernel_str_bytes},
+    helpers::{bpf_d_path, bpf_probe_read_kernel_str_bytes},
     macros::lsm,
     programs::LsmContext,
 };
