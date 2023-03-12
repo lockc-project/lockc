@@ -23,10 +23,13 @@ Vagrant.configure("2") do |config|
     wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | apt-key add -
     add-apt-repository 'deb http://apt.llvm.org/jammy/ llvm-toolchain-jammy main'
     apt-get update
+    apt-get upgrade -y
+    apt-get dist-upgrade -y
     apt-get install -y \
         build-essential \
         docker.io \
         clang-15 \
+        linux-tools-generic \
         lld-15
     usermod -aG docker vagrant
     sed -i 's/GRUB_CMDLINE_LINUX=\"\"/GRUB_CMDLINE_LINUX=\"lsm=lockdown,yama,bpf\"/' /etc/default/grub
