@@ -53,11 +53,13 @@ Vagrant.configure("2") do |config|
   config.vm.provision "shell", inline: <<-SHELL
     systemctl enable --now lockc
   SHELL
-  config.vm.define "server" do |server|
-    server.vm.network "private_network", ip: "192.168.33.10"
-    server.vm.provision "shell", inline: <<-SHELL
-      curl -sfL https://get.k3s.io | K3S_TOKEN=mynodetoken sh -
-    SHELL
+  if ENV['LOCKC_VAGRANT_K8S'] == 'true'
+    config.vm.define "server" do |server|
+      server.vm.network "private_network", ip: "192.168.33.10"
+      server.vm.provision "shell", inline: <<-SHELL
+        curl -sfL https://get.k3s.io | K3S_TOKEN=mynodetoken sh -
+      SHELL
+    end
   end
 
   # TODO(vadorovsky): Enble agent when we deploy lockc with helm.
