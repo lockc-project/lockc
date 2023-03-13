@@ -43,6 +43,8 @@ Vagrant.configure("2") do |config|
     source $HOME/.cargo/env
     rustup toolchain install nightly --component rust-src
     cargo install bpf-linker
+    cargo install bindgen-cli
+    cargo install --git https://github.com/aya-rs/aya -- aya-tool
 
     pushd /vagrant
     cargo xtask build-ebpf
