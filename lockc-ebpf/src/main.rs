@@ -155,8 +155,6 @@ pub fn task_fix_setuid(ctx: LsmContext) -> i32 {
 }
 
 fn try_task_fix_setuid(ctx: LsmContext) -> Result<i32, i32> {
-    debug!(&ctx, "function task_fix_setuid called by LSM");
-
     let (container_id, policy_level) = get_container_and_policy_level()?;
     match policy_level {
         ContainerPolicyLevel::NotFound => {
@@ -289,7 +287,7 @@ pub fn socket_sendmsg(ctx: LsmContext) -> i32 {
 }
 
 fn try_socket_sendmsg(ctx: LsmContext) -> Result<i32, i32> {
-    let (_, policy_level) = get_container_and_policy_level()?;
+    let (container_id, policy_level) = get_container_and_policy_level()?;
     match policy_level {
         ContainerPolicyLevel::NotFound => {
             return Ok(0);
@@ -307,9 +305,16 @@ fn try_socket_sendmsg(ctx: LsmContext) -> Result<i32, i32> {
         }
     }
 
+    let container_id = container_id.ok_or(-1)?;
+    let container_id = unsafe { container_id.as_str() };
+    let pid = ctx.pid();
     let sock: *const socket = unsafe { ctx.arg(0) };
     let txhash = unsafe { (*(*sock).sk).sk_txhash };
-    debug!(&ctx, "socket_sendmsg: txhash: {}", txhash);
+    debug!(
+        &ctx,
+        "socket_sendmsg: container_id: {}, pid: {}, txhash: {}", container_id, pid, txhash
+    );
+
     Ok(0)
 }
 
@@ -376,7 +381,7 @@ fn try_socket_recvmsg(ctx: LsmContext) -> Result<i32, i32> {
         }
         _ => {}
     };
-    debug!(&ctx, "socket_recvmsg: txhash: {}", txhash);
+
     Ok(0)
 }
 
