@@ -118,6 +118,20 @@ pub fn attach_programs(bpf: &mut Bpf) -> Result<(), AttachError> {
     program.load("file_open", &btf)?;
     program.attach()?;
 
+    let program: &mut Lsm = bpf
+        .program_mut("socket_sendmsg")
+        .ok_or(AttachError::ProgLoad)?
+        .try_into()?;
+    program.load("socket_sendmsg", &btf)?;
+    program.attach()?;
+
+    let program: &mut Lsm = bpf
+        .program_mut("socket_recvmsg")
+        .ok_or(AttachError::ProgLoad)?
+        .try_into()?;
+    program.load("socket_recvmsg", &btf)?;
+    program.attach()?;
+
     Ok(())
 }
 

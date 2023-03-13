@@ -5,7 +5,7 @@ edition = "2021"
 publish = false
 
 [dependencies]
-aya = { git = "https://github.com/aya-rs/aya", branch = "main" }
+aya = { version = "0.11", features = ["async_tokio"] }
 aya-log = "0.1"
 bytes = "1.1"
 lockc-common = { path = "../lockc-common", features=["user"] }
