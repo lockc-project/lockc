@@ -7,6 +7,7 @@ use aya_bpf::{
     helpers::{bpf_d_path, bpf_probe_read_kernel_str_bytes},
     macros::lsm,
     programs::LsmContext,
+    BpfContext,
 };
 use aya_log_ebpf::{debug, error, info};
 
@@ -23,7 +24,10 @@ mod vmlinux;
 
 use maps::{CONTAINER_INITIAL_SETUID, MOUNT_TYPE_BUF, PATH_BUF};
 use policy::get_container_and_policy_level;
-use vmlinux::{cred, file};
+use vmlinux::{cred, file, socket};
+
+const AF_INET: u16 = 2;
+const AF_INET6: u16 = 10;
 
 /// LSM program triggered by attempts to access the kernel logs. Behavior based
 /// on policy levels:
@@ -50,6 +54,10 @@ fn try_syslog(ctx: LsmContext) -> Result<i32, i32> {
             return Ok(0);
         }
         ContainerPolicyLevel::Restricted => {
+            info!(&ctx, "syslog: deny accessing syslog");
+            return Err(-1);
+        }
+        ContainerPolicyLevel::Offline => {
             info!(&ctx, "syslog: deny accessing syslog");
             return Err(-1);
         }
@@ -84,6 +92,7 @@ fn try_sb_mount(ctx: LsmContext) -> Result<i32, i32> {
             return Ok(0);
         }
         ContainerPolicyLevel::Restricted => {}
+        ContainerPolicyLevel::Offline => {}
         ContainerPolicyLevel::Baseline => {}
         ContainerPolicyLevel::Privileged => {
             return Ok(0);
@@ -157,6 +166,7 @@ fn try_task_fix_setuid(ctx: LsmContext) -> Result<i32, i32> {
             return Ok(0);
         }
         ContainerPolicyLevel::Restricted => {}
+        ContainerPolicyLevel::Offline => {}
         ContainerPolicyLevel::Baseline => {}
         ContainerPolicyLevel::Privileged => {
             return Ok(0);
@@ -227,6 +237,7 @@ fn try_file_open(ctx: LsmContext) -> Result<i32, i32> {
             return Ok(0);
         }
         ContainerPolicyLevel::Restricted => {}
+        ContainerPolicyLevel::Offline => {}
         ContainerPolicyLevel::Baseline => {}
         ContainerPolicyLevel::Privileged => {
             return Ok(0);
@@ -266,6 +277,106 @@ fn try_file_open(ctx: LsmContext) -> Result<i32, i32> {
         return Err(-1);
     }
 
+    Ok(0)
+}
+
+#[lsm(name = "socket_sendmsg")]
+pub fn socket_sendmsg(ctx: LsmContext) -> i32 {
+    match { try_socket_sendmsg(ctx) } {
+        Ok(ret) => ret,
+        Err(ret) => ret,
+    }
+}
+
+fn try_socket_sendmsg(ctx: LsmContext) -> Result<i32, i32> {
+    let (_, policy_level) = get_container_and_policy_level()?;
+    match policy_level {
+        ContainerPolicyLevel::NotFound => {
+            return Ok(0);
+        }
+        ContainerPolicyLevel::Lockc => {
+            return Ok(0);
+        }
+        ContainerPolicyLevel::Restricted => {}
+        ContainerPolicyLevel::Offline => {
+            return Err(-1);
+        }
+        ContainerPolicyLevel::Baseline => {}
+        ContainerPolicyLevel::Privileged => {
+            return Ok(0);
+        }
+    }
+
+    let sock: *const socket = unsafe { ctx.arg(0) };
+    let txhash = unsafe { (*(*sock).sk).sk_txhash };
+    debug!(&ctx, "socket_sendmsg: txhash: {}", txhash);
+    Ok(0)
+}
+
+#[lsm(name = "socket_recvmsg")]
+pub fn socket_recvmsg(ctx: LsmContext) -> i32 {
+    match { try_socket_recvmsg(ctx) } {
+        Ok(ret) => ret,
+        Err(ret) => ret,
+    }
+}
+
+fn try_socket_recvmsg(ctx: LsmContext) -> Result<i32, i32> {
+    let (container_id, policy_level) = get_container_and_policy_level()?;
+    match policy_level {
+        ContainerPolicyLevel::NotFound => {
+            return Ok(0);
+        }
+        ContainerPolicyLevel::Lockc => {
+            return Ok(0);
+        }
+        ContainerPolicyLevel::Restricted => {}
+        ContainerPolicyLevel::Offline => {
+            return Err(-1);
+        }
+        ContainerPolicyLevel::Baseline => {}
+        ContainerPolicyLevel::Privileged => {
+            return Ok(0);
+        }
+    }
+
+    let container_id = container_id.ok_or(-1)?;
+    let container_id = unsafe { container_id.as_str() };
+    let pid = ctx.pid();
+    let sock: *const socket = unsafe { ctx.arg(0) };
+    let txhash = unsafe { (*(*sock).sk).sk_txhash };
+    match unsafe { (*(*sock).sk).__sk_common.skc_family } {
+        AF_INET => {
+            let src_addr = u32::from_be(unsafe {
+                (*(*sock).sk)
+                    .__sk_common
+                    .__bindgen_anon_1
+                    .__bindgen_anon_1
+                    .skc_rcv_saddr
+            });
+            debug!(
+                &ctx,
+                "socket_recvmsg: container_id: {}, pid: {}, src_addr: {:ipv4}, txhash: {}",
+                container_id,
+                pid,
+                src_addr,
+                txhash
+            );
+        }
+        AF_INET6 => {
+            let src_addr = unsafe { (*(*sock).sk).__sk_common.skc_v6_rcv_saddr.in6_u.u6_addr8 };
+            debug!(
+                &ctx,
+                "socket_recvmsg: container_id: {}, pid: {}, src_addr: {:ipv6}, txhash: {}",
+                container_id,
+                pid,
+                src_addr,
+                txhash
+            );
+        }
+        _ => {}
+    };
+    debug!(&ctx, "socket_recvmsg: txhash: {}", txhash);
     Ok(0)
 }
 

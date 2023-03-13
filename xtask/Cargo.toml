@@ -7,7 +7,7 @@ edition = "2021"
 
 [dependencies]
 structopt = {version = "0.3", default-features = false }
-aya-gen = { git = "https://github.com/aya-rs/aya", branch = "main" }
+aya-tool = { git = "https://github.com/aya-rs/aya", branch = "main" }
 anyhow = "1"
 flate2 = "1.0"
 fs_extra = "1.2"

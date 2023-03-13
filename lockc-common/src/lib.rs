@@ -28,6 +28,7 @@ pub enum ContainerPolicyLevel {
 
     // Policy levels.
     Restricted,
+    Offline,
     Baseline,
     Privileged,
 }
