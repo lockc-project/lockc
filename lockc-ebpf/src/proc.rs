@@ -27,8 +27,13 @@ fn handle_new_process(ctx: BtfTracePointContext, ppid: i32, pid: i32) -> Result<
         }
 
         // Register a new process.
-        debug!(&ctx, "new containerized process");
         let container_id = parent.container_id;
+        debug!(
+            &ctx,
+            "new containerized process: pid: {}, container_id: {}",
+            pid,
+            unsafe { container_id.as_str() }
+        );
         let child = Process { container_id };
         unsafe { PROCESSES.insert(&pid, &child, 0).map_err(|e| e as i32)? };
     }
