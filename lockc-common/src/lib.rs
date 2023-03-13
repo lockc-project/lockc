@@ -19,6 +19,7 @@ pub const PATH_LEN: usize = 64;
 const CONTAINER_ID_LEN: usize = 64;
 
 #[cfg_attr(feature = "user", derive(Debug))]
+#[cfg_attr(feature = "cli", derive(clap::ValueEnum))]
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub enum ContainerPolicyLevel {
@@ -33,12 +34,47 @@ pub enum ContainerPolicyLevel {
     Privileged,
 }
 
+#[cfg(feature = "user")]
+impl std::fmt::Display for ContainerPolicyLevel {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            ContainerPolicyLevel::NotFound => write!(f, "not found"),
+            ContainerPolicyLevel::Lockc => write!(f, "lockc"),
+            ContainerPolicyLevel::Restricted => write!(f, "restricted"),
+            ContainerPolicyLevel::Offline => write!(f, "offline"),
+            ContainerPolicyLevel::Baseline => write!(f, "baseline"),
+            ContainerPolicyLevel::Privileged => write!(f, "privileged"),
+        }
+    }
+}
+
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct ContainerID {
     pub id: [u8; CONTAINER_ID_LEN],
 }
 
+#[cfg(feature = "user")]
+impl std::str::FromStr for ContainerID {
+    type Err = std::ffi::NulError;
+
+    fn from_str(id: &str) -> Result<Self, Self::Err> {
+        let mut id = std::ffi::CString::new(id)?.into_bytes_with_nul();
+        id.resize(CONTAINER_ID_LEN, 0);
+        Ok(ContainerID {
+            id: id.try_into().unwrap(),
+        })
+    }
+}
+
+#[cfg(feature = "user")]
+impl ContainerID {
+    pub fn as_str(&self) -> Result<&str, std::str::Utf8Error> {
+        std::str::from_utf8(&self.id)
+    }
+}
+
+#[cfg(not(feature = "user"))]
 impl ContainerID {
     /// Convert container ID to a string.
     ///
