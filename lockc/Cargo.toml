@@ -10,7 +10,7 @@ aya-log = "0.1"
 bytes = "1.1"
 lockc-common = { path = "../lockc-common", features=["user"] }
 anyhow = "1.0.42"
-clap = { version = "3.1", features = ["derive", "env"] }
+clap = { version = "4.1", features = ["env"] }
 config = "0.13"
 fanotify-rs = { git = "https://github.com/vadorovsky/fanotify-rs", branch = "fix-pid-type" }
 kube = { version = "0.71", features = ["runtime", "derive"] }

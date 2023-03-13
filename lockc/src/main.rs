@@ -1,7 +1,7 @@
 use std::{env, fs, path, thread};
 
 use aya_log::BpfLogger;
-use clap::Parser;
+use clap::{Parser, ValueEnum};
 use thiserror::Error;
 use tokio::{
     runtime::Runtime,
@@ -128,31 +128,36 @@ async fn ebpf(
     Ok(())
 }
 
-#[derive(Debug, Parser)]
+#[derive(Parser)]
 #[clap(author, version, about, long_about = None)]
 struct Opt {
     #[cfg_attr(
         debug_assertions,
-        clap(
-            long,
-            env="LOCKC_LOG_LEVEL",
-            default_value = "debug",
-            possible_values = &["trace", "debug", "info", "warn", "error"]
-        )
+        clap(value_enum, long, env = "LOCKC_LOG_LEVEL", default_value_t = LogLevel::Debug)
     )]
     #[cfg_attr(
         not(debug_assertions),
-        clap(
-            long,
-            env="LOCKC_LOG_LEVEL",
-            default_value = "info",
-            possible_values = &["trace", "debug", "info", "warn", "error"]
-        )
+        clap(value_enum, long, env = "LOCKC_LOG_LEVEL", default_value_t = LogLevel::Info)
     )]
-    log_level: String,
+    log_level: LogLevel,
 
-    #[clap(long, env="LOCKC_LOG_FMT", default_value = "text", possible_values = &["json", "text"])]
-    log_fmt: String,
+    #[clap(value_enum, long, env="LOCKC_LOG_FMT", default_value_t = LogFmt::Text)]
+    log_fmt: LogFmt,
+}
+
+#[derive(ValueEnum, Clone)]
+enum LogLevel {
+    Trace,
+    Debug,
+    Info,
+    Warn,
+    Error,
+}
+
+#[derive(ValueEnum, Clone)]
+enum LogFmt {
+    Json,
+    Text,
 }
 
 #[derive(Error, Debug)]
@@ -162,35 +167,27 @@ enum SetupTracingError {
 
     #[error(transparent)]
     SetGlobalDefault(#[from] tracing_core::dispatcher::SetGlobalDefaultError),
-
-    #[error("unknown log level")]
-    UnknownLogLevel,
-
-    #[error("unknown log message format")]
-    UnknownLogFormat,
 }
 
 fn setup_tracing(opt: &Opt) -> Result<(), SetupTracingError> {
-    let (level_tracing, level_log) = match opt.log_level.as_str() {
-        "trace" => (Level::TRACE, log::LevelFilter::Trace),
-        "debug" => (Level::DEBUG, log::LevelFilter::Debug),
-        "info" => (Level::INFO, log::LevelFilter::Info),
-        "warn" => (Level::WARN, log::LevelFilter::Warn),
-        "error" => (Level::ERROR, log::LevelFilter::Error),
-        _ => return Err(SetupTracingError::UnknownLogLevel),
+    let (level_tracing, level_log) = match opt.log_level {
+        LogLevel::Trace => (Level::TRACE, log::LevelFilter::Trace),
+        LogLevel::Debug => (Level::DEBUG, log::LevelFilter::Debug),
+        LogLevel::Info => (Level::INFO, log::LevelFilter::Info),
+        LogLevel::Warn => (Level::WARN, log::LevelFilter::Warn),
+        LogLevel::Error => (Level::ERROR, log::LevelFilter::Error),
     };
 
     let builder = FmtSubscriber::builder().with_max_level(level_tracing);
-    match opt.log_fmt.as_str() {
-        "json" => {
+    match opt.log_fmt {
+        LogFmt::Json => {
             let subscriber = builder.json().finish();
             tracing::subscriber::set_global_default(subscriber)?;
         }
-        "text" => {
+        LogFmt::Text => {
             let subscriber = builder.finish();
             tracing::subscriber::set_global_default(subscriber)?;
         }
-        _ => return Err(SetupTracingError::UnknownLogFormat),
     };
 
     LogTracer::builder().with_max_level(level_log).init()?;
