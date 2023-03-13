@@ -9,14 +9,13 @@ use lockc_common::{Container, ContainerID, MountType, Path, Process, PID_MAX_LIM
 /// given container.
 #[map]
 pub(crate) static mut CONTAINERS: HashMap<ContainerID, Container> =
-    HashMap::with_max_entries(PID_MAX_LIMIT, 0);
+    HashMap::pinned(PID_MAX_LIMIT, 0);
 
 /// BPF map which maps the PID to a container it belongs to. The value of this
 /// map, which represents the container, is a key of `containers` BPF map, so
 /// it can be used immediately for lookups in `containers` map.
 #[map]
-pub(crate) static mut PROCESSES: HashMap<i32, Process> =
-    HashMap::with_max_entries(PID_MAX_LIMIT, 0);
+pub(crate) static mut PROCESSES: HashMap<i32, Process> = HashMap::pinned(PID_MAX_LIMIT, 0);
 
 #[map]
 pub(crate) static mut CONTAINER_INITIAL_SETUID: HashMap<ContainerID, bool> =
