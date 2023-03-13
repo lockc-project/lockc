@@ -1,2 +1,2 @@
 [workspace]
-members = ["lockc", "lockc-common", "xtask"]
+members = ["lockc", "lockctl", "lockc-common", "xtask"]
