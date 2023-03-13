@@ -3,7 +3,7 @@ use std::{io, path::Path};
 use aya::{
     include_bytes_aligned,
     programs::{BtfTracePoint, Lsm, ProgramError},
-    Bpf, BpfError, Btf, BtfError,
+    Bpf, BpfError, BpfLoader, Btf, BtfError,
 };
 use thiserror::Error;
 use tracing::warn;
@@ -23,13 +23,17 @@ pub fn load_bpf<P: AsRef<Path>>(path_base_r: P) -> Result<Bpf, LoadError> {
     std::fs::create_dir_all(path_base)?;
 
     #[cfg(debug_assertions)]
-    let bpf = Bpf::load(include_bytes_aligned!(
-        "../../target/bpfel-unknown-none/debug/lockc"
-    ))?;
+    let bpf = BpfLoader::new()
+        .map_pin_path(path_base)
+        .load(include_bytes_aligned!(
+            "../../target/bpfel-unknown-none/debug/lockc"
+        ))?;
     #[cfg(not(debug_assertions))]
-    let bpf = Bpf::load(include_bytes_aligned!(
-        "../../target/bpfel-unknown-none/release/lockc"
-    ))?;
+    let bpf = BpfLoader::new()
+        .map_pin_path(path_base)
+        .load(include_bytes_aligned!(
+            "../../target/bpfel-unknown-none/release/lockc"
+        ))?;
 
     Ok(bpf)
 }
