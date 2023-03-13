@@ -11,6 +11,8 @@ use tracing::{debug, error, Level};
 use tracing_log::LogTracer;
 use tracing_subscriber::FmtSubscriber;
 
+use lockc_common::ContainerPolicyLevel;
+
 mod communication;
 mod load;
 mod maps;
@@ -35,8 +37,9 @@ enum FanotifyError {
 fn fanotify(
     fanotify_bootstrap_rx: oneshot::Receiver<()>,
     ebpf_tx: mpsc::Sender<EbpfCommand>,
+    default_policy_level: ContainerPolicyLevel,
 ) -> Result<(), anyhow::Error> {
-    RuncWatcher::new(fanotify_bootstrap_rx, ebpf_tx)?.work_loop()?;
+    RuncWatcher::new(fanotify_bootstrap_rx, ebpf_tx, default_policy_level)?.work_loop()?;
     Ok(())
 }
 
@@ -143,6 +146,9 @@ struct Opt {
 
     #[clap(value_enum, long, env="LOCKC_LOG_FMT", default_value_t = LogFmt::Text)]
     log_fmt: LogFmt,
+
+    #[clap(value_enum, long, env="LOCKC_DEFAULT_POLICY_LEVEL", default_value_t = ContainerPolicyLevel::Baseline)]
+    default_policy_level: ContainerPolicyLevel,
 }
 
 #[derive(ValueEnum, Clone)]
@@ -222,7 +228,8 @@ fn main() -> Result<(), anyhow::Error> {
     let (ebpf_tx, ebpf_rx) = mpsc::channel::<EbpfCommand>(100);
 
     // Start the thread (but it's going to wait for bootstrap).
-    let fanotify_thread = thread::spawn(move || fanotify(fanotify_bootstrap_rx, ebpf_tx));
+    let fanotify_thread =
+        thread::spawn(move || fanotify(fanotify_bootstrap_rx, ebpf_tx, opt.default_policy_level));
 
     // Step 2: Setup a Tokio runtime for asynchronous part of lockc, which
     // takes care of:
