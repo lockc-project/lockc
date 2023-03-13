@@ -6,6 +6,7 @@ use aya::{
     Bpf, BpfError, Btf, BtfError,
 };
 use thiserror::Error;
+use tracing::warn;
 
 #[derive(Error, Debug)]
 pub enum LoadError {
@@ -45,6 +46,20 @@ pub enum AttachError {
     ProgLoad,
 }
 
+fn is_root_btrfs() -> bool {
+    let mountinfo = std::fs::read_to_string("/proc/1/mountinfo");
+    if let Ok(mountinfo) = mountinfo {
+        let root = mountinfo.lines().find(|line| line.contains(" / "));
+        if let Some(root) = root {
+            root.contains("btrfs")
+        } else {
+            false
+        }
+    } else {
+        false
+    }
+}
+
 pub fn attach_programs(bpf: &mut Bpf) -> Result<(), AttachError> {
     let btf = Btf::from_sys_fs()?;
 
@@ -76,12 +91,18 @@ pub fn attach_programs(bpf: &mut Bpf) -> Result<(), AttachError> {
     program.load("syslog", &btf)?;
     program.attach()?;
 
-    let program: &mut Lsm = bpf
-        .program_mut("sb_mount")
-        .ok_or(AttachError::ProgLoad)?
-        .try_into()?;
-    program.load("sb_mount", &btf)?;
-    program.attach()?;
+    // NOTE(vadorovsky): Mount policies work only with BTRFS for now.
+    // TODO(vadorovsky): Add support for overlayfs.
+    if is_root_btrfs() {
+        let program: &mut Lsm = bpf
+            .program_mut("sb_mount")
+            .ok_or(AttachError::ProgLoad)?
+            .try_into()?;
+        program.load("sb_mount", &btf)?;
+        program.attach()?;
+    } else {
+        warn!("Root filesystem is not BTRFS, skipping mount policies");
+    }
 
     let program: &mut Lsm = bpf
         .program_mut("task_fix_setuid")
