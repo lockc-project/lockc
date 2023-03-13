@@ -36,9 +36,9 @@ jobs:
           DOCKER_BUILDKIT: 1
           COMPOSE_DOCKER_CLI_BUILD: 1
       - name: Install udeps
-        run: cargo install cargo-udeps
+        run: cargo +nightly install cargo-udeps
       - name: Check unused dependencies
-        run: cargo udeps --all-targets
+        run: cargo +nightly udeps --all-targets
         env:
           DOCKER_BUILDKIT: 1
           COMPOSE_DOCKER_CLI_BUILD: 1
