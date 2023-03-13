@@ -169,7 +169,10 @@ fn container_type_data<P: AsRef<std::path::Path>>(
 
 /// Finds the policy for the given Kubernetes namespace. If none, the baseline
 /// policy is returned. Otherwise checks the Kubernetes namespace labels.
-async fn policy_kubernetes(namespace: String) -> Result<ContainerPolicyLevel, kube::Error> {
+async fn policy_kubernetes(
+    default_policy_level: ContainerPolicyLevel,
+    namespace: String,
+) -> Result<ContainerPolicyLevel, kube::Error> {
     // Apply the privileged policy for kube-system containers immediately.
     // Otherwise the core k8s components (apiserver, scheduler) won't be able
     // to run.
@@ -189,11 +192,11 @@ async fn policy_kubernetes(namespace: String) -> Result<ContainerPolicyLevel, ku
                 "restricted" => Ok(ContainerPolicyLevel::Restricted),
                 "baseline" => Ok(ContainerPolicyLevel::Baseline),
                 "privileged" => Ok(ContainerPolicyLevel::Privileged),
-                _ => Ok(ContainerPolicyLevel::Baseline),
+                _ => Ok(default_policy_level),
             },
-            None => Ok(ContainerPolicyLevel::Baseline),
+            None => Ok(default_policy_level),
         },
-        None => Ok(ContainerPolicyLevel::Baseline),
+        None => Ok(default_policy_level),
     }
 }
 
@@ -209,19 +212,23 @@ pub enum PolicyKubernetesSyncError {
 /// Makes the `policy_label_sync` function synchronous. We use it together with
 /// poll(2) syscall, which is definitely not meant for multithreaded code.
 fn policy_kubernetes_sync(
+    default_policy_level: ContainerPolicyLevel,
     namespace: String,
 ) -> Result<ContainerPolicyLevel, PolicyKubernetesSyncError> {
     match Builder::new_current_thread()
         .enable_all()
         .build()?
-        .block_on(policy_kubernetes(namespace))
+        .block_on(policy_kubernetes(default_policy_level, namespace))
     {
         Ok(p) => Ok(p),
         Err(e) => Err(PolicyKubernetesSyncError::from(e)),
     }
 }
 
-fn policy_docker<P: AsRef<Path>>(docker_bundle: P) -> Result<ContainerPolicyLevel, ContainerError> {
+fn policy_docker<P: AsRef<Path>>(
+    default_policy_level: ContainerPolicyLevel,
+    docker_bundle: P,
+) -> Result<ContainerPolicyLevel, ContainerError> {
     let config_path = docker_bundle.as_ref();
     let f = std::fs::File::open(config_path)?;
     let r = std::io::BufReader::new(f);
@@ -235,9 +242,9 @@ fn policy_docker<P: AsRef<Path>>(docker_bundle: P) -> Result<ContainerPolicyLeve
             "restricted" => Ok(ContainerPolicyLevel::Restricted),
             "baseline" => Ok(ContainerPolicyLevel::Baseline),
             "privileged" => Ok(ContainerPolicyLevel::Privileged),
-            _ => Ok(ContainerPolicyLevel::Baseline),
+            _ => Ok(default_policy_level),
         },
-        None => Ok(ContainerPolicyLevel::Baseline),
+        None => Ok(default_policy_level),
     }
 }
 
@@ -287,6 +294,7 @@ pub struct RuncWatcher {
     bootstrap_rx: oneshot::Receiver<()>,
     ebpf_tx: mpsc::Sender<EbpfCommand>,
     fd: Fanotify,
+    default_policy_level: ContainerPolicyLevel,
 }
 
 #[derive(Error, Debug)]
@@ -329,6 +337,7 @@ impl RuncWatcher {
     pub fn new(
         bootstrap_rx: oneshot::Receiver<()>,
         ebpf_tx: mpsc::Sender<EbpfCommand>,
+        default_policy_level: ContainerPolicyLevel,
     ) -> Result<Self, io::Error> {
         let runc_paths = vec![
             "/usr/bin/runc",
@@ -397,6 +406,7 @@ impl RuncWatcher {
             bootstrap_rx,
             ebpf_tx,
             fd,
+            default_policy_level,
         })
     }
 
@@ -636,10 +646,12 @@ impl RuncWatcher {
                 // let policy;
                 let (container_type, container_data) = container_type_data(container_bundle)?;
                 let policy: ContainerPolicyLevel = match container_type {
-                    ContainerType::Docker => {
-                        policy_docker(container_data.ok_or(HandleRuncEventError::ContainerData)?)?
-                    }
+                    ContainerType::Docker => policy_docker(
+                        self.default_policy_level,
+                        container_data.ok_or(HandleRuncEventError::ContainerData)?,
+                    )?,
                     ContainerType::KubernetesContainerd => policy_kubernetes_sync(
+                        self.default_policy_level,
                         container_data.ok_or(HandleRuncEventError::ContainerData)?,
                     )?,
                     ContainerType::Unknown => ContainerPolicyLevel::Baseline,

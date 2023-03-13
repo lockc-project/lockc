@@ -164,8 +164,12 @@ fn try_task_fix_setuid(ctx: LsmContext) -> Result<i32, i32> {
             return Ok(0);
         }
         ContainerPolicyLevel::Restricted => {}
-        ContainerPolicyLevel::Offline => {}
-        ContainerPolicyLevel::Baseline => {}
+        ContainerPolicyLevel::Offline => {
+            return Ok(0);
+        }
+        ContainerPolicyLevel::Baseline => {
+            return Ok(0);
+        }
         ContainerPolicyLevel::Privileged => {
             return Ok(0);
         }
