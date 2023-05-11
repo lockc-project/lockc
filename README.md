@@ -20,7 +20,7 @@ documentation section explains what we mean by that phrase and what kind of
 behavior we want to restrict with **lockc**.
 
 The main technology behind lockc is [eBPF](https://ebpf.io/) - to be more
-precise, its ability to attach to [LSM hooks](https://www.kernel.org/doc/html/latest/bpf/bpf_lsm.html)
+precise, its ability to attach to [LSM hooks](https://docs.kernel.org/bpf/prog_lsm.html)
 
 Please note that currently lockc is an experimental project, not meant for
 production environment and without any official binaries or packages to use -
